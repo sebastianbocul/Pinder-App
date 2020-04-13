@@ -254,4 +254,14 @@ public class MainActivity extends AppCompatActivity {
         finish();
         return;
     }
+
+    public void goToSettings(View view) {
+
+        checkUserSex();
+        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        intent.putExtra("userSex", userSex);
+        System.out.println("Odpalanie settings - - - -  - - - - -  - - -" + userSex);
+        startActivity(intent);
+        return;
+    }
 }
