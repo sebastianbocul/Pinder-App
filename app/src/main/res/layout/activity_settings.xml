@@ -40,6 +40,4 @@
         android:id="@+id/back"
         android:text="Back"/>
 
-
-
 </LinearLayout>

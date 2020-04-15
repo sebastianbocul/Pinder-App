@@ -37,24 +37,51 @@ import java.util.Map;
 
 public class SettingsActivity extends AppCompatActivity {
 
+
+    private Uri resultUri;
+    private ImageView mProfileImage;
+    private static int RESULT_LOAD_IMAGE = 1;
     private EditText mNameField, mPhoneField;
 
     private Button mBack,mConfirm;
 
-    private ImageView mProfileImage;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mCustomerDatabase;
 
     private String userId, name , phone, profileImageUrl;
 
-    private Uri resultUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        mProfileImage= (ImageView) findViewById(R.id.profileImage);
 
+        mProfileImage.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                Intent i = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
+            }
+        });
+
+        //////////////////////////
+/*
+        mProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent,1);
+            }
+        });*/
         String userSex = getIntent().getExtras().getString("userSex");
         mNameField = (EditText) findViewById(R.id.name);
 
@@ -68,18 +95,10 @@ public class SettingsActivity extends AppCompatActivity {
         userId= mAuth.getCurrentUser().getUid();
         System.out.println("userSex: " +userSex);
         System.out.println("userId: "+userId);
-        mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Female").child(userId);
+        mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userSex).child(userId);
 
         getUserInfo();
 
-        mProfileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent,1);
-            }
-        });
 
         mConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,7 +114,20 @@ public class SettingsActivity extends AppCompatActivity {
                 return;
             }
         });
+        //////////////////
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        final Uri imageUri = data.getData();
+        resultUri = imageUri;
+        mProfileImage.setImageURI(resultUri);
+    }
+
+
 
     private void getUserInfo() {
         mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -137,7 +169,7 @@ public class SettingsActivity extends AppCompatActivity {
         userInfo.put("phone",phone);
         mCustomerDatabase.updateChildren(userInfo);
         if(resultUri!=null){
-            StorageReference filepath = FirebaseStorage.getInstance().getReference().child("profileImages").child(userId);
+            final StorageReference filePath = FirebaseStorage.getInstance().getReference().child("profileImages").child(userId);
             Bitmap bitmap = null;
             try {
                 bitmap= MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), resultUri);
@@ -147,26 +179,33 @@ public class SettingsActivity extends AppCompatActivity {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 20,baos);
             byte[] data = baos.toByteArray();
-            UploadTask uploadTask = filepath.putBytes(data);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    finish();
-                }
-            });
+            UploadTask uploadTask = filePath.putBytes(data);
+
+
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Task<Uri> downloadUrl = taskSnapshot.getMetadata().getReference().getDownloadUrl();
-                   // Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    Map userInfo = new HashMap();
-                    userInfo.put("profileImageUrl", downloadUrl);
-                    mCustomerDatabase.updateChildren(userInfo);
-                    finish();
-                    return;
+                    filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Map newImage = new HashMap();
+                            newImage.put("profileImageUrl", uri.toString());
+                            mCustomerDatabase.updateChildren(newImage);
 
+                            finish();
+                            return;
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            finish();
+                            return;
+                        }
+                    });
                 }
             });
+
+
 
 
         }else {
@@ -175,15 +214,5 @@ public class SettingsActivity extends AppCompatActivity {
 
 
 
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode ==1 && requestCode == Activity.RESULT_OK){
-            final Uri imageUri = data.getData();
-            resultUri = imageUri;
-            mProfileImage.setImageURI(resultUri);
-        }
     }
 }
