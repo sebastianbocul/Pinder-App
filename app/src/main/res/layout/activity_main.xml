@@ -9,7 +9,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
         <Button
             android:layout_width="wrap_content"
@@ -29,9 +29,9 @@
 
     <com.lorentzos.flingswipe.SwipeFlingAdapterView
         android:id="@+id/frame"
-        android:background="#ffeee9e2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:rotation_degrees="15.5"
         tools:context=".MyActivity" />
 </LinearLayout>

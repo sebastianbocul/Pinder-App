@@ -47,9 +47,9 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mCustomerDatabase;
+    private DatabaseReference mUserDatabase;
 
-    private String userId, name , phone, profileImageUrl;
+    private String userId, name , phone, profileImageUrl,userSex;
 
 
 
@@ -59,30 +59,8 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         mProfileImage= (ImageView) findViewById(R.id.profileImage);
 
-        mProfileImage.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View arg0) {
 
-                Intent i = new Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-                startActivityForResult(i, RESULT_LOAD_IMAGE);
-            }
-        });
-
-        //////////////////////////
-/*
-        mProfileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent,1);
-            }
-        });*/
-        String userSex = getIntent().getExtras().getString("userSex");
         mNameField = (EditText) findViewById(R.id.name);
 
         mPhoneField = (EditText) findViewById(R.id.phone);
@@ -95,9 +73,21 @@ public class SettingsActivity extends AppCompatActivity {
         userId= mAuth.getCurrentUser().getUid();
         System.out.println("userSex: " +userSex);
         System.out.println("userId: "+userId);
-        mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userSex).child(userId);
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
 
         getUserInfo();
+        mProfileImage.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                Intent i = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
+            }
+        });
 
 
         mConfirm.setOnClickListener(new View.OnClickListener() {
@@ -130,7 +120,7 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     private void getUserInfo() {
-        mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
@@ -143,10 +133,26 @@ public class SettingsActivity extends AppCompatActivity {
                         phone = map.get("phone").toString();
                         mPhoneField.setText(phone);
                     }
+                    if(map.get("sex")!=null){
+                        userSex = map.get("sex").toString();
+
+                    }
+                    Glide.with(mProfileImage).clear(mProfileImage);
                     if(map.get("profileImageUrl")!=null){
                         profileImageUrl = map.get("profileImageUrl").toString();
-                        Glide.with(getApplication()).load(profileImageUrl).into(mProfileImage);
 
+                        switch (profileImageUrl) {
+
+                            case "default":
+                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mProfileImage);
+                                break;
+
+                            default:
+                                Glide.with(getApplication()).load(profileImageUrl).into(mProfileImage);
+                                break;
+
+
+                        }
                     }
                 }
             }
@@ -167,7 +173,7 @@ public class SettingsActivity extends AppCompatActivity {
         Map userInfo = new HashMap<>();
         userInfo.put("name", name);
         userInfo.put("phone",phone);
-        mCustomerDatabase.updateChildren(userInfo);
+        mUserDatabase.updateChildren(userInfo);
         if(resultUri!=null){
             final StorageReference filePath = FirebaseStorage.getInstance().getReference().child("profileImages").child(userId);
             Bitmap bitmap = null;
@@ -190,7 +196,7 @@ public class SettingsActivity extends AppCompatActivity {
                         public void onSuccess(Uri uri) {
                             Map newImage = new HashMap();
                             newImage.put("profileImageUrl", uri.toString());
-                            mCustomerDatabase.updateChildren(newImage);
+                            mUserDatabase.updateChildren(newImage);
 
                             finish();
                             return;
