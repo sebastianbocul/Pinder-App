@@ -1,4 +1,4 @@
-package com.example.tinderapp;
+package com.example.tinderapp.Cards;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 
 import com.bumptech.glide.Glide;
+import com.example.tinderapp.R;
 
 import java.util.List;
 
