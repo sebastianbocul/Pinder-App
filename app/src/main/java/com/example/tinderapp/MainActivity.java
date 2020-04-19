@@ -170,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
         usersDb.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if(dataSnapshot.child("sex").getValue()!=null){
                 if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID)&& dataSnapshot.child("sex").getValue().toString().equals(oppositeUserSex)){
                     String profileImageUrl = "default";
                     if(!dataSnapshot.child("profileImageUrl").getValue().toString().equals("default")){
@@ -178,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     cards item = new cards(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString(), profileImageUrl);
                     rowItems.add(item);
                     arrayAdapter.notifyDataSetChanged();
+                }
                 }
             }
 
