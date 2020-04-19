@@ -1,6 +1,8 @@
 package com.example.tinderapp.Chat;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +26,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
     @NonNull
     @Override
     public ChatViewHolders onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_matches, null, false);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat, null, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp);
         ChatViewHolders rcv = new ChatViewHolders(layoutView);
@@ -34,7 +36,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
 
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolders holder, int position) {
-
+        holder.mMessaage.setText(chatList.get(position).getMessage());
+        if(chatList.get(position).getCurrentUser()==true){
+            holder.mMessaage.setGravity(Gravity.END);
+            holder.mMessaage.setTextColor(Color.parseColor("#404040"));
+            holder.mContainer.setBackgroundColor(Color.parseColor("#F4F4F4"));
+        }
+        else {
+            holder.mMessaage.setGravity(Gravity.START);
+            holder.mMessaage.setTextColor(Color.parseColor("#FFFFFF"));
+            holder.mContainer.setBackgroundColor(Color.parseColor("#2DB4C8"));
+        }
     }
 
     @Override
