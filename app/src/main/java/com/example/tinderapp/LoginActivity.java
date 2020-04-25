@@ -2,8 +2,11 @@ package com.example.tinderapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -31,7 +34,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
 
-
+        if(ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
+        }
+        else {
+            ActivityCompat.requestPermissions(LoginActivity.this, new  String[]{Manifest.permission.ACCESS_FINE_LOCATION},44);
+        }
         mAuth = FirebaseAuth.getInstance();
         firebaseAuthStateListener= new FirebaseAuth.AuthStateListener() {
             @Override

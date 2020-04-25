@@ -3,8 +3,14 @@ package com.example.tinderapp;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +20,10 @@ import android.widget.Toast;
 import com.example.tinderapp.Cards.arrayAdapter;
 import com.example.tinderapp.Cards.cards;
 import com.example.tinderapp.Matches.MatchesActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -24,14 +34,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private cards cards_data;
     private com.example.tinderapp.Cards.arrayAdapter arrayAdapter;
     private int i;
 
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
     private FirebaseAuth mAuth;
 
     private DatabaseReference usersDb;
@@ -52,6 +66,18 @@ public class MainActivity extends AppCompatActivity {
         arrayAdapter = new arrayAdapter(this, R.layout.item,rowItems );
 
         SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
+
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        //check location permission
+        if(ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
+            updateLocation();
+        }
+        else {
+            ActivityCompat.requestPermissions(MainActivity.this, new  String[]{Manifest.permission.ACCESS_FINE_LOCATION},44);
+        }
+
+
 
         flingContainer.setAdapter(arrayAdapter);
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
@@ -235,4 +261,51 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         return;
     }
+
+    public void updateLocation(){
+        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                Location location = task.getResult();
+                if(location!=null){
+                    try {
+                        Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(),location.getLongitude(),1);
+
+
+                        DatabaseReference myRef = usersDb.child(currentUID).child("location");
+
+                        myRef.child("longitude").setValue(addresses.get(0).getLongitude());
+                        myRef.child("latitude").setValue(addresses.get(0).getLatitude());
+
+                        if(addresses.get(0).getCountryName()!=null){
+                            myRef.child("countryName").setValue(addresses.get(0).getCountryName());
+                        }else {
+                            myRef.child("countryName").setValue("Not found");
+                        }
+
+                        if(addresses.get(0).getLocality()!=null){
+                            myRef.child("locality").setValue(addresses.get(0).getLocality());
+                        }else {
+                            myRef.child("locality").setValue("Not found");
+                        }
+
+                        if(addresses.get(0).getAddressLine(0)!=null){
+                            myRef.child("address").setValue(addresses.get(0).getAddressLine(0));
+                        }else {
+                            myRef.child("address").setValue("Not found");
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+
+    }
+
+
+
 }

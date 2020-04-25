@@ -5,8 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
+import com.example.tinderapp.LocationActivity;
 import com.example.tinderapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -23,6 +27,8 @@ public class MatchesActivity extends AppCompatActivity {
     private RecyclerView.Adapter mMatchesAdapter;
     private RecyclerView.LayoutManager mMatchesLayoutManager;
     private String currentUserID;
+    private Button locationButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +36,8 @@ public class MatchesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_matches);
 
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        locationButton = (Button) findViewById(R.id.locationButton);
+
 
         myRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         myRecyclerView.setNestedScrollingEnabled(false);
@@ -42,6 +50,13 @@ public class MatchesActivity extends AppCompatActivity {
         myRecyclerView.setAdapter(mMatchesAdapter);
 
         getUserMatchId();
+
+        locationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToLocationActivity();
+            }
+        });
 //
 //        for(int i=0;i<100;i++){
 //            MatchesObject obj = new MatchesObject(Integer.toString(i));
@@ -49,6 +64,11 @@ public class MatchesActivity extends AppCompatActivity {
 //        }
 
 
+    }
+
+    private void goToLocationActivity() {
+        Intent intent = new Intent(MatchesActivity.this, LocationActivity.class);
+        startActivity(intent);
     }
 
     private void getUserMatchId() {
