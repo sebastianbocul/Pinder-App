@@ -14,6 +14,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,11 +47,14 @@ public class MainActivity extends AppCompatActivity {
     private int i;
 
 
+    public Button likeButton,dislikeButton;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private FirebaseAuth mAuth;
     private TextView tags;
     private DatabaseReference usersDb;
     public String currentUID;
+
+    public SwipeFlingAdapterView flingContainer;
     ListView listView;
     List<cards> rowItems;
 
@@ -66,7 +70,10 @@ public class MainActivity extends AppCompatActivity {
         rowItems = new ArrayList<cards>();
         arrayAdapter = new arrayAdapter(this, R.layout.item,rowItems );
 
-        SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
+        likeButton = (Button) findViewById(R.id.likeButton);
+        dislikeButton = (Button) findViewById(R.id.dislikeButton);
+
+        flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -81,7 +88,25 @@ public class MainActivity extends AppCompatActivity {
 
 
         flingContainer.setAdapter(arrayAdapter);
+        likeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(flingContainer.getChildCount()!=0)
+                    flingContainer.getTopCardListener().selectRight();
+                else Toast.makeText(MainActivity.this,"There is no more users",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dislikeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(flingContainer.getChildCount()!=0)
+                flingContainer.getTopCardListener().selectLeft();
+                else Toast.makeText(MainActivity.this,"There is no more users",Toast.LENGTH_SHORT).show();
+            }
+        });
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
+
             @Override
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
