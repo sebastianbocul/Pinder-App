@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -86,6 +87,7 @@ public class SettingsActivity extends AppCompatActivity {
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
                 startActivityForResult(i, RESULT_LOAD_IMAGE);
+
             }
         });
 
@@ -111,11 +113,16 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        final Uri imageUri;
+        if(data!=null){
+            imageUri = data.getData();
+            resultUri = imageUri;
+            mProfileImage.setImageURI(resultUri);
+            Toast.makeText(SettingsActivity.this,"Uploading image...",Toast.LENGTH_SHORT).show();
+        }
 
-        final Uri imageUri = data.getData();
-        resultUri = imageUri;
-        mProfileImage.setImageURI(resultUri);
     }
+
 
 
 

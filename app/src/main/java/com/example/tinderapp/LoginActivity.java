@@ -64,15 +64,20 @@ public class LoginActivity extends AppCompatActivity {
 
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
+                if(email.isEmpty() && password.isEmpty()){
+                    Toast.makeText(LoginActivity.this, "Wrong email or password", Toast.LENGTH_SHORT).show();
+                }else{
+
+
                 mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(!task.isSuccessful()){
-                            Toast.makeText(LoginActivity.this, "sign_up_error", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Wrong email or password", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-
+                }
             }
         });
 

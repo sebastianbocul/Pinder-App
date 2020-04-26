@@ -64,8 +64,10 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int selectedId = mRadioGroup.getCheckedRadioButtonId();
+
                 final RadioButton radioButton = (RadioButton) findViewById(selectedId);
-                if(radioButton.getText()==null){
+                if(mRadioGroup.getCheckedRadioButtonId()==-1){
+                    Toast.makeText(RegistrationActivity.this, "sign_up_error", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -73,25 +75,28 @@ public class RegistrationActivity extends AppCompatActivity {
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
                 final String name = mName.getText().toString();
-                mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(!task.isSuccessful()){
-                            Toast.makeText(RegistrationActivity.this, "sign_up_error", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            String userId = mAuth.getCurrentUser().getUid();
-                            DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-                            Map userInfo = new HashMap<>();
-                            userInfo.put("name", name);
-                            userInfo.put("sex",radioButton.getText().toString());
-                            userInfo.put("profileImageUrl","default");
 
-                            currentUserDb.updateChildren(userInfo);
-                        }
-                    }
-                });
+                if(email.isEmpty() || password.isEmpty() || name.isEmpty()){
+                    Toast.makeText(RegistrationActivity.this, "sign_up_error", Toast.LENGTH_SHORT).show();
+                }else {
+                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (!task.isSuccessful()) {
+                                Toast.makeText(RegistrationActivity.this, "sign_up_error", Toast.LENGTH_SHORT).show();
+                            } else {
+                                String userId = mAuth.getCurrentUser().getUid();
+                                DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+                                Map userInfo = new HashMap<>();
+                                userInfo.put("name", name);
+                                userInfo.put("sex", radioButton.getText().toString());
+                                userInfo.put("profileImageUrl", "default");
 
+                                currentUserDb.updateChildren(userInfo);
+                            }
+                        }
+                    });
+                }
             }
         });
 
