@@ -4,11 +4,13 @@ public class cards {
     private String userId;
     private String name;
     private String profileImageUrl;
+    private String tags;
 
-    public cards (String userId,String name, String profileImageUrl){
+    public cards (String userId,String name, String profileImageUrl,String tags){
         this.userId = userId;
         this.name = name;
         this.profileImageUrl = profileImageUrl;
+        this.tags = tags;
     }
 
     public String getUserId() {
@@ -33,5 +35,13 @@ public class cards {
 
     public void setProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 }

@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tinderapp.Cards.arrayAdapter;
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private FirebaseAuth mAuth;
-
+    private TextView tags;
     private DatabaseReference usersDb;
     public String currentUID;
     ListView listView;
@@ -208,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
                     if(!dataSnapshot.child("profileImageUrl").getValue().toString().equals("default")){
                         profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
                     }
-                    cards item = new cards(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString(), profileImageUrl);
+                    cards item = new cards(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString(), profileImageUrl,"Tags");
                     rowItems.add(item);
                     arrayAdapter.notifyDataSetChanged();
                 }
@@ -251,7 +252,6 @@ public class MainActivity extends AppCompatActivity {
         checkUserSex();
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
         intent.putExtra("userSex", userSex);
-        System.out.println("Odpalanie settings - - - -  - - - - -  - - -" + userSex);
         startActivity(intent);
         return;
     }
