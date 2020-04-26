@@ -19,7 +19,9 @@
             android:id="@+id/bt_location"
             android:text="Get my location"/>
 
-        <EditText
+        <TextView
+            android:layout_marginLeft="10sp"
+            android:textSize="20sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/name"

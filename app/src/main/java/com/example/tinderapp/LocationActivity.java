@@ -18,15 +18,13 @@ import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -40,13 +38,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import androidx.fragment.app.FragmentActivity;
-
-
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback {
 
     Button btLocation;
-    TextView textView1,textView2,textView3,textView4,textView5;
+    TextView textView1,textView2,textView3,textView4,textView5, name;
     FusedLocationProviderClient fusedLocationProviderClient;
     private GoogleMap myGoogleMap;
 
@@ -72,6 +67,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         textView3 =(TextView) findViewById(R.id.text_view3);
         textView4 =(TextView) findViewById(R.id.text_view4);
         textView5 =(TextView) findViewById(R.id.text_view5);
+        name = (TextView) findViewById(R.id.name);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.google_map);
@@ -98,8 +94,8 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                //get my location
                 mAuth = FirebaseAuth.getInstance();
                 currentUID = mAuth.getCurrentUser().getUid();
                 String lat = dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString();
@@ -107,22 +103,56 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                 double myLatitude = Double.parseDouble(lat);
                 double myLongitude = Double.parseDouble(lon);
                 LatLng latLng = new LatLng(myLatitude,myLongitude);
-                MarkerOptions markerOptions = new MarkerOptions().position(latLng).title("I am here.");
                 myGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
-                myGoogleMap.addMarker(markerOptions);
+                //
 
-/*
+                //set my info at start
+                name.setText(dataSnapshot.child("Users").child(currentUID).child("name").getValue().toString());
+                textView1.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString());
+                textView2.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("longitude").getValue().toString());
+                textView3.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("address").getValue().toString());
+                textView4.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("countryName").getValue().toString());
+                textView5.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("locality").getValue().toString());
+
+
+
+                myGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+
+                        name.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("name").getValue().toString());
+                        textView1.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("latitude").getValue().toString());
+                        textView2.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("longitude").getValue().toString());
+                        textView3.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("address").getValue().toString());
+                        textView4.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("countryName").getValue().toString());
+                        textView5.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("locality").getValue().toString());
+
+                        return false;
+                    }
+                });
+
                 for(DataSnapshot ds : dataSnapshot.child("Users").getChildren()){
                     String userName = ds.child("name").getValue().toString();
                     double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
                     double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
                     double distance = distance(myLatitude,myLongitude,latitude,longitude);
                     LatLng latLngFB = new LatLng(latitude,longitude);
-                    MarkerOptions markerOptionsFB = new MarkerOptions().position(latLngFB).title(userName + "\r" + Math.round(distance) + "km");
-                    myGoogleMap.addMarker(markerOptionsFB);
+
+                    MarkerOptions markerOptionsFB;
+                    System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                    System.out.println(currentUID);
+                    System.out.println(ds.getKey());
+                    if (ds.getKey().equals(currentUID)) {
+                        markerOptionsFB= new MarkerOptions().position(latLngFB).title("I'm here").icon(BitmapDescriptorFactory.defaultMarker(300));
+                    }
+                    else {
+                        markerOptionsFB= new MarkerOptions().position(latLngFB).title(userName + "\r" + Math.round(distance) + "km");
+                    }
+                    Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
+                    myMarker.setTag(ds.getKey().trim());
                 }
-*/
+
             }
 
             @Override
