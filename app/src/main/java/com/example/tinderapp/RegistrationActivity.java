@@ -27,7 +27,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private Button mRegister;
 
-    private EditText mEmail, mPassword, mName;
+    private EditText mEmail, mPassword, mName,mRepeatPassword;
 
     private RadioGroup mRadioGroup;
 
@@ -56,7 +56,8 @@ public class RegistrationActivity extends AppCompatActivity {
 
         mRegister = (Button) findViewById(R.id.register);
         mEmail = (EditText) findViewById(R.id.email);
-        mPassword=(EditText) findViewById(R.id.email);
+        mPassword=(EditText) findViewById(R.id.password);
+        mRepeatPassword = (EditText) findViewById(R.id.repeatpassword);
         mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         mName = (EditText) findViewById(R.id.name);
 
@@ -64,21 +65,30 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int selectedId = mRadioGroup.getCheckedRadioButtonId();
-
-                final RadioButton radioButton = (RadioButton) findViewById(selectedId);
-                if(mRadioGroup.getCheckedRadioButtonId()==-1){
-                    Toast.makeText(RegistrationActivity.this, "sign_up_error", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
                 final String name = mName.getText().toString();
+                final String repeatpassword = mRepeatPassword.getText().toString();
+                final RadioButton radioButton = (RadioButton) findViewById(selectedId);
 
-                if(email.isEmpty() || password.isEmpty() || name.isEmpty()){
-                    Toast.makeText(RegistrationActivity.this, "sign_up_error", Toast.LENGTH_SHORT).show();
-                }else {
+
+                if(mRadioGroup.getCheckedRadioButtonId()==-1){
+                    Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(email.isEmpty() || password.isEmpty() || repeatpassword.isEmpty() || name.isEmpty()){
+                    Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(password.length()<6){
+                    Toast.makeText(RegistrationActivity.this,"Password too short. Minimum length is 6 characters", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(!password.equals(repeatpassword)){
+                    Toast.makeText(RegistrationActivity.this,"Passwords do not match", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                     mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -97,7 +107,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         }
                     });
                 }
-            }
+
         });
 
     }

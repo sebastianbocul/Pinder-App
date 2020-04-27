@@ -171,11 +171,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "new Connection", Toast.LENGTH_LONG).show();
 
                     String key = FirebaseDatabase.getInstance().getReference().child("Chat").push().getKey();
-
-                    //usersDb.child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUID).setValue(true);
                     usersDb.child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUID).child("ChatId").setValue(key);
-
-                    //usersDb.child(currentUID).child("connections").child("matches").child(dataSnapshot.getKey()).setValue(true);
                     usersDb.child(currentUID).child("connections").child("matches").child(dataSnapshot.getKey()).child("ChatId").setValue(key);
 
                 }
@@ -264,19 +260,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void logoutUser(View view) {
-        mAuth.signOut();
-        Intent intent = new Intent(MainActivity.this, ChooseLoginRegistration.class);
+
+    public void goToProfile(View view) {
+
+        checkUserSex();
+        Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+        intent.putExtra("userSex", userSex);
         startActivity(intent);
-        finish();
         return;
     }
 
     public void goToSettings(View view) {
-
-        checkUserSex();
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-        intent.putExtra("userSex", userSex);
         startActivity(intent);
         return;
     }
@@ -286,6 +281,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         return;
     }
+
+
 
     public void updateLocation(){
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
