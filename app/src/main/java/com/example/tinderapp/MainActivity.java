@@ -69,13 +69,9 @@ public class MainActivity extends AppCompatActivity {
         checkUserSex();
         rowItems = new ArrayList<cards>();
         arrayAdapter = new arrayAdapter(this, R.layout.item,rowItems );
-
         likeButton = (Button) findViewById(R.id.likeButton);
         dislikeButton = (Button) findViewById(R.id.dislikeButton);
-
         flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
-
-
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         //check location permission
         if(ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
@@ -156,7 +152,13 @@ public class MainActivity extends AppCompatActivity {
         flingContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
             @Override
             public void onItemClicked(int itemPosition, Object dataObject) {
+                cards obj = (cards) dataObject;
+                String userId = obj.getUserId();
                 Toast.makeText(MainActivity.this,"click",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this,UsersProfilesActivity.class);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
+
             }
         });
 

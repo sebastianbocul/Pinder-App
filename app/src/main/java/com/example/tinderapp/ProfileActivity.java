@@ -57,13 +57,9 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         mProfileImage= (ImageView) findViewById(R.id.profileImage);
-
-
         descriptionEditText = (EditText)findViewById(R.id.description);
         mNameField = (EditText) findViewById(R.id.name);
-
         mPhoneField = (EditText) findViewById(R.id.phone);
-
         mProfileImage= (ImageView) findViewById(R.id.profileImage);
         mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);
@@ -110,7 +106,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) { }
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) { }
-
+            //set max lines in descriptions field
             @Override
             public void afterTextChanged(Editable editable) {
                 if (null != descriptionEditText.getLayout() && descriptionEditText.getLayout().getLineCount() > 5) {
@@ -118,7 +114,6 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             }
         });
-        //////////////////
     }
 
 
