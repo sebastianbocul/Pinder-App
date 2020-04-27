@@ -56,9 +56,10 @@ public class ChatActivity extends AppCompatActivity {
         mDatabaseChat= FirebaseDatabase.getInstance().getReference().child("Chat");
         getChatId();
 
+
         myRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        myRecyclerView.setNestedScrollingEnabled(false);
-        myRecyclerView.setHasFixedSize(false);
+        //myRecyclerView.setNestedScrollingEnabled(true);
+       // myRecyclerView.setHasFixedSize(false);
         mChatLayoutManager= new LinearLayoutManager(ChatActivity.this);
         myRecyclerView.setLayoutManager(mChatLayoutManager);
         mChatAdapter = new ChatAdapter(getDataSetChat(),ChatActivity.this);
@@ -66,6 +67,17 @@ public class ChatActivity extends AppCompatActivity {
 
         mSendEditText = (EditText) findViewById(R.id.message);
         mSendButton = (Button) findViewById(R.id.send);
+
+
+        //this functions helps fix recyclerView while opening keyboards
+        myRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (bottom < oldBottom) {
+                    myRecyclerView.scrollBy(0, oldBottom - bottom);
+                }
+            }
+        });
 
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,6 +143,7 @@ public class ChatActivity extends AppCompatActivity {
                         mChatAdapter.notifyDataSetChanged();
                     }
                 }
+                myRecyclerView.scrollToPosition(mChatAdapter.getItemCount()-1);
             }
 
             @Override

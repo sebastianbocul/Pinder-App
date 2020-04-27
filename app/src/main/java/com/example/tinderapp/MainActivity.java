@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tags;
     private DatabaseReference usersDb;
     public String currentUID;
-
+    public TextView noMoreEditText;
     public SwipeFlingAdapterView flingContainer;
     ListView listView;
     List<cards> rowItems;
@@ -63,10 +64,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         mAuth = FirebaseAuth.getInstance();
         currentUID = mAuth.getCurrentUser().getUid();
         checkUserSex();
+        noMoreEditText = (TextView) findViewById(R.id.noMore);
         rowItems = new ArrayList<cards>();
         arrayAdapter = new arrayAdapter(this, R.layout.item,rowItems );
         likeButton = (Button) findViewById(R.id.likeButton);
@@ -235,8 +238,10 @@ public class MainActivity extends AppCompatActivity {
                     cards item = new cards(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString(), profileImageUrl,"Tags");
                     rowItems.add(item);
                     arrayAdapter.notifyDataSetChanged();
+
                 }
                 }
+                noMoreEditText.setText("There is no more users");
             }
 
             @Override

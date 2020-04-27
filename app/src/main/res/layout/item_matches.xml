@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:padding="20sp">
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="50sp"
         android:layout_height="50sp"
         android:src="@mipmap/ic_launcher"
