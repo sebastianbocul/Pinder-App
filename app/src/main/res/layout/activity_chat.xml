@@ -15,15 +15,59 @@
         android:layout_alignParentTop="true"
         android:background="@color/colorPrimaryDark">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
-            android:layout_width="50sp"
-            android:layout_height="match_parent"
-            android:src="@mipmap/ic_launcher" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
 
+            <Button
+                android:id="@+id/backButton"
+                android:layout_width="50sp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="5sp"
+                android:text="Back" />
+
+
+            <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5sp"
+            android:layout_marginTop="14sp"
+            android:text="Name"
+            android:textColor="@android:color/white"
+            android:textSize="25sp"
+            android:layout_toEndOf="@+id/profileImage"
+            android:layout_toRightOf="@+id/profileImage"   />
+
+            <Button
+                android:id="@+id/optionButton"
+                android:layout_width="50sp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="120sp"
+                android:layout_marginTop="5sp"
+                android:layout_marginEnd="15sp"
+                android:layout_marginRight="14dp"
+                android:text="..." />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profileImage"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_marginStart="10sp"
+                android:layout_marginLeft="50dp"
+                android:layout_toEndOf="@+id/backButton"
+                android:layout_toRightOf="@+id/backButton"
+                android:padding="5sp"
+                android:src="@mipmap/ic_launcher" />
+        </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
-<RelativeLayout
+
+    <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_weight="100">

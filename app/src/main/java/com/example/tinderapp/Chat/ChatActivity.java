@@ -6,15 +6,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.example.tinderapp.MainActivity;
 import com.example.tinderapp.Matches.MatchesActivity;
 import com.example.tinderapp.Matches.MatchesAdapter;
 import com.example.tinderapp.Matches.MatchesObject;
 import com.example.tinderapp.R;
+import com.example.tinderapp.UsersProfilesActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -23,10 +30,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -35,11 +46,13 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mChatLayoutManager;
 
     private EditText mSendEditText;
-    private Button mSendButton;
+    private Button mSendButton,backButton;
+    private ImageView profileImage;
+    private TextView userNameTextView;
     private String currentUserID;
     private String matchId;
     private String chatId;
-    DatabaseReference mDatabaseUser,mDatabaseChat;
+    DatabaseReference mDatabaseUser,mDatabaseChat,mDatabaseOtherUser;
 
 
     @Override
@@ -47,14 +60,17 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        backButton = (Button) findViewById(R.id.backButton);
+
+        profileImage = (ImageView) findViewById(R.id.profileImage);
+        userNameTextView = (TextView) findViewById(R.id.userName);
         matchId = getIntent().getExtras().getString("matchId");
-
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-
         mDatabaseUser= FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId).child("ChatId");
         mDatabaseChat= FirebaseDatabase.getInstance().getReference().child("Chat");
+        mDatabaseOtherUser = FirebaseDatabase.getInstance().getReference().child("Users").child(matchId);
         getChatId();
+        fillImageAndName();
 
 
         myRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -69,6 +85,32 @@ public class ChatActivity extends AppCompatActivity {
         mSendButton = (Button) findViewById(R.id.send);
 
 
+
+        userNameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatActivity.this, UsersProfilesActivity.class);
+                intent.putExtra("userId", matchId);
+                startActivity(intent);
+            }
+        });
+        //on profileimage click
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatActivity.this, UsersProfilesActivity.class);
+                intent.putExtra("userId", matchId);
+                startActivity(intent);
+            }
+        });
+        //on back button click
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatActivity.this,MatchesActivity.class);
+                startActivity(intent);
+            }
+        });
         //this functions helps fix recyclerView while opening keyboards
         myRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -86,6 +128,42 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    private void fillImageAndName() {
+        mDatabaseOtherUser.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("name").getValue().toString();
+                String profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString().trim();
+
+
+                if(!name.isEmpty()){
+                    userNameTextView.setText(name);
+                }
+                userNameTextView.setText(name);
+                switch(profileImageUrl){
+                    case "default":
+                        Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(profileImage);
+                        break;
+                    default:
+                        Glide.with(profileImage).clear(profileImage);
+                        Glide.with(getApplication()).load(profileImageUrl).into(profileImage);
+                        break;
+                }
+
+
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 

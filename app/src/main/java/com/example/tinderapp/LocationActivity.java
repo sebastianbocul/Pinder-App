@@ -50,7 +50,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     public String currentUID;
     private DatabaseReference myRef;
     FirebaseDatabase database;
-
+    DatabaseReference usersReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,14 +100,19 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                 currentUID = mAuth.getCurrentUser().getUid();
                 String lat = dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString();
                 String lon = dataSnapshot.child("Users").child(currentUID).child("location").child("longitude").getValue().toString();
-                double myLatitude = Double.parseDouble(lat);
-                double myLongitude = Double.parseDouble(lon);
+                final double myLatitude = Double.parseDouble(lat);
+                final double myLongitude = Double.parseDouble(lon);
                 LatLng latLng = new LatLng(myLatitude,myLongitude);
                 myGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
                 //
 
-                //set my info at start
+                //set my marker at start
+                MarkerOptions markerOptionsFB;
+                markerOptionsFB= new MarkerOptions().position(latLng).title("I'm here").icon(BitmapDescriptorFactory.defaultMarker(300));
+                Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
+                myMarker.setTag(currentUID.trim());
+
                 name.setText(dataSnapshot.child("Users").child(currentUID).child("name").getValue().toString());
                 textView1.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString());
                 textView2.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("longitude").getValue().toString());
@@ -131,7 +136,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                         return false;
                     }
                 });
-
+/*          //show everyone location
                 for(DataSnapshot ds : dataSnapshot.child("Users").getChildren()){
                     String userName = ds.child("name").getValue().toString();
                     double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
@@ -153,8 +158,48 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                     myMarker.setTag(ds.getKey().trim());
                 }
 
-            }
+            }*/
 
+            //matches only location
+                for(final DataSnapshot ds : dataSnapshot.child("Users").child(currentUID).child("connections").child("matches").getChildren()){
+
+                    String userId = ds.getKey().toString();
+                    System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+                    System.out.println(userId);
+                    usersReference= FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+                    usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String userName = dataSnapshot.child("name").getValue().toString();
+                            System.out.println("AAAAAAAAAAAAAAAAAAAA");
+                            System.out.println(dataSnapshot);
+
+
+                            double latitude = Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString());
+                            double longitude = Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString());
+                            double distance = distance(myLatitude,myLongitude,latitude,longitude);
+                            LatLng latLngFB = new LatLng(latitude,longitude);
+
+                            MarkerOptions markerOptionsFB;
+                            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                            System.out.println(currentUID);
+                            System.out.println(dataSnapshot.getKey());
+
+                            markerOptionsFB= new MarkerOptions().position(latLngFB).title(userName + "\r" + Math.round(distance) + "km");
+
+                            Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
+                            myMarker.setTag(dataSnapshot.getKey().trim());
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+
+            }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 

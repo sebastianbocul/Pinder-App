@@ -56,15 +56,16 @@ public class LoginActivity extends AppCompatActivity {
 
         mLogin = (Button) findViewById(R.id.login);
         mEmail = (EditText) findViewById(R.id.email);
-        mPassword=(EditText) findViewById(R.id.email);
+        mPassword=(EditText) findViewById(R.id.password);
         mRegister=(Button)findViewById(R.id.register);
 
         mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                final String email = mEmail.getText().toString();
-                final String password = mPassword.getText().toString();
+                String email = mEmail.getText().toString();
+                String password = mPassword.getText().toString();
+
                 if(email.isEmpty() && password.isEmpty()){
                     Toast.makeText(LoginActivity.this, "Wrong email or password", Toast.LENGTH_SHORT).show();
                 }else{

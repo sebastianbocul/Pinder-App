@@ -64,10 +64,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         mAuth = FirebaseAuth.getInstance();
         currentUID = mAuth.getCurrentUser().getUid();
+
+        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         checkUserSex();
         noMoreEditText = (TextView) findViewById(R.id.noMore);
         rowItems = new ArrayList<cards>();
