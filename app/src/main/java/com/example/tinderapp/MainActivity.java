@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 if(flingContainer.getChildCount()!=0)
                     flingContainer.getTopCardListener().selectRight();
                 else Toast.makeText(MainActivity.this,"There is no more users",Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -178,6 +179,11 @@ public class MainActivity extends AppCompatActivity {
                     String key = FirebaseDatabase.getInstance().getReference().child("Chat").push().getKey();
                     usersDb.child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUID).child("ChatId").setValue(key);
                     usersDb.child(currentUID).child("connections").child("matches").child(dataSnapshot.getKey()).child("ChatId").setValue(key);
+                    String matchId = dataSnapshot.getKey();
+                    //popactivity when matched
+                    Intent i = new Intent(getApplicationContext(),PopActivity.class);
+                    i.putExtra("matchId",matchId);
+                    startActivity(i);
 
                 }
             }
