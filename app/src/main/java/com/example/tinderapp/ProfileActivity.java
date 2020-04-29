@@ -66,8 +66,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         mAuth =  FirebaseAuth.getInstance();
         userId= mAuth.getCurrentUser().getUid();
-        System.out.println("userSex: " +userSex);
-        System.out.println("userId: "+userId);
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
 
         getUserInfo();

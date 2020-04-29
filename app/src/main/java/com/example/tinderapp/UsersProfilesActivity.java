@@ -5,10 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.tinderapp.Matches.MatchesActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,18 +29,21 @@ public class UsersProfilesActivity extends AppCompatActivity {
     private ImageView imageView;
     private TextView nameTextView,tagsTextView,genderTextView,distanceTextView,locationTextView,descriptionTextView;
     public String name,tags,gender,distance,location,description,phone,profileImageUrl;
-    public String userId,myId;
+    public String userId,myId,fromActivity="empty";
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mUserDatabase;
-
+    private DatabaseReference mUserDatabase, mUserProfileDatabase,myDatabaseReference;
+    private Button unmatchButton,dislikeButton,likeButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users_profiles);
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
          userId=intent.getStringExtra("userId");
+         if(intent.getStringExtra("fromActivity")!=null){
+             fromActivity = intent.getStringExtra("fromActivity");
+         }
 
         imageView = (ImageView) findViewById(R.id.imageView);
         nameTextView = (TextView) findViewById(R.id.nameTextView);
@@ -44,12 +52,126 @@ public class UsersProfilesActivity extends AppCompatActivity {
         distanceTextView = (TextView) findViewById(R.id.distanceTextView);
         locationTextView = (TextView) findViewById(R.id.locationTextView);
         descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
-
-
+        unmatchButton = (Button) findViewById(R.id.unmatchButton);
+        dislikeButton = findViewById(R.id.dislikeButton);
+        likeButton= findViewById(R.id.likeButton);
         mAuth =  FirebaseAuth.getInstance();
         myId= mAuth.getCurrentUser().getUid();
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
+        mUserProfileDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(myId).child("connections").child("matches");
+        myDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
+
+        mUserProfileDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+
+                    unmatchButton.setVisibility(View.INVISIBLE);
+                    dislikeButton.setVisibility(View.VISIBLE);
+                    likeButton.setVisibility(View.VISIBLE);
+                    for(DataSnapshot ds: dataSnapshot.getChildren()){
+                        if(userId.equals(ds.getKey())){
+                            unmatchButton.setVisibility(View.VISIBLE);
+                            dislikeButton.setVisibility(View.INVISIBLE);
+                            likeButton.setVisibility(View.INVISIBLE);
+                        }
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        dislikeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dislikeButton.setText("Clicked Dislike");
+                Intent i = new Intent(UsersProfilesActivity.this,MainActivity.class);
+                i.putExtra("fromUsersProfilesActivity","dislikeButtonClicked");
+                startActivity(i);
+            }
+        });
+
+        likeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                likeButton.setText("Clicked like");
+                Intent i = new Intent(UsersProfilesActivity.this,MainActivity.class);
+                i.putExtra("fromUsersProfilesActivity","likeButtonClicked");
+                startActivity(i);
+            }
+        });
+
+        unmatchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                unmatchButton.setText("clicked unmatch");
+
+                myDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        //myId, userId
+                        //need to remove chat, move users from 'matched' to nopes
+                        //
+                        try {
+                            String chatId;
+                            chatId = dataSnapshot.child("Users").child(myId).child("connections").child("matches").child(userId).child("ChatId").getValue().toString();
+                            //for chat
+                            DatabaseReference mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
+                            mRemoveChild.removeValue();
+                            //for me
+                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(myId).child("connections");
+                            mRemoveChild.child("nope").child(userId).setValue(true);
+                            mRemoveChild.child("yes").child(userId).removeValue();
+                            mRemoveChild.child("matches").child(userId).removeValue();
+                            //for user
+                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("connections");
+                            mRemoveChild.child("nope").child(myId).setValue(true);
+                            mRemoveChild.child("yes").child(myId).removeValue();
+                            mRemoveChild.child("matches").child(myId).removeValue();
+
+
+                            /////
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(UsersProfilesActivity.this, MatchesActivity.class);
+                                    startActivity(intent);
+                                }
+                            }, 500);
+                        }catch (NullPointerException e){
+                            Toast.makeText(UsersProfilesActivity.this,"Unable to do that operation",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                //again need some time to get response from database to update users in MatchesActivity
+
+
+            }
+
+        });
+        //method nr1/
+        /*
+        if(fromActivity.equals("ChatActivity")){
+
+            unmatchButton.setEnabled(true);
+        }else unmatchButton.setEnabled(false);*/
         fillUserProfile();
 
     }

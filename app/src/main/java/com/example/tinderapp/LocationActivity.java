@@ -145,9 +145,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                     LatLng latLngFB = new LatLng(latitude,longitude);
 
                     MarkerOptions markerOptionsFB;
-                    System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                    System.out.println(currentUID);
-                    System.out.println(ds.getKey());
+
                     if (ds.getKey().equals(currentUID)) {
                         markerOptionsFB= new MarkerOptions().position(latLngFB).title("I'm here").icon(BitmapDescriptorFactory.defaultMarker(300));
                     }
@@ -164,16 +162,11 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                 for(final DataSnapshot ds : dataSnapshot.child("Users").child(currentUID).child("connections").child("matches").getChildren()){
 
                     String userId = ds.getKey().toString();
-                    System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-                    System.out.println(userId);
                     usersReference= FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
                     usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             String userName = dataSnapshot.child("name").getValue().toString();
-                            System.out.println("AAAAAAAAAAAAAAAAAAAA");
-                            System.out.println(dataSnapshot);
-
 
                             double latitude = Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString());
                             double longitude = Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString());
@@ -181,10 +174,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                             LatLng latLngFB = new LatLng(latitude,longitude);
 
                             MarkerOptions markerOptionsFB;
-                            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                            System.out.println(currentUID);
-                            System.out.println(dataSnapshot.getKey());
-
                             markerOptionsFB= new MarkerOptions().position(latLngFB).title(userName + "\r" + Math.round(distance) + "km");
 
                             Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);

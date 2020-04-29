@@ -12,6 +12,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -85,8 +86,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-
+        arrayAdapter = new arrayAdapter(this, R.layout.item,rowItems );
         flingContainer.setAdapter(arrayAdapter);
+
+
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,6 +108,34 @@ public class MainActivity extends AppCompatActivity {
                 else Toast.makeText(MainActivity.this,"There is no more users",Toast.LENGTH_SHORT).show();
             }
         });
+
+
+
+        //created delay so flingContainer is loaded - coudnt find other solutin
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = getIntent();
+                if(flingContainer!=null){
+                    if(intent.getStringExtra("fromUsersProfilesActivity")!=null){
+                        String s = intent.getStringExtra("fromUsersProfilesActivity");
+                        if(s.equals("likeButtonClicked")){
+                            if(flingContainer.getChildCount()!=0)
+                                flingContainer.getTopCardListener().selectRight();
+                            else Toast.makeText(MainActivity.this,"There is no more users",Toast.LENGTH_SHORT).show();
+                        }
+                        if(s.equals("dislikeButtonClicked")){
+                            if(flingContainer.getChildCount()!=0)
+                                flingContainer.getTopCardListener().selectLeft();
+                            else Toast.makeText(MainActivity.this,"There is no more users",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+            }
+        }, 300);
+
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
 
             @Override
@@ -150,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
 
         // Optionally add an OnItemClickListener
         flingContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {

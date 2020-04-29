@@ -89,18 +89,14 @@ public class ChatActivity extends AppCompatActivity {
         userNameTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ChatActivity.this, UsersProfilesActivity.class);
-                intent.putExtra("userId", matchId);
-                startActivity(intent);
+                goToUsersProfile();
             }
         });
         //on profileimage click
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ChatActivity.this, UsersProfilesActivity.class);
-                intent.putExtra("userId", matchId);
-                startActivity(intent);
+                goToUsersProfile();
             }
         });
         //on back button click
@@ -129,6 +125,13 @@ public class ChatActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void goToUsersProfile() {
+        Intent intent = new Intent(ChatActivity.this, UsersProfilesActivity.class);
+        intent.putExtra("userId", matchId);
+        intent.putExtra("fromActivity","ChatActivity");
+        startActivity(intent);
     }
 
     private void fillImageAndName() {
