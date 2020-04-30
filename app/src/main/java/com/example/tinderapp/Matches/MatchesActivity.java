@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.tinderapp.LocationActivity;
+import com.example.tinderapp.MainActivity;
 import com.example.tinderapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -124,7 +125,11 @@ public class MatchesActivity extends AppCompatActivity {
         });
 
     }
-
+    @Override
+    public void onBackPressed() {
+        Intent startMain = new Intent(this, MainActivity.class);
+        startActivity(startMain);
+    }
     private ArrayList<MatchesObject> resultMatches = new ArrayList<MatchesObject>();
     private List<MatchesObject> getDataSetMatches() {
         return resultMatches;

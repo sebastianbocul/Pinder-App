@@ -65,20 +65,19 @@ public class UsersProfilesActivity extends AppCompatActivity {
         mUserProfileDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
+                unmatchButton.setVisibility(View.INVISIBLE);
+                dislikeButton.setVisibility(View.VISIBLE);
+                likeButton.setVisibility(View.VISIBLE);
+                if(!dataSnapshot.exists()) return;
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    if(userId.equals(ds.getKey())){
+                        unmatchButton.setVisibility(View.VISIBLE);
+                        dislikeButton.setVisibility(View.INVISIBLE);
+                        likeButton.setVisibility(View.INVISIBLE);
 
-                    unmatchButton.setVisibility(View.INVISIBLE);
-                    dislikeButton.setVisibility(View.VISIBLE);
-                    likeButton.setVisibility(View.VISIBLE);
-                    for(DataSnapshot ds: dataSnapshot.getChildren()){
-                        if(userId.equals(ds.getKey())){
-                            unmatchButton.setVisibility(View.VISIBLE);
-                            dislikeButton.setVisibility(View.INVISIBLE);
-                            likeButton.setVisibility(View.INVISIBLE);
-                        }
+                    }
                     }
 
-                }
 
             }
 
