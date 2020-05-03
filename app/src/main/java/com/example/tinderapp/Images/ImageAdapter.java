@@ -43,14 +43,17 @@ public class ImageAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         ImageView imageView = new ImageView(mContext);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        System.out.println("IMAGEEEEEEEEEEEEEEEEE ADAPTEEEEEEEEEEEEER");
-        System.out.println(mImages);
         Integer i = position;
         String imageUrl = mImages.get(i).toString();
-        System.out.println(imageUrl);
-        Uri myUri = Uri.parse(imageUrl);
-        Glide.with(mContext).load(imageUrl).into(imageView);
-        imageView.setImageURI(myUri);
+        if(mImages.get(i).equals("default")){
+            Glide.with(mContext).load(R.mipmap.ic_launcher).into(imageView);
+        }else {
+            Uri myUri = Uri.parse(imageUrl);
+            Glide.with(mContext).load(imageUrl).into(imageView);
+            imageView.setImageURI(myUri);
+        }
+
+
         container.addView(imageView,0);
         return imageView;
     }

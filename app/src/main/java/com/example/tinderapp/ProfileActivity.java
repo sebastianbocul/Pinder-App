@@ -1,16 +1,21 @@
 package com.example.tinderapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.DragEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,13 +51,14 @@ public class ProfileActivity extends AppCompatActivity {
     private static int RESULT_LOAD_IMAGE = 1;
     private EditText mNameField, mPhoneField;
 
-    private Button mBack,mConfirm;
+    private Button mBack,mConfirm,setDefaultButton;
 
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
 
-    private String userId, name , phone, profileImageUrl,userSex,description, imageStorageKey;
+    private String userId, name , phone,description, imageStorageKey,userSex,profileImageUrl;
+    private int imagePosition=0;
     private EditText descriptionEditText;
     private ArrayList imagesList,mImages;
     DatabaseReference mImageDatabase;
@@ -67,12 +73,11 @@ public class ProfileActivity extends AppCompatActivity {
         descriptionEditText = (EditText)findViewById(R.id.description);
         mNameField = (EditText) findViewById(R.id.name);
         mPhoneField = (EditText) findViewById(R.id.phone);
-        mProfileImage= (ImageView) findViewById(R.id.profileImage);
         mAddImage = findViewById(R.id.addImage);
         mDeleteImage = findViewById(R.id.delImage);
         mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);
-
+        setDefaultButton= findViewById(R.id.setDefaultButton);
         mAuth =  FirebaseAuth.getInstance();
         userId= mAuth.getCurrentUser().getUid();
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
@@ -87,6 +92,22 @@ public class ProfileActivity extends AppCompatActivity {
 
 
         getUserInfo();
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                imagePosition=position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         mAddImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,22 +117,69 @@ public class ProfileActivity extends AppCompatActivity {
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
                 startActivityForResult(i, RESULT_LOAD_IMAGE);
+
             }
         });
-        mProfileImage.setOnClickListener(new View.OnClickListener() {
+        setDefaultButton.setOnClickListener(new View.OnClickListener() {
+            private String buffor,defaultBuffor;
 
             @Override
-            public void onClick(View arg0) {
+            public void onClick(View v) {
+                if(viewPager.getAdapter().getCount()!=0){
+                mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        buffor = dataSnapshot.child("0").getValue().toString();
+                        defaultBuffor = dataSnapshot.child(String.valueOf(imagePosition)).getValue().toString();
+                        mImageDatabase.child("0").setValue(defaultBuffor);
+                        mImageDatabase.child(String.valueOf(imagePosition)).setValue(buffor);
+                        Toast.makeText(ProfileActivity.this,"Profile picture has been changed",Toast.LENGTH_SHORT).show();
+                        loadImages();
 
-                Intent i = new Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                startActivityForResult(i, RESULT_LOAD_IMAGE);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                }
+                else  Toast.makeText(ProfileActivity.this,"Add images first!",Toast.LENGTH_SHORT).show();
 
             }
         });
+        mDeleteImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //imagePosition;
+                mImageDatabase.child(String.valueOf(imagePosition)).removeValue();
+                mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Map imagesMap = new HashMap<>();
+                        int i = 0;
+                        String key;
+                        for(DataSnapshot ds: dataSnapshot.getChildren()){
+                            key = String.valueOf(i);
+                            imagesMap.put(key,ds.getValue().toString());
+                            i++;
+                        }
+                        mImageDatabase.removeValue();
+                        mImageDatabase.updateChildren(imagesMap);
+                        getUserInfo();
 
+                        imagePosition=0;
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                loadImages();
+            }
+        });
 
         mConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,24 +211,51 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+
+    private void sortImagesDatabase(){
+        mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map imagesMap = new HashMap<>();
+                int i = 0;
+                String key;
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    key = String.valueOf(i);
+                    imagesMap.put(key,ds.getValue().toString());
+                    i++;
+                }
+                mImageDatabase.removeValue();
+
+                mImageDatabase.updateChildren(imagesMap);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
     private void loadImages() {
+
         imagesList = new ArrayList<String>();
 
         mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            //    System.out.println("CCCCCCCCCCCCCCCCCCCCCCCCCCCC");
-           //     System.out.println(mUserDatabase);
+                if(dataSnapshot.getChildrenCount()!=0){
+                    viewPager.setBackground(null);
+                }
                 ArrayList arrayList = new ArrayList();
                 for(DataSnapshot ds:dataSnapshot.getChildren()){
 
-                   /// System.out.println(ds);
                     arrayList.add(ds.getValue());
+                  /*  if(ds.getValue().equals("default") && dataSnapshot.getChildrenCount()!=1){
+                        arrayList.remove(0);
+                    }*/
                 }
-                System.out.println("MMMMMMMMMMMMMMMMMMMMMMMMM");
-                mImages=arrayList;
-                System.out.println(mImages);
-                ImageAdapter adapter = new ImageAdapter(ProfileActivity.this,mImages);
+                mImages=arrayList;ImageAdapter adapter = new ImageAdapter(ProfileActivity.this,mImages);
                 viewPager.setAdapter(adapter);
                 return;
             }
@@ -171,11 +266,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
 
         });
-
-       // imagesList.add("https://firebasestorage.googleapis.com/v0/b/tinderapp-7da20.appspot.com/o/profileImages%2Frc8qDsgXdvOjoQZMt5tmHRVSUL83%2F31?alt=media&token=81e5325f-b48e-4c2d-a98c-38a06f73c2de");
-      //  imagesList.add("https://firebasestorage.googleapis.com/v0/b/tinderapp-7da20.appspot.com/o/profileImages%2Frc8qDsgXdvOjoQZMt5tmHRVSUL83%2F31?alt=media&token=81e5325f-b48e-4c2d-a98c-38a06f73c2de");
-      //  imagesList.add("https://firebasestorage.googleapis.com/v0/b/tinderapp-7da20.appspot.com/o/profileImages%2Frc8qDsgXdvOjoQZMt5tmHRVSUL83%2F31?alt=media&token=81e5325f-b48e-4c2d-a98c-38a06f73c2de");
-
     }
 
 
@@ -186,14 +276,13 @@ public class ProfileActivity extends AppCompatActivity {
         if(data!=null){
             imageUri = data.getData();
             resultUri = imageUri;
-            mProfileImage.setImageURI(resultUri);
+
             Toast.makeText(ProfileActivity.this,"Uploading image...",Toast.LENGTH_SHORT).show();
         }
 
         if(resultUri!=null){
             String size = String.valueOf(mImages.size());
             imageStorageKey  = mImageDatabase.push().getKey();
-            System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ + " +size);
             filePath = FirebaseStorage.getInstance().getReference().child("profileImages").child(userId).child(imageStorageKey);
             Bitmap bitmap = null;
             try {
@@ -221,13 +310,11 @@ public class ProfileActivity extends AppCompatActivity {
 
                             Map newImage = new HashMap();
                             String size = String.valueOf(mImages.size());
-                            System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-//                            System.out.println(mImages.get(0));
-
                             newImage.put((size), uri.toString());
-
                             mImageDatabase.updateChildren(newImage);
                             Toast.makeText(ProfileActivity.this,"Upload successful",Toast.LENGTH_SHORT).show();
+                            loadImages();
+                            getUserInfo();
                            // finish();
                             return;
                         }
@@ -258,6 +345,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void getUserInfo() {
         mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
@@ -278,22 +366,18 @@ public class ProfileActivity extends AppCompatActivity {
                         description = map.get("description").toString();
                         descriptionEditText.setText(description);
                     }
-                    Glide.with(mProfileImage).clear(mProfileImage);
-                    if(map.get("profileImageUrl")!=null){
-                        profileImageUrl = map.get("profileImageUrl").toString();
-
-                        switch (profileImageUrl) {
-
-                            case "default":
-                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mProfileImage);
-                                break;
-
-                            default:
-                                Glide.with(getApplication()).load(profileImageUrl).into(mProfileImage);
-                                break;
 
 
-                        }
+                    //dataSnapshot.child("images").exists()
+                    if(map.get("images")!=null){
+                        String imageDef =  ((ArrayList)map.get("images")).get(0).toString();
+
+                        mUserDatabase.child("profileImageUrl").setValue(imageDef);
+                        profileImageUrl = imageDef;
+                    }
+                    else {
+                        mUserDatabase.child("profileImageUrl").setValue("default");
+                        viewPager.setBackground(getDrawable(R.mipmap.ic_launcher));
                     }
                 }
             }
