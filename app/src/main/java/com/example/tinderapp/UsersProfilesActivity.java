@@ -1,11 +1,13 @@
 package com.example.tinderapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -24,6 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 
@@ -37,6 +40,9 @@ public class UsersProfilesActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase, mUserProfileDatabase,myDatabaseReference;
     private Button unmatchButton,dislikeButton,likeButton;
+    ViewPager viewPager;
+    private ArrayList imagesList,mImages;
+    DatabaseReference mImageDatabase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +54,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
              fromActivity = intent.getStringExtra("fromActivity");
          }
 
-        imageView = (ImageView) findViewById(R.id.imageView);
+     //   imageView = (ImageView) findViewById(R.id.imageView);
         nameTextView = (TextView) findViewById(R.id.nameTextView);
         tagsTextView = (TextView) findViewById(R.id.tagsTextView);
         genderTextView= (TextView) findViewById(R.id.genderTextView);
@@ -63,6 +69,8 @@ public class UsersProfilesActivity extends AppCompatActivity {
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
         mUserProfileDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(myId).child("connections").child("matches");
         myDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        viewPager = findViewById(R.id.viewPager);
+        mImageDatabase = mUserDatabase.child(userId).child("images");
 
 
         mUserProfileDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -175,11 +183,38 @@ public class UsersProfilesActivity extends AppCompatActivity {
             unmatchButton.setEnabled(true);
         }else unmatchButton.setEnabled(false);*/
         fillUserProfile();
+        loadImages();
+    }
 
+
+
+    private void loadImages() {
+        imagesList = new ArrayList<String>();
+
+        mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ArrayList arrayList = new ArrayList();
+                for(DataSnapshot ds:dataSnapshot.getChildren()){
+                    arrayList.add(ds.child("uri").getValue());
+                }
+                mImages=arrayList;
+                ImageAdapter adapter = new ImageAdapter(UsersProfilesActivity.this,mImages);
+                viewPager.setAdapter(adapter);
+                return;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+        });
     }
 
 public void fillUserProfile(){
         mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -225,8 +260,22 @@ public void fillUserProfile(){
                         description = map.get("description").toString();
                         descriptionTextView.setText("Description: " +description);
                     }else descriptionTextView.setText("Description:");
-
+                    /*
+                    if(map.get("images")!=null){
+                        ArrayList imageArray;
+                        imageArray = (ArrayList) map.get("images");
+                        Map imageMap;
+                        imageMap = (Map)imageArray.get(0);
+                        String imageDef =  imageMap.get("uri").toString();
+                        mUserDatabase.child("profileImageUrl").setValue(imageDef);
+                        profileImageUrl = imageDef;
+                    }
+                    else {
+                        mUserDatabase.child("profileImageUrl").setValue("default");
+                        viewPager.setBackground(getDrawable(R.mipmap.ic_launcher));
+                    }*/
                     //image
+                    /*
                     Glide.with(imageView).clear(imageView);
                     if(map.get("profileImageUrl")!=null){
                         profileImageUrl = map.get("profileImageUrl").toString();
@@ -243,7 +292,7 @@ public void fillUserProfile(){
 
 
                         }
-                    }
+                    }*/
 
                 }
             }

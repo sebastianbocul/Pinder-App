@@ -129,10 +129,13 @@ public class ProfileActivity extends AppCompatActivity {
                 mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        buffor = dataSnapshot.child("0").getValue().toString();
-                        defaultBuffor = dataSnapshot.child(String.valueOf(imagePosition)).getValue().toString();
-                        mImageDatabase.child("0").setValue(defaultBuffor);
-                        mImageDatabase.child(String.valueOf(imagePosition)).setValue(buffor);
+                        DataSnapshot bufor,defaultBufor;
+                        bufor = dataSnapshot.child("0");
+                        //buffor = dataSnapshot.child("5").getValue().toString();
+                        //defaultBuffor = dataSnapshot.child(String.valueOf(imagePosition)).getValue().toString();
+                        defaultBufor = dataSnapshot.child(String.valueOf(imagePosition));
+                        mImageDatabase.child("0").setValue(defaultBufor.getValue());
+                        mImageDatabase.child(String.valueOf(imagePosition)).setValue(bufor.getValue());
                         Toast.makeText(ProfileActivity.this,"Profile picture has been changed",Toast.LENGTH_SHORT).show();
                         loadImages();
 
@@ -153,8 +156,44 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //imagePosition;
-                mImageDatabase.child(String.valueOf(imagePosition)).removeValue();
+
                 mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        String imageName = dataSnapshot.child(String.valueOf(imagePosition)).child("name").getValue().toString();
+                        filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId);
+                        StorageReference storageRef = filePath;
+                        // Create a reference to the file to delete
+                        StorageReference desertRef = storageRef.child(imageName);
+                       // storageRef.getAl
+                        // Delete the file
+                        Toast.makeText(ProfileActivity.this,"File from Storage deleted successfully",Toast.LENGTH_SHORT);
+                        desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                // File deleted successfully
+
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Uh-oh, an error occurred!
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+                mImageDatabase.child(String.valueOf(imagePosition)).removeValue();
+
+                mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    String imageKey;
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Map imagesMap = new HashMap<>();
@@ -162,12 +201,17 @@ public class ProfileActivity extends AppCompatActivity {
                         String key;
                         for(DataSnapshot ds: dataSnapshot.getChildren()){
                             key = String.valueOf(i);
-                            imagesMap.put(key,ds.getValue().toString());
+                            imagesMap.put(key,ds.getValue());
                             i++;
                         }
+
+
+
                         mImageDatabase.removeValue();
                         mImageDatabase.updateChildren(imagesMap);
                         getUserInfo();
+
+
 
                         imagePosition=0;
                     }
@@ -250,7 +294,7 @@ public class ProfileActivity extends AppCompatActivity {
                 ArrayList arrayList = new ArrayList();
                 for(DataSnapshot ds:dataSnapshot.getChildren()){
 
-                    arrayList.add(ds.getValue());
+                    arrayList.add(ds.child("uri").getValue());
                   /*  if(ds.getValue().equals("default") && dataSnapshot.getChildrenCount()!=1){
                         arrayList.remove(0);
                     }*/
@@ -272,7 +316,8 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        final Uri imageUri;
+        Uri imageUri=null;
+        resultUri=null;
         if(data!=null){
             imageUri = data.getData();
             resultUri = imageUri;
@@ -283,7 +328,7 @@ public class ProfileActivity extends AppCompatActivity {
         if(resultUri!=null){
             String size = String.valueOf(mImages.size());
             imageStorageKey  = mImageDatabase.push().getKey();
-            filePath = FirebaseStorage.getInstance().getReference().child("profileImages").child(userId).child(imageStorageKey);
+            filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId).child(imageStorageKey);
             Bitmap bitmap = null;
             try {
                 bitmap= MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), resultUri);
@@ -310,7 +355,10 @@ public class ProfileActivity extends AppCompatActivity {
 
                             Map newImage = new HashMap();
                             String size = String.valueOf(mImages.size());
-                            newImage.put((size), uri.toString());
+                            Map imgInfo = new HashMap();
+                            imgInfo.put("uri",uri.toString());
+                            imgInfo.put("name",imageStorageKey);
+                            newImage.put((size), imgInfo);
                             mImageDatabase.updateChildren(newImage);
                             Toast.makeText(ProfileActivity.this,"Upload successful",Toast.LENGTH_SHORT).show();
                             loadImages();
@@ -370,8 +418,11 @@ public class ProfileActivity extends AppCompatActivity {
 
                     //dataSnapshot.child("images").exists()
                     if(map.get("images")!=null){
-                        String imageDef =  ((ArrayList)map.get("images")).get(0).toString();
-
+                        ArrayList imageArray;
+                        imageArray = (ArrayList) map.get("images");
+                        Map imageMap;
+                        imageMap = (Map)imageArray.get(0);
+                        String imageDef =  imageMap.get("uri").toString();
                         mUserDatabase.child("profileImageUrl").setValue(imageDef);
                         profileImageUrl = imageDef;
                     }
