@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -23,6 +24,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void logoutUser(View view) {
         mAuth.signOut();
+        LoginManager.getInstance().logOut();
         Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();

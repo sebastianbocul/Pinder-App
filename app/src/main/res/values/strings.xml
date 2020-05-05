@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">TinderApp</string>
     <string name="map_key" translatable="false">AIzaSyB_qsP8AOP_P0MdlPz-48TDaJYjTP3vbjo</string>
+
+    <string name="facebook_app_id">261820641530663</string>
+    <string name="fb_login_protocol_scheme">fb261820641530663</string>
 </resources>

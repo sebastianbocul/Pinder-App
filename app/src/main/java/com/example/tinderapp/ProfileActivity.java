@@ -136,6 +136,7 @@ public class ProfileActivity extends AppCompatActivity {
                         defaultBufor = dataSnapshot.child(String.valueOf(imagePosition));
                         mImageDatabase.child("0").setValue(defaultBufor.getValue());
                         mImageDatabase.child(String.valueOf(imagePosition)).setValue(bufor.getValue());
+                        mUserDatabase.child("profileImageUrl").setValue(defaultBufor.child("uri").getValue());
                         Toast.makeText(ProfileActivity.this,"Profile picture has been changed",Toast.LENGTH_SHORT).show();
                         loadImages();
 
@@ -168,7 +169,7 @@ public class ProfileActivity extends AppCompatActivity {
                         StorageReference desertRef = storageRef.child(imageName);
                        // storageRef.getAl
                         // Delete the file
-                        Toast.makeText(ProfileActivity.this,"File from Storage deleted successfully",Toast.LENGTH_SHORT);
+                        Toast.makeText(ProfileActivity.this,"File from Storage deleted successfully",Toast.LENGTH_SHORT).show();
                         desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
