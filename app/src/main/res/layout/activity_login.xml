@@ -37,8 +37,8 @@
         android:layout_marginTop="10dp"
         android:layout_weight="1"/>
 
-        <com.facebook.login.widget.LoginButton
-            android:id="@+id/placeForGoogleBtn"
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
