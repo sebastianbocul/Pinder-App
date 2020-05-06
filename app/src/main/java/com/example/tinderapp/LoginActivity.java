@@ -1,20 +1,13 @@
 package com.example.tinderapp;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
 
 import android.Manifest;
-import android.app.Application;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,10 +20,11 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.Profile;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+//import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -45,12 +39,16 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
@@ -70,7 +68,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        //Intent intent  = new Intent(LoginActivity.this, LoginTest.class);
+       // startActivity(intent);
         //FACEBOOK
+        mAuth = FirebaseAuth.getInstance();
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(getApplication());
         callbackManager = CallbackManager.Factory.create();
@@ -97,13 +98,8 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
+        checkLocationPermission();
 
-        if(ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
-        }
-        else {
-            ActivityCompat.requestPermissions(LoginActivity.this, new  String[]{Manifest.permission.ACCESS_FINE_LOCATION},44);
-        }
-        mAuth = FirebaseAuth.getInstance();
         firebaseAuthStateListener= new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -165,6 +161,17 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+
+
+
+    }
+
+    private void checkLocationPermission() {
+        if(ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
+        }
+        else {
+            ActivityCompat.requestPermissions(LoginActivity.this, new  String[]{Manifest.permission.ACCESS_FINE_LOCATION},44);
+        }
     }
 
 
@@ -194,99 +201,23 @@ public class LoginActivity extends AppCompatActivity {
     private void logInEmailPassword() {
         String email = mEmail.getText().toString();
         String password = mPassword.getText().toString();
-
         if(email.isEmpty()){
             Toast.makeText(LoginActivity.this, "Wrong email", Toast.LENGTH_SHORT).show();
             mEmail.setError("Enter email!");
-
-
         };
         if(password.isEmpty()){
             mPassword.setError("Enter password!");
             Toast.makeText(LoginActivity.this, "Wrong password", Toast.LENGTH_SHORT).show();
-
         }
         if(!email.isEmpty() && !password.isEmpty()){
-
-
-            mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(!task.isSuccessful()){
-                        Toast.makeText(LoginActivity.this, "Wrong email or password", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+            AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+            linkWithCredential(credential);
         }
     }
 
-/*
-    private void handleFacebookToken(AccessToken accessToken) {
-        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this,new OnCompleteListener<AuthResult>() {
-            //Map userInfo = new HashMap<>();
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    Profile profile = Profile.getCurrentProfile();
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    updateUI(user);
-                    if(profile!=null){
-                        //getting facebook user info
-                        String facebookId = profile.getId();
-                        String facebookName=profile.getFirstName();
-                        String facebookFullName = profile.getName();
-                        String facebookProfileImage = profile.getProfilePictureUri(300,300).toString();
-                        System.out.println("FACEBOOK USER INFO");
-                        System.out.println("facebookId" + facebookId);
-                        System.out.println("facebookName" + facebookName);
-                        System.out.println("facebookFullName" + facebookFullName);
-                        System.out.println("facebookProfileImage" + facebookProfileImage);
-                        String userId = mAuth.getCurrentUser().getUid();
-                        System.out.println("userId" + userId);
-                        DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-                       // userInfo.put("name",facebookName);
-                        //Pending requests: user_birthday, user_gender in facebook delevopment console;
-                        //male-as default;
-                       // userInfo.put("sex", "Male");
-                       // userInfo.put("profileImageUrl", facebookProfileImage);
-                        //currentUserDb.updateChildren(userInfo);
-                    }
-                }
-                else {
-                    updateUI(null);
-                    Toast.makeText(getApplicationContext(),"Could not register to firebase",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-*/
-
     private void handleFacebookToken(AccessToken token) {
-
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                          //  Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            //Log.w(TAG, "signInWithCredential:failure", task.getException());
-                           Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-
-                            updateUI(null);
-                        }
-
-                        // [START_EXCLUDE]
-                       // hideProgressBar();
-                        // [END_EXCLUDE]
-                    }
-                });
+        linkWithCredential(credential);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -315,56 +246,73 @@ public class LoginActivity extends AppCompatActivity {
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w("Error", "signInResult:failed code=" + e.getStatusCode());;
+            Log.w("myLog", "signInResult:failed code=" + e.getStatusCode());;
         }
     }
 
     private void FirebaseGoogleAuth(GoogleSignInAccount account) {
         AuthCredential authCredential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
-        mAuth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    updateUI(user);
-                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                    startActivity(intent);
-                }
-                else updateUI(null);
-            }
-        });
+        linkWithCredential(authCredential);
         }
+    private void linkWithCredential(AuthCredential credential){
 
+        mAuth = FirebaseAuth.getInstance();
+        System.out.println("CCCCCCCCCCCCCCCCCCCCCC" + mAuth);
+        //mAuth.getCurrentUser().linkWithCredential(credential)
+             mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("myLog", "linkWithCredential:success");
+                            FirebaseUser user = task.getResult().getUser();
+                            updateUI(user);
+                        } else {
+                            Log.w("myLog", "linkWithCredential:failure", task.getException());
+                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            LoginManager.getInstance().logOut();
+                            updateUI(null);
+                        }
 
-    private void updateUI(FirebaseUser user) {
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-        if(account!=null){
-            String userName = account.getDisplayName();
-            String userGivenName = account.getGivenName();
-            String userFamilyName = account.getFamilyName();
-            String userEmail = account.getEmail();
-            String userId = account.getId();
-            Uri userPhoto = account.getPhotoUrl();
-            System.out.println("GOOOOOOOOOOOOOOOOOOOGLE USER INFO");
-            System.out.println("userName: " + userName);
-            System.out.println("userGivenName: " + userGivenName);
-            System.out.println("userFamilyName: " + userFamilyName);
-            System.out.println("userEmail: " + userEmail);
-            System.out.println("userId: " + userId);
-            System.out.println("userPhoto: " + userPhoto);
-
-        }
+                        // ...
+                    }
+                });
     }
 
 
 
+    private void updateUI(final FirebaseUser user) {
+        System.out.println("UPDATEuiiiiiiiiiiiiIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIiiiiiiii");
+        final Map userInfo = new HashMap<>();
+        if(user!=null){
+            final DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getUid());
+            System.out.println("currentUserDb.getKey() : "+currentUserDb.getKey());
+            currentUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.child("name").getValue()==null){
+                        userInfo.put("name",getFirstName(user.getDisplayName()));
+                        //userInfo.put("sex", "Male");
+                        //userInfo.put("profileImageUrl", user.getPhotoUrl());
 
+                        currentUserDb.updateChildren(userInfo);
 
+                    }
+                }
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                }
+            });
+        }
+    }
 
-
-
+    private String getFirstName(String displayName) {
+        String[] words = displayName.split(" ");
+        return words[0];
+    }
 
 
 }
