@@ -12,15 +12,12 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
 import com.example.tinderapp.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ImageAdapter extends PagerAdapter {
     private Context mContext;
-    private int[] mImageIds = new int[] {R.drawable.ic_launcher_background,R.drawable.pop_bg,R.drawable.ic_launcher_foreground};
-    private Map mImages2 = new HashMap<>();
     private ArrayList mImages;
     public ImageAdapter(Context context, ArrayList imagesUrls){
         mContext= context;
@@ -49,8 +46,11 @@ public class ImageAdapter extends PagerAdapter {
             Glide.with(mContext).load(R.mipmap.ic_launcher).into(imageView);
         }else {
             Uri myUri = Uri.parse(imageUrl);
+
             Glide.with(mContext).load(imageUrl).into(imageView);
-            imageView.setImageURI(myUri);
+           // Picasso.get().load(imageUrl).into(imageView);
+
+            //imageView.setImageURI(myUri);
         }
 
 
