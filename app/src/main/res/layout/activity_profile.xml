@@ -47,6 +47,7 @@
         android:id="@+id/name"
         android:background="#50CBCBCB"
         android:hint="Name"
+        android:maxLength="15"
         android:inputType="textPersonName"
         android:layout_marginBottom="20sp"/>
     <EditText

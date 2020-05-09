@@ -13,13 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@color/colorPrimaryDark">
+        android:background="@drawable/chat_top_bar">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
+<!--
             <Button
                 android:id="@+id/backButton"
                 android:layout_width="50sp"
@@ -27,7 +27,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="5sp"
                 android:text="Back" />
-
+-->
 
             <TextView
             android:id="@+id/userName"
@@ -40,7 +40,7 @@
             android:textSize="25sp"
             android:layout_toEndOf="@+id/profileImage"
             android:layout_toRightOf="@+id/profileImage"   />
-
+<!--
             <Button
                 android:id="@+id/optionButton"
                 android:layout_width="50sp"
@@ -53,17 +53,18 @@
                 android:layout_marginEnd="15sp"
                 android:layout_marginRight="14dp"
                 android:text="..." />
-
+-->
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profileImage"
                 android:layout_width="60sp"
                 android:layout_height="60sp"
                 android:layout_marginStart="10sp"
                 android:layout_marginLeft="50dp"
-                android:layout_toEndOf="@+id/backButton"
-                android:layout_toRightOf="@+id/backButton"
                 android:padding="5sp"
                 android:src="@mipmap/ic_launcher" />
+            <!--    android:layout_toEndOf="@+id/backButton"
+           android:layout_toRightOf="@+id/backButton"-->
+
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 

@@ -6,6 +6,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
     private List<ChatObject> chatList;
     private Context context;
 
+    private float scale;
+
+    private int dpAsPixels;
+    private int dpAsPixels2;
+    private int dpAsPixels3;
+
+    private LinearLayout.LayoutParams paramsText;
+    private LinearLayout.LayoutParams paramsContainer,paramsContainer2;
+
+
     public ChatAdapter(List<ChatObject>matchesList, Context context){
         this.chatList=matchesList;
         this.context = context;
@@ -31,6 +42,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
         layoutView.setLayoutParams(lp);
         ChatViewHolders rcv = new ChatViewHolders(layoutView);
 
+
+        paramsText = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        paramsContainer = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        paramsContainer2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+
         return rcv;
     }
 
@@ -38,14 +55,26 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
     public void onBindViewHolder(@NonNull ChatViewHolders holder, int position) {
         holder.mMessaage.setText(chatList.get(position).getMessage());
         if(chatList.get(position).getCurrentUser()==true){
-            holder.mMessaage.setGravity(Gravity.END);
+            paramsContainer2.setMargins(100,30,20,0);
+            paramsText.setMargins(0,0,10,0);
+            holder.mMessaage.setGravity(Gravity.RIGHT);
+            holder.mContainer.setGravity(Gravity.RIGHT);
             holder.mMessaage.setTextColor(Color.parseColor("#404040"));
-            holder.mContainer.setBackgroundColor(Color.parseColor("#F4F4F4"));
+            holder.mContainer.setLayoutParams(paramsContainer2);
+            holder.mMessaage.setLayoutParams(paramsText);
+            holder.mContainer.setBackgroundResource(R.drawable.my_chat);
+            Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
         }
         else {
-            holder.mMessaage.setGravity(Gravity.START);
-            holder.mMessaage.setTextColor(Color.parseColor("#FFFFFF"));
-            holder.mContainer.setBackgroundColor(Color.parseColor("#2DB4C8"));
+            paramsContainer.setMargins(20,30,100,0);
+            paramsText.setMargins(10,0,0,0);
+            holder.mMessaage.setGravity(Gravity.LEFT);
+            holder.mContainer.setGravity(Gravity.LEFT);
+            holder.mMessaage.setTextColor(Color.parseColor("#404040"));
+            holder.mContainer.setLayoutParams(paramsContainer);
+            holder.mMessaage.setLayoutParams(paramsText);
+            holder.mContainer.setBackgroundResource(R.drawable.other_chat);
+            Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
         }
     }
 

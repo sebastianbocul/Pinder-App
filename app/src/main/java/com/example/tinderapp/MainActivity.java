@@ -249,6 +249,9 @@ public class MainActivity extends AppCompatActivity {
                              }
                               getOppositeSexUsers();
                          }
+                    else {
+                        noMoreEditText.setText("There is no more users");
+                    }
                     }
 
                 }

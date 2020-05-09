@@ -52,7 +52,8 @@ public class ChatActivity extends AppCompatActivity {
     private String currentUserID;
     private String matchId;
     private String chatId;
-    DatabaseReference mDatabaseUser,mDatabaseChat,mDatabaseOtherUser;
+    private String profileImageUrl,myProfileImageUrl;
+    DatabaseReference mDatabaseUserChat,mDatabaseChat,mDatabaseUser;
 
 
     @Override
@@ -60,17 +61,18 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        backButton = (Button) findViewById(R.id.backButton);
+       // backButton = (Button) findViewById(R.id.backButton);
 
         profileImage = (ImageView) findViewById(R.id.profileImage);
         userNameTextView = (TextView) findViewById(R.id.userName);
         matchId = getIntent().getExtras().getString("matchId");
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        mDatabaseUser= FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId).child("ChatId");
+        mDatabaseUserChat= FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId).child("ChatId");
         mDatabaseChat= FirebaseDatabase.getInstance().getReference().child("Chat");
-        mDatabaseOtherUser = FirebaseDatabase.getInstance().getReference().child("Users").child(matchId);
+        mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("Users");
         getChatId();
-        fillImageAndName();
+        fillImagesAndName();
+
 
 
         myRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -100,13 +102,13 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
         //on back button click
-        backButton.setOnClickListener(new View.OnClickListener() {
+/*        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ChatActivity.this,MatchesActivity.class);
                 startActivity(intent);
             }
-        });
+        });*/
         //this functions helps fix recyclerView while opening keyboards
         myRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -134,13 +136,13 @@ public class ChatActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void fillImageAndName() {
-        mDatabaseOtherUser.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void fillImagesAndName() {
+        mDatabaseUser.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String name = dataSnapshot.child("name").getValue().toString();
-                String profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString().trim();
-
+                String name = dataSnapshot.child(matchId).child("name").getValue().toString();
+                profileImageUrl = dataSnapshot.child(matchId).child("profileImageUrl").getValue().toString().trim();
+                myProfileImageUrl = dataSnapshot.child(currentUserID).child("profileImageUrl").getValue().toString().trim();
 
                 if(!name.isEmpty()){
                     userNameTextView.setText(name);
@@ -155,11 +157,6 @@ public class ChatActivity extends AppCompatActivity {
                         Glide.with(getApplication()).load(profileImageUrl).into(profileImage);
                         break;
                 }
-
-
-
-
-
             }
 
             @Override
@@ -183,7 +180,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getChatId(){
-        mDatabaseUser.addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabaseUserChat.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -208,6 +205,7 @@ public class ChatActivity extends AppCompatActivity {
                     String message = null;
                     String createdByUser = null;
 
+
                     if(dataSnapshot.child("text").getValue()!=null){
                         message=dataSnapshot.child("text").getValue().toString();
                     }
@@ -216,10 +214,12 @@ public class ChatActivity extends AppCompatActivity {
                     }
                     if(message!=null && createdByUser!=null){
                         Boolean currentUserBoolean = false;
+                        String imageUrl=profileImageUrl;
                         if(createdByUser.equals(currentUserID)){
                             currentUserBoolean = true;
+                            imageUrl=myProfileImageUrl;
                         }
-                        ChatObject newMessage = new ChatObject(message,currentUserBoolean);
+                        ChatObject newMessage = new ChatObject(message,currentUserBoolean,imageUrl);
                         resultChat.add(newMessage);
                         mChatAdapter.notifyDataSetChanged();
                     }
