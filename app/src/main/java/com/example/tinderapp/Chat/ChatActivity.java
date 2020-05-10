@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.tinderapp.LoginActivity;
 import com.example.tinderapp.MainActivity;
 import com.example.tinderapp.Matches.MatchesActivity;
 import com.example.tinderapp.Matches.MatchesAdapter;
@@ -53,7 +54,7 @@ public class ChatActivity extends AppCompatActivity {
     private String matchId;
     private String chatId;
     private String profileImageUrl,myProfileImageUrl;
-    DatabaseReference mDatabaseUserChat,mDatabaseChat,mDatabaseUser;
+    DatabaseReference mDatabaseUserChat, mDatabaseChat,mDatabaseUser;
 
 
     @Override
@@ -67,7 +68,7 @@ public class ChatActivity extends AppCompatActivity {
         userNameTextView = (TextView) findViewById(R.id.userName);
         matchId = getIntent().getExtras().getString("matchId");
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        mDatabaseUserChat= FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId).child("ChatId");
+        mDatabaseUserChat = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId).child("ChatId");
         mDatabaseChat= FirebaseDatabase.getInstance().getReference().child("Chat");
         mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("Users");
         getChatId();
@@ -180,6 +181,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getChatId(){
+
         mDatabaseUserChat.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -253,5 +255,11 @@ public class ChatActivity extends AppCompatActivity {
     private ArrayList<ChatObject> resultChat = new ArrayList<ChatObject>();
     private List<ChatObject> getDataSetChat() {
         return resultChat;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(this, MatchesActivity.class);
+        startActivity(i);
     }
 }

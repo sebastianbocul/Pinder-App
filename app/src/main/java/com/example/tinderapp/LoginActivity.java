@@ -262,7 +262,6 @@ public class LoginActivity extends AppCompatActivity {
     private void linkWithCredential(AuthCredential credential){
 
         mAuth = FirebaseAuth.getInstance();
-        System.out.println("CCCCCCCCCCCCCCCCCCCCCC" + mAuth);
         //mAuth.getCurrentUser().linkWithCredential(credential)
              mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -288,11 +287,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void updateUI(final FirebaseUser user) {
-        System.out.println("UPDATEuiiiiiiiiiiiiIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIiiiiiiii");
         final Map userInfo = new HashMap<>();
         if(user!=null){
             final DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getUid());
-            System.out.println("currentUserDb.getKey() : "+currentUserDb.getKey());
             currentUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

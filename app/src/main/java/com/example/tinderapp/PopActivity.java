@@ -40,7 +40,7 @@ public class PopActivity extends AppCompatActivity {
         int width = dm.widthPixels;
         int height = dm.heightPixels;
         linearLayout=(LinearLayout) findViewById(R.id.layoutId);
-        getWindow().setLayout((int)(width*.8),(int)(height*.5));
+        getWindow().setLayout((int)(width*.8),(int)(height*.55));
 
         WindowManager.LayoutParams params = getWindow().getAttributes();
         params.gravity= Gravity.CENTER;
@@ -51,14 +51,15 @@ public class PopActivity extends AppCompatActivity {
 
         db = FirebaseDatabase.getInstance().getReference().child("Users").child(matchId);
 
-/*
+
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              //  Intent i = new Intent(getApplicationContext(),MainActivity.class);
-           //     startActivity(i);
+                onBackPressed();
+               // Intent i = new Intent(getApplicationContext(),MainActivity.class);
+           //  startActivity(i);
             }
-        });*/
+        });
 
         db.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

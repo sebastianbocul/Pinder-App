@@ -129,8 +129,6 @@ public class SettingsActivity extends AppCompatActivity {
                 });
     }
     private void deleteDatabaseAndStorage(){
-
-        System.out.println("userID" + userId);
         DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
         mUserDatabase.removeValue();
 

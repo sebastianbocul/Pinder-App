@@ -354,12 +354,10 @@ public class ProfileActivity extends AppCompatActivity {
                 bitmap= MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), resultUri);
 
                 ExifInterface exifInterface;
-                System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 InputStream in = getContentResolver().openInputStream(resultUri);
                 try {
-                  //  in = getContentResolver().openInputStream(resultUri);
                     exifInterface = new ExifInterface(in);
-                    System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+
                     // Now you can extract any Exif tag you want
                     // Assuming the image is a JPEG or supported raw format
 
@@ -368,7 +366,7 @@ public class ProfileActivity extends AppCompatActivity {
                     int orientation = exifInterface.getAttributeInt(
                             ExifInterface.TAG_ORIENTATION,
                             ExifInterface.ORIENTATION_NORMAL);
-                    System.out.println(orientation);
+
                     switch(orientation) {
 
                         case ExifInterface.ORIENTATION_ROTATE_90:

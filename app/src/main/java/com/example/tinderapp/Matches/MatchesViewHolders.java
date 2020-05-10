@@ -17,12 +17,13 @@ import org.w3c.dom.Text;
 
 
 public class MatchesViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
-    public TextView mMatchId, mMatchName;
+    public TextView mMatchName,mLastMessage;
     public ImageView mMatchImage;
+    String mMatchUserId;
     public MatchesViewHolders(@NonNull View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
-        mMatchId = (TextView) itemView.findViewById(R.id.Matchid);
+        mLastMessage = (TextView) itemView.findViewById(R.id.lastMessage);
         mMatchName = (TextView) itemView.findViewById(R.id.MatchName);
         mMatchImage = (ImageView) itemView.findViewById(R.id.MatchImage);
 
@@ -32,8 +33,7 @@ public class MatchesViewHolders extends RecyclerView.ViewHolder implements View.
     public void onClick(View view){
         Intent intent = new Intent(view.getContext(), ChatActivity.class);
         Bundle b= new Bundle();
-
-        b.putString("matchId",mMatchId.getText().toString());
+        b.putString("matchId",mMatchUserId);
         intent.putExtras(b);
         view.getContext().startActivity(intent);
     }
