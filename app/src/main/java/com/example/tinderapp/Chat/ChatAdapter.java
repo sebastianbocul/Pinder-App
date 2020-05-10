@@ -63,7 +63,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
             holder.mContainer.setLayoutParams(paramsContainer2);
             holder.mMessaage.setLayoutParams(paramsText);
             holder.mContainer.setBackgroundResource(R.drawable.my_chat);
-            Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
+            System.out.println("AAAAAAA");
+            System.out.println(chatList.get(position).getProfileImageUrl());
+            if(chatList.get(position).getProfileImageUrl().equals("default")){
+                Glide.with(context).load(R.mipmap.ic_launcher).into(holder.mChatImage);
+            }else {
+                Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
+            }
         }
         else {
             paramsContainer.setMargins(20,30,100,0);
@@ -74,7 +80,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
             holder.mContainer.setLayoutParams(paramsContainer);
             holder.mMessaage.setLayoutParams(paramsText);
             holder.mContainer.setBackgroundResource(R.drawable.other_chat);
-            Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
+
+            if(chatList.get(position).getProfileImageUrl().equals("default")){
+                Glide.with(context).load(R.mipmap.ic_launcher).into(holder.mChatImage);
+            }else {
+                Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
+            }
+
         }
     }
 

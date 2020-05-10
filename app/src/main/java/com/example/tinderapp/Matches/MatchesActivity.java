@@ -140,6 +140,7 @@ public class MatchesActivity extends AppCompatActivity {
 
 
         userDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){

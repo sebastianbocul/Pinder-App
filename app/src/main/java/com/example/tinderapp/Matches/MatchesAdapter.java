@@ -57,11 +57,14 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesViewHolders> {
         if(matchesList.get(position).isCreatedByMe()==true){
             holder.mLastMessage.setTypeface(null, Typeface.NORMAL);
             holder.mMatchName.setTypeface(null, Typeface.NORMAL);
+            holder.mMatchImage.setBorderColor(Color.parseColor("#00000000"));
             holder.mLastMessage.setTextColor(Color.parseColor("#404040"));
         }
         else {
             holder.mLastMessage.setTypeface(null, Typeface.BOLD);
             holder.mMatchName.setTypeface(null, Typeface.BOLD);
+           // holder.mMatchImage.setColor
+            holder.mMatchImage.setBorderColor(Color.parseColor("#FF5F96"));
             holder.mLastMessage.setTextColor(Color.parseColor("#404040"));
         }
         holder.mMatchName.setText(matchesList.get(position).getName());
