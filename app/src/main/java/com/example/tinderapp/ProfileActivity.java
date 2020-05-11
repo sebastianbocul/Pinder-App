@@ -498,7 +498,7 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                         else {
                             mUserDatabase.child("profileImageUrl").setValue("default");
-                            viewPager.setBackground(getDrawable(R.mipmap.ic_launcher));
+                            viewPager.setBackground(getDrawable(R.drawable.profile_default));
                         }
                     }catch (Exception e){
                         System.out.println( "Opps something went wrong");

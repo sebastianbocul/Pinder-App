@@ -76,15 +76,17 @@ public class MatchesActivity extends AppCompatActivity {
     private void getUserMatchId() {
 
         DatabaseReference matchDb = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
-
+        DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
 
 
         matchDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
+
+
                     for(DataSnapshot match: dataSnapshot.getChildren()){
-                        matchesCount=(int)dataSnapshot.getChildrenCount();
+                         matchesCount=(int)dataSnapshot.getChildrenCount();
                          getLastMessage(match);
                         //fetchMatchInformation(match.getKey(), match.child("ChatId").getValue().toString());
                     }
@@ -143,6 +145,13 @@ public class MatchesActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()){
+                    matchesCount--;
+                    if(resultMatches.size()==matchesCount){
+                        Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
+                        mMatchesAdapter.notifyDataSetChanged();
+                    }
+                }
                 if(dataSnapshot.exists()){
                     String userId = dataSnapshot.getKey();
                     String name = "";
@@ -161,7 +170,7 @@ public class MatchesActivity extends AppCompatActivity {
                     if(dataSnapshot.child("profileImageUrl").getValue()!=null){
                         profileImageUrl=dataSnapshot.child("profileImageUrl").getValue().toString();
                     }
-
+                    
                     MatchesObject obj = new MatchesObject(userId,name,profileImageUrl,mLastMessage,createdByMe,mSortId);
                     resultMatches.add(obj);
 
