@@ -14,3 +14,5 @@
 .cxx
 .settings/org.eclipse.buildship.core.prefs
 .project
+app/google-services.json
+app/src/main/res/values/strings.xml

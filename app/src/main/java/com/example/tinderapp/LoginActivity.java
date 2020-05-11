@@ -132,20 +132,13 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             for(DataSnapshot ds : dataSnapshot.child("Users").getChildren()){
-                                System.out.println("ds.getKye : " + ds.getKey());
-                                System.out.println("user.getUid() : " + user.getUid());
-                                String a,b;
-                                a= ds.getKey();
-                                b=user.getUid();
                                 if(ds.getKey().equals(user.getUid())){
-                                    System.out.println("AAAAAAAAAAAAAAAAAASGSAG");
                                     Intent intent  = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();
                                     return;
                                 }
                             }
-                            System.out.println("DUUUUUUUUUPA");
                             Intent intent  = new Intent(LoginActivity.this, FillInfoActivity.class);
                             startActivity(intent);
                             finish();

@@ -5,11 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,19 +37,22 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
-
+    private EditText date;
+    private boolean dateValid = false;
+    private TextView title;
+    private int dd,mm,yyyy;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
         mAuth = FirebaseAuth.getInstance();
-        firebaseAuthStateListener= new FirebaseAuth.AuthStateListener() {
+        firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if(user !=null){
-                    Intent intent  = new Intent(RegistrationActivity.this, MainActivity.class);
+                if (user != null) {
+                    Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                     return;
@@ -56,10 +63,99 @@ public class RegistrationActivity extends AppCompatActivity {
 
         mRegister = (Button) findViewById(R.id.register);
         mEmail = (EditText) findViewById(R.id.email);
-        mPassword=(EditText) findViewById(R.id.password);
+        mPassword = (EditText) findViewById(R.id.password);
         mRepeatPassword = (EditText) findViewById(R.id.repeatpassword);
         mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         mName = (EditText) findViewById(R.id.name);
+
+        title = findViewById(R.id.title);
+
+        date = (EditText) findViewById(R.id.date);
+        date.addTextChangedListener(new TextWatcher() {
+            private String current = "";
+            private String ddmmyyyy = "DDMMYYYY";
+            private Calendar cal = Calendar.getInstance();
+            String clean;
+            String cleanC;
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                try {
+                    if (!s.toString().equals(current)) {
+                        dateValid = false;
+                        clean = s.toString().replaceAll("[^\\d.]", "");
+                        cleanC = current.replaceAll("[^\\d.]", "");
+
+                        int cl = clean.length();
+                        int sel = cl;
+                        for (int i = 2; i <= cl && i < 6; i += 2) {
+                            sel++;
+                        }
+                        //Fix for pressing delete next to a forward slash
+                        if (clean.equals(cleanC)) sel--;
+
+                        if (clean.length() < 8) {
+                            clean = clean + ddmmyyyy.substring(clean.length());
+                        } else {
+                            //This part makes sure that when we finish entering numbers
+                            //the date is correct, fixing it otherwise
+                            int day = Integer.parseInt(clean.substring(0, 2));
+                            int mon = Integer.parseInt(clean.substring(2, 4));
+                            int year = Integer.parseInt(clean.substring(4, 8));
+
+
+                            if (mon > 12) mon = 12;
+                            if (mon == 0) mon = 1;
+                            cal.set(Calendar.MONTH, mon - 1);
+                            year = (year < 1900) ? 1900 : (year > 2019) ? 2019 : year;
+                            cal.set(Calendar.YEAR, year);
+                            // ^ first set year for the line below to work correctly
+                            //with leap years - otherwise, date e.g. 29/02/2012
+                            //would be automatically corrected to 28/02/2012
+                            dateValid = true;
+
+                            day = (day < 1) ? 1 : (day > cal.getActualMaximum(Calendar.DATE)) ? cal.getActualMaximum(Calendar.DATE) : day;
+
+
+                            dd = day;
+                            mm = mon;
+                            yyyy = year;
+
+
+                            clean = String.format("%02d%02d%02d", day, mon, year);
+                        }
+
+                        clean = String.format("%s/%s/%s", clean.substring(0, 2),
+                                clean.substring(2, 4),
+                                clean.substring(4, 8));
+
+                        sel = sel < 0 ? 0 : sel;
+                        current = clean;
+                        date.setText(current);
+                        date.setSelection(sel < current.length() ? sel : current.length());
+                    }
+                } catch (Exception e) {
+                    dateValid = false;
+                    Toast.makeText(RegistrationActivity.this, "Invalid date format", Toast.LENGTH_SHORT).show();
+                    date.setText("");
+                }
+
+            }
+
+            //set max lines in descriptions field
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+
+
 
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +167,10 @@ public class RegistrationActivity extends AppCompatActivity {
                 final String repeatpassword = mRepeatPassword.getText().toString();
                 final RadioButton radioButton = (RadioButton) findViewById(selectedId);
 
+                if(!dateValid==true) {
+                    Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 if(mRadioGroup.getCheckedRadioButtonId()==-1){
                     Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
@@ -97,12 +197,15 @@ public class RegistrationActivity extends AppCompatActivity {
                             } else {
                                 String userId = mAuth.getCurrentUser().getUid();
                                 DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+                                String dateOfBirth = date.getText().toString();
                                 Map userInfo = new HashMap<>();
                                 userInfo.put("name", name);
                                 userInfo.put("sex", radioButton.getText().toString());
                                 userInfo.put("profileImageUrl", "default");
-
+                                userInfo.put("dateOfBirth",dateOfBirth);
                                 currentUserDb.updateChildren(userInfo);
+                                Toast.makeText(RegistrationActivity.this,"Register successful!",Toast.LENGTH_SHORT).show();
+
                             }
                         }
                     });

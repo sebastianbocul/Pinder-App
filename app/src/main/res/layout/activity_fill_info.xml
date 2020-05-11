@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Please fill all the informations"
+        android:id="@+id/title"
         android:textSize="20sp"
         android:gravity="center"
         android:paddingBottom="20sp"/>
@@ -22,6 +23,15 @@
         android:inputType="textPersonName"
         android:hint="Name"
         android:id="@+id/name"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="DD/MM/YYYY"
+        android:ems="10"
+        android:inputType="date"
+        android:id="@+id/date"/>
+
 
     <RadioGroup
         android:layout_width="match_parent"

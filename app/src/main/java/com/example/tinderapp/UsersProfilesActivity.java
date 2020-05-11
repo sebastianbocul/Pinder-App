@@ -260,39 +260,11 @@ public void fillUserProfile(){
                         description = map.get("description").toString();
                         descriptionTextView.setText("Description: " +description);
                     }else descriptionTextView.setText("Description:");
-                    /*
-                    if(map.get("images")!=null){
-                        ArrayList imageArray;
-                        imageArray = (ArrayList) map.get("images");
-                        Map imageMap;
-                        imageMap = (Map)imageArray.get(0);
-                        String imageDef =  imageMap.get("uri").toString();
-                        mUserDatabase.child("profileImageUrl").setValue(imageDef);
-                        profileImageUrl = imageDef;
+
+                    //dataSnapshot.child("images").exists()
+                    if(map.get("images")==null){
+                        viewPager.setBackground(getDrawable(R.drawable.picture_default));
                     }
-                    else {
-                        mUserDatabase.child("profileImageUrl").setValue("default");
-                        viewPager.setBackground(getDrawable(R.mipmap.ic_launcher));
-                    }*/
-                    //image
-                    /*
-                    Glide.with(imageView).clear(imageView);
-                    if(map.get("profileImageUrl")!=null){
-                        profileImageUrl = map.get("profileImageUrl").toString();
-
-                        switch (profileImageUrl) {
-
-                            case "default":
-                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(imageView);
-                                break;
-
-                            default:
-                                Glide.with(getApplication()).load(profileImageUrl).into(imageView);
-                                break;
-
-
-                        }
-                    }*/
 
                 }
             }
