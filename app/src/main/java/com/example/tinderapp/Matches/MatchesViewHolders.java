@@ -12,20 +12,21 @@ import android.widget.TextView;
 
 import com.example.tinderapp.Chat.ChatActivity;
 import com.example.tinderapp.R;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import org.w3c.dom.Text;
 
 
 public class MatchesViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
     public TextView mMatchName,mLastMessage;
-    public ImageView mMatchImage;
+    public CircularImageView mMatchImage;
     String mMatchUserId;
     public MatchesViewHolders(@NonNull View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
         mLastMessage = (TextView) itemView.findViewById(R.id.lastMessage);
         mMatchName = (TextView) itemView.findViewById(R.id.MatchName);
-        mMatchImage = (ImageView) itemView.findViewById(R.id.MatchImage);
+        mMatchImage = (CircularImageView) itemView.findViewById(R.id.MatchImage);
 
     }
 

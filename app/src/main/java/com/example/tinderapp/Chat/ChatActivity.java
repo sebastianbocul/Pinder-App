@@ -151,7 +151,7 @@ public class ChatActivity extends AppCompatActivity {
                 userNameTextView.setText(name);
                 switch(profileImageUrl){
                     case "default":
-                        Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(profileImage);
+                        Glide.with(getApplication()).load(R.drawable.profile_default).into(profileImage);
                         break;
                     default:
                         Glide.with(profileImage).clear(profileImage);

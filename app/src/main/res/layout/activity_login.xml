@@ -7,7 +7,17 @@
     tools:context=".RegistrationActivity"
     android:orientation="vertical"
     android:padding="50sp"
-    android:id="@+id/mainLayout">
+  >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/mainLayout">
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,8 +37,33 @@
         android:text="LOGIN"
         android:id="@+id/login"/>
     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <TextView
+        android:paddingTop="5sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register with email? Click "/>
+    <Button
+        android:layout_width="40sp"
+        android:layout_height="20sp"
+        android:text="HERE"
+        android:textSize="15sp"
+        android:textColor="#0000ff"
+        android:background="#00000000"
+        android:id="@+id/register"/>
+    <TextView
+        android:paddingTop="5sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" ."/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="20sp"
         android:orientation="vertical">
 
     <com.facebook.login.widget.LoginButton
@@ -54,16 +89,40 @@
             android:layout_marginBottom="10dp"
             android:layout_weight="1"/>
     </LinearLayout>
-    <TextView
-        android:paddingTop="10sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="First time? Click register now!"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="REGISTER"
-        android:id="@+id/register"/>
-==
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/smallLogo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:src="@drawable/login_photo" />
+
+
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/logoLayout">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/bigLogo"
+                android:layout_width="match_parent"
+                android:layout_height="500sp"
+                android:layout_weight="1"
+                android:padding="10sp"
+                android:src="@drawable/login_photo" />
+
+        </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

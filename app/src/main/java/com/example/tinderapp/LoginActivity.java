@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String EMAIL = "email";
     private TextView facebookRegister;
     private SignInButton googleSignIn;
-    private LinearLayout myLayout;
+    private LinearLayout myLayout,logoLayout;
     GoogleSignInClient mGoogleSignInClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +78,14 @@ public class LoginActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(getApplication());
         callbackManager = CallbackManager.Factory.create();
+        myLayout = (LinearLayout)findViewById(R.id.mainLayout);
+        logoLayout = findViewById(R.id.logoLayout);
+        loginButton = findViewById(R.id.login_button);
+        loginButton.setReadPermissions(Arrays.asList(EMAIL));
+        mLogin = (Button) findViewById(R.id.login);
+        mEmail = (EditText) findViewById(R.id.email);
+        mPassword=(EditText) findViewById(R.id.password);
+        mRegister=(Button)findViewById(R.id.register);
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -103,28 +111,65 @@ public class LoginActivity extends AppCompatActivity {
 
         checkLocationPermission();
 
-        firebaseAuthStateListener= new FirebaseAuth.AuthStateListener() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user==null){
+            myLayout.setVisibility(View.VISIBLE);
+            logoLayout.setVisibility(View.INVISIBLE);
+        }
+        else  {
+            logoLayout.setVisibility(View.VISIBLE);
+            myLayout.setVisibility(View.INVISIBLE);
+        }
+
+        firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                int i=0;
                 if(user !=null){
+                    dr.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for(DataSnapshot ds : dataSnapshot.child("Users").getChildren()){
+                                System.out.println("ds.getKye : " + ds.getKey());
+                                System.out.println("user.getUid() : " + user.getUid());
+                                String a,b;
+                                a= ds.getKey();
+                                b=user.getUid();
+                                if(ds.getKey().equals(user.getUid())){
+                                    System.out.println("AAAAAAAAAAAAAAAAAASGSAG");
+                                    Intent intent  = new Intent(LoginActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                    return;
+                                }
+                            }
+                            System.out.println("DUUUUUUUUUPA");
+                            Intent intent  = new Intent(LoginActivity.this, FillInfoActivity.class);
+                            startActivity(intent);
+                            finish();
+                            return;
+
+                        }
+
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    /*
                     myLayout.setVisibility(View.INVISIBLE);
                     Intent intent  = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
 
                     finish();
-                    return;
+                    return;*/
                 }
             }
         };
 
-        myLayout = (LinearLayout)findViewById(R.id.mainLayout);
-        loginButton = findViewById(R.id.login_button);
-        loginButton.setReadPermissions(Arrays.asList(EMAIL));
-        mLogin = (Button) findViewById(R.id.login);
-        mEmail = (EditText) findViewById(R.id.email);
-        mPassword=(EditText) findViewById(R.id.password);
-        mRegister=(Button)findViewById(R.id.register);
 
 
 
@@ -270,13 +315,13 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d("myLog", "linkWithCredential:success");
                             FirebaseUser user = task.getResult().getUser();
-                            updateUI(user);
+                           // updateUI(user);
                         } else {
                             Log.w("myLog", "linkWithCredential:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             LoginManager.getInstance().logOut();
-                            updateUI(null);
+                            //updateUI(null);
                         }
 
                         // ...
@@ -294,11 +339,11 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if(dataSnapshot.child("name").getValue()==null){
-                        userInfo.put("name",getFirstName(user.getDisplayName()));
+                        //userInfo.put("name",getFirstName(user.getDisplayName()));
                         //userInfo.put("sex", "Male");
                         //userInfo.put("profileImageUrl", user.getPhotoUrl());
 
-                        currentUserDb.updateChildren(userInfo);
+                        //currentUserDb.updateChildren(userInfo);
 
                     }
                 }

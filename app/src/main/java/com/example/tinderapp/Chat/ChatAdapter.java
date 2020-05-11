@@ -66,7 +66,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
             System.out.println("AAAAAAA");
             System.out.println(chatList.get(position).getProfileImageUrl());
             if(chatList.get(position).getProfileImageUrl().equals("default")){
-                Glide.with(context).load(R.mipmap.ic_launcher).into(holder.mChatImage);
+                Glide.with(context).load(R.drawable.profile_default).into(holder.mChatImage);
             }else {
                 Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
             }
@@ -82,7 +82,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
             holder.mContainer.setBackgroundResource(R.drawable.other_chat);
 
             if(chatList.get(position).getProfileImageUrl().equals("default")){
-                Glide.with(context).load(R.mipmap.ic_launcher).into(holder.mChatImage);
+                Glide.with(context).load(R.drawable.profile_default).into(holder.mChatImage);
             }else {
                 Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
             }

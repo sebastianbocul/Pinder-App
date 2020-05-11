@@ -166,7 +166,11 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                     usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            String userName = dataSnapshot.child("name").getValue().toString();
+                            String userName;
+                            if(!dataSnapshot.child("name").exists()){
+                              return;
+                            }
+                            userName = dataSnapshot.child("name").getValue().toString();
 
                             double latitude = Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString());
                             double longitude = Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString());
