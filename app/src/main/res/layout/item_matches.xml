@@ -19,7 +19,7 @@
     <com.mikhaellopez.circularimageview.CircularImageView
         android:layout_width="55sp"
         android:layout_height="55sp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/picture_default"
         android:id="@+id/MatchImage"
         xmlns:app="http://schemas.android.com/apk/res-auto"
 
