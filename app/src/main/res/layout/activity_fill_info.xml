@@ -27,10 +27,34 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="DD/MM/YYYY"
+        android:hint="DD/MM/YYYY - Date of birth"
         android:ems="10"
         android:inputType="date"
         android:id="@+id/date"/>
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tags separeted with #"
+        android:id="@+id/tagsEditText"
+        android:maxLines="5"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="My Tags:"
+        android:id="@+id/myTagsTextView"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:paddingBottom="0sp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint=""
+        android:id="@+id/tagsTextView"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:paddingBottom="0sp"/>
 
 
     <RadioGroup

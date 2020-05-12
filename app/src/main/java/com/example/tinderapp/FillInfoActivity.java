@@ -60,19 +60,71 @@ public class FillInfoActivity extends AppCompatActivity {
     private EditText date;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private TextView title;
+    private TextView tagsTextView;
+    private EditText tagsEditText;
     private int dd,mm,yyyy;
-   // private  RadioButton radioButton;
+    private String[] currencies;
+    private StringBuilder stringBuilder=null;
+    // private  RadioButton radioButton;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fill_info);
-
+        stringBuilder = new StringBuilder();
+        currencies = new String[0];
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         title=findViewById(R.id.title);
 
         date = (EditText)findViewById(R.id.date);
+        tagsEditText=findViewById(R.id.tagsEditText);
+        tagsTextView=findViewById(R.id.tagsTextView);
+
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+
+        mRegister = (Button) findViewById(R.id.register);
+        mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        mName = (EditText) findViewById(R.id.name);
+       // int selectedId = mRadioGroup.getCheckedRadioButtonId();
+       // radioButton = (RadioButton) findViewById(selectedId);
+
+        mName.setText(getFirstName(user.getDisplayName()));
+
+
+
+        tagsEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String lineOfCurrencies = tagsEditText.getText().toString();
+                currencies = new String[0];
+                currencies = lineOfCurrencies.split("#");
+                stringBuilder.setLength(0);
+                for(String str:currencies){
+                    if(!str.trim().isEmpty()){
+
+                        stringBuilder.append("#"+ str.trim() +"  ");
+                    }
+
+                }
+                tagsTextView.setText(stringBuilder);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (null != tagsEditText.getLayout() && tagsEditText.getLayout().getLineCount() > 5) {
+                    tagsEditText.getText().delete(tagsEditText.getText().length() - 1, tagsEditText.getText().length());
+                }
+            }
+        });
+
         date.addTextChangedListener(new TextWatcher() {
             private String current = "";
             private String ddmmyyyy = "DDMMYYYY";
@@ -156,18 +208,6 @@ public class FillInfoActivity extends AppCompatActivity {
 
 
 
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        mRegister = (Button) findViewById(R.id.register);
-        mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
-        mName = (EditText) findViewById(R.id.name);
-       // int selectedId = mRadioGroup.getCheckedRadioButtonId();
-       // radioButton = (RadioButton) findViewById(selectedId);
-
-        mName.setText(getFirstName(user.getDisplayName()));
-
-
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -175,7 +215,19 @@ public class FillInfoActivity extends AppCompatActivity {
                 final String name = mName.getText().toString();
                 final RadioButton radioButton = (RadioButton) findViewById(selectedId);
                 System.out.println("TEXTTTTTTTTT: " + dateValid);
-                if(!dateValid==true) return;
+
+
+
+                System.out.println("STRING BUILDER ::" + stringBuilder.length()+"::" + "    "  + currencies.length);
+                if(stringBuilder.length()==0||currencies.length==0){
+                    Toast.makeText(FillInfoActivity.this, "Fill tags", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(!dateValid==true) {
+                    Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 if(mRadioGroup.getCheckedRadioButtonId()==-1){
                     Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
@@ -194,10 +246,15 @@ public class FillInfoActivity extends AppCompatActivity {
                 else {
                     ActivityCompat.requestPermissions(FillInfoActivity.this, new  String[]{Manifest.permission.ACCESS_FINE_LOCATION},44);
                 }
-                updateDb();
+                try {
+                    updateDb();
 
 
-                changeActivty();
+                    changeActivty();
+                }catch (Exception e){
+                    Toast.makeText(FillInfoActivity.this, "Opps something went wrong", Toast.LENGTH_SHORT).show();
+                }
+
             }
 
         });
@@ -257,10 +314,17 @@ public class FillInfoActivity extends AppCompatActivity {
         String name = mName.getText().toString();
         String gender = radioButton.getText().toString();
         String dateOfBirth = date.getText().toString();
+        Map tagsMap = new HashMap<>();
+        for(String str:currencies){
+            if(!str.trim().isEmpty()){
+                tagsMap.put(str.trim(),true);
+            }
+        }
         Map userInfo = new HashMap<>();
         userInfo.put("name", name);
         userInfo.put("sex",gender);
         userInfo.put("dateOfBirth",dateOfBirth);
+        userInfo.put("tags",tagsMap);
         mUserDatabase.updateChildren(userInfo);
         Toast.makeText(FillInfoActivity.this,"Register successful!",Toast.LENGTH_SHORT).show();
     }
@@ -284,6 +348,9 @@ public class FillInfoActivity extends AppCompatActivity {
 
                         myRef.child("longitude").setValue(addresses.get(0).getLongitude());
                         myRef.child("latitude").setValue(addresses.get(0).getLatitude());
+
+
+
 
                         if(addresses.get(0).getCountryName()!=null){
                             myRef.child("countryName").setValue(addresses.get(0).getCountryName());

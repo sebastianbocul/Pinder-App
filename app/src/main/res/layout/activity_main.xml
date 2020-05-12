@@ -40,6 +40,19 @@
 
     </LinearLayout>
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tagsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="50sp"
+            android:orientation="horizontal" />
+    </LinearLayout>
+
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"

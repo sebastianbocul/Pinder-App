@@ -501,7 +501,7 @@ public class ProfileActivity extends AppCompatActivity {
                             viewPager.setBackground(getDrawable(R.drawable.profile_default));
                         }
                     }catch (Exception e){
-                        System.out.println( "Opps something went wrong");
+                        Toast.makeText(ProfileActivity.this, "Opps something went wrong", Toast.LENGTH_SHORT).show();
                     }
 
                 }

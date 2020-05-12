@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
@@ -16,7 +18,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import com.example.tinderapp.Cards.arrayAdapter;
 import com.example.tinderapp.Cards.cards;
 import com.example.tinderapp.Matches.MatchesActivity;
+import com.example.tinderapp.Tags.TagsAdapter;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     public SwipeFlingAdapterView flingContainer;
     ListView listView;
     List<cards> rowItems;
-
+    TagsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
 
         arrayAdapter = new arrayAdapter(this, R.layout.item,rowItems );
         flingContainer.setAdapter(arrayAdapter);
+
+
+        fillTagsAdapter();
+
+
 
 
         likeButton.setOnClickListener(new View.OnClickListener() {
@@ -197,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
 
     private void isConnectionMatch(final String userId) {
         DatabaseReference currentUserConnectionsDb = usersDb.child(currentUID).child("connections").child("yes").child(userId);
@@ -374,6 +382,32 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    private void fillTagsAdapter() {
+        //  super.onCreate(savedInstanceState);
+        // setContentView(R.layout.activity_main);
+        // data to populate the RecyclerView with
+        ArrayList<String> myTags = new ArrayList<>();
+        myTags.add("Date");
+        myTags.add("go_out");
+        myTags.add("party");
+        myTags.add("grill");
+        myTags.add("beer");
+        myTags.add("warzone");
+        myTags.add("League_of_legends");
+        // set up the RecyclerView
+        RecyclerView recyclerView = findViewById(R.id.tagsRecyclerView);
+        LinearLayoutManager horizontalLayoutManager
+                = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
+
+        recyclerView.setLayoutManager(horizontalLayoutManager);
+        adapter = new TagsAdapter(this, myTags);
+        //    adapter.setClickListener(this);
+        recyclerView.setAdapter(adapter);
+
+    }
+
+
     @Override
     public void onBackPressed() {
         Intent startMain = new Intent(Intent.ACTION_MAIN);
@@ -381,5 +415,6 @@ public class MainActivity extends AppCompatActivity {
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(startMain);
     }
+
 
 }

@@ -63,8 +63,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
             holder.mContainer.setLayoutParams(paramsContainer2);
             holder.mMessaage.setLayoutParams(paramsText);
             holder.mContainer.setBackgroundResource(R.drawable.my_chat);
-            System.out.println("AAAAAAA");
-            System.out.println(chatList.get(position).getProfileImageUrl());
             if(chatList.get(position).getProfileImageUrl().equals("default")){
                 Glide.with(context).load(R.drawable.picture_default).into(holder.mChatImage);
             }else {
