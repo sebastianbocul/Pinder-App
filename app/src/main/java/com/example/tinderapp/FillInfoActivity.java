@@ -325,6 +325,7 @@ public class FillInfoActivity extends AppCompatActivity {
         userInfo.put("sex",gender);
         userInfo.put("dateOfBirth",dateOfBirth);
         userInfo.put("tags",tagsMap);
+        userInfo.put("profileImageUrl", "default");
         mUserDatabase.updateChildren(userInfo);
         Toast.makeText(FillInfoActivity.this,"Register successful!",Toast.LENGTH_SHORT).show();
     }

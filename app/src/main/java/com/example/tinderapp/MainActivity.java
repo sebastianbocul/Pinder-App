@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     List<cards> rowItems;
     TagsAdapter adapter;
-
+    private ArrayList<String> myTagsList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -278,14 +278,10 @@ public class MainActivity extends AppCompatActivity {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.child("sex").getValue()!=null){
                 if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID)&& dataSnapshot.child("sex").getValue().toString().equals(oppositeUserSex)){
-                    String profileImageUrl = "default";
-                    if(!dataSnapshot.child("profileImageUrl").getValue().toString().equals("default")){
-                        profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
-                    }
-                    cards item = new cards(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString(), profileImageUrl,"Tags");
-                    rowItems.add(item);
-                    arrayAdapter.notifyDataSetChanged();
+                    getTagsPreferencesUsers(dataSnapshot);
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
 
+                    }
                 }
                 }
                 noMoreEditText.setText("There is no more users");
@@ -399,6 +395,7 @@ public class MainActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()){
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
                         myTags.add("#"+ ds.getKey());
+                        myTagsList.add(ds.getKey());
                     }
                     adapter = new TagsAdapter(MainActivity.this, myTags);
                     recyclerView.setAdapter(adapter);
@@ -429,6 +426,30 @@ public class MainActivity extends AppCompatActivity {
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(startMain);
+    }
+
+    private void getTagsPreferencesUsers(DataSnapshot ds) {
+        ArrayList<String> mutalTagsList = new ArrayList<>();
+        StringBuilder mutalTagsSB=new StringBuilder();
+        for (DataSnapshot dataTag : ds.child("tags").getChildren()){
+            for (String tag : myTagsList){
+                if(dataTag.getKey().toString().equals(tag)){
+                    mutalTagsList.add(tag);
+                    mutalTagsSB.append("#" + tag + " ");
+                }
+            }
+        }
+        if(mutalTagsList.size()!=0){
+            String profileImageUrl = "default";
+            if(ds.child("profileImageUrl").exists()){
+                if(!ds.child("profileImageUrl").getValue().toString().equals("default")){
+                    profileImageUrl = ds.child("profileImageUrl").getValue().toString();
+                }
+            }else profileImageUrl = "default";
+            cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl,mutalTagsSB.toString());
+            rowItems.add(item);
+            arrayAdapter.notifyDataSetChanged();
+        }
     }
 
 

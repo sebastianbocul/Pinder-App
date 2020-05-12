@@ -64,7 +64,11 @@ public class PopActivity extends AppCompatActivity {
         db.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String matchPictureUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
+                String matchPictureUrl;
+                if(!dataSnapshot.child("profileImageUrl").exists()){
+                    matchPictureUrl="default";
+                }
+                matchPictureUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
 
                 switch(matchPictureUrl){
                     case "default":

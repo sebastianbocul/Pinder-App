@@ -142,7 +142,11 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.child(matchId).child("name").getValue().toString();
-                profileImageUrl = dataSnapshot.child(matchId).child("profileImageUrl").getValue().toString().trim();
+                if(!dataSnapshot.child(matchId).child("profileImageUrl").exists()){
+                    profileImageUrl = "default";
+                }
+                else profileImageUrl = dataSnapshot.child(matchId).child("profileImageUrl").getValue().toString().trim();
+
                 myProfileImageUrl = dataSnapshot.child(currentUserID).child("profileImageUrl").getValue().toString().trim();
 
                 if(!name.isEmpty()){
