@@ -387,23 +387,38 @@ public class MainActivity extends AppCompatActivity {
         //  super.onCreate(savedInstanceState);
         // setContentView(R.layout.activity_main);
         // data to populate the RecyclerView with
+        DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID).child("tags");
         ArrayList<String> myTags = new ArrayList<>();
-        myTags.add("Date");
-        myTags.add("go_out");
-        myTags.add("party");
-        myTags.add("grill");
-        myTags.add("beer");
-        myTags.add("warzone");
-        myTags.add("League_of_legends");
-        // set up the RecyclerView
         RecyclerView recyclerView = findViewById(R.id.tagsRecyclerView);
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
-
         recyclerView.setLayoutManager(horizontalLayoutManager);
-        adapter = new TagsAdapter(this, myTags);
-        //    adapter.setClickListener(this);
-        recyclerView.setAdapter(adapter);
+        ds.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        myTags.add("#"+ ds.getKey());
+                    }
+                    adapter = new TagsAdapter(MainActivity.this, myTags);
+                    recyclerView.setAdapter(adapter);
+
+                }
+                else {
+                    myTags.add("Add tags in options first!");
+                    adapter = new TagsAdapter(MainActivity.this, myTags);
+                    recyclerView.setAdapter(adapter);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
 
     }
 

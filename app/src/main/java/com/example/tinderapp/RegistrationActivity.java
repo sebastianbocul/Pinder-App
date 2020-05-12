@@ -90,7 +90,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String lineOfCurrencies = tagsEditText.getText().toString();
+                String lineOfCurrencies = tagsEditText.getText().toString().toLowerCase();
                 currencies = new String[0];
                 currencies = lineOfCurrencies.split("#");
                 stringBuilder.setLength(0);
