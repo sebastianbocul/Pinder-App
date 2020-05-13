@@ -214,11 +214,7 @@ public class FillInfoActivity extends AppCompatActivity {
                 int selectedId = mRadioGroup.getCheckedRadioButtonId();
                 final String name = mName.getText().toString();
                 final RadioButton radioButton = (RadioButton) findViewById(selectedId);
-                System.out.println("TEXTTTTTTTTT: " + dateValid);
 
-
-
-                System.out.println("STRING BUILDER ::" + stringBuilder.length()+"::" + "    "  + currencies.length);
                 if(stringBuilder.length()==0||currencies.length==0){
                     Toast.makeText(FillInfoActivity.this, "Fill tags", Toast.LENGTH_SHORT).show();
                     return;

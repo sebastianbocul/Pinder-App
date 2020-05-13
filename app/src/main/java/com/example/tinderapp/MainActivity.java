@@ -42,8 +42,10 @@ import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private cards cards_data;
@@ -170,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 cards obj = (cards) dataObject;
                 String userId = obj.getUserId();
                 usersDb.child(userId).child("connections").child("yes").child(currentUID).setValue(true);
-                isConnectionMatch(userId);
+                isConnectionMatch(userId,obj);
                 Toast.makeText(MainActivity.this,"right",Toast.LENGTH_SHORT).show();
             }
 
@@ -206,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void isConnectionMatch(final String userId) {
+    private void isConnectionMatch(final String userId,cards obj) {
         DatabaseReference currentUserConnectionsDb = usersDb.child(currentUID).child("connections").child("yes").child(userId);
         currentUserConnectionsDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -217,6 +219,8 @@ public class MainActivity extends AppCompatActivity {
                     String key = FirebaseDatabase.getInstance().getReference().child("Chat").push().getKey();
                     usersDb.child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUID).child("ChatId").setValue(key);
                     usersDb.child(currentUID).child("connections").child("matches").child(dataSnapshot.getKey()).child("ChatId").setValue(key);
+                    usersDb.child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUID).child("mutualTags").updateChildren(obj.getMutualTagsMap());
+                    usersDb.child(currentUID).child("connections").child("matches").child(dataSnapshot.getKey()).child("mutualTags").updateChildren(obj.getMutualTagsMap());
                     String matchId = dataSnapshot.getKey();
                     //popactivity when matched
                     Intent i = new Intent(getApplicationContext(),PopActivity.class);
@@ -431,10 +435,12 @@ public class MainActivity extends AppCompatActivity {
     private void getTagsPreferencesUsers(DataSnapshot ds) {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB=new StringBuilder();
+        Map tagsMap = new HashMap<>();
         for (DataSnapshot dataTag : ds.child("tags").getChildren()){
             for (String tag : myTagsList){
                 if(dataTag.getKey().toString().equals(tag)){
                     mutalTagsList.add(tag);
+                    tagsMap.put(tag,true);
                     mutalTagsSB.append("#" + tag + " ");
                 }
             }
@@ -446,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
                     profileImageUrl = ds.child("profileImageUrl").getValue().toString();
                 }
             }else profileImageUrl = "default";
-            cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl,mutalTagsSB.toString());
+            cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl,mutalTagsSB.toString(),tagsMap);
             rowItems.add(item);
             arrayAdapter.notifyDataSetChanged();
         }

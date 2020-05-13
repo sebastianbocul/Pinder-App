@@ -19,16 +19,38 @@
             android:layout_height="wrap_content"
             android:text="LOC"
             android:id="@+id/locationButton"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="all"
+            android:id="@+id/allMatches"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/tagsRecyclerViewMatches"/>
 
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#50CBCBCB">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sort by: "
+        android:textSize="20sp"
+        android:padding="10sp"
+
+        />
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#50CBCBCB"
-        android:padding="5sp">
+        android:padding="0sp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -40,6 +62,6 @@
         </androidx.recyclerview.widget.RecyclerView>
 
     </androidx.core.widget.NestedScrollView>
-
+    </LinearLayout>
 
 </LinearLayout>

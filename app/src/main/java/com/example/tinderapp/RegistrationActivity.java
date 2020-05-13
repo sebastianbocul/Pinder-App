@@ -209,7 +209,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 final String repeatpassword = mRepeatPassword.getText().toString();
                 final RadioButton radioButton = (RadioButton) findViewById(selectedId);
 
-                System.out.println("STRING BUILDER ::" + stringBuilder.length()+"::" + "    "  + currencies.length);
                 if(stringBuilder.length()==0||currencies.length==0){
                     Toast.makeText(RegistrationActivity.this, "Fill tags", Toast.LENGTH_SHORT).show();
                     return;

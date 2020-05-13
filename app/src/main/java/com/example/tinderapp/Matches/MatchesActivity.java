@@ -15,6 +15,7 @@ import android.widget.Button;
 import com.example.tinderapp.LocationActivity;
 import com.example.tinderapp.MainActivity;
 import com.example.tinderapp.R;
+import com.example.tinderapp.Tags.TagsAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,7 +28,11 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MatchesActivity extends AppCompatActivity {
     private RecyclerView myRecyclerView;
@@ -38,6 +43,9 @@ public class MatchesActivity extends AppCompatActivity {
     private String lastMessage, createdByUser;
     private int matchesCount;
 
+    RecyclerView recyclerView;
+    MatchesTagsAdapter adapter;
+    ArrayList<String> myTags = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,12 +61,12 @@ public class MatchesActivity extends AppCompatActivity {
 
         mMatchesLayoutManager= new LinearLayoutManager(MatchesActivity.this);
         myRecyclerView.setLayoutManager(mMatchesLayoutManager);
-
+        recyclerView = findViewById(R.id.tagsRecyclerViewMatches);
         mMatchesAdapter = new MatchesAdapter(getDataSetMatches(),MatchesActivity.this);
         myRecyclerView.setAdapter(mMatchesAdapter);
 
         getUserMatchId();
-
+        loadTagsRecyclerView();
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,6 +75,7 @@ public class MatchesActivity extends AppCompatActivity {
         });
 
     }
+
 
     private void goToLocationActivity() {
         Intent intent = new Intent(MatchesActivity.this, LocationActivity.class);
@@ -203,5 +212,67 @@ public class MatchesActivity extends AppCompatActivity {
     private ArrayList<MatchesObject> resultMatches = new ArrayList<MatchesObject>();
     private List<MatchesObject> getDataSetMatches() {
         return resultMatches;
+    }
+
+    int iterator=0;
+
+
+    private void loadTagsRecyclerView() {
+//  super.onCreate(savedInstanceState);
+        // setContentView(R.layout.activity_main);
+        // data to populate the RecyclerView with
+        DatabaseReference matchesReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
+
+
+        LinearLayoutManager verticalLayoutManager
+                = new LinearLayoutManager(MatchesActivity.this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(verticalLayoutManager);
+
+        matchesReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    //int i = (int)dataSnapshot.getChildrenCount();
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        //myTags.add("#"+ ds.getKey());
+                        iterator--;
+                        singeMatchTags(matchesReference.child(ds.getKey()));
+
+                    }
+                }
+                else {
+                    myTags.add("No matches");
+                    adapter = new MatchesTagsAdapter(MatchesActivity.this, myTags);
+                    recyclerView.setAdapter(adapter);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void singeMatchTags(DatabaseReference  databaseReference){
+        databaseReference.child("mutualTags").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds: dataSnapshot.getChildren())
+                myTags.add(ds.getKey());
+                Set<String> set = new HashSet<>(myTags);
+                myTags.clear();
+                myTags.addAll(set);
+                if(iterator==0){
+                    adapter = new MatchesTagsAdapter(MatchesActivity.this, myTags);
+                    recyclerView.setAdapter(adapter);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
