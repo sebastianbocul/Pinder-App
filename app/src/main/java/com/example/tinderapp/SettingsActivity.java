@@ -154,11 +154,8 @@ public class SettingsActivity extends AppCompatActivity {
                     }catch (Exception e){
                         Toast.makeText(SettingsActivity.this,"Oooops something went wrong",Toast.LENGTH_SHORT).show();
                     }
-                    
+
                 }
-
-
-
             }
 
             @Override
