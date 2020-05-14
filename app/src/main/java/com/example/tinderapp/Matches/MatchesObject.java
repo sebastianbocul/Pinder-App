@@ -1,5 +1,7 @@
 package com.example.tinderapp.Matches;
 
+import java.util.ArrayList;
+
 public class MatchesObject {
     private String userId;
     private String name;
@@ -7,14 +9,16 @@ public class MatchesObject {
     private String lastMessage;
     private boolean createdByMe;
     private String sortId;
+    private ArrayList<String> mutualTags;
 
-    public MatchesObject (String userId,String name,String profileImageUrl,String lastMessage,boolean createdByMe,String sortId){
+    public MatchesObject (String userId,String name,String profileImageUrl,String lastMessage,boolean createdByMe,String sortId,  ArrayList<String> mutualTags){
         this.userId = userId;
         this.name=name;
         this.profileImageUrl=profileImageUrl;
         this.lastMessage = lastMessage;
         this.createdByMe =createdByMe;
         this.sortId = sortId;
+        this.mutualTags=mutualTags;
     }
 
 
@@ -64,6 +68,14 @@ public class MatchesObject {
 
     public void setSortId(String sortId) {
         this.sortId = sortId;
+    }
+
+    public ArrayList<String> getMutualTags() {
+        return mutualTags;
+    }
+
+    public void setMutualTags(ArrayList<String> mutualTags) {
+        this.mutualTags = mutualTags;
     }
 
 }

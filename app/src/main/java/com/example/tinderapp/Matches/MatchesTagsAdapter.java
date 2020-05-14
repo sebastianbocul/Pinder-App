@@ -51,9 +51,13 @@ public class MatchesTagsAdapter extends RecyclerView.Adapter<MatchesTagsAdapter.
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         Button myTagButton;
+        TextView sortByTextView;
+        String sortBy;
         ViewHolder(View itemView) {
             super(itemView);
             myTagButton = itemView.findViewById(R.id.itemTagButton);
+            sortByTextView=itemView.findViewById(R.id.sortByText);
+            myTagButton.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }
 
@@ -76,6 +80,7 @@ public class MatchesTagsAdapter extends RecyclerView.Adapter<MatchesTagsAdapter.
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
+
     }
 
 }

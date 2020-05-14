@@ -42,9 +42,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sort by: "
+        android:text="#all "
         android:textSize="20sp"
         android:padding="10sp"
+        android:id="@+id/sortByText"
 
         />
     <androidx.core.widget.NestedScrollView

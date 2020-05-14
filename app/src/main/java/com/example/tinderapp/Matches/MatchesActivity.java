@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.tinderapp.LocationActivity;
 import com.example.tinderapp.MainActivity;
@@ -42,10 +43,14 @@ public class MatchesActivity extends AppCompatActivity {
     private Button locationButton;
     private String lastMessage, createdByUser;
     private int matchesCount;
-
+    private String sortBy;
+    private TextView sortByTextView;
+    private Button allMatches;
     RecyclerView recyclerView;
     MatchesTagsAdapter adapter;
     ArrayList<String> myTags = new ArrayList<>();
+    private ArrayList<MatchesObject> resultMatches = new ArrayList<MatchesObject>();
+    private ArrayList<MatchesObject> oryginalMatches = new ArrayList<MatchesObject>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +58,8 @@ public class MatchesActivity extends AppCompatActivity {
 
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         locationButton = (Button) findViewById(R.id.locationButton);
-
+        allMatches=findViewById(R.id.allMatches);
+        sortByTextView = findViewById(R.id.sortByText);
 
         myRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         myRecyclerView.setNestedScrollingEnabled(false);
@@ -65,8 +71,18 @@ public class MatchesActivity extends AppCompatActivity {
         mMatchesAdapter = new MatchesAdapter(getDataSetMatches(),MatchesActivity.this);
         myRecyclerView.setAdapter(mMatchesAdapter);
 
+
+
+
         getUserMatchId();
         loadTagsRecyclerView();
+
+        allMatches.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               allMatchesFunction();
+            }
+        });
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +92,10 @@ public class MatchesActivity extends AppCompatActivity {
 
     }
 
+
+    private void allMatchesFunction() {
+        fillRecyclerViewByTags("AllButtonClicked");
+    }
 
     private void goToLocationActivity() {
         Intent intent = new Intent(MatchesActivity.this, LocationActivity.class);
@@ -169,6 +189,17 @@ public class MatchesActivity extends AppCompatActivity {
                     StringBuilder stringBuilder=new StringBuilder();
                     String s = StringUtils.left(lastMessageM, 15);
                     stringBuilder.append(s);
+
+                    ArrayList<String> mutualTags = new ArrayList<>();
+                    Map tagMap = new HashMap();
+
+                    for(DataSnapshot ds : dataSnapshot.child("connections").child("matches").child(currentUserID).child("mutualTags").getChildren()){
+                        mutualTags.add(ds.getKey());
+                    }
+                   // tagMap = dataSnapshot.child("tags").getChildren();
+
+
+
                     if(lastMessageM.length()>=15) stringBuilder.append("...");
                     String mLastMessage = stringBuilder.toString();
 
@@ -179,10 +210,12 @@ public class MatchesActivity extends AppCompatActivity {
                     if(dataSnapshot.child("profileImageUrl").getValue()!=null){
                         profileImageUrl=dataSnapshot.child("profileImageUrl").getValue().toString();
                     }
-                    
-                    MatchesObject obj = new MatchesObject(userId,name,profileImageUrl,mLastMessage,createdByMe,mSortId);
-                    resultMatches.add(obj);
 
+
+                    
+                    MatchesObject obj = new MatchesObject(userId,name,profileImageUrl,mLastMessage,createdByMe,mSortId,mutualTags);
+                    oryginalMatches.add(obj);
+                    resultMatches.add(obj);
                     if(resultMatches.size()==matchesCount){
                         Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
                         mMatchesAdapter.notifyDataSetChanged();
@@ -209,7 +242,7 @@ public class MatchesActivity extends AppCompatActivity {
         Intent startMain = new Intent(this, MainActivity.class);
         startActivity(startMain);
     }
-    private ArrayList<MatchesObject> resultMatches = new ArrayList<MatchesObject>();
+
     private List<MatchesObject> getDataSetMatches() {
         return resultMatches;
     }
@@ -232,7 +265,7 @@ public class MatchesActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    //int i = (int)dataSnapshot.getChildrenCount();
+                     iterator = (int)dataSnapshot.getChildrenCount();
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
                         //myTags.add("#"+ ds.getKey());
                         iterator--;
@@ -244,6 +277,8 @@ public class MatchesActivity extends AppCompatActivity {
                     myTags.add("No matches");
                     adapter = new MatchesTagsAdapter(MatchesActivity.this, myTags);
                     recyclerView.setAdapter(adapter);
+
+
                 }
 
             }
@@ -267,6 +302,19 @@ public class MatchesActivity extends AppCompatActivity {
                 if(iterator==0){
                     adapter = new MatchesTagsAdapter(MatchesActivity.this, myTags);
                     recyclerView.setAdapter(adapter);
+
+                    adapter.setClickListener(new MatchesTagsAdapter.ItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+                            sortBy =  myTags.get(position);
+                            sortByTextView.setText("#" + sortBy);
+                            fillRecyclerViewByTags(sortBy);
+                        }
+
+
+
+
+                    });
                 }
             }
             @Override
@@ -275,4 +323,39 @@ public class MatchesActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    public void fillRecyclerViewByTags(String tag){
+        ArrayList mutualTags = new ArrayList();
+        ArrayList<MatchesObject> bufforMatches = new ArrayList<MatchesObject>();
+
+        if(tag.equals("AllButtonClicked")){
+            sortByTextView.setText("#" + "all");
+            mMatchesAdapter = new MatchesAdapter(oryginalMatches,MatchesActivity.this);
+            myRecyclerView.setAdapter(mMatchesAdapter);
+            return;
+        }
+
+
+
+        for(MatchesObject mo : oryginalMatches){
+            mutualTags = mo.getMutualTags();
+       //     boolean contains  = mutualTags.contains(tag);
+            if(mutualTags.contains(tag)) {
+                bufforMatches.add(mo);
+            }
+            }
+
+        if(bufforMatches.size()!=0){
+            resultMatches.clear();
+            resultMatches=bufforMatches;
+            mMatchesAdapter = new MatchesAdapter(resultMatches,MatchesActivity.this);
+            myRecyclerView.setAdapter(mMatchesAdapter);
+        }
+
+
+        }
+
+
+
 }
