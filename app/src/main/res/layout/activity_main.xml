@@ -24,6 +24,13 @@
             android:text="Settings" />
 
         <Button
+            android:id="@+id/tags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:onClick="goToTags"
+            android:text="Tags" />
+        <Button
             android:id="@+id/matches"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

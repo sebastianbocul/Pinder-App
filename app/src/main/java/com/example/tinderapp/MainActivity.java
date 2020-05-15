@@ -26,6 +26,7 @@ import com.example.tinderapp.Cards.arrayAdapter;
 import com.example.tinderapp.Cards.cards;
 import com.example.tinderapp.Matches.MatchesActivity;
 import com.example.tinderapp.Tags.TagsAdapter;
+import com.example.tinderapp.Tags.TagsManagerActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     public SwipeFlingAdapterView flingContainer;
     ListView listView;
     List<cards> rowItems;
-    TagsAdapter adapter;
+    private TagsAdapter adapter;
     private ArrayList<String> myTagsList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -281,12 +282,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.child("sex").getValue()!=null){
-                if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID)&& dataSnapshot.child("sex").getValue().toString().equals(oppositeUserSex)){
-                    getTagsPreferencesUsers(dataSnapshot);
-                    for(DataSnapshot ds : dataSnapshot.getChildren()){
 
+                    if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID)&& dataSnapshot.child("sex").getValue().toString().equals(oppositeUserSex)){
+                        getTagsPreferencesUsers(dataSnapshot);
                     }
-                }
                 }
                 noMoreEditText.setText("There is no more users");
             }
@@ -459,4 +458,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void goToTags(View view) {
+        Intent intent = new Intent(MainActivity.this, TagsManagerActivity.class);
+        startActivity(intent);
+        return;
+    }
 }

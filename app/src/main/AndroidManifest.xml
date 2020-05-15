@@ -17,7 +17,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".FillInfoActivity"></activity>
+        <activity android:name=".Tags.TagsManagerActivity"></activity>
+        <activity android:name=".FillInfoActivity" />
         <activity
             android:name=".PopActivity"
             android:theme="@style/AppTheme.PopMe" />
