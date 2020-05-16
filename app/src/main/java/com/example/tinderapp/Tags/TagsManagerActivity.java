@@ -24,6 +24,10 @@ import com.crystal.crystalrangeseekbar.interfaces.OnSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar;
 import com.example.tinderapp.LoginActivity;
+import com.example.tinderapp.Matches.MatchesActivity;
+import com.example.tinderapp.Matches.MatchesAdapter;
+import com.example.tinderapp.Matches.MatchesObject;
+import com.example.tinderapp.Matches.MatchesTagsAdapter;
 import com.example.tinderapp.R;
 import com.example.tinderapp.SettingsActivity;
 import com.facebook.login.LoginManager;
@@ -59,11 +63,12 @@ public class TagsManagerActivity extends AppCompatActivity {
     private CrystalRangeSeekbar ageRangeSeeker;
     private CrystalSeekbar maxDistanceSeeker;
     private TagsManagerAdapter adapter;
-    private ArrayList<String> myTagsList = new ArrayList<>();
     private Button addTagButton;
     private EditText tagsEditText;
     private RadioGroup mRadioGroup;
     private String ageMin,ageMax,distanceMax;
+    private ArrayList<TagsManagerObject> myTagsList;
+    private RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +84,28 @@ public class TagsManagerActivity extends AppCompatActivity {
         tagsEditText = findViewById(R.id.tagsEditText);
         mRadioGroup=findViewById(R.id.radioGroup);
         // set listener
+
+        ///RecyclerView
+        myTagsList = new ArrayList<TagsManagerObject>();
+        recyclerView = findViewById(R.id.tagsRecyclerView);
+        LinearLayoutManager horizontalLayoutManager
+                = new LinearLayoutManager(TagsManagerActivity.this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(horizontalLayoutManager);
+        adapter = new TagsManagerAdapter(myTagsList);
+        recyclerView.setAdapter(adapter);
+
+
+
+//        TagsManagerObject obj = new TagsManagerObject("DUpa","Male","mAgeMin","mAgeMax","mDistance");
+//        myTagsList.add(obj);
+//        myTagsList.add(obj);
+//        myTagsList.add(obj);
+//        adapter = new TagsManagerAdapter(myTagsList);
+//        // adapter.notifyDataSetChanged();
+//        recyclerView.setAdapter(adapter);
+
+
+
         ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
             @Override
             public void valueChanged(Number minValue, Number maxValue) {
@@ -105,6 +132,20 @@ public class TagsManagerActivity extends AppCompatActivity {
         });
 
 
+        adapter.setOnItemClickListener(new TagsManagerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+
+            }
+
+            @Override
+            public void onDeleteClick(int position) {
+                System.out.println("Activity pos: " + position);
+                removeItem(position);
+            }
+        });
+     //   adapter.setOnItemClickListener(this);
+
     }
 
     private void addTagButtonFunction() {
@@ -125,59 +166,33 @@ public class TagsManagerActivity extends AppCompatActivity {
         String gender= radioButton.getText().toString();
         String mAgeMax = ageMax;
         String mAgeMin=ageMin;
+        String mDistance=distanceMax;
         Map tag = new HashMap();
         tag.put("name",tagName);
         tag.put("ageMax",mAgeMax);
         tag.put("ageMin",mAgeMin);
         tag.put("lookForGender",gender);
-        System.out.println("ABBBBBBBBBBBBBBBB   " +  tag);
+        tag.put("distanceMax",mDistance);
+        TagsManagerObject obj = new TagsManagerObject(tagName,gender,mAgeMin,mAgeMax,mDistance);
+        myTagsList.add(obj);
+        System.out.println("myTagsList:   " + myTagsList);
+       // adapter = new TagsManagerAdapter(myTagsList);
+        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(adapter);
 
 
-    }
-
-
-    public void logoutUser() {
-        mAuth.signOut();
-        LoginManager.getInstance().logOut();
-        Intent intent = new Intent(TagsManagerActivity.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
-        return;
-    }
-
-
-
-    private void deleteDatabaseAndStorage(){
-
-        filePath = FirebaseStorage.getInstance().getReference().child("images").child(currentUserId);
-        StorageReference storageRef = filePath;
-        // Delete the userStorage
-        storageRef.listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-                        for (StorageReference item : listResult.getItems()) {
-                            // All the items under listRef.
-                            item.delete();
-                        }
-                        logoutUser();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Uh-oh, an error occurred!
-                    }
-                });
-
+       // adapter = new MatchesTagsAdapter(MatchesActivity.this, myTags);
+       // recyclerView.setAdapter(adapter);
+      //  myTagsList.put(tag);
 
     }
+
     private void fillTagsAdapter() {
         //  super.onCreate(savedInstanceState);
         // setContentView(R.layout.activity_main);
         // data to populate the RecyclerView with
 
-
+ /*
 
 
 
@@ -193,7 +208,7 @@ public class TagsManagerActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()){
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
                         myTags.add("#"+ ds.getKey());
-                        myTagsList.add(ds.getKey());
+                        myTagsList.put(ds.getKey());
 
                     }
                     adapter = new TagsManagerAdapter(TagsManagerActivity.this, myTagsList);
@@ -228,9 +243,16 @@ public class TagsManagerActivity extends AppCompatActivity {
             }
         });
 
-
+*/
 
     }
+    /*
+    public void removeItem(int position) {
+        myTagsList.remove(position);
+        adapter.notifyItemRemoved(position);
+        //adapter = new TagsManagerAdapter(TagsManagerActivity.this, myTagsList);
+        //recyclerView.setAdapter(adapter);
+    }*/
     public void removeItem(int position) {
         myTagsList.remove(position);
         adapter.notifyItemRemoved(position);

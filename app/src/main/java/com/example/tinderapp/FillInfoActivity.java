@@ -25,6 +25,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tinderapp.Tags.TagsManagerActivity;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -60,11 +61,11 @@ public class FillInfoActivity extends AppCompatActivity {
     private EditText date;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private TextView title;
-    private TextView tagsTextView;
-    private EditText tagsEditText;
+  //  private TextView tagsTextView;
+ //   private EditText tagsEditText;
     private int dd,mm,yyyy;
-    private String[] currencies;
-    private StringBuilder stringBuilder=null;
+    //private String[] currencies;
+    //private StringBuilder stringBuilder=null;
     // private  RadioButton radioButton;
 
 
@@ -72,14 +73,14 @@ public class FillInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fill_info);
-        stringBuilder = new StringBuilder();
-        currencies = new String[0];
+        //stringBuilder = new StringBuilder();
+        //currencies = new String[0];
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         title=findViewById(R.id.title);
 
         date = (EditText)findViewById(R.id.date);
-        tagsEditText=findViewById(R.id.tagsEditText);
-        tagsTextView=findViewById(R.id.tagsTextView);
+       // tagsEditText=findViewById(R.id.tagsEditText);
+        //tagsTextView=findViewById(R.id.tagsTextView);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -94,7 +95,7 @@ public class FillInfoActivity extends AppCompatActivity {
         mName.setText(getFirstName(user.getDisplayName()));
 
 
-
+/*
         tagsEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -123,7 +124,7 @@ public class FillInfoActivity extends AppCompatActivity {
                     tagsEditText.getText().delete(tagsEditText.getText().length() - 1, tagsEditText.getText().length());
                 }
             }
-        });
+        });*/
 
         date.addTextChangedListener(new TextWatcher() {
             private String current = "";
@@ -214,11 +215,11 @@ public class FillInfoActivity extends AppCompatActivity {
                 int selectedId = mRadioGroup.getCheckedRadioButtonId();
                 final String name = mName.getText().toString();
                 final RadioButton radioButton = (RadioButton) findViewById(selectedId);
-
+ /*
                 if(stringBuilder.length()==0||currencies.length==0){
                     Toast.makeText(FillInfoActivity.this, "Fill tags", Toast.LENGTH_SHORT).show();
                     return;
-                }
+                }*/
 
                 if(!dateValid==true) {
                     Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
@@ -294,7 +295,7 @@ public class FillInfoActivity extends AppCompatActivity {
     }
 
     private void changeActivty(){
-        Intent intent = new Intent(FillInfoActivity.this, MainActivity.class);
+        Intent intent = new Intent(FillInfoActivity.this, TagsManagerActivity.class);
         startActivity(intent);
         finish();
         return;
@@ -310,17 +311,18 @@ public class FillInfoActivity extends AppCompatActivity {
         String name = mName.getText().toString();
         String gender = radioButton.getText().toString();
         String dateOfBirth = date.getText().toString();
-        Map tagsMap = new HashMap<>();
+       // Map tagsMap = new HashMap<>();
+        /*
         for(String str:currencies){
             if(!str.trim().isEmpty()){
                 tagsMap.put(str.trim(),true);
             }
-        }
+        }*/
         Map userInfo = new HashMap<>();
         userInfo.put("name", name);
         userInfo.put("sex",gender);
         userInfo.put("dateOfBirth",dateOfBirth);
-        userInfo.put("tags",tagsMap);
+        //userInfo.put("tags",tagsMap);
         userInfo.put("profileImageUrl", "default");
         mUserDatabase.updateChildren(userInfo);
         Toast.makeText(FillInfoActivity.this,"Register successful!",Toast.LENGTH_SHORT).show();

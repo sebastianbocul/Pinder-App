@@ -4,98 +4,90 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.tinderapp.Matches.MatchesTagsAdapter;
 import com.example.tinderapp.R;
+import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
+import java.util.ArrayList;
 import java.util.List;
+public class TagsManagerAdapter extends RecyclerView.Adapter<TagsManagerAdapter.ExampleViewHolder> {
+    private ArrayList<TagsManagerObject> mTagsManagerObject;
+    private OnItemClickListener mListener;
 
-
-public class TagsManagerAdapter extends RecyclerView.Adapter<TagsManagerAdapter.ViewHolder>{
-
-    private List<String> mData;
     private LayoutInflater mInflater;
-    private ItemClickListener mClickListener;
-    private ImageView mDeleteImage;
-   // private MatchesTagsAdapter.ItemClickListener mClickListener;
-
-    // data is passed into the constructor
-    public TagsManagerAdapter(Context context, List<String> data) {
-        this.mInflater = LayoutInflater.from(context);
-        this.mData = data;
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+        void onDeleteClick(int position);
     }
-
-    // inflates the row layout from xml when needed
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.item_tags_manager, parent, false);
-        return new ViewHolder(view);
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
     }
+    public static class ExampleViewHolder extends RecyclerView.ViewHolder {
+        private TextView tagName,gender,tagAge,distance;
+        private ImageView mDeleteImage;
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String tag = mData.get(position);
-        holder.myTextView.setText(tag);
-    }
-    // binds the data to the TextView in each row
-
-    // total number of rows
-    @Override
-    public int getItemCount() {
-        return mData.size();
-    }
-
-    public void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
-    }
-
-
-    // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
-        ViewHolder(View itemView) {
+        public ExampleViewHolder(View itemView, final OnItemClickListener listener) {
             super(itemView);
-            myTextView = itemView.findViewById(R.id.tag);
+            tagName= itemView.findViewById(R.id.tag);
+            gender = itemView.findViewById(R.id.tag_gender);
+            distance = itemView.findViewById(R.id.tag_distance);
+            tagAge = itemView.findViewById(R.id.tag_age);
             mDeleteImage = itemView.findViewById(R.id.tag_delete);
-            itemView.setOnClickListener(this);
 
-
-
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
             mDeleteImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if(position!=RecyclerView.NO_POSITION){
-                        mClickListener.onDeleteClick(position);
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        System.out.println("Poosition");
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onDeleteClick(position);
+                        }
                     }
                 }
             });
         }
-
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
-        }
-
-
     }
-
-    // convenience method for getting data at click position
-    String getItem(int id) {
-        return mData.get(id);
+    public TagsManagerAdapter(ArrayList<TagsManagerObject> exampleList) {
+        mTagsManagerObject = exampleList;
     }
-
-    // allows clicks events to be caught
-
-    // parent activity will implement this method to respond to click events
-    public interface ItemClickListener {
-        void onItemClick(View view, int position);
-        void onDeleteClick(int position);
+    @Override
+    public ExampleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tags_manager, parent, false);
+        ExampleViewHolder evh = new ExampleViewHolder(v, mListener);
+        return evh;
     }
+    @Override
+    public void onBindViewHolder(ExampleViewHolder holder, int position) {
+        TagsManagerObject currentItem = mTagsManagerObject.get(position);
+//        holder.mImageView.setImageResource(currentItem.get());
+//        holder.mTextView1.setText(currentItem.getText1());
+//        holder.mTextView2.setText(currentItem.getText2());
+//
 
+        holder.tagName.setText("#"+currentItem.getTagName());
+        holder.gender.setText(currentItem.getGender());
+        holder.distance.setText(currentItem.getmDistance());
+        holder.tagAge.setText(currentItem.getmAgeMin() + "-" + mTagsManagerObject.get(position).getmAgeMax());
+    }
+    @Override
+    public int getItemCount() {
+        return mTagsManagerObject.size();
+    }
 }
