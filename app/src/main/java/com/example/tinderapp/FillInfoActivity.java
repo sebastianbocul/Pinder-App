@@ -61,70 +61,23 @@ public class FillInfoActivity extends AppCompatActivity {
     private EditText date;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private TextView title;
-  //  private TextView tagsTextView;
- //   private EditText tagsEditText;
     private int dd,mm,yyyy;
-    //private String[] currencies;
-    //private StringBuilder stringBuilder=null;
-    // private  RadioButton radioButton;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fill_info);
-        //stringBuilder = new StringBuilder();
-        //currencies = new String[0];
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         title=findViewById(R.id.title);
-
         date = (EditText)findViewById(R.id.date);
-       // tagsEditText=findViewById(R.id.tagsEditText);
-        //tagsTextView=findViewById(R.id.tagsTextView);
-
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-
         mRegister = (Button) findViewById(R.id.register);
         mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         mName = (EditText) findViewById(R.id.name);
-       // int selectedId = mRadioGroup.getCheckedRadioButtonId();
-       // radioButton = (RadioButton) findViewById(selectedId);
 
         mName.setText(getFirstName(user.getDisplayName()));
-
-
-/*
-        tagsEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String lineOfCurrencies = tagsEditText.getText().toString().toLowerCase();
-                currencies = new String[0];
-                currencies = lineOfCurrencies.split("#");
-                stringBuilder.setLength(0);
-                for(String str:currencies){
-                    if(!str.trim().isEmpty()){
-
-                        stringBuilder.append("#"+ str.trim() +"  ");
-                    }
-
-                }
-                tagsTextView.setText(stringBuilder);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (null != tagsEditText.getLayout() && tagsEditText.getLayout().getLineCount() > 5) {
-                    tagsEditText.getText().delete(tagsEditText.getText().length() - 1, tagsEditText.getText().length());
-                }
-            }
-        });*/
 
         date.addTextChangedListener(new TextWatcher() {
             private String current = "";
@@ -214,12 +167,6 @@ public class FillInfoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int selectedId = mRadioGroup.getCheckedRadioButtonId();
                 final String name = mName.getText().toString();
-                final RadioButton radioButton = (RadioButton) findViewById(selectedId);
- /*
-                if(stringBuilder.length()==0||currencies.length==0){
-                    Toast.makeText(FillInfoActivity.this, "Fill tags", Toast.LENGTH_SHORT).show();
-                    return;
-                }*/
 
                 if(!dateValid==true) {
                     Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
@@ -295,7 +242,7 @@ public class FillInfoActivity extends AppCompatActivity {
     }
 
     private void changeActivty(){
-        Intent intent = new Intent(FillInfoActivity.this, TagsManagerActivity.class);
+        Intent intent = new Intent(FillInfoActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
         return;
@@ -311,18 +258,24 @@ public class FillInfoActivity extends AppCompatActivity {
         String name = mName.getText().toString();
         String gender = radioButton.getText().toString();
         String dateOfBirth = date.getText().toString();
-       // Map tagsMap = new HashMap<>();
-        /*
-        for(String str:currencies){
-            if(!str.trim().isEmpty()){
-                tagsMap.put(str.trim(),true);
-            }
-        }*/
+
+        Map tagsMap = new HashMap<>();
+        Map tagInfo = new HashMap<>();
         Map userInfo = new HashMap<>();
+
+        tagInfo.put("minAge","18");
+        tagInfo.put("maxAge","99");
+        tagInfo.put("maxDistance","100");
+        if(radioButton.getText().toString()=="Male"){
+            tagInfo.put("gender","Female");
+        }
+        else  tagInfo.put("gender","Male");
+
+        tagsMap.put("default",tagInfo);
         userInfo.put("name", name);
         userInfo.put("sex",gender);
         userInfo.put("dateOfBirth",dateOfBirth);
-        //userInfo.put("tags",tagsMap);
+        userInfo.put("tags",tagsMap);
         userInfo.put("profileImageUrl", "default");
         mUserDatabase.updateChildren(userInfo);
         Toast.makeText(FillInfoActivity.this,"Register successful!",Toast.LENGTH_SHORT).show();

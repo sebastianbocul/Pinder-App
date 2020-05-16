@@ -113,9 +113,9 @@ public class SettingsActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d("del", "User account deleted.");
                             Toast.makeText(SettingsActivity.this,"User account deleted.",Toast.LENGTH_LONG).show();
-                           // deleteDatabaseAndStorage();
+                            deleteDatabaseAndStorage();
                             deleteMatches();
-                            //logoutUser();
+                           // logoutUser();
 
                         } else {
                         Log.w("del","Something is wrong!");
@@ -138,7 +138,8 @@ public class SettingsActivity extends AppCompatActivity {
     private void deleteMatches() {
 
         DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
-
+        DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+        mUserDatabase.removeValue();
         users.child(userId).child("connections").child("matches").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -146,8 +147,7 @@ public class SettingsActivity extends AppCompatActivity {
                     try {
                         users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
                         users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
-                        DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-                        mUserDatabase.removeValue();
+
 
                         deleteDatabaseAndStorage();
 

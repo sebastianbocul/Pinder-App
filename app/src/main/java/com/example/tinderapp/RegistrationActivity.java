@@ -41,11 +41,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText date;
     private boolean dateValid = false;
     private TextView title;
-  //  private TextView tagsTextView;
-    //private EditText tagsEditText;
     private int dd,mm,yyyy;
-   // private String[] currencies;
-    //private StringBuilder stringBuilder=null;
 
 
     @Override
@@ -59,7 +55,7 @@ public class RegistrationActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null) {
-                    Intent intent = new Intent(RegistrationActivity.this, TagsManagerActivity.class);
+                    Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                     return;
@@ -67,8 +63,6 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         };
 
-       // stringBuilder = new StringBuilder();
-       // currencies = new String[0];
         mRegister = (Button) findViewById(R.id.register);
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
@@ -76,43 +70,10 @@ public class RegistrationActivity extends AppCompatActivity {
         mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         title = findViewById(R.id.title);
         date = (EditText) findViewById(R.id.date);
-        //tagsEditText=findViewById(R.id.tagsEditText);
-      //  tagsTextView=findViewById(R.id.tagsTextView);
         mAuth = FirebaseAuth.getInstance();
         mName = (EditText) findViewById(R.id.name);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-
-       /* tagsEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String lineOfCurrencies = tagsEditText.getText().toString().toLowerCase();
-                currencies = new String[0];
-                currencies = lineOfCurrencies.split("#");
-                stringBuilder.setLength(0);
-                for(String str:currencies){
-                    if(!str.trim().isEmpty()){
-
-                        stringBuilder.append("#"+ str.trim() +"  ");
-                    }
-
-                }
-                tagsTextView.setText(stringBuilder);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (null != tagsEditText.getLayout() && tagsEditText.getLayout().getLineCount() > 5) {
-                    tagsEditText.getText().delete(tagsEditText.getText().length() - 1, tagsEditText.getText().length());
-                }
-            }
-        });
-*/
 
         date.addTextChangedListener(new TextWatcher() {
             private String current = "";
@@ -209,12 +170,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 final String name = mName.getText().toString();
                 final String repeatpassword = mRepeatPassword.getText().toString();
                 final RadioButton radioButton = (RadioButton) findViewById(selectedId);
-
-               /*  if(stringBuilder.length()==0||currencies.length==0){
-                    Toast.makeText(RegistrationActivity.this, "Fill tags", Toast.LENGTH_SHORT).show();
-                    return;
-                }*/
-
                 if(!dateValid==true) {
                     Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
                     return;
@@ -246,18 +201,25 @@ public class RegistrationActivity extends AppCompatActivity {
                                 String userId = mAuth.getCurrentUser().getUid();
                                 DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
                                 String dateOfBirth = date.getText().toString();
+
+                                Map tagsMap = new HashMap<>();
+                                Map tagInfo = new HashMap<>();
                                 Map userInfo = new HashMap<>();
-                               // Map tagsMap = new HashMap<>();
-                              /*  for(String str:currencies){
-                                    if(!str.trim().isEmpty()){
-                                        tagsMap.put(str.trim(),true);
-                                    }
-                                }*/
+
+                                tagInfo.put("minAge","18");
+                                tagInfo.put("maxAge","99");
+                                tagInfo.put("maxDistance","100");
+                                if(radioButton.getText().toString()=="Male"){
+                                    tagInfo.put("gender","Female");
+                                }
+                                else  tagInfo.put("gender","Male");
+                                tagsMap.put("default",tagInfo);
+
                                 userInfo.put("name", name);
                                 userInfo.put("sex", radioButton.getText().toString());
                                 userInfo.put("profileImageUrl", "default");
                                 userInfo.put("dateOfBirth",dateOfBirth);
-                                //userInfo.put("tags",tagsMap);
+                                userInfo.put("tags",tagsMap);
                                 currentUserDb.updateChildren(userInfo);
                                 Toast.makeText(RegistrationActivity.this,"Register successful!",Toast.LENGTH_SHORT).show();
                             }
@@ -283,6 +245,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
     }

@@ -251,9 +251,7 @@ public class MatchesActivity extends AppCompatActivity {
 
 
     private void loadTagsRecyclerView() {
-//  super.onCreate(savedInstanceState);
-        // setContentView(R.layout.activity_main);
-        // data to populate the RecyclerView with
+
         DatabaseReference matchesReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
 
 

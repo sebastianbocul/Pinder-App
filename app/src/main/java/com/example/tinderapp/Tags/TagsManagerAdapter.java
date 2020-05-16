@@ -76,11 +76,6 @@ public class TagsManagerAdapter extends RecyclerView.Adapter<TagsManagerAdapter.
     @Override
     public void onBindViewHolder(ExampleViewHolder holder, int position) {
         TagsManagerObject currentItem = mTagsManagerObject.get(position);
-//        holder.mImageView.setImageResource(currentItem.get());
-//        holder.mTextView1.setText(currentItem.getText1());
-//        holder.mTextView2.setText(currentItem.getText2());
-//
-
         holder.tagName.setText("#"+currentItem.getTagName());
         holder.gender.setText(currentItem.getGender());
         holder.distance.setText(currentItem.getmDistance());

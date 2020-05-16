@@ -23,7 +23,9 @@ import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.interfaces.OnSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar;
+import com.example.tinderapp.FillInfoActivity;
 import com.example.tinderapp.LoginActivity;
+import com.example.tinderapp.MainActivity;
 import com.example.tinderapp.Matches.MatchesActivity;
 import com.example.tinderapp.Matches.MatchesAdapter;
 import com.example.tinderapp.Matches.MatchesObject;
@@ -96,16 +98,6 @@ public class TagsManagerActivity extends AppCompatActivity {
 
 
 
-//        TagsManagerObject obj = new TagsManagerObject("DUpa","Male","mAgeMin","mAgeMax","mDistance");
-//        myTagsList.add(obj);
-//        myTagsList.add(obj);
-//        myTagsList.add(obj);
-//        adapter = new TagsManagerAdapter(myTagsList);
-//        // adapter.notifyDataSetChanged();
-//        recyclerView.setAdapter(adapter);
-
-
-
         ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
             @Override
             public void valueChanged(Number minValue, Number maxValue) {
@@ -144,7 +136,7 @@ public class TagsManagerActivity extends AppCompatActivity {
                 removeItem(position);
             }
         });
-     //   adapter.setOnItemClickListener(this);
+
 
     }
 
@@ -160,41 +152,29 @@ public class TagsManagerActivity extends AppCompatActivity {
             return;
         }
 
+        for(TagsManagerObject tmo:myTagsList){
+            if(tmo.getTagName().equals(tagsEditText.getText().toString().toLowerCase())){
+                Toast.makeText(TagsManagerActivity.this, "Duplicate tag", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
         int selectedId = mRadioGroup.getCheckedRadioButtonId();
         RadioButton radioButton = (RadioButton) findViewById(selectedId);
-        String tagName = tagsEditText.getText().toString();
+        String tagName = tagsEditText.getText().toString().toLowerCase();
         String gender= radioButton.getText().toString();
         String mAgeMax = ageMax;
         String mAgeMin=ageMin;
         String mDistance=distanceMax;
-        Map tag = new HashMap();
-        tag.put("name",tagName);
-        tag.put("ageMax",mAgeMax);
-        tag.put("ageMin",mAgeMin);
-        tag.put("lookForGender",gender);
-        tag.put("distanceMax",mDistance);
         TagsManagerObject obj = new TagsManagerObject(tagName,gender,mAgeMin,mAgeMax,mDistance);
         myTagsList.add(obj);
         System.out.println("myTagsList:   " + myTagsList);
-       // adapter = new TagsManagerAdapter(myTagsList);
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
-
-
-       // adapter = new MatchesTagsAdapter(MatchesActivity.this, myTags);
-       // recyclerView.setAdapter(adapter);
-      //  myTagsList.put(tag);
 
     }
 
     private void fillTagsAdapter() {
-        //  super.onCreate(savedInstanceState);
-        // setContentView(R.layout.activity_main);
-        // data to populate the RecyclerView with
-
- /*
-
-
 
         DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserId).child("tags");
         ArrayList<String> myTags = new ArrayList<>();
@@ -205,35 +185,29 @@ public class TagsManagerActivity extends AppCompatActivity {
         ds.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    for(DataSnapshot ds : dataSnapshot.getChildren()){
-                        myTags.add("#"+ ds.getKey());
-                        myTagsList.put(ds.getKey());
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        System.out.println("DDDDDDDDD" + ds);
+                        String tagName = ds.getKey();
+                        String gender = ds.child("gender").getValue().toString();
+                        String mAgeMax = ds.child("maxAge").getValue().toString();
+                        String mAgeMin = ds.child("minAge").getValue().toString();
+                        String mDistance = ds.child("maxDistance").getValue().toString();
+                        TagsManagerObject obj = new TagsManagerObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
+                        myTagsList.add(obj);
+                        adapter.notifyDataSetChanged();
+                        recyclerView.setAdapter(adapter);
 
                     }
-                    adapter = new TagsManagerAdapter(TagsManagerActivity.this, myTagsList);
-                    recyclerView.setAdapter(adapter);
-                    adapter.setClickListener(new TagsManagerAdapter.ItemClickListener() {
-                        @Override
-                        public void onItemClick(View view, int position) {
-
-                        }
-
-                        @Override
-                        public void onDeleteClick(int position) {
-                            System.out.println("AAABBSBA " +position);
-                            removeItem(position);
-                        }
 
 
-                    });
-
-                }
-                else {
-                    myTags.add("Add tags in options first!");
-                    adapter = new TagsManagerAdapter(TagsManagerActivity.this, myTagsList);
+                } else {
+                    TagsManagerObject obj = new TagsManagerObject("default", "default", "default", "default", "default");
+                    myTagsList.add(obj);
+                    adapter.notifyDataSetChanged();
                     recyclerView.setAdapter(adapter);
                 }
+
 
             }
 
@@ -242,20 +216,44 @@ public class TagsManagerActivity extends AppCompatActivity {
 
             }
         });
-
-*/
-
     }
-    /*
+
     public void removeItem(int position) {
         myTagsList.remove(position);
         adapter.notifyItemRemoved(position);
-        //adapter = new TagsManagerAdapter(TagsManagerActivity.this, myTagsList);
-        //recyclerView.setAdapter(adapter);
-    }*/
-    public void removeItem(int position) {
-        myTagsList.remove(position);
-        adapter.notifyItemRemoved(position);
+    }
+    @Override
+    public void onBackPressed() {
+        if(myTagsList.size()==0){
+            Toast.makeText(TagsManagerActivity.this,"Add at least one tag!",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        updateDb();
+        Intent startMain = new Intent(this, MainActivity.class);
+        startActivity(startMain);
+    }
+
+
+    private void updateDb() {
+
+        String userId = mAuth.getCurrentUser().getUid();
+        DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+        Map userInfo = new HashMap<>();
+        Map tagsMap = new HashMap<>();
+        for (TagsManagerObject tgo:myTagsList){
+            Map tagInfo = new HashMap<>();
+            tagInfo.put("minAge",tgo.getmAgeMin());
+            tagInfo.put("maxAge",tgo.getmAgeMax());
+            tagInfo.put("maxDistance",tgo.getmDistance());
+            tagInfo.put("gender",tgo.getGender());
+            tagsMap.put(tgo.getTagName(),tagInfo);
+
+        }
+        userInfo.put("tags",tagsMap);
+
+        mUserDatabase.updateChildren(userInfo);
     }
 
 }
