@@ -318,7 +318,8 @@ public class ProfileActivity extends AppCompatActivity {
                         arrayList.remove(0);
                     }*/
                 }
-                mImages=arrayList;ImageAdapter adapter = new ImageAdapter(ProfileActivity.this,mImages);
+                mImages=arrayList;
+                ImageAdapter adapter = new ImageAdapter(ProfileActivity.this,mImages);
                 viewPager.setAdapter(adapter);
 
                 return;

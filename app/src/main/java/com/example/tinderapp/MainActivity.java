@@ -2,6 +2,7 @@ package com.example.tinderapp;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -27,6 +29,7 @@ import com.example.tinderapp.Cards.cards;
 import com.example.tinderapp.Matches.MatchesActivity;
 import com.example.tinderapp.Tags.TagsAdapter;
 import com.example.tinderapp.Tags.TagsManagerActivity;
+import com.example.tinderapp.Tags.TagsManagerObject;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,7 +45,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -65,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     List<cards> rowItems;
     private TagsAdapter adapter;
-    private ArrayList<String> myTagsList = new ArrayList<>();
+    private ArrayList<TagsManagerObject> myTagsList = new ArrayList<>();
+    private double myLatitude,myLongitude;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         currentUID = mAuth.getCurrentUser().getUid();
 
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
-        checkUserSex();
+
         noMoreEditText = (TextView) findViewById(R.id.noMore);
         rowItems = new ArrayList<cards>();
         arrayAdapter = new arrayAdapter(this, R.layout.item,rowItems );
@@ -95,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
         flingContainer.setAdapter(arrayAdapter);
 
 
+      //  getUsersFromDb();
         fillTagsAdapter();
 
 
@@ -237,88 +247,86 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+//
+//    private String userSex;
+//    private String oppositeUserSex;
+//    public void checkUserSex(){
+//        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        DatabaseReference userDb = usersDb.child(user.getUid());
+//        userDb.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//            if(dataSnapshot.getKey().equals(user.getUid())){
+//                if(dataSnapshot.exists()){
+//                    if(dataSnapshot.child("sex").getValue()!=null){
+//                        userSex=dataSnapshot.child("sex").getValue().toString();
+//                        switch (userSex){
+//                            case "Male":
+//                                oppositeUserSex="Female";
+//                                break;
+//                            case "Female":
+//                                oppositeUserSex="Male";
+//                                break;
+//                             }
+//                              getOppositeSexUsers();
+//                         }
+//                    else {
+//                        noMoreEditText.setText("There is no more users");
+//                    }
+//                    }
+//
+//                }
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
-    private String userSex;
-    private String oppositeUserSex;
-    public void checkUserSex(){
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-
-        DatabaseReference userDb = usersDb.child(user.getUid());
-        userDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            if(dataSnapshot.getKey().equals(user.getUid())){
-                if(dataSnapshot.exists()){
-                    if(dataSnapshot.child("sex").getValue()!=null){
-                        userSex=dataSnapshot.child("sex").getValue().toString();
-                        switch (userSex){
-                            case "Male":
-                                oppositeUserSex="Female";
-                                break;
-                            case "Female":
-                                oppositeUserSex="Male";
-                                break;
-                             }
-                              getOppositeSexUsers();
-                         }
-                    else {
-                        noMoreEditText.setText("There is no more users");
-                    }
-                    }
-
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-
-    public void getOppositeSexUsers(){
-        usersDb.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.child("sex").getValue()!=null){
-
-                    if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID)&& dataSnapshot.child("sex").getValue().toString().equals(oppositeUserSex)){
-                        getTagsPreferencesUsers(dataSnapshot);
-                    }
-                }
-                noMoreEditText.setText("There is no more users");
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
+//
+//    public void getOppositeSexUsers(){
+//        usersDb.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                if(dataSnapshot.child("sex").getValue()!=null){
+//
+//                    if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) && dataSnapshot.child("sex").getValue().toString().equals(oppositeUserSex)){
+//                        getTagsPreferencesUsers(dataSnapshot);
+//                    }
+//                }
+//                noMoreEditText.setText("There is no more users");
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
+//
 
 
     public void goToProfile(View view) {
 
-        checkUserSex();
+   //     checkUserSex();
         Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-        intent.putExtra("userSex", userSex);
+   //     intent.putExtra("userSex", userSex);
         startActivity(intent);
         return;
     }
@@ -352,6 +360,8 @@ public class MainActivity extends AppCompatActivity {
 
                         myRef.child("longitude").setValue(addresses.get(0).getLongitude());
                         myRef.child("latitude").setValue(addresses.get(0).getLatitude());
+                        myLongitude=addresses.get(0).getLongitude();
+                        myLatitude= addresses.get(0).getLatitude();
 
                         if(addresses.get(0).getCountryName()!=null){
                             myRef.child("countryName").setValue(addresses.get(0).getCountryName());
@@ -398,7 +408,16 @@ public class MainActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()){
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
                         myTags.add("#"+ ds.getKey());
-                        myTagsList.add(ds.getKey());
+                      //  myTagsList.add(ds.getKey());
+                        String tagName = ds.getKey().toLowerCase();
+                        String gender = ds.child("gender").getValue().toString();
+                        String mAgeMax = ds.child("maxAge").getValue().toString();
+                        String mAgeMin = ds.child("minAge").getValue().toString();
+                        String mDistance = ds.child("maxDistance").getValue().toString();
+                        TagsManagerObject obj = new TagsManagerObject(tagName,gender,mAgeMin,mAgeMax,mDistance);
+                        myTagsList.add(obj);
+
+
                     }
                     adapter = new TagsAdapter(MainActivity.this, myTags);
                     recyclerView.setAdapter(adapter);
@@ -431,16 +450,88 @@ public class MainActivity extends AppCompatActivity {
         startActivity(startMain);
     }
 
+    private void getUsersFromDb(){
+        usersDb.addChildEventListener(new ChildEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if(dataSnapshot.child("sex").getValue()!=null){
+
+                    if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) &&!dataSnapshot.getKey().equals(currentUID)){
+                        getTagsPreferencesUsers(dataSnapshot);
+                    }
+                }
+                noMoreEditText.setText("There is no more users");
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void getTagsPreferencesUsers(DataSnapshot ds) {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB=new StringBuilder();
         Map tagsMap = new HashMap<>();
+     //   System.out.println("NAME: " + ds.child("name").getValue().toString()+"  Birth:" + ds.child("dateOfBirth").getValue().toString());
+        int age=stringDateToAge(ds.child("dateOfBirth").getValue().toString());
+     //   System.out.println("AGGGGGGEEEE " + age);
         for (DataSnapshot dataTag : ds.child("tags").getChildren()){
-            for (String tag : myTagsList){
-                if(dataTag.getKey().toString().equals(tag)){
-                    mutalTagsList.add(tag);
-                    tagsMap.put(tag,true);
-                    mutalTagsSB.append("#" + tag + " ");
+            for (TagsManagerObject tag : myTagsList){
+                ///VALIDATING MY PREFERENCES
+                //comparing tags
+                if(dataTag.getKey().toString().equals(tag.getTagName())){
+                    //validating gender
+                    if(tag.getGender().equals(ds.child("sex").getValue().toString())||tag.getGender().equals("Both")){
+                       //validating age with minAge and maxAge
+//                        System.out.println("NAME: " + ds.child("name").getValue().toString()+"  Birth:" + ds.child("dateOfBirth").getValue().toString());
+//                        System.out.println("AGGGGGGEEEE " + age);
+//                        System.out.println("Integer.parseInt(tag.getmAgeMin()): "+ Integer.parseInt(tag.getmAgeMin()));
+//                        System.out.println("Integer.parseInt(tag.getmAgeMax()): "+ Integer.parseInt(tag.getmAgeMax()));
+//                        System.out.println("age: "+ age);
+                        if(Integer.parseInt(tag.getmAgeMin())<=age && Integer.parseInt(tag.getmAgeMax())>=age){
+                            //validating distance
+                            double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
+                            double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
+                            double distance = distance(myLatitude,myLongitude,latitude,longitude);
+                            if(Integer.parseInt(tag.getmDistance())>=distance){
+                                ///CAN VALIDATE OTHER USER PREFERENCES
+//                                System.out.println("DISTANCE : " + distance);
+                                mutalTagsList.add(tag.getTagName());
+                                tagsMap.put(tag.getTagName(),true);
+                                mutalTagsSB.append("#" + tag.getTagName() + " ");
+                            }
+
+
+
+                        }
+
+
+                    }
+
+
+
                 }
             }
         }
@@ -451,6 +542,7 @@ public class MainActivity extends AppCompatActivity {
                     profileImageUrl = ds.child("profileImageUrl").getValue().toString();
                 }
             }else profileImageUrl = "default";
+
             cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl,mutalTagsSB.toString(),tagsMap);
             rowItems.add(item);
             arrayAdapter.notifyDataSetChanged();
@@ -462,5 +554,54 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, TagsManagerActivity.class);
         startActivity(intent);
         return;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getUsersFromDb();
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public int stringDateToAge(String strDate){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+        LocalDate date = LocalDate.parse(strDate, formatter);
+        Date c = Calendar.getInstance().getTime();
+        LocalDate today = LocalDate.now();
+
+        return calculateAge(date,today);
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static int calculateAge(LocalDate birthDate, LocalDate currentDate) {
+
+        if ((birthDate != null) && (currentDate != null)) {
+            return Period.between(birthDate, currentDate).getYears();
+        } else {
+            return 0;
+        }
+}
+
+    private double distance(double lat1, double lon1, double lat2, double lon2) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1))
+                * Math.sin(deg2rad(lat2))
+                + Math.cos(deg2rad(lat1))
+                * Math.cos(deg2rad(lat2))
+                * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515* 1.609344;
+        return (dist);
+    }
+
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private double rad2deg(double rad) {
+        return (rad * 180.0 / Math.PI);
     }
 }
