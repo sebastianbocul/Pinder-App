@@ -278,6 +278,9 @@ public class FillInfoActivity extends AppCompatActivity {
         userInfo.put("tags",tagsMap);
         userInfo.put("profileImageUrl", "default");
         mUserDatabase.updateChildren(userInfo);
+
+        DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
+        tags.child("default").child(userId).setValue(true);
         Toast.makeText(FillInfoActivity.this,"Register successful!",Toast.LENGTH_SHORT).show();
     }
 

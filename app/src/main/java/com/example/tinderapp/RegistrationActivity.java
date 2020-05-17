@@ -221,6 +221,11 @@ public class RegistrationActivity extends AppCompatActivity {
                                 userInfo.put("dateOfBirth",dateOfBirth);
                                 userInfo.put("tags",tagsMap);
                                 currentUserDb.updateChildren(userInfo);
+
+                                DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
+                                tags.child("default").child(userId).setValue(true);
+
+
                                 Toast.makeText(RegistrationActivity.this,"Register successful!",Toast.LENGTH_SHORT).show();
                             }
                         }
