@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
 
 
       //  getUsersFromDb();
-        fillTagsAdapter();
+
+
 
 
 
@@ -203,13 +204,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Optionally add an OnItemClickListener
+
         flingContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
             @Override
             public void onItemClicked(int itemPosition, Object dataObject) {
-                cards obj = (cards) dataObject;
-                String userId = obj.getUserId();
+                cards objec = (cards) dataObject;
+                String userId = objec.getUserId();
                 Toast.makeText(MainActivity.this,"click",Toast.LENGTH_SHORT).show();
+
                 Intent intent = new Intent(MainActivity.this,UsersProfilesActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.putExtra("userId", userId);
                 startActivity(intent);
 
@@ -355,13 +359,13 @@ public class MainActivity extends AppCompatActivity {
                         Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
                         List<Address> addresses = geocoder.getFromLocation(location.getLatitude(),location.getLongitude(),1);
 
-
+                        myLongitude=addresses.get(0).getLongitude();
+                        myLatitude= addresses.get(0).getLatitude();
                         DatabaseReference myRef = usersDb.child(currentUID).child("location");
 
                         myRef.child("longitude").setValue(addresses.get(0).getLongitude());
                         myRef.child("latitude").setValue(addresses.get(0).getLatitude());
-                        myLongitude=addresses.get(0).getLongitude();
-                        myLatitude= addresses.get(0).getLatitude();
+
 
                         if(addresses.get(0).getCountryName()!=null){
                             myRef.child("countryName").setValue(addresses.get(0).getCountryName());
@@ -419,6 +423,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     }
+
                     adapter = new TagsAdapter(MainActivity.this, myTags);
                     recyclerView.setAdapter(adapter);
 
@@ -498,6 +503,9 @@ public class MainActivity extends AppCompatActivity {
         int age=stringDateToAge(ds.child("dateOfBirth").getValue().toString());
      //   System.out.println("AGGGGGGEEEE " + age);
         for (DataSnapshot dataTag : ds.child("tags").getChildren()){
+            double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
+            double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
+            double distance = distance(myLatitude,myLongitude,latitude,longitude);
             for (TagsManagerObject tag : myTagsList){
                 ///VALIDATING MY PREFERENCES
                 //comparing tags
@@ -505,22 +513,14 @@ public class MainActivity extends AppCompatActivity {
                     //validating gender
                     if(tag.getGender().equals(ds.child("sex").getValue().toString())||tag.getGender().equals("Both")){
                        //validating age with minAge and maxAge
-//                        System.out.println("NAME: " + ds.child("name").getValue().toString()+"  Birth:" + ds.child("dateOfBirth").getValue().toString());
-//                        System.out.println("AGGGGGGEEEE " + age);
-//                        System.out.println("Integer.parseInt(tag.getmAgeMin()): "+ Integer.parseInt(tag.getmAgeMin()));
-//                        System.out.println("Integer.parseInt(tag.getmAgeMax()): "+ Integer.parseInt(tag.getmAgeMax()));
-//                        System.out.println("age: "+ age);
                         if(Integer.parseInt(tag.getmAgeMin())<=age && Integer.parseInt(tag.getmAgeMax())>=age){
                             //validating distance
-                            double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
-                            double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
-                            double distance = distance(myLatitude,myLongitude,latitude,longitude);
-                            if(Integer.parseInt(tag.getmDistance())>=distance){
+                            if(Double.parseDouble(tag.getmDistance())>=distance){
                                 ///CAN VALIDATE OTHER USER PREFERENCES
-//                                System.out.println("DISTANCE : " + distance);
                                 mutalTagsList.add(tag.getTagName());
                                 tagsMap.put(tag.getTagName(),true);
                                 mutalTagsSB.append("#" + tag.getTagName() + " ");
+
                             }
 
 
@@ -542,7 +542,6 @@ public class MainActivity extends AppCompatActivity {
                     profileImageUrl = ds.child("profileImageUrl").getValue().toString();
                 }
             }else profileImageUrl = "default";
-
             cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl,mutalTagsSB.toString(),tagsMap);
             rowItems.add(item);
             arrayAdapter.notifyDataSetChanged();
@@ -559,8 +558,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        fillTagsAdapter();
+        updateMyLoc();
         getUsersFromDb();
 
+    }
+    private void updateMyLoc(){
+        DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID).child("location");
+        ds.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                myLatitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
+                myLongitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
