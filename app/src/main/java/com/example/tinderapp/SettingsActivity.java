@@ -113,6 +113,7 @@ public class SettingsActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d("del", "User account deleted.");
                             Toast.makeText(SettingsActivity.this,"User account deleted.",Toast.LENGTH_LONG).show();
+                            deleteUserTags();
                             deleteDatabaseAndStorage();
                             deleteMatches();
                            // logoutUser();
@@ -148,8 +149,7 @@ public class SettingsActivity extends AppCompatActivity {
                         users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
                         users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
 
-
-                        deleteDatabaseAndStorage();
+                        deleteUserTags();
 
                     }catch (Exception e){
                         Toast.makeText(SettingsActivity.this,"Oooops something went wrong",Toast.LENGTH_SHORT).show();
@@ -164,6 +164,33 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void deleteUserTags(){
+        DatabaseReference usersTagReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("tags");
+        DatabaseReference tagsReference = FirebaseDatabase.getInstance().getReference().child("Tags");
+
+        //DatabaseReference mTagsRemoved = FirebaseDatabase.getInstance().getReference().child("Tags").child(removedTags.getTagName()).child(userId);
+        //mTagsRemoved.removeValue();
+        Log.d("delM","dzia");
+        usersTagReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d("delM",dataSnapshot.toString());
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    Log.d("delM",ds.getKey());
+                    tagsReference.child(ds.getKey()).child(userId).removeValue();
+                }
+
+                deleteDatabaseAndStorage();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     private void deleteDatabaseAndStorage(){
 

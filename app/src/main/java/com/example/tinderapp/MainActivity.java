@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
         currentUID = mAuth.getCurrentUser().getUid();
-
+        
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
 
         noMoreEditText = (TextView) findViewById(R.id.noMore);
@@ -456,13 +456,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getUsersFromDb(){
-        usersDb.addChildEventListener(new ChildEventListener() {
+
+        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+        mAuth = FirebaseAuth.getInstance();
+        DatabaseReference newUserDb = FirebaseDatabase.getInstance().getReference().child("Users");
+        String newCurrentUID =FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        newUserDb.addChildEventListener(new ChildEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.child("sex").getValue()!=null){
 
-                    if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) &&!dataSnapshot.getKey().equals(currentUID)){
+                    if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) &&!dataSnapshot.getKey().equals(newCurrentUID)){
+                        dataSnapshot.getKey().equals(currentUID);
+                        System.out.println("AAAJ : " +  dataSnapshot.getKey() + " ---- my: " +  currentUID.toString()+ "   New newCurrentUID: " + newCurrentUID);
+                        Log.d("getUser: ", dataSnapshot.getKey() + " ---- my: " +  currentUID.toString());
+
                         getTagsPreferencesUsers(dataSnapshot);
                     }
                 }
@@ -500,51 +510,54 @@ public class MainActivity extends AppCompatActivity {
         StringBuilder mutalTagsSB=new StringBuilder();
         Map tagsMap = new HashMap<>();
      //   System.out.println("NAME: " + ds.child("name").getValue().toString()+"  Birth:" + ds.child("dateOfBirth").getValue().toString());
-        int age=stringDateToAge(ds.child("dateOfBirth").getValue().toString());
-     //   System.out.println("AGGGGGGEEEE " + age);
-        for (DataSnapshot dataTag : ds.child("tags").getChildren()){
-            double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
-            double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
-            double distance = distance(myLatitude,myLongitude,latitude,longitude);
-            for (TagsManagerObject tag : myTagsList){
-                ///VALIDATING MY PREFERENCES
-                //comparing tags
-                if(dataTag.getKey().toString().equals(tag.getTagName())){
-                    //validating gender
-                    if(tag.getGender().equals(ds.child("sex").getValue().toString())||tag.getGender().equals("Both")){
-                       //validating age with minAge and maxAge
-                        if(Integer.parseInt(tag.getmAgeMin())<=age && Integer.parseInt(tag.getmAgeMax())>=age){
-                            //validating distance
-                            if(Double.parseDouble(tag.getmDistance())>=distance){
-                                ///CAN VALIDATE OTHER USER PREFERENCES
-                                mutalTagsList.add(tag.getTagName());
-                                tagsMap.put(tag.getTagName(),true);
-                                mutalTagsSB.append("#" + tag.getTagName() + " ");
+
+        try {
+            int age = stringDateToAge(ds.child("dateOfBirth").getValue().toString());
+            //   System.out.println("AGGGGGGEEEE " + age);
+            for (DataSnapshot dataTag : ds.child("tags").getChildren()) {
+                double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
+                double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
+                double distance = distance(myLatitude, myLongitude, latitude, longitude);
+                for (TagsManagerObject tag : myTagsList) {
+                    ///VALIDATING MY PREFERENCES
+                    //comparing tags
+                    if (dataTag.getKey().toString().equals(tag.getTagName())) {
+                        //validating gender
+                        if (tag.getGender().equals(ds.child("sex").getValue().toString()) || tag.getGender().equals("Both")) {
+                            //validating age with minAge and maxAge
+                            if (Integer.parseInt(tag.getmAgeMin()) <= age && Integer.parseInt(tag.getmAgeMax()) >= age) {
+                                //validating distance
+                                if (Double.parseDouble(tag.getmDistance()) >= distance) {
+                                    ///CAN VALIDATE OTHER USER PREFERENCES
+                                    mutalTagsList.add(tag.getTagName());
+                                    tagsMap.put(tag.getTagName(), true);
+                                    mutalTagsSB.append("#" + tag.getTagName() + " ");
+
+                                }
+
 
                             }
-
 
 
                         }
 
 
                     }
-
-
-
                 }
             }
-        }
-        if(mutalTagsList.size()!=0){
-            String profileImageUrl = "default";
-            if(ds.child("profileImageUrl").exists()){
-                if(!ds.child("profileImageUrl").getValue().toString().equals("default")){
-                    profileImageUrl = ds.child("profileImageUrl").getValue().toString();
-                }
-            }else profileImageUrl = "default";
-            cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl,mutalTagsSB.toString(),tagsMap);
-            rowItems.add(item);
-            arrayAdapter.notifyDataSetChanged();
+            if (mutalTagsList.size() != 0) {
+                String profileImageUrl = "default";
+                if (ds.child("profileImageUrl").exists()) {
+                    if (!ds.child("profileImageUrl").getValue().toString().equals("default")) {
+                        profileImageUrl = ds.child("profileImageUrl").getValue().toString();
+                    }
+                } else profileImageUrl = "default";
+                cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap);
+                rowItems.add(item);
+                arrayAdapter.notifyDataSetChanged();
+            }
+        }catch (Exception e){
+            Log.d("error","Error caused by currentId in getUsersFromDb(). Delete account > register again> this error (currentUID do not refresh on first try)");
         }
     }
 
@@ -558,8 +571,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        fillTagsAdapter();
         updateMyLoc();
+        fillTagsAdapter();
         getUsersFromDb();
 
     }
