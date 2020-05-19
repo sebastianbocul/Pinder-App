@@ -581,8 +581,10 @@ public class MainActivity extends AppCompatActivity {
         ds.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                myLatitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
-                myLongitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
+                if(dataSnapshot.exists()) {
+                    myLatitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
+                    myLongitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
+                }
             }
 
             @Override

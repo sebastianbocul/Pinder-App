@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tinderapp.Chat.ChatActivity;
 import com.example.tinderapp.R;
@@ -32,10 +33,14 @@ public class MatchesViewHolders extends RecyclerView.ViewHolder implements View.
 
     @Override
     public void onClick(View view){
-        Intent intent = new Intent(view.getContext(), ChatActivity.class);
-        Bundle b= new Bundle();
-        b.putString("matchId",mMatchUserId);
-        intent.putExtras(b);
-        view.getContext().startActivity(intent);
+        try {
+            Intent intent = new Intent(view.getContext(), ChatActivity.class);
+            Bundle b = new Bundle();
+            b.putString("matchId", mMatchUserId);
+            intent.putExtras(b);
+            view.getContext().startActivity(intent);
+        }catch (Exception e){
+            Toast.makeText(view.getContext(),"Oops something went wrong",Toast.LENGTH_SHORT).show();
+        }
     }
 }

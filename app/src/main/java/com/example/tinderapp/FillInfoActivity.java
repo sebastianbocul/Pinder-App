@@ -266,7 +266,8 @@ public class FillInfoActivity extends AppCompatActivity {
         tagInfo.put("minAge","18");
         tagInfo.put("maxAge","99");
         tagInfo.put("maxDistance","100");
-        if(radioButton.getText().toString()=="Male"){
+        Log.d("radioButton",radioButton.getText().toString());
+        if(radioButton.getText().toString().equals("Male")){
             tagInfo.put("gender","Female");
         }
         else  tagInfo.put("gender","Male");

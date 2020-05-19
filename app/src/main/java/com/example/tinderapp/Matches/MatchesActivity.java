@@ -1,6 +1,7 @@
 package com.example.tinderapp.Matches;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import com.example.tinderapp.MainActivity;
 import com.example.tinderapp.R;
 import com.example.tinderapp.Tags.TagsAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -60,24 +63,19 @@ public class MatchesActivity extends AppCompatActivity {
         locationButton = (Button) findViewById(R.id.locationButton);
         allMatches=findViewById(R.id.allMatches);
         sortByTextView = findViewById(R.id.sortByText);
-
         myRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         myRecyclerView.setNestedScrollingEnabled(false);
         myRecyclerView.setHasFixedSize(true);
-
         mMatchesLayoutManager= new LinearLayoutManager(MatchesActivity.this);
         myRecyclerView.setLayoutManager(mMatchesLayoutManager);
         recyclerView = findViewById(R.id.tagsRecyclerViewMatches);
         mMatchesAdapter = new MatchesAdapter(getDataSetMatches(),MatchesActivity.this);
         myRecyclerView.setAdapter(mMatchesAdapter);
-
-
-
-
         getUserMatchId();
         loadTagsRecyclerView();
 
         allMatches.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                allMatchesFunction();
@@ -93,6 +91,7 @@ public class MatchesActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void allMatchesFunction() {
         fillRecyclerViewByTags("AllButtonClicked");
     }
@@ -108,18 +107,35 @@ public class MatchesActivity extends AppCompatActivity {
         DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
 
 
-        matchDb.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference matchDbAd = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
+
+        matchDbAd.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d("myTag", "ChildEventLisAd: "+ dataSnapshot.toString());
                 if(dataSnapshot.exists()){
-
-
-                    for(DataSnapshot match: dataSnapshot.getChildren()){
-                         matchesCount=(int)dataSnapshot.getChildrenCount();
-                         getLastMessage(match);
-                        //fetchMatchInformation(match.getKey(), match.child("ChatId").getValue().toString());
-                    }
+                    matchesCount=(int)dataSnapshot.getChildrenCount();
+                    getLastMessage(dataSnapshot);
+//                    for(DataSnapshot match: dataSnapshot.getChildren()){
+//
+//                        //fetchMatchInformation(match.getKey(), match.child("ChatId").getValue().toString());
+//                    }
                 }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
             }
 
             @Override
@@ -127,25 +143,99 @@ public class MatchesActivity extends AppCompatActivity {
 
             }
         });
+//
+//        matchDb.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                Log.d("myTag", "onMatchAddded: "+ dataSnapshot.toString());
+//                if(dataSnapshot.exists()){
+//
+//
+//                    for(DataSnapshot match: dataSnapshot.getChildren()){
+//                         matchesCount=(int)dataSnapshot.getChildrenCount();
+//                         getLastMessage(match);
+//                        //fetchMatchInformation(match.getKey(), match.child("ChatId").getValue().toString());
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 
     private String sortId;
     private void getLastMessage(DataSnapshot match) {
         sortId="00";
         String chatId = match.child("ChatId").getValue().toString();
+
         DatabaseReference chatDb = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
-        final DataSnapshot mMatch= match;
 
 
+        DataSnapshot mMatch= match;
+          Log.d("GLM", "chatDB : " + chatDb.toString());
+        chatDb.addChildEventListener(new ChildEventListener() {
+
+
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                Log.d("GLM", "Datasnapshot: " + dataSnapshot.toString());
+//                boolean createdByMe=true;
+//                String message = "No messages...";
+//                sortId=chatId;
+//                if(dataSnapshot.exists()){
+//                    DataSnapshot ds= dataSnapshot;
+//                        message = ds.child("text").getValue().toString();
+//                        createdByUser = ds.child("createdByUser").getValue().toString();
+//                        sortId=ds.getKey();
+//                    if (createdByUser.equals(currentUserID.toString())){
+//                        createdByMe = true;
+//                    }else createdByMe=false;
+//                    fetchMatchInformation(mMatch.getKey(), chatId,createdByMe,message,sortId);
+//
+//                }else {
+//                    Log.d("GLM", "WYKONAJ");
+//                    fetchMatchInformation(mMatch.getKey(), chatId,false,"No messages...",chatId);
+//                }
+//
+
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         chatDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean createdByMe=true;
                 String message = "No messages...";
+                Log.d("myTag", "addListenerForSingleValueEvent: " + dataSnapshot.toString());
                 sortId=chatId;
                 if(dataSnapshot.exists()){
+                    Log.d("myTag", "datasnapshot exists");
                     for(DataSnapshot ds: dataSnapshot.getChildren()){
                         message = ds.child("text").getValue().toString();
+                        Log.d("myTag", "addListenerForSingleValueEvent: " + ds.toString());
                         createdByUser = ds.child("createdByUser").getValue().toString();
                         sortId=ds.getKey();
                     }
@@ -168,14 +258,15 @@ public class MatchesActivity extends AppCompatActivity {
 
     private void fetchMatchInformation(String key, String chatId, final boolean createdByMe, final String message, String mSortId) {
         DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child(key);
-
-
+       // oryginalMatches.removeAll(oryginalMatches);
+      //  resultMatches.removeAll(resultMatches);
+        Log.d("mytag", "fetchMatchInformation: key: " + key +" chatId: " + chatId + " message: " + message + " sortId: "+ sortId);
         userDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(!dataSnapshot.exists()){
-                    matchesCount--;
+                  //  matchesCount--;
                     if(resultMatches.size()==matchesCount){
                         Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
                         mMatchesAdapter.notifyDataSetChanged();
@@ -212,13 +303,14 @@ public class MatchesActivity extends AppCompatActivity {
                     }
 
 
-                    
+
                     MatchesObject obj = new MatchesObject(userId,name,profileImageUrl,mLastMessage,createdByMe,mSortId,mutualTags);
                     oryginalMatches.add(obj);
                     resultMatches.add(obj);
+                    Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
+                    mMatchesAdapter.notifyDataSetChanged();
+                    Log.d("GLM", "resultMatches : " + resultMatches.size() + " matchescount: "+matchesCount);
                     if(resultMatches.size()==matchesCount){
-                        Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
-                        mMatchesAdapter.notifyDataSetChanged();
                     }
 
                 }
@@ -302,6 +394,7 @@ public class MatchesActivity extends AppCompatActivity {
                     recyclerView.setAdapter(adapter);
 
                     adapter.setClickListener(new MatchesTagsAdapter.ItemClickListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.N)
                         @Override
                         public void onItemClick(View view, int position) {
                             sortBy =  myTags.get(position);
@@ -323,12 +416,14 @@ public class MatchesActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void fillRecyclerViewByTags(String tag){
         ArrayList mutualTags = new ArrayList();
         ArrayList<MatchesObject> bufforMatches = new ArrayList<MatchesObject>();
 
         if(tag.equals("AllButtonClicked")){
             sortByTextView.setText("#" + "all");
+            Collections.sort(oryginalMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
             mMatchesAdapter = new MatchesAdapter(oryginalMatches,MatchesActivity.this);
             myRecyclerView.setAdapter(mMatchesAdapter);
             return;
@@ -347,6 +442,7 @@ public class MatchesActivity extends AppCompatActivity {
         if(bufforMatches.size()!=0){
             resultMatches.clear();
             resultMatches=bufforMatches;
+            Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
             mMatchesAdapter = new MatchesAdapter(resultMatches,MatchesActivity.this);
             myRecyclerView.setAdapter(mMatchesAdapter);
         }
