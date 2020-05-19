@@ -217,6 +217,10 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this,UsersProfilesActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.putExtra("userId", userId);
+
+                ArrayList<String> stringList = new ArrayList(objec.getMutualTagsMap().keySet());
+                Log.d("main",stringList.toString());
+                intent.putStringArrayListExtra("mutualTags",  stringList);
                 startActivity(intent);
 
             }

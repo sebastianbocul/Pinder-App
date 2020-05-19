@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -44,15 +45,19 @@ public class UsersProfilesActivity extends AppCompatActivity {
     ViewPager viewPager;
     private ArrayList imagesList,mImages;
     DatabaseReference mImageDatabase;
+    private ArrayList<String> mutualTagsExtras;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users_profiles);
-
+        mutualTagsExtras=null;
         final Intent intent = getIntent();
          userId=intent.getStringExtra("userId");
          if(intent.getStringExtra("fromActivity")!=null){
              fromActivity = intent.getStringExtra("fromActivity");
+         }
+         if(intent.getStringArrayListExtra("mutualTags")!=null){
+             mutualTagsExtras = intent.getStringArrayListExtra("mutualTags");
          }
 
      //   imageView = (ImageView) findViewById(R.id.imageView);
@@ -223,6 +228,7 @@ public void fillUserProfile(){
                     Map<String, Object> mapLoc = (Map<String, Object>) map.get("location");
                     Map<String, Object> mapMyLoc = (Map<String, Object>) dataSnapshot.child(myId).child("location").getValue();
 
+
                     double lat1,lon1,lat2,lon2;
 
                     lat1= (double) mapMyLoc.get("latitude");
@@ -233,6 +239,26 @@ public void fillUserProfile(){
 
                     double distance = distance(lat1,lon1,lat2,lon2);
                     distanceTextView.setText("Distance: " + Math.round(distance) + " km");
+                    //tags
+                    StringBuilder strB = new StringBuilder();
+                    if(mutualTagsExtras!=null){
+                        for(String str: mutualTagsExtras){
+                            strB.append("#");
+                            strB.append(str + " ");
+                        }
+                    }else if(dataSnapshot.child(myId).child("connections").child("matches").child(userId).child("mutualTags").exists()){
+                        Map<String, Object> tags = (Map<String, Object>) dataSnapshot.child(myId).child("connections").child("matches").child(userId).child("mutualTags").getValue();
+                        ArrayList<String> stringList = new ArrayList(tags.keySet());
+                        for(String str: stringList){
+                            strB.append("#");
+                            strB.append(str + " ");
+                        }
+                    }
+                    if(strB.length()!=0){
+                        tagsTextView.setText("Mutual tags: " + strB.toString());
+                    }else {
+                        tagsTextView.setText("Mutual tags: ");
+                    }
 
                     //name
                     if(map.get("name")!=null){
@@ -240,8 +266,6 @@ public void fillUserProfile(){
                         nameTextView.setText("Name: "+name);
                     }else descriptionTextView.setText("Name: ");
 
-                    //tags
-                    tagsTextView.setText("Mutual tags: ");
 
 
                     //sex
@@ -261,6 +285,8 @@ public void fillUserProfile(){
                         description = map.get("description").toString();
                         descriptionTextView.setText("Description: " +description);
                     }else descriptionTextView.setText("Description:");
+
+
 
                     //dataSnapshot.child("images").exists()
                     if(map.get("images")==null){

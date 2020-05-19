@@ -55,7 +55,7 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesViewHolders> {
             holder.mLastMessage.setTypeface(null, Typeface.BOLD);
             holder.mMatchName.setTypeface(null, Typeface.BOLD);
            // holder.mMatchImage.setColor
-            holder.mMatchImage.setBorderColor(Color.parseColor("#FF5F96"));
+            holder.mMatchImage.setBorderColor(Color.parseColor("#D3D3D3"));
             holder.mLastMessage.setTextColor(Color.parseColor("#404040"));
         }
         holder.mMatchName.setText(matchesList.get(position).getName());
