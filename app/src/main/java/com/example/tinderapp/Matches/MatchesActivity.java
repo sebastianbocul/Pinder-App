@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tinderapp.LocationActivity;
@@ -45,7 +46,7 @@ public class MatchesActivity extends AppCompatActivity {
     private RecyclerView.Adapter mMatchesAdapter;
     private RecyclerView.LayoutManager mMatchesLayoutManager;
     private String currentUserID;
-    private Button locationButton;
+    private ImageView locationButton;
     private String lastMessage, createdByUser;
     private int matchesCount;
     private String sortBy;
@@ -64,7 +65,7 @@ public class MatchesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_matches);
 
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        locationButton = (Button) findViewById(R.id.locationButton);
+        locationButton =  findViewById(R.id.locationButton);
         allMatches=findViewById(R.id.allMatches);
         sortByTextView = findViewById(R.id.sortByText);
         myRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);

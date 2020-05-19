@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        app:cardCornerRadius="4dp"
+        app:cardCornerRadius="10dp"
         android:elevation="2dp"
         android:id="@+id/cardView">
 
@@ -29,7 +29,7 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="500sp"
             android:layout_weight="1"
             android:id="@+id/image"
             android:scaleType="centerCrop"/>

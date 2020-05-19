@@ -36,20 +36,21 @@
         android:layout_width="match_parent"
         android:layout_height="50sp"
         android:id="@+id/delImage"
-        android:src="@drawable/delete"
+        android:src="@drawable/delete_picture"
         android:layout_weight="1"/>
-    <Button
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="50sp"
         android:layout_weight="1"
         android:textSize="12sp"
         android:text="Set as default"
+        android:src="@drawable/set_profile"
         android:id="@+id/setDefaultButton"/>
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="50sp"
         android:id="@+id/addImage"
-        android:src="@drawable/plus_orange"
+        android:src="@drawable/add_picture"
         android:layout_weight="1"/>
 </LinearLayout>
      </RelativeLayout>
@@ -60,30 +61,29 @@
         android:orientation="vertical"
         android:layout_weight="2"
         android:padding="10sp">
-
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Your name:"
+            android:textSize="12sp"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/name"
-        android:background="#50CBCBCB"
         android:hint="Name"
         android:maxLength="15"
         android:inputType="textPersonName"
         android:layout_marginBottom="20sp"/>
-    <EditText
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Your description:"
+            android:textSize="12sp"/>
+       <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/phone"
-        android:background="#50CBCBCB"
-        android:hint="Phone"
-        android:layout_marginBottom="20sp"
-        android:inputType="phone"/>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="200sp"
         android:id="@+id/description"
-        android:background="#50CBCBCB"
+
         android:hint="Description"
         android:gravity="top"
         android:layout_marginBottom="20sp"

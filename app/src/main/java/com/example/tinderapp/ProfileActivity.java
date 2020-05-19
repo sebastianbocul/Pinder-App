@@ -60,12 +60,12 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     private Uri resultUri;
-    private ImageView mProfileImage,mAddImage,mDeleteImage;
+    private ImageView mProfileImage,mAddImage,mDeleteImage,setDefaultButton;
 
     private static int RESULT_LOAD_IMAGE = 1;
     private EditText mNameField, mPhoneField;
 
-    private Button mBack,mConfirm,setDefaultButton;
+    private Button mBack,mConfirm;
 
     private String imageName;
     private FirebaseAuth mAuth;
@@ -86,7 +86,7 @@ public class ProfileActivity extends AppCompatActivity {
         mProfileImage= (ImageView) findViewById(R.id.profileImage);
         descriptionEditText = (EditText)findViewById(R.id.description);
         mNameField = (EditText) findViewById(R.id.name);
-        mPhoneField = (EditText) findViewById(R.id.phone);
+       // mPhoneField = (EditText) findViewById(R.id.phone);
         mAddImage = findViewById(R.id.addImage);
         mDeleteImage = findViewById(R.id.delImage);
        // mBack = (Button) findViewById(R.id.back);
@@ -472,10 +472,10 @@ public class ProfileActivity extends AppCompatActivity {
                         name = map.get("name").toString();
                         mNameField.setText(name);
                     }
-                    if(map.get("phone")!=null){
-                        phone = map.get("phone").toString();
-                        mPhoneField.setText(phone);
-                    }
+//                    if(map.get("phone")!=null){
+//                        phone = map.get("phone").toString();
+//                        mPhoneField.setText(phone);
+//                    }
                     if(map.get("sex")!=null){
                         userSex = map.get("sex").toString();
 
@@ -519,12 +519,12 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void saveUserInformation() {
         name = mNameField.getText().toString();
-        phone = mPhoneField.getText().toString();
+        //phone = mPhoneField.getText().toString();
         description = descriptionEditText.getText().toString().trim();
 
         Map userInfo = new HashMap<>();
         userInfo.put("name", name);
-        userInfo.put("phone",phone);
+    //    userInfo.put("phone",phone);
         userInfo.put("description",description);
 
         mUserDatabase.updateChildren(userInfo);

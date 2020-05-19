@@ -12,6 +12,8 @@
         android:text="tag1"
         android:textSize="10sp"
         android:id="@+id/itemTagButton"
-        android:textColor="#FF00FF"/>
+        android:layout_margin="5sp"
+        android:background = "@drawable/rounded_button"
+        />
 
 </LinearLayout>

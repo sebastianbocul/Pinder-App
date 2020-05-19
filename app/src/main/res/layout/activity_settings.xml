@@ -11,15 +11,21 @@
 
     <Button
         android:id="@+id/logoutUser"
-        android:layout_width="match_parent"
+        android:layout_width="200sp"
         android:layout_height="wrap_content"
+        android:background = "@drawable/rounded_button"
         android:text="SignOut"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="10sp"
         />
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="200sp"
         android:layout_height="wrap_content"
         android:id="@+id/deleteUser"
         android:text="Delete account"
+        android:background = "@drawable/rounded_button"
+        android:layout_gravity="center|bottom"
+
         />
 
 </LinearLayout>

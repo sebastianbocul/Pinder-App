@@ -4,29 +4,30 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="300sp"
-        android:layout_height="wrap_content"
-        android:padding="5sp"
         android:id="@+id/container"
-        android:gravity="right"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:gravity="right"
         android:orientation="vertical"
+        android:padding="5sp"
         android:radius="25sp">
 
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/chatImage"
-            android:layout_width="40sp"
-            android:layout_height="40sp"
+            android:layout_width="50sp"
+            android:layout_height="50sp"
             android:src="@mipmap/ic_launcher" />
 
         <TextView
+            android:id="@+id/message"
+            android:textSize="15sp"
+            android:layout_width="17dp"
+            android:layout_height="wrap_content"
             android:paddingTop="5sp"
             android:paddingBottom="5sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Text"
-            android:id="@+id/message"/>
+            android:text="Text" />
 
 
     </LinearLayout>

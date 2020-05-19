@@ -46,6 +46,7 @@
         android:layout_height="wrap_content"
         android:text="lastMessage"
         android:layout_gravity="center"
+        android:maxLines="1"
         android:id="@+id/lastMessage"/>
 
     </LinearLayout>

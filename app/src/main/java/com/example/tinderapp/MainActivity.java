@@ -14,12 +14,14 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private int i;
 
 
-    public Button likeButton,dislikeButton;
+    public ImageView likeButton,dislikeButton;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private FirebaseAuth mAuth;
     private TextView tags;
@@ -87,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
         noMoreEditText = (TextView) findViewById(R.id.noMore);
         rowItems = new ArrayList<cards>();
         arrayAdapter = new arrayAdapter(this, R.layout.item,rowItems );
-        likeButton = (Button) findViewById(R.id.likeButton);
-        dislikeButton = (Button) findViewById(R.id.dislikeButton);
+        likeButton = findViewById(R.id.likeButton);
+        dislikeButton = findViewById(R.id.dislikeButton);
         flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         //check location permission

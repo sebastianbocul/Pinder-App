@@ -98,7 +98,7 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/smallLogo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="250sp"
             android:layout_gravity="bottom"
             android:src="@drawable/login_photo" />
 

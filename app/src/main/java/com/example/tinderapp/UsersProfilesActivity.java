@@ -39,7 +39,8 @@ public class UsersProfilesActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase, mUserProfileDatabase,myDatabaseReference;
-    private Button unmatchButton,dislikeButton,likeButton;
+    private ImageView dislikeButton,likeButton;
+    private Button unmatchButton;
     ViewPager viewPager;
     private ArrayList imagesList,mImages;
     DatabaseReference mImageDatabase;
@@ -103,7 +104,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
         dislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dislikeButton.setText("Clicked Dislike");
+                //dislikeButton.setText("Clicked Dislike");
                 Intent i = new Intent(UsersProfilesActivity.this,MainActivity.class);
                 i.putExtra("fromUsersProfilesActivity","dislikeButtonClicked");
                 startActivity(i);
@@ -113,7 +114,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                likeButton.setText("Clicked like");
+                //likeButton.setText("Clicked like");
                 Intent i = new Intent(UsersProfilesActivity.this,MainActivity.class);
                 i.putExtra("fromUsersProfilesActivity","likeButtonClicked");
                 startActivity(i);
@@ -240,7 +241,7 @@ public void fillUserProfile(){
                     }else descriptionTextView.setText("Name: ");
 
                     //tags
-                    tagsTextView.setText("Tags: ");
+                    tagsTextView.setText("Mutual tags: ");
 
 
                     //sex

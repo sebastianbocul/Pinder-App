@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="false">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="10sp"
     tools:context=".UsersProfilesActivity">
 
 
@@ -13,10 +16,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
+
         <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
             android:layout_width="match_parent"
-            android:layout_height="350sp"
-            android:id="@+id/viewPager"/>
+            android:layout_height="500sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -35,14 +39,14 @@
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/locationTextView"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textColor="@android:color/black"
             tools:text="location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/distanceTextView"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textColor="@android:color/black"
             tools:text="distance:"
             android:layout_width="wrap_content"
@@ -50,21 +54,21 @@
 
         <TextView
             android:id="@+id/tagsTextView"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textColor="@android:color/black"
-            tools:text="tags"
+            tools:text="Mutual tags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/genderTextView"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textColor="@android:color/black"
             tools:text="gender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/descriptionTextView"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textColor="@android:color/black"
             tools:text="description"
             android:layout_width="wrap_content"
@@ -74,27 +78,39 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <Button
+            android:background = "@drawable/rounded_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/unmatchButton"
+            android:layout_marginLeft="100sp"
+            android:layout_marginRight="100sp"
             android:text="unmatch"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10sp"
+            android:paddingBottom="10sp">
+            <ImageView
                 android:id="@+id/dislikeButton"
-                android:text="Dislike"
-                android:layout_weight="1"/>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/likeButton"
-            android:text="Like"
-            android:layout_weight="1"/>
+                android:layout_width="20sp"
+                android:layout_height="75sp"
+                android:layout_weight="1"
+                android:text="DISLIKE"
+                android:src="@drawable/dislike"
+                android:paddingLeft="50sp"/>
+
+            <ImageView
+                android:id="@+id/likeButton"
+                android:layout_width="20sp"
+                android:layout_height="75sp"
+                android:layout_weight="1"
+                android:text="LIKE"
+                android:src="@drawable/like"
+                android:paddingRight="50sp"
+                />
 
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>
+</ScrollView>
