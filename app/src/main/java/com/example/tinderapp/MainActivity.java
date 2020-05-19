@@ -471,7 +471,6 @@ public class MainActivity extends AppCompatActivity {
                     if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) &&!dataSnapshot.getKey().equals(newCurrentUID)){
                         dataSnapshot.getKey().equals(currentUID);
                         System.out.println("AAAJ : " +  dataSnapshot.getKey() + " ---- my: " +  currentUID.toString()+ "   New newCurrentUID: " + newCurrentUID);
-                        Log.d("getUser: ", dataSnapshot.getKey() + " ---- my: " +  currentUID.toString());
 
                         getTagsPreferencesUsers(dataSnapshot);
                     }
@@ -557,7 +556,6 @@ public class MainActivity extends AppCompatActivity {
                 arrayAdapter.notifyDataSetChanged();
             }
         }catch (Exception e){
-            Log.d("error","Error caused by currentId in getUsersFromDb(). Delete account > register again> this error (currentUID do not refresh on first try)");
         }
     }
 

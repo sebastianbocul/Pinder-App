@@ -111,7 +111,6 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Log.d("del", "User account deleted.");
                             Toast.makeText(SettingsActivity.this,"User account deleted.",Toast.LENGTH_LONG).show();
                             deleteUserTags();
                             deleteDatabaseAndStorage();
@@ -119,7 +118,6 @@ public class SettingsActivity extends AppCompatActivity {
                            // logoutUser();
 
                         } else {
-                        Log.w("del","Something is wrong!");
                         AlertDialog.Builder error = new AlertDialog.Builder(context);
                             error.setMessage("Due to safety reasons please re-login and try again").setCancelable(false)
                                     .setTitle("Credentials too old")
@@ -171,13 +169,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         //DatabaseReference mTagsRemoved = FirebaseDatabase.getInstance().getReference().child("Tags").child(removedTags.getTagName()).child(userId);
         //mTagsRemoved.removeValue();
-        Log.d("delM","dzia");
         usersTagReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("delM",dataSnapshot.toString());
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    Log.d("delM",ds.getKey());
                     tagsReference.child(ds.getKey()).child(userId).removeValue();
                 }
 

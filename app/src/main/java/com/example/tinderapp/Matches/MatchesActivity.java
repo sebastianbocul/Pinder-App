@@ -29,7 +29,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -54,6 +56,8 @@ public class MatchesActivity extends AppCompatActivity {
     ArrayList<String> myTags = new ArrayList<>();
     private ArrayList<MatchesObject> resultMatches = new ArrayList<MatchesObject>();
     private ArrayList<MatchesObject> oryginalMatches = new ArrayList<MatchesObject>();
+    private ArrayList<String> usersID = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,14 +116,10 @@ public class MatchesActivity extends AppCompatActivity {
         matchDbAd.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d("myTag", "ChildEventLisAd: "+ dataSnapshot.toString());
                 if(dataSnapshot.exists()){
                     matchesCount=(int)dataSnapshot.getChildrenCount();
                     getLastMessage(dataSnapshot);
-//                    for(DataSnapshot match: dataSnapshot.getChildren()){
-//
-//                        //fetchMatchInformation(match.getKey(), match.child("ChatId").getValue().toString());
-//                    }
+
                 }
             }
 
@@ -143,27 +143,7 @@ public class MatchesActivity extends AppCompatActivity {
 
             }
         });
-//
-//        matchDb.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Log.d("myTag", "onMatchAddded: "+ dataSnapshot.toString());
-//                if(dataSnapshot.exists()){
-//
-//
-//                    for(DataSnapshot match: dataSnapshot.getChildren()){
-//                         matchesCount=(int)dataSnapshot.getChildrenCount();
-//                         getLastMessage(match);
-//                        //fetchMatchInformation(match.getKey(), match.child("ChatId").getValue().toString());
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+
     }
 
     private String sortId;
@@ -175,38 +155,28 @@ public class MatchesActivity extends AppCompatActivity {
 
 
         DataSnapshot mMatch= match;
-          Log.d("GLM", "chatDB : " + chatDb.toString());
         chatDb.addChildEventListener(new ChildEventListener() {
-
-
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                Log.d("GLM", "Datasnapshot: " + dataSnapshot.toString());
-//                boolean createdByMe=true;
-//                String message = "No messages...";
-//                sortId=chatId;
-//                if(dataSnapshot.exists()){
-//                    DataSnapshot ds= dataSnapshot;
-//                        message = ds.child("text").getValue().toString();
-//                        createdByUser = ds.child("createdByUser").getValue().toString();
-//                        sortId=ds.getKey();
-//                    if (createdByUser.equals(currentUserID.toString())){
-//                        createdByMe = true;
-//                    }else createdByMe=false;
-//                    fetchMatchInformation(mMatch.getKey(), chatId,createdByMe,message,sortId);
-//
-//                }else {
-//                    Log.d("GLM", "WYKONAJ");
-//                    fetchMatchInformation(mMatch.getKey(), chatId,false,"No messages...",chatId);
-//                }
-//
+                boolean createdByMe=true;
+                String message = "No messages...";
+                sortId=chatId;
+                if(dataSnapshot.exists()){
+                    DataSnapshot ds= dataSnapshot;
+                        message = ds.child("text").getValue().toString();
+                        createdByUser = ds.child("createdByUser").getValue().toString();
+                        sortId=ds.getKey();
+                    if (createdByUser.equals(currentUserID.toString())){
+                        createdByMe = true;
+                    }else createdByMe=false;
+                    fetchMatchInformation(mMatch.getKey(), chatId,createdByMe,message,sortId);
 
-
+                }else {
+                    fetchMatchInformation(mMatch.getKey(), chatId,false,"No messages...",chatId);
+                }
             }
-
             @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+            public void onChildChanged(DataSnapshot dataSnapshot, @Nullable String s) {
             }
 
             @Override
@@ -227,24 +197,10 @@ public class MatchesActivity extends AppCompatActivity {
         chatDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                boolean createdByMe=true;
-                String message = "No messages...";
-                Log.d("myTag", "addListenerForSingleValueEvent: " + dataSnapshot.toString());
-                sortId=chatId;
-                if(dataSnapshot.exists()){
-                    Log.d("myTag", "datasnapshot exists");
-                    for(DataSnapshot ds: dataSnapshot.getChildren()){
-                        message = ds.child("text").getValue().toString();
-                        Log.d("myTag", "addListenerForSingleValueEvent: " + ds.toString());
-                        createdByUser = ds.child("createdByUser").getValue().toString();
-                        sortId=ds.getKey();
-                    }
-                    if (createdByUser.equals(currentUserID.toString())){
-                        createdByMe = true;
-                    }else createdByMe=false;
-                }
-                fetchMatchInformation(mMatch.getKey(), mMatch.child("ChatId").getValue().toString(),createdByMe,message,sortId);
 
+                if(!dataSnapshot.exists()){
+                    fetchMatchInformation(mMatch.getKey(), chatId,false,"No messages...",chatId);
+                }
             }
 
 
@@ -258,15 +214,14 @@ public class MatchesActivity extends AppCompatActivity {
 
     private void fetchMatchInformation(String key, String chatId, final boolean createdByMe, final String message, String mSortId) {
         DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child(key);
-       // oryginalMatches.removeAll(oryginalMatches);
-      //  resultMatches.removeAll(resultMatches);
-        Log.d("mytag", "fetchMatchInformation: key: " + key +" chatId: " + chatId + " message: " + message + " sortId: "+ sortId);
+
         userDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
                 if(!dataSnapshot.exists()){
-                  //  matchesCount--;
                     if(resultMatches.size()==matchesCount){
                         Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
                         mMatchesAdapter.notifyDataSetChanged();
@@ -287,8 +242,6 @@ public class MatchesActivity extends AppCompatActivity {
                     for(DataSnapshot ds : dataSnapshot.child("connections").child("matches").child(currentUserID).child("mutualTags").getChildren()){
                         mutualTags.add(ds.getKey());
                     }
-                   // tagMap = dataSnapshot.child("tags").getChildren();
-
 
 
                     if(lastMessageM.length()>=15) stringBuilder.append("...");
@@ -305,11 +258,43 @@ public class MatchesActivity extends AppCompatActivity {
 
 
                     MatchesObject obj = new MatchesObject(userId,name,profileImageUrl,mLastMessage,createdByMe,mSortId,mutualTags);
-                    oryginalMatches.add(obj);
-                    resultMatches.add(obj);
+
+
+                    for(String str:usersID){
+
+                        if (!str.equals(usersID)) {
+
+                        }
+                    }
+
+                    if(!usersID.contains(obj.getUserId())){
+                        usersID.add(obj.getUserId());
+                        resultMatches.add(obj);
+                        oryginalMatches.add(obj);
+                    }else {
+                        Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getUserId));
+                        Collections.sort(oryginalMatches, Comparator.comparing(MatchesObject ::getUserId));
+
+                        for(MatchesObject m : resultMatches){
+                        }
+                        for(int i =0;i<resultMatches.size();i++){
+                          if(usersID.get(i).equals(obj.getUserId())){
+                              oryginalMatches.get(i).setLastMessage(obj.getLastMessage());
+                              oryginalMatches.get(i).setSortId(obj.getSortId());
+                              oryginalMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
+                              resultMatches.get(i).setLastMessage(obj.getLastMessage());
+                              resultMatches.get(i).setSortId(obj.getSortId());
+                              resultMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
+                          }
+                        }
+                    }
+
+                   // Collections.sort(usersID, Comparator.comparing(String ::getSortId).reversed());
                     Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
+
+
+
                     mMatchesAdapter.notifyDataSetChanged();
-                    Log.d("GLM", "resultMatches : " + resultMatches.size() + " matchescount: "+matchesCount);
                     if(resultMatches.size()==matchesCount){
                     }
 

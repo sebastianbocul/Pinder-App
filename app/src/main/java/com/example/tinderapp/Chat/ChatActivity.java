@@ -164,7 +164,6 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 }catch (Exception e){
                     Toast.makeText(ChatActivity.this,"Oooops something went wrong ", Toast.LENGTH_SHORT).show();
-                    Log.d("myLog","Error in chat activity");
                     Intent intent=new Intent(ChatActivity.this,MatchesActivity.class);
                     startActivity(intent);
                 }

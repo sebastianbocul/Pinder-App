@@ -306,7 +306,6 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Log.d("myLog", "linkWithCredential:success");
                             FirebaseUser user = task.getResult().getUser();
                            // updateUI(user);
                         } else {
