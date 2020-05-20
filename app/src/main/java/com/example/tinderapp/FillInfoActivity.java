@@ -277,6 +277,7 @@ public class FillInfoActivity extends AppCompatActivity {
         userInfo.put("dateOfBirth",dateOfBirth);
         userInfo.put("tags",tagsMap);
         userInfo.put("profileImageUrl", "default");
+        userInfo.put("showMyLocation", true);
         mUserDatabase.updateChildren(userInfo);
 
         DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");

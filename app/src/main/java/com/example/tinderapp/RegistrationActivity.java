@@ -41,8 +41,9 @@ public class RegistrationActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
     private EditText date;
     private boolean dateValid = false;
-    private TextView title;
     private int dd,mm,yyyy;
+
+    private TextView title;
 
 
     @Override
@@ -223,6 +224,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                 userInfo.put("profileImageUrl", "default");
                                 userInfo.put("dateOfBirth",dateOfBirth);
                                 userInfo.put("tags",tagsMap);
+                                userInfo.put("showMyLocation", true);
                                 currentUserDb.updateChildren(userInfo);
 
                                 DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");

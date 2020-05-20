@@ -84,7 +84,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     }
 
 
-
+    private boolean mapRdy= false;
     public void onMapReady(GoogleMap googleMap) {
 
         myGoogleMap = googleMap;
@@ -103,10 +103,12 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                 final double myLatitude = Double.parseDouble(lat);
                 final double myLongitude = Double.parseDouble(lon);
                 LatLng latLng = new LatLng(myLatitude,myLongitude);
-                myGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
-                //
-
+                if(mapRdy==false) {
+                    myGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                    myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    mapRdy=true;
+                    //
+                }
                 //set my marker at start
                 MarkerOptions markerOptionsFB;
                 markerOptionsFB= new MarkerOptions().position(latLng).title("I'm here").icon(BitmapDescriptorFactory.defaultMarker(300));
@@ -166,6 +168,9 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                     usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.child("showMyLocation").getValue().toString().equals("false")){
+                                return;
+                            }
                             String userName;
                             if(!dataSnapshot.child("name").exists()){
                               return;
