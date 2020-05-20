@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/tag"
-        android:layout_width="wrap_content"
+        android:layout_width="80sp"
         android:layout_height="30sp"
          android:text="Item1"
         android:textSize="15sp"
@@ -16,29 +16,33 @@
     <TextView
         android:layout_weight="1"
         android:id="@+id/tag_gender"
-        android:layout_width="wrap_content"
+        android:layout_width="40sp"
         android:layout_height="30sp"
         android:text="Item1"
-        android:textSize="15sp"/>
+        android:textSize="15sp"
+        android:layout_marginRight="10sp"/>
 
     <TextView
         android:layout_weight="1"
         android:id="@+id/tag_age"
-        android:layout_width="wrap_content"
+        android:layout_width="30sp"
         android:layout_height="30sp"
         android:text="Item1"
-        android:textSize="15sp"/>
+        android:textSize="15sp"
+        android:layout_marginRight="10sp"/>
     <TextView
         android:layout_weight="1"
         android:id="@+id/tag_distance"
-        android:layout_width="wrap_content"
+        android:layout_width="30sp"
         android:layout_height="30sp"
         android:text="Item1"
-        android:textSize="15sp"/>
+        android:textSize="15sp"
+        android:layout_marginRight="10sp"/>
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="22sp"
+        android:layout_height="22sp"
+        android:layout_marginRight="5sp"
         android:src="@drawable/delete_tag"
         android:id="@+id/tag_delete"/>
 

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -164,12 +165,14 @@ public class RegistrationActivity extends AppCompatActivity {
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
                 int selectedId = mRadioGroup.getCheckedRadioButtonId();
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
                 final String name = mName.getText().toString();
                 final String repeatpassword = mRepeatPassword.getText().toString();
                 final RadioButton radioButton = (RadioButton) findViewById(selectedId);
+
                 if(!dateValid==true) {
                     Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
                     return;
@@ -230,9 +233,15 @@ public class RegistrationActivity extends AppCompatActivity {
                             }
                         }
                     });
+                }catch (Exception e){
+                    Log.d("myError",e.toString());
+                    Toast.makeText(RegistrationActivity.this, "Fill all fields!", Toast.LENGTH_SHORT).show();
+                }
                 }
 
+
         });
+
 
     }
 

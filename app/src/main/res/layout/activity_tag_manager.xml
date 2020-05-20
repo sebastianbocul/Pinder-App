@@ -17,16 +17,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="#85EFEFEF"
             android:paddingBottom="10sp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tag: "
+                android:text="My tags: "
                 android:textSize="12sp"
-                android:layout_weight="5"/>
+                android:layout_weight="50"/>
             <TextView
+                android:layout_marginRight="22sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Gender: "
@@ -37,14 +37,17 @@
                 android:layout_height="wrap_content"
                 android:text="Age: "
                 android:textSize="12sp"
+                android:layout_marginRight="17sp"
                 android:layout_weight="1"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Distance: "
+                android:gravity="center"
                 android:textSize="12sp"
                 android:layout_weight="1"/>
             <TextView
+                android:gravity="right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Delete: "
@@ -56,9 +59,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tagsRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="255sp"
-
-            android:background="#85EFEFEF"/>
+            android:layout_height="255sp" />
 
 
         <TextView
@@ -89,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Both"/>
+                android:text="Any"/>
         </RadioGroup>
 
         <TextView
@@ -152,14 +153,17 @@
                 android:layout_height="wrap_content"
                 android:hint="Tag name:"
                 android:id="@+id/tagsEditText"
-                android:maxLines="5"
+                android:maxLines="1"
+                android:maxLength="15"
+                android:singleLine="true"
                 android:layout_weight="5"/>
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="60sp"
+                android:layout_height="30sp"
                 android:text="ADD"
                 android:id="@+id/addButton"
                 android:layout_weight="1"
+                android:background = "@drawable/rounded_button"
                 />
 
         </LinearLayout>
@@ -168,7 +172,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="#85EFEFEF">
+            android:layout_marginTop="20sp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -187,9 +191,9 @@
         </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="300sp"
+            android:layout_height="wrap_content"
             android:id="@+id/popularTagsRecyclerView"
-            android:background="#85EFEFEF"
+
             />
 
     </LinearLayout>

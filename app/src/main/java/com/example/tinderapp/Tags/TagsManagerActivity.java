@@ -250,7 +250,7 @@ public class TagsManagerActivity extends AppCompatActivity {
 
 
                 } else {
-                    TagsManagerObject obj = new TagsManagerObject("default", "Both", "18", "99", "100");
+                    TagsManagerObject obj = new TagsManagerObject("default", "Any", "18", "99", "100");
                     myTagsList.add(obj);
                     adapter.notifyDataSetChanged();
                     recyclerView.setAdapter(adapter);

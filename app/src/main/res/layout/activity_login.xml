@@ -18,24 +18,42 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:id="@+id/mainLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="Email:"/>
+
     <EditText
+        android:paddingTop="2sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email"
         android:inputType="text"
         android:id="@+id/email"/>
-
+        <TextView
+            android:layout_marginTop="5sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="Password:"/>
     <EditText
+        android:paddingTop="2sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword"
         android:id="@+id/password"/>
     <Button
+        android:layout_marginLeft="2sp"
+        android:layout_marginRight="2sp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30sp"
+        android:layout_gravity="center"
         android:text="LOGIN"
-        android:id="@+id/login"/>
+        android:id="@+id/login"
+        android:background = "@drawable/rounded_button"/>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

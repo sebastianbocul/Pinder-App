@@ -18,7 +18,7 @@
             android:id="@+id/chatImage"
             android:layout_width="50sp"
             android:layout_height="50sp"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@drawable/profile_default" />
 
         <TextView
             android:id="@+id/message"

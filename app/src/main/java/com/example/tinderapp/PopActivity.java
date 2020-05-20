@@ -72,7 +72,7 @@ public class PopActivity extends AppCompatActivity {
 
                 switch(matchPictureUrl){
                     case "default":
-                        Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(profileImage);
+                        Glide.with(getApplication()).load(R.drawable.profile_default).into(profileImage);
                         break;
                     default:
                         Glide.with(profileImage).clear(profileImage);

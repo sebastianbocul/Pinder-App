@@ -61,25 +61,25 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         currentUID = mAuth.getCurrentUser().getUid();
 
 
-        btLocation = (Button) findViewById(R.id.bt_location);
-        textView1 =(TextView) findViewById(R.id.text_view1);
-        textView2 =(TextView) findViewById(R.id.text_view2);
-        textView3 =(TextView) findViewById(R.id.text_view3);
-        textView4 =(TextView) findViewById(R.id.text_view4);
-        textView5 =(TextView) findViewById(R.id.text_view5);
+//        btLocation = (Button) findViewById(R.id.bt_location);
+//        textView1 =(TextView) findViewById(R.id.text_view1);
+//        textView2 =(TextView) findViewById(R.id.text_view2);
+//        textView3 =(TextView) findViewById(R.id.text_view3);
+//        textView4 =(TextView) findViewById(R.id.text_view4);
+//        textView5 =(TextView) findViewById(R.id.text_view5);
         name = (TextView) findViewById(R.id.name);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.google_map);
         supportMapFragment.getMapAsync(LocationActivity.this);
-        btLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //checking permission
-
-
-            }
-        });
+//        btLocation.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //checking permission
+//
+//
+//            }
+//        });
 
     }
 
@@ -113,12 +113,12 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                 Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
                 myMarker.setTag(currentUID.trim());
 
-                name.setText(dataSnapshot.child("Users").child(currentUID).child("name").getValue().toString());
-                textView1.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString());
-                textView2.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("longitude").getValue().toString());
-                textView3.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("address").getValue().toString());
-                textView4.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("countryName").getValue().toString());
-                textView5.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("locality").getValue().toString());
+              //  name.setText(dataSnapshot.child("Users").child(currentUID).child("name").getValue().toString());
+//                textView1.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString());
+//                textView2.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("longitude").getValue().toString());
+//                textView3.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("address").getValue().toString());
+//                textView4.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("countryName").getValue().toString());
+//                textView5.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("locality").getValue().toString());
 
 
 
@@ -126,12 +126,12 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                     @Override
                     public boolean onMarkerClick(Marker marker) {
 
-                        name.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("name").getValue().toString());
-                        textView1.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("latitude").getValue().toString());
-                        textView2.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("longitude").getValue().toString());
-                        textView3.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("address").getValue().toString());
-                        textView4.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("countryName").getValue().toString());
-                        textView5.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("locality").getValue().toString());
+                      //  name.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("name").getValue().toString());
+//                        textView1.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("latitude").getValue().toString());
+//                        textView2.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("longitude").getValue().toString());
+//                        textView3.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("address").getValue().toString());
+//                        textView4.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("countryName").getValue().toString());
+//                        textView5.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("locality").getValue().toString());
 
                         return false;
                     }

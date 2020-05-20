@@ -528,7 +528,7 @@ public class MainActivity extends AppCompatActivity {
                     //comparing tags
                     if (dataTag.getKey().toString().equals(tag.getTagName())) {
                         //validating gender
-                        if (tag.getGender().equals(ds.child("sex").getValue().toString()) || tag.getGender().equals("Both")) {
+                        if (tag.getGender().equals(ds.child("sex").getValue().toString()) || tag.getGender().equals("Any")) {
                             //validating age with minAge and maxAge
                             if (Integer.parseInt(tag.getmAgeMin()) <= age && Integer.parseInt(tag.getmAgeMax()) >= age) {
                                 //validating distance
