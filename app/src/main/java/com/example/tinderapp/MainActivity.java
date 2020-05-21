@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import com.example.tinderapp.Cards.arrayAdapter;
 import com.example.tinderapp.Cards.cards;
 import com.example.tinderapp.Matches.MatchesActivity;
+import com.example.tinderapp.Notifications.Token;
 import com.example.tinderapp.Tags.TagsAdapter;
 import com.example.tinderapp.Tags.TagsManagerActivity;
 import com.example.tinderapp.Tags.TagsManagerObject;
@@ -44,6 +46,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
 import java.io.IOException;
@@ -77,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
     private TagsAdapter adapter;
     private ArrayList<TagsManagerObject> myTagsList = new ArrayList<>();
     private double myLatitude,myLongitude;
+    String mUID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,8 +112,9 @@ public class MainActivity extends AppCompatActivity {
 
 
       //  getUsersFromDb();
-
-
+        checkUserStatus();
+        //update token
+        updateToken(FirebaseInstanceId.getInstance().getToken());
 
 
 
@@ -638,5 +644,29 @@ public class MainActivity extends AppCompatActivity {
 
     private double rad2deg(double rad) {
         return (rad * 180.0 / Math.PI);
+    }
+
+    public void updateToken(String token){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Tokens");
+        Token mToken = new Token(token);
+        ref.child(mUID).setValue(mToken);
+    }
+
+    @Override
+    protected void onResume() {
+        checkUserStatus();
+        super.onResume();
+    }
+
+    private void checkUserStatus(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(user!=null){
+            mUID = user.getUid();
+            //save UID of current signin user in shared preferences
+            SharedPreferences sp =getSharedPreferences("SP_USER",MODE_PRIVATE);
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("Current_USERID",mUID);
+            editor.apply();
+        }
     }
 }
