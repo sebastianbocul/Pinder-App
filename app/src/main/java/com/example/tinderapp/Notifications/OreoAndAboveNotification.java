@@ -44,7 +44,14 @@ public class OreoAndAboveNotification extends ContextWrapper {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Notification.Builder getNotifications(String title, String body, PendingIntent pIntent, Uri soundUri, String icon){
-        return new Notification.Builder(getApplicationContext(),ID).setContentIntent(pIntent).setContentTitle(title).setContentText(body).setSound(soundUri).setAutoCancel(true).setSmallIcon(Integer.parseInt(icon));
+        return new Notification.Builder(getApplicationContext(),ID)
+                .setContentIntent(pIntent)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setSound(soundUri)
+                .setAutoCancel(true)
+                .setSmallIcon(Integer.parseInt(icon));
+
     }
 
 }

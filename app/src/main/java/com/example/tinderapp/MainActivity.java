@@ -30,6 +30,10 @@ import android.widget.Toast;
 import com.example.tinderapp.Cards.arrayAdapter;
 import com.example.tinderapp.Cards.cards;
 import com.example.tinderapp.Matches.MatchesActivity;
+import com.example.tinderapp.Notifications.APIService;
+import com.example.tinderapp.Notifications.Client;
+import com.example.tinderapp.Notifications.Data;
+import com.example.tinderapp.Notifications.Sender;
 import com.example.tinderapp.Notifications.Token;
 import com.example.tinderapp.Tags.TagsAdapter;
 import com.example.tinderapp.Tags.TagsManagerActivity;
@@ -45,6 +49,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
@@ -60,6 +65,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
     private cards cards_data;
@@ -81,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<TagsManagerObject> myTagsList = new ArrayList<>();
     private double myLatitude,myLongitude;
     String mUID;
+    APIService apiService;
+    boolean notify = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
         currentUID = mAuth.getCurrentUser().getUid();
-        
+
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
 
         noMoreEditText = (TextView) findViewById(R.id.noMore);
@@ -110,8 +122,12 @@ public class MainActivity extends AppCompatActivity {
         arrayAdapter = new arrayAdapter(this, R.layout.item,rowItems );
         flingContainer.setAdapter(arrayAdapter);
 
-
-      //  getUsersFromDb();
+        //create APISERVICE
+        Client client = new Client();
+        apiService = client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+        //Client.
+        //   api= client.get
+        //  getUsersFromDb();
         checkUserStatus();
         //update token
         updateToken(FirebaseInstanceId.getInstance().getToken());
@@ -133,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(flingContainer.getChildCount()!=0)
-                flingContainer.getTopCardListener().selectLeft();
+                    flingContainer.getTopCardListener().selectLeft();
                 else Toast.makeText(MainActivity.this,"There is no more users",Toast.LENGTH_SHORT).show();
             }
         });
@@ -249,6 +265,26 @@ public class MainActivity extends AppCompatActivity {
                     usersDb.child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUID).child("mutualTags").updateChildren(obj.getMutualTagsMap());
                     usersDb.child(currentUID).child("connections").child("matches").child(dataSnapshot.getKey()).child("mutualTags").updateChildren(obj.getMutualTagsMap());
                     String matchId = dataSnapshot.getKey();
+
+                    DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
+                    database.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String myName=currentUID;
+                            if(notify){
+                                sendNotification(matchId,myName," ");
+                            }
+                            notify=false;
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    //notify
+                    notify=true;
+
                     //popactivity when matched
                     Intent i = new Intent(getApplicationContext(),PopActivity.class);
                     i.putExtra("matchId",matchId);
@@ -340,9 +376,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void goToProfile(View view) {
 
-   //     checkUserSex();
+        //     checkUserSex();
         Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-   //     intent.putExtra("userSex", userSex);
+        //     intent.putExtra("userSex", userSex);
         startActivity(intent);
         return;
     }
@@ -424,7 +460,7 @@ public class MainActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()){
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
                         myTags.add("#"+ ds.getKey());
-                      //  myTagsList.add(ds.getKey());
+                        //  myTagsList.add(ds.getKey());
                         String tagName = ds.getKey().toLowerCase();
                         String gender = ds.child("gender").getValue().toString();
                         String mAgeMax = ds.child("maxAge").getValue().toString();
@@ -520,7 +556,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB=new StringBuilder();
         Map tagsMap = new HashMap<>();
-     //   System.out.println("NAME: " + ds.child("name").getValue().toString()+"  Birth:" + ds.child("dateOfBirth").getValue().toString());
+        //   System.out.println("NAME: " + ds.child("name").getValue().toString()+"  Birth:" + ds.child("dateOfBirth").getValue().toString());
 
         try {
             int age = stringDateToAge(ds.child("dateOfBirth").getValue().toString());
@@ -623,7 +659,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return 0;
         }
-}
+    }
 
     private double distance(double lat1, double lon1, double lat2, double lon2) {
         double theta = lon1 - lon2;
@@ -668,5 +704,37 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("Current_USERID",mUID);
             editor.apply();
         }
+    }
+
+    private void sendNotification(String matchId, String myName, String sendMessageText) {
+        DatabaseReference allTokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        Query query = allTokens.orderByKey().equalTo(matchId);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    Token token = ds.getValue(Token.class);
+                    Data data = new Data(currentUID,R.drawable.login_photo,"Check out now!","New match!",matchId);
+                    Sender sender = new Sender(data, token.getToken());
+                    apiService.sendNotification(sender).enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            //       Toast.makeText(ChatActivity.this,""+response.message(),Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                        }
+                    });
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -79,6 +81,8 @@ public class ChatActivity extends AppCompatActivity {
             getChatId();
             fillImagesAndName();
 
+            NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancelAll();
             //create APISERVICE
             Client client = new Client();
             apiService = client.getClient("https://fcm.googleapis.com/").create(APIService.class);
@@ -225,7 +229,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     Token token = ds.getValue(Token.class);
-                    Data data = new Data(currentUserID,R.drawable.login_photo,myName+":"+sendMessageText,"New message",matchId);
+                    Data data = new Data(currentUserID,R.drawable.login_photo,myName+":"+sendMessageText,myName,matchId);
                     Sender sender = new Sender(data, token.getToken());
                     apiService.sendNotification(sender).enqueue(new Callback<ResponseBody>() {
                         @Override

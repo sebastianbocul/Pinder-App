@@ -27,7 +27,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 
@@ -42,6 +47,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
     private DatabaseReference mUserDatabase, mUserProfileDatabase,myDatabaseReference;
     private ImageView dislikeButton,likeButton;
     private Button unmatchButton;
+    private String userAge;
     ViewPager viewPager;
     private ArrayList imagesList,mImages;
     DatabaseReference mImageDatabase;
@@ -260,12 +266,20 @@ public void fillUserProfile(){
                         tagsTextView.setText("Mutual tags: ");
                     }
 
+                    userAge="";
+                    if(map.get("dateOfBirth")!=null){
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                            int age = stringDateToAge(map.get("dateOfBirth").toString());
+                            userAge = String.valueOf(age);
+                        }
+                        else  userAge="";
+                    }
+
                     //name
                     if(map.get("name")!=null){
                         name = map.get("name").toString();
-                        nameTextView.setText("Name: "+name);
+                        nameTextView.setText(name+"  " + userAge);
                     }else descriptionTextView.setText("Name: ");
-
 
 
                     //sex
@@ -330,5 +344,27 @@ public void fillUserProfile(){
 
     private double rad2deg(double rad) {
         return (rad * 180.0 / Math.PI);
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public int stringDateToAge(String strDate){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+        LocalDate date = LocalDate.parse(strDate, formatter);
+        Date c = Calendar.getInstance().getTime();
+        LocalDate today = LocalDate.now();
+
+        return calculateAge(date,today);
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static int calculateAge(LocalDate birthDate, LocalDate currentDate) {
+
+        if ((birthDate != null) && (currentDate != null)) {
+            return Period.between(birthDate, currentDate).getYears();
+        } else {
+            return 0;
+        }
     }
 }
