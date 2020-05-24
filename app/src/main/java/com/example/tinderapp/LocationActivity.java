@@ -2,6 +2,14 @@ package com.example.tinderapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +28,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -182,8 +191,24 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                             double distance = distance(myLatitude,myLongitude,latitude,longitude);
                             LatLng latLngFB = new LatLng(latitude,longitude);
 
+
+                            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.picture_default);
+                            Bitmap b=bitmapdraw.getBitmap();
+                            Bitmap smallMarker = Bitmap.createScaledBitmap(b, 100 , 100, false);
+
+                            Bitmap circleMarker = getCroppedBitmap(smallMarker);
+
+                            //Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
+                            //Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+                            //BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.picture_default);
+                            //createScaledBitmap(bitmap, 300, 200, false);
+                           // Bitmap bitmap = Bitmap.createScaledBitmap(icon,50,50,false);
+
                             MarkerOptions markerOptionsFB;
-                            markerOptionsFB= new MarkerOptions().position(latLngFB).title(userName + "\r" + Math.round(distance) + "km");
+                            markerOptionsFB= new MarkerOptions()
+                                    .position(latLngFB)
+                                    .title(userName + "\r" + Math.round(distance) + "km")
+                                    .icon(BitmapDescriptorFactory.fromBitmap(circleMarker));
 
                             Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
                             myMarker.setTag(dataSnapshot.getKey().trim());
@@ -239,4 +264,27 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     private double rad2deg(double rad) {
         return (rad * 180.0 / Math.PI);
     }
+
+    public Bitmap getCroppedBitmap(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
+                bitmap.getWidth() / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
+        //return _bmp;
+        return output;
+    }
+
 }
