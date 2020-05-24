@@ -1,5 +1,6 @@
 package com.example.tinderapp;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
@@ -10,6 +11,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,10 +25,17 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -47,6 +57,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback {
 
     Button btLocation;
@@ -60,6 +73,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     private DatabaseReference myRef;
     FirebaseDatabase database;
     DatabaseReference usersReference;
+    Bitmap bitmap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -191,27 +205,55 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                             double distance = distance(myLatitude,myLongitude,latitude,longitude);
                             LatLng latLngFB = new LatLng(latitude,longitude);
 
+                            if(dataSnapshot.child("profileImageUrl").getValue().toString().equals("default")){
+                                Log.d("locTag", "onDataChange datasnap1: " + dataSnapshot.child("profileImageUrl").getValue().toString());
+                                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.picture_default);
+                                bitmap=bitmapdraw.getBitmap();
+                                Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, 100 , 100, false);
+                                Bitmap circleMarker = getCroppedBitmap(smallMarker);
+                                MarkerOptions markerOptionsFB;
+                                markerOptionsFB= new MarkerOptions()
+                                        .position(latLngFB)
+                                        .title(userName + "\r" + Math.round(distance) + "km")
+                                        .icon(BitmapDescriptorFactory.fromBitmap(circleMarker));
 
-                            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.picture_default);
-                            Bitmap b=bitmapdraw.getBitmap();
-                            Bitmap smallMarker = Bitmap.createScaledBitmap(b, 100 , 100, false);
+                                Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
+                                myMarker.setTag(dataSnapshot.getKey().trim());
 
-                            Bitmap circleMarker = getCroppedBitmap(smallMarker);
 
-                            //Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
-                            //Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
-                            //BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.picture_default);
-                            //createScaledBitmap(bitmap, 300, 200, false);
-                           // Bitmap bitmap = Bitmap.createScaledBitmap(icon,50,50,false);
+                            }else {
 
-                            MarkerOptions markerOptionsFB;
-                            markerOptionsFB= new MarkerOptions()
-                                    .position(latLngFB)
-                                    .title(userName + "\r" + Math.round(distance) + "km")
-                                    .icon(BitmapDescriptorFactory.fromBitmap(circleMarker));
 
-                            Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
-                            myMarker.setTag(dataSnapshot.getKey().trim());
+                                Glide.with(LocationActivity.this)
+                                        .load(dataSnapshot.child("profileImageUrl").getValue().toString())
+                                        .into(new CustomTarget<Drawable>() {
+                                            @Override
+                                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                                bitmap = drawableToBitmap(resource);
+                                                Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, 100 , 100, false);
+                                                Bitmap circleMarker = getCroppedBitmap(smallMarker);
+                                                MarkerOptions markerOptionsFB;
+                                                markerOptionsFB= new MarkerOptions()
+                                                        .position(latLngFB)
+                                                        .title(userName + "\r" + Math.round(distance) + "km")
+                                                        .icon(BitmapDescriptorFactory.fromBitmap(circleMarker));
+
+                                                Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
+                                                myMarker.setTag(dataSnapshot.getKey().trim());
+
+                                            }
+
+                                            @Override
+                                            public void onLoadCleared(@Nullable Drawable placeholder) {
+                                                // Remove the Drawable provided in onResourceReady from any Views and ensure
+                                                // no references to it remain.
+                                            }
+                                        });
+
+
+
+                            }
+
                         }
 
                         @Override
@@ -287,4 +329,26 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         return output;
     }
 
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        // We ask for the bounds if they have been set as they would be most
+        // correct, then we check we are  > 0
+        final int width = !drawable.getBounds().isEmpty() ?
+                drawable.getBounds().width() : drawable.getIntrinsicWidth();
+
+        final int height = !drawable.getBounds().isEmpty() ?
+                drawable.getBounds().height() : drawable.getIntrinsicHeight();
+
+        // Now we check we are > 0
+        final Bitmap bitmap = Bitmap.createBitmap(width <= 0 ? 1 : width, height <= 0 ? 1 : height,
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
 }
