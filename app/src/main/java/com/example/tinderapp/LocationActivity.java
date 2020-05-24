@@ -3,6 +3,7 @@ package com.example.tinderapp;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -31,11 +32,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.example.tinderapp.Chat.ChatActivity;
+import com.example.tinderapp.Matches.MatchesActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -74,36 +78,27 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     FirebaseDatabase database;
     DatabaseReference usersReference;
     Bitmap bitmap;
+    LinearLayout linearLayout;
+    private ImageView profileImage,goToChat;
+    private boolean toggleMapToolBarVisibility;
+
+    private String matchId,myId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
-
+        linearLayout = (LinearLayout) findViewById(R.id.userLayout);
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         mAuth = FirebaseAuth.getInstance();
         currentUID = mAuth.getCurrentUser().getUid();
+        myId=mAuth.getCurrentUser().getUid();
 
-
-//        btLocation = (Button) findViewById(R.id.bt_location);
-//        textView1 =(TextView) findViewById(R.id.text_view1);
-//        textView2 =(TextView) findViewById(R.id.text_view2);
-//        textView3 =(TextView) findViewById(R.id.text_view3);
-//        textView4 =(TextView) findViewById(R.id.text_view4);
-//        textView5 =(TextView) findViewById(R.id.text_view5);
-        name = (TextView) findViewById(R.id.name);
-
+        name = (TextView) findViewById(R.id.MatchName);
+        profileImage = findViewById(R.id.profileImage);
+        goToChat = findViewById(R.id.goToChat);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.google_map);
         supportMapFragment.getMapAsync(LocationActivity.this);
-//        btLocation.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //checking permission
-//
-//
-//            }
-//        });
-
     }
 
 
@@ -121,14 +116,30 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                 //get my location
                 mAuth = FirebaseAuth.getInstance();
                 currentUID = mAuth.getCurrentUser().getUid();
-                String lat = dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString();
-                String lon = dataSnapshot.child("Users").child(currentUID).child("location").child("longitude").getValue().toString();
+                String lat;
+                String lon;
+                String latMap;
+                String lonMap;
+                lat = dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString();
+                lon = dataSnapshot.child("Users").child(currentUID).child("location").child("longitude").getValue().toString();
+                if(getIntent().hasExtra("matchId")){
+                    latMap = dataSnapshot.child("Users").child(getIntent().getExtras().getString("matchId")).child("location").child("latitude").getValue().toString();
+                    lonMap = dataSnapshot.child("Users").child(getIntent().getExtras().getString("matchId")).child("location").child("longitude").getValue().toString();
+                }else {
+                    latMap=lat;
+                    lonMap=lon;
+                }
+                final double myMapLatitude = Double.parseDouble(latMap);
+                final double myMapLongitude = Double.parseDouble(lonMap);
+                LatLng latLngMap = new LatLng(myMapLatitude,myMapLongitude);
+
+
                 final double myLatitude = Double.parseDouble(lat);
                 final double myLongitude = Double.parseDouble(lon);
                 LatLng latLng = new LatLng(myLatitude,myLongitude);
                 if(mapRdy==false) {
-                    myGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                    myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    myGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLngMap));
+                    myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLngMap, 15));
                     mapRdy=true;
                     //
                 }
@@ -138,51 +149,67 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                 Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
                 myMarker.setTag(currentUID.trim());
 
-              //  name.setText(dataSnapshot.child("Users").child(currentUID).child("name").getValue().toString());
-//                textView1.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString());
-//                textView2.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("longitude").getValue().toString());
-//                textView3.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("address").getValue().toString());
-//                textView4.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("countryName").getValue().toString());
-//                textView5.setText(dataSnapshot.child("Users").child(currentUID).child("location").child("locality").getValue().toString());
 
-
-
+                myGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+                        linearLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
                 myGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
+                        try{
+                            linearLayout.setVisibility(View.VISIBLE);
+                            name.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("name").getValue().toString());
+                            String profileImageUrl = dataSnapshot.child("Users").child(marker.getTag().toString()).child("profileImageUrl").getValue().toString();
+                            if(profileImageUrl.equals("default")){
+                                Glide.with(LocationActivity.this).load( R.drawable.picture_default).into(profileImage);
 
-                      //  name.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("name").getValue().toString());
-//                        textView1.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("latitude").getValue().toString());
-//                        textView2.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("longitude").getValue().toString());
-//                        textView3.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("address").getValue().toString());
-//                        textView4.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("countryName").getValue().toString());
-//                        textView5.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("location").child("locality").getValue().toString());
+                            }else {
+                                Glide.with(LocationActivity.this).load(dataSnapshot.child("Users").child(marker.getTag().toString()).child("profileImageUrl").getValue().toString()).into(profileImage);
+                            }
+                            matchId = marker.getTag().toString();
+                            if(myId.equals(matchId)){
+                                if(dataSnapshot.child("Users").child(marker.getTag().toString()).child("showMyLocation").getValue().toString().equals("true")){
+                                    Glide.with(LocationActivity.this).load(R.drawable.ghost_mode).into(goToChat);
+                                    goToChat.setEnabled(false);
+                                } else {
+                                    goToChat.setVisibility(View.INVISIBLE);
+                                }
+                            }else {
+                                goToChat.setVisibility(View.VISIBLE);
+                                goToChat.setEnabled(true);
+                                Glide.with(LocationActivity.this).load(R.drawable.matches).into(goToChat);
 
+                            }
+                            profileImage.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                    goToUsersProfile();
+                                }
+                            });
+
+                            goToChat.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    goToUserChat();
+                                }
+                            });
+
+
+
+
+
+
+                        }
+                        catch (SecurityException sec){
+                            Log.e("locationTag", sec.getMessage());
+                        }
                         return false;
                     }
                 });
-/*          //show everyone location
-                for(DataSnapshot ds : dataSnapshot.child("Users").getChildren()){
-                    String userName = ds.child("name").getValue().toString();
-                    double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
-                    double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
-                    double distance = distance(myLatitude,myLongitude,latitude,longitude);
-                    LatLng latLngFB = new LatLng(latitude,longitude);
-
-                    MarkerOptions markerOptionsFB;
-
-                    if (ds.getKey().equals(currentUID)) {
-                        markerOptionsFB= new MarkerOptions().position(latLngFB).title("I'm here").icon(BitmapDescriptorFactory.defaultMarker(300));
-                    }
-                    else {
-                        markerOptionsFB= new MarkerOptions().position(latLngFB).title(userName + "\r" + Math.round(distance) + "km");
-                    }
-                    Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
-                    myMarker.setTag(ds.getKey().trim());
-                }
-
-            }*/
-
             //matches only location
                 for(final DataSnapshot ds : dataSnapshot.child("Users").child(currentUID).child("connections").child("matches").getChildren()){
 
@@ -207,7 +234,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
                             if(dataSnapshot.child("profileImageUrl").getValue().toString().equals("default")){
                                 Log.d("locTag", "onDataChange datasnap1: " + dataSnapshot.child("profileImageUrl").getValue().toString());
-                                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.picture_default);
+                                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.map_default);
                                 bitmap=bitmapdraw.getBitmap();
                                 Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, 100 , 100, false);
                                 Bitmap circleMarker = getCroppedBitmap(smallMarker);
@@ -226,6 +253,8 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
                                 Glide.with(LocationActivity.this)
                                         .load(dataSnapshot.child("profileImageUrl").getValue().toString())
+                                        .override(100, 100)
+                                        .centerCrop()
                                         .into(new CustomTarget<Drawable>() {
                                             @Override
                                             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
@@ -249,25 +278,17 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                                                 // no references to it remain.
                                             }
                                         });
-
-
-
                             }
-
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
                         }
                     });
-
                 }
-
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
@@ -280,8 +301,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                 //    getLocation();
                 }
                 break;
-
-
         }
     }
 
@@ -350,5 +369,24 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         drawable.draw(canvas);
 
         return bitmap;
+    }
+
+    private void goToUsersProfile() {
+        Intent intent = new Intent(LocationActivity.this, UsersProfilesActivity.class);
+        intent.putExtra("userId", matchId);
+        intent.putExtra("fromActivity","LocationActivity");
+        startActivity(intent);
+    }
+    private void goToUserChat() {
+        Intent intent = new Intent(LocationActivity.this, ChatActivity.class);
+        intent.putExtra("matchId", matchId);
+        intent.putExtra("fromActivity","LocationActivity");
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+            Intent i = new Intent(this, MatchesActivity.class);
+            startActivity(i);
     }
 }

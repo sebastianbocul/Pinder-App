@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.tinderapp.LocationActivity;
 import com.example.tinderapp.Matches.MatchesActivity;
 import com.example.tinderapp.Notifications.APIService;
 import com.example.tinderapp.Notifications.Client;
@@ -64,7 +65,7 @@ public class ChatActivity extends AppCompatActivity {
 
     APIService apiService;
     boolean notify = false;
-
+    private String fromActivity = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,14 +81,15 @@ public class ChatActivity extends AppCompatActivity {
             mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("Users");
             getChatId();
             fillImagesAndName();
-
+            if( getIntent().getExtras().getString("fromActivity")!=null){
+                fromActivity = getIntent().getExtras().getString("fromActivity");
+            }
             NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancelAll();
             //create APISERVICE
             Client client = new Client();
             apiService = client.getClient("https://fcm.googleapis.com/").create(APIService.class);
-                    //Client.
-         //   api= client.get
+
             myRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
             //myRecyclerView.setNestedScrollingEnabled(true);
             // myRecyclerView.setHasFixedSize(false);
@@ -332,7 +334,16 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(fromActivity.equals("LocationActivity")){
+            finish();
+            /*
+            Intent i = new Intent(this, LocationActivity.class);
+            i.putExtra("matchId", matchId);
+            startActivity(i);*/
+        }else {
         Intent i = new Intent(this, MatchesActivity.class);
         startActivity(i);
+        }
     }
 }

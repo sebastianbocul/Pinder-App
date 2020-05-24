@@ -100,8 +100,13 @@ public class UsersProfilesActivity extends AppCompatActivity {
 
                     }
                     }
-
-
+                if(getIntent().hasExtra("userId")){
+                    if(intent.getStringExtra("userId").equals(myId)){
+                        unmatchButton.setVisibility(View.INVISIBLE);
+                        dislikeButton.setVisibility(View.INVISIBLE);
+                        likeButton.setVisibility(View.INVISIBLE);
+                    }
+                }
             }
 
             @Override
@@ -189,11 +194,8 @@ public class UsersProfilesActivity extends AppCompatActivity {
 
         });
         //method nr1/
-        /*
-        if(fromActivity.equals("ChatActivity")){
 
-            unmatchButton.setEnabled(true);
-        }else unmatchButton.setEnabled(false);*/
+
         fillUserProfile();
         loadImages();
     }

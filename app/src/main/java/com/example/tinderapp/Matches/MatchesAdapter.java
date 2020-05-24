@@ -54,13 +54,15 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesViewHolders> {
         else {
             holder.mLastMessage.setTypeface(null, Typeface.BOLD);
             holder.mMatchName.setTypeface(null, Typeface.BOLD);
-           // holder.mMatchImage.setColor
             holder.mMatchImage.setBorderColor(Color.parseColor("#D3D3D3"));
             holder.mLastMessage.setTextColor(Color.parseColor("#404040"));
         }
         holder.mMatchName.setText(matchesList.get(position).getName());
         holder.mLastMessage.setText(matchesList.get(position).getLastMessage());
-        if(!matchesList.get(position).getProfileImageUrl().equals("default")){
+
+        if(matchesList.get(position).getProfileImageUrl().equals("default")){
+            Glide.with(context).load(R.drawable.picture_default).into(holder.mMatchImage);
+        }else {
             Glide.with(context).load(matchesList.get(position).getProfileImageUrl()).into(holder.mMatchImage);
         }
 

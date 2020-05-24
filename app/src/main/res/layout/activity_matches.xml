@@ -63,7 +63,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="0sp">
+        android:paddingTop="5sp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
