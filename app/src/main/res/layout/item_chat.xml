@@ -26,7 +26,7 @@
             android:layout_width="17dp"
             android:layout_height="wrap_content"
             android:paddingTop="5sp"
-            android:paddingBottom="5sp"
+            android:paddingBottom="0sp"
             android:text="Text" />
 
 

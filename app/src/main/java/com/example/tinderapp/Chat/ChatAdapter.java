@@ -2,6 +2,7 @@ package com.example.tinderapp.Chat;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,8 +55,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolders holder, int position) {
         holder.mMessaage.setText(chatList.get(position).getMessage());
+        Log.d("chatLog", " position : " + position + " message : " + chatList.get(position).getMessage());
         if(chatList.get(position).getCurrentUser()==true){
-            paramsContainer2.setMargins(100,30,20,0);
+
+            paramsContainer2.setMargins(100,0,20,0);
             paramsText.setMargins(0,0,10,0);
             holder.mMessaage.setGravity(Gravity.RIGHT);
             holder.mContainer.setGravity(Gravity.RIGHT);
@@ -63,6 +66,19 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
             holder.mContainer.setLayoutParams(paramsContainer2);
             holder.mMessaage.setLayoutParams(paramsText);
             holder.mContainer.setBackgroundResource(R.drawable.my_chat);
+            if(position!=0){
+                if(chatList.get(position-1).getCurrentUser()==false){
+                    holder.mChatImage.getLayoutParams().height = 125;
+                    holder.mChatImage.getLayoutParams().width = 125;
+                }else {
+                    holder.mChatImage.getLayoutParams().height = 0;
+                    holder.mChatImage.getLayoutParams().width = 0;
+                }
+            }else {
+                holder.mChatImage.getLayoutParams().height = 125;
+                holder.mChatImage.getLayoutParams().width = 125;
+            }
+
             if(chatList.get(position).getProfileImageUrl().equals("default")){
                 Glide.with(context).load(R.drawable.picture_default).into(holder.mChatImage);
             }else {
@@ -70,7 +86,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
             }
         }
         else {
-            paramsContainer.setMargins(20,30,100,0);
+            paramsContainer.setMargins(20,0,100,0);
             paramsText.setMargins(10,0,0,0);
             holder.mMessaage.setGravity(Gravity.LEFT);
             holder.mContainer.setGravity(Gravity.LEFT);
@@ -78,7 +94,21 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
             holder.mContainer.setLayoutParams(paramsContainer);
             holder.mMessaage.setLayoutParams(paramsText);
             holder.mContainer.setBackgroundResource(R.drawable.other_chat);
+            if(position!=0){
+                if(chatList.get(position-1).getCurrentUser()==true){
+                    holder.mChatImage.getLayoutParams().height = 125;
+                    holder.mChatImage.getLayoutParams().width = 125;
+                }else {
+                    holder.mChatImage.getLayoutParams().height = 0;
+                    holder.mChatImage.getLayoutParams().width = 0;
+                }
+            }else {
+                holder.mChatImage.getLayoutParams().height = 125;
+                holder.mChatImage.getLayoutParams().width = 125;
+            }
 
+
+            //   holder.mChatImage.setVisibility(View.INVISIBLE);
             if(chatList.get(position).getProfileImageUrl().equals("default")){
                 Glide.with(context).load(R.drawable.picture_default).into(holder.mChatImage);
             }else {
