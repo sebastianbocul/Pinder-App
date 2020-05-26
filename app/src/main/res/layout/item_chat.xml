@@ -10,7 +10,7 @@
         android:layout_weight="1"
         android:gravity="right"
         android:orientation="vertical"
-        android:padding="5sp"
+        android:padding="2sp"
         android:radius="25sp">
 
 

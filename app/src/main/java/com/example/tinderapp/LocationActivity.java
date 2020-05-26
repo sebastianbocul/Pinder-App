@@ -120,6 +120,9 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                 String lon;
                 String latMap;
                 String lonMap;
+                if(!dataSnapshot.child("Users").child(currentUID).child("location").exists()){
+                    return;
+                }
                 lat = dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString();
                 lon = dataSnapshot.child("Users").child(currentUID).child("location").child("longitude").getValue().toString();
                 if(getIntent().hasExtra("matchId")){
