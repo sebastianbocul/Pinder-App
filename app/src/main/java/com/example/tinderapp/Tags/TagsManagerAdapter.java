@@ -55,7 +55,6 @@ public class TagsManagerAdapter extends RecyclerView.Adapter<TagsManagerAdapter.
                 public void onClick(View v) {
                     if (listener != null) {
                         int position = getAdapterPosition();
-                        System.out.println("Poosition");
                         if (position != RecyclerView.NO_POSITION) {
                             listener.onDeleteClick(position);
                         }
@@ -78,7 +77,11 @@ public class TagsManagerAdapter extends RecyclerView.Adapter<TagsManagerAdapter.
         TagsManagerObject currentItem = mTagsManagerObject.get(position);
         holder.tagName.setText("#"+currentItem.getTagName());
         holder.gender.setText(currentItem.getGender());
-        holder.distance.setText(currentItem.getmDistance());
+        if(currentItem.getmDistance().equals("100000")){
+            holder.distance.setText("w/o");
+        }else {
+            holder.distance.setText(currentItem.getmDistance());
+        }
         holder.tagAge.setText(currentItem.getmAgeMin() + "-" + mTagsManagerObject.get(position).getmAgeMax());
     }
     @Override

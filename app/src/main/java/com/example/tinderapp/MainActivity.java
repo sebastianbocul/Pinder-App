@@ -503,41 +503,71 @@ public class MainActivity extends AppCompatActivity {
         startActivity(startMain);
     }
 
+    private ArrayList<String> first;
     private void getUsersFromDb(){
-
+        first = new ArrayList<>();
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         mAuth = FirebaseAuth.getInstance();
         DatabaseReference newUserDb = FirebaseDatabase.getInstance().getReference().child("Users");
         String newCurrentUID =FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        newUserDb.addChildEventListener(new ChildEventListener() {
+
+
+        newUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.child("sex").getValue()!=null){
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) &&!dataSnapshot.getKey().equals(newCurrentUID)){
-                        dataSnapshot.getKey().equals(currentUID);
-                        System.out.println("AAAJ : " +  dataSnapshot.getKey() + " ---- my: " +  currentUID.toString()+ "   New newCurrentUID: " + newCurrentUID);
 
-                        getTagsPreferencesUsers(dataSnapshot);
+                if(dataSnapshot.child(currentUID).child("connections").child("yes").exists()){
+                    for (DataSnapshot ds: dataSnapshot.child(currentUID).child("connections").child("yes").getChildren()){
+                        if(!dataSnapshot.child(currentUID).child("connections").child("matches").hasChild(ds.getKey())){
+                            Log.d("first", "onDataChange: " + ds.getKey());
+                            getTagsPreferencesUsers(dataSnapshot.child(ds.getKey()));
+                            first.add(ds.getKey());
+                        }
                     }
                 }
-                noMoreEditText.setText("There is no more users");
-            }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d("first", "after loop: " );
 
-            }
+                newUserDb.addChildEventListener(new ChildEventListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        if(dataSnapshot.child("sex").getValue()!=null){
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists() && !first.contains(dataSnapshot.getKey()) && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) &&!dataSnapshot.getKey().equals(newCurrentUID)){
+                                dataSnapshot.getKey().equals(currentUID);
+                                Log.d("first", "OnChillAdded: " + dataSnapshot.getKey());
 
-            }
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                getTagsPreferencesUsers(dataSnapshot);
+                            }
+                        }
+                        noMoreEditText.setText("There is no more users");
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
             }
 
@@ -546,6 +576,42 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+//        newUserDb.addChildEventListener(new ChildEventListener() {
+//            @RequiresApi(api = Build.VERSION_CODES.O)
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                if(dataSnapshot.child("sex").getValue()!=null){
+//
+//                    if(dataSnapshot.exists() && !first.contains(dataSnapshot.getKey()) && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) &&!dataSnapshot.getKey().equals(newCurrentUID)){
+//                        dataSnapshot.getKey().equals(currentUID);
+//
+//                        getTagsPreferencesUsers(dataSnapshot);
+//                    }
+//                }
+//                noMoreEditText.setText("There is no more users");
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
 
     }
@@ -556,11 +622,9 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB=new StringBuilder();
         Map tagsMap = new HashMap<>();
-        //   System.out.println("NAME: " + ds.child("name").getValue().toString()+"  Birth:" + ds.child("dateOfBirth").getValue().toString());
 
         try {
             int age = stringDateToAge(ds.child("dateOfBirth").getValue().toString());
-            //   System.out.println("AGGGGGGEEEE " + age);
             for (DataSnapshot dataTag : ds.child("tags").getChildren()) {
                 double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
                 double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());

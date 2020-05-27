@@ -140,7 +140,6 @@ public class TagsManagerFragment extends Fragment {
         String mDistance=distanceMax;
         TagsManagerObject obj = new TagsManagerObject(tagName,gender,mAgeMin,mAgeMax,mDistance);
         myTagsList.add(obj);
-        System.out.println("myTagsList:   " + myTagsList);
         listener.doSomethingWithData(myTagsList,removedTags);
         Toast.makeText(getActivity().getApplicationContext(), "Tag added!", Toast.LENGTH_SHORT).show();
 //        Intent send=new Intent(getActivity().getApplicationContext(),TagsManagerActivity.class);
@@ -164,7 +163,6 @@ public class TagsManagerFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        System.out.println("DDDDDDDDD" + ds);
                         String tagName = ds.getKey();
                         String gender = ds.child("gender").getValue().toString();
                         String mAgeMax = ds.child("maxAge").getValue().toString();
@@ -260,7 +258,15 @@ public class TagsManagerFragment extends Fragment {
         maxDistanceSeeker.setOnSeekbarChangeListener(new OnSeekbarChangeListener() {
             @Override
             public void valueChanged(Number minValue) {
-                maxDistanceTextView.setText("Max distance: " + String.valueOf(minValue) + " km");
+
+                if(minValue.intValue()==1000){
+                    minValue=100000;
+                    maxDistanceTextView.setText("Max distance: " + " w/o");
+
+                }else {
+                    maxDistanceTextView.setText("Max distance: " + String.valueOf(minValue) + " km");
+                }
+
                 distanceMax=minValue.toString();
             }
         });
@@ -282,7 +288,6 @@ public class TagsManagerFragment extends Fragment {
 
             @Override
             public void onDeleteClick(int position) {
-                System.out.println("Activity pos: " + position);
                 removeItem(position);
             }
         });
