@@ -7,7 +7,11 @@ android:layout_height="match_parent"
 tools:context=".RegistrationActivity"
 android:orientation="vertical"
     android:padding="50sp">
-
+    <Button android:id="@+id/back"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:text="Back!"
+        android:onClick="onBack" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

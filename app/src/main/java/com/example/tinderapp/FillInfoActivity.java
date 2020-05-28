@@ -222,6 +222,10 @@ public class FillInfoActivity extends AppCompatActivity {
         deleteUser();
         logoutUser();
     }
+    public void onBack(View view) {
+        deleteUser();
+        logoutUser();
+    }
 
     private void deleteUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

@@ -11,7 +11,11 @@
     android:layout_height="wrap_content"
     tools:context=".ProfileActivity"
     android:orientation="vertical">
-
+    <Button android:id="@+id/back"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:text="Back!"
+        android:onClick="onBack" />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

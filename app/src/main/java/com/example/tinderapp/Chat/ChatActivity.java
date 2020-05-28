@@ -346,4 +346,17 @@ public class ChatActivity extends AppCompatActivity {
         startActivity(i);
         }
     }
+    public void onBack(View view) {
+
+        if(fromActivity.equals("LocationActivity")){
+            finish();
+            /*
+            Intent i = new Intent(this, LocationActivity.class);
+            i.putExtra("matchId", matchId);
+            startActivity(i);*/
+        }else {
+            Intent i = new Intent(this, MatchesActivity.class);
+            startActivity(i);
+        }
+    }
 }

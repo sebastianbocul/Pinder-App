@@ -367,6 +367,12 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    public void onBack(View view) {
+        updateMyDb();
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+        return;
+    }
 
     private void updateMyDb(){
         DatabaseReference myDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);

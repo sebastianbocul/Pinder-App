@@ -265,4 +265,9 @@ public class RegistrationActivity extends AppCompatActivity {
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
     }
+    public void onBack(View view) {
+
+        Intent i = new Intent(this, LoginActivity.class);
+        startActivity(i);
+    }
 }

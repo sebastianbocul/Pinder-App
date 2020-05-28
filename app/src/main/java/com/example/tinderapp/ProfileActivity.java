@@ -540,6 +540,12 @@ public class ProfileActivity extends AppCompatActivity {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
     }
+    public void onBack(View view) {
+        saveUserInformation();
+        finish();
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+    }
     public static Bitmap rotateImage(Bitmap source, float angle) {
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);

@@ -16,6 +16,13 @@
         android:orientation="horizontal"
         android:paddingTop="10sp">
 
+        <Button android:id="@+id/back"
+            android:layout_width="50sp"
+            android:layout_height="50sp"
+            android:text="Back!"
+            android:onClick="onBack" />
+
+
         <ImageView
             android:id="@+id/settins"
             android:layout_width="match_parent"

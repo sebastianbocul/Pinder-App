@@ -125,7 +125,21 @@ public class TagsManagerActivity extends AppCompatActivity implements TagsManage
         startActivity(startMain);
     }
 
+    public void onBack(View view) {
 
+
+        Log.d("TMAlog", "onBackPressed myTags: " + myTagsList);
+        Log.d("TMAlog", "onBackPressed removedTags: " + removedTags);
+        if(myTagsList.size()==0){
+            Toast.makeText(this,"Add at least one tag!",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        updateDb();
+        Intent startMain = new Intent(this.getApplicationContext(), MainActivity.class);
+        startActivity(startMain);
+    }
 
 
   private void updateDb() {

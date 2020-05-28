@@ -6,7 +6,11 @@
     android:layout_height="wrap_content"
     tools:context=".Chat.ChatActivity"
     android:orientation="vertical">
-
+    <Button android:id="@+id/back"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:text="Back!"
+        android:onClick="onBack" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"

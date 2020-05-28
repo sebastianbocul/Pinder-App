@@ -320,6 +320,10 @@ public class MatchesActivity extends AppCompatActivity {
         Intent startMain = new Intent(this, MainActivity.class);
         startActivity(startMain);
     }
+    public void onBack(View view) {
+        Intent startMain = new Intent(this, MainActivity.class);
+        startActivity(startMain);
+    }
 
     private List<MatchesObject> getDataSetMatches() {
         return resultMatches;

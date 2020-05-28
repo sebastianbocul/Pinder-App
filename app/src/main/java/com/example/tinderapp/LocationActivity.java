@@ -392,4 +392,9 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
             Intent i = new Intent(this, MatchesActivity.class);
             startActivity(i);
     }
+
+    public void onBack(View view) {
+        Intent i = new Intent(this, MatchesActivity.class);
+        startActivity(i);
+    }
 }
