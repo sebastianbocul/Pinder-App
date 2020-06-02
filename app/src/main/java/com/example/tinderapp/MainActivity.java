@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     private TagsAdapter adapter;
     private ArrayList<TagsManagerObject> myTagsList = new ArrayList<>();
     private double myLatitude,myLongitude;
+    private Map<String, String> myInfo = new HashMap<>();
     String mUID;
     APIService apiService;
     boolean notify = false;
@@ -524,7 +525,13 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                if(dataSnapshot.child("sex").exists()){
+                    myInfo.put("sex",dataSnapshot.child("sex").getValue().toString());
+                }
+                if(dataSnapshot.child("dateOfBirth").exists()){
+                    int myAge = stringDateToAge(dataSnapshot.child("dateOfBirth").getValue().toString());
+                    myInfo.put("age", String.valueOf(myAge));
+                }
 
                 if(dataSnapshot.child(currentUID).child("connections").child("yes").exists()){
                     for (DataSnapshot ds: dataSnapshot.child(currentUID).child("connections").child("yes").getChildren()){
@@ -583,44 +590,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-//        newUserDb.addChildEventListener(new ChildEventListener() {
-//            @RequiresApi(api = Build.VERSION_CODES.O)
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                if(dataSnapshot.child("sex").getValue()!=null){
-//
-//                    if(dataSnapshot.exists() && !first.contains(dataSnapshot.getKey()) && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) &&!dataSnapshot.getKey().equals(newCurrentUID)){
-//                        dataSnapshot.getKey().equals(currentUID);
-//
-//                        getTagsPreferencesUsers(dataSnapshot);
-//                    }
-//                }
-//                noMoreEditText.setText("There is no more users");
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-
-
     }
 
 
@@ -632,6 +601,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             int age = stringDateToAge(ds.child("dateOfBirth").getValue().toString());
+            int myAge = Integer.parseInt(myInfo.get("age"));
             for (DataSnapshot dataTag : ds.child("tags").getChildren()) {
                 double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
                 double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
@@ -640,26 +610,30 @@ public class MainActivity extends AppCompatActivity {
                     ///VALIDATING MY PREFERENCES
                     //comparing tags
                     if (dataTag.getKey().toString().equals(tag.getTagName())) {
-                        //validating gender
+                        //validating my gender preferences
                         if (tag.getGender().equals(ds.child("sex").getValue().toString()) || tag.getGender().equals("Any")) {
-                            //validating age with minAge and maxAge
+                            //validating user gender preferences
+                            if(dataTag.child("gender").getValue().toString().equals(myInfo.get("sex")) || dataTag.child("gender").getValue().toString().equals(myInfo.get("Any"))){
+                            //validating myTag age preferences with minAge and maxAge
                             if (Integer.parseInt(tag.getmAgeMin()) <= age && Integer.parseInt(tag.getmAgeMax()) >= age) {
-                                //validating distance
-                                if (Double.parseDouble(tag.getmDistance()) >= distance) {
-                                    ///CAN VALIDATE OTHER USER PREFERENCES
-                                    mutalTagsList.add(tag.getTagName());
-                                    tagsMap.put(tag.getTagName(), true);
-                                    mutalTagsSB.append("#" + tag.getTagName() + " ");
-
+                                //validating userTag age preferences with minAge and maxAge
+                                if(Integer.parseInt(dataTag.child("minAge").getValue().toString()) <= myAge && Integer.parseInt(dataTag.child("maxAge").getValue().toString()) >=myAge) {
+                                    //validating myTag distance preference
+                                    if (Double.parseDouble(tag.getmDistance()) >= distance) {
+                                        //validate userTag distance preference
+                                        if(Double.parseDouble(dataTag.child("maxDistance").getValue().toString())>=distance){
+                                        ///CAN VALIDATE OTHER USER PREFERENCES
+                                        mutalTagsList.add(tag.getTagName());
+                                        tagsMap.put(tag.getTagName(), true);
+                                        mutalTagsSB.append("#" + tag.getTagName() + " ");
+                                        }
+                                    }
                                 }
 
+                              }
 
-                            }
-
-
+                             }
                         }
-
-
                     }
                 }
             }

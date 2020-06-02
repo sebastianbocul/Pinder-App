@@ -231,7 +231,8 @@ public class TagsManagerFragment extends Fragment {
         addTagButton=getView().findViewById(R.id.addButton);
         tagsEditText = getView().findViewById(R.id.tagsEditText);
         mRadioGroup=getView().findViewById(R.id.radioGroup);
-
+        maxDistanceSeeker.setMinStartValue(100);
+        maxDistanceSeeker.apply();
 
         ///RecyclerView
         myTagsList = new ArrayList<TagsManagerObject>();
@@ -261,7 +262,7 @@ public class TagsManagerFragment extends Fragment {
 
                 if(minValue.intValue()==1000){
                     minValue=100000;
-                    maxDistanceTextView.setText("Max distance: " + " w/o");
+                    maxDistanceTextView.setText("Max distance: " + "∞");
 
                 }else {
                     maxDistanceTextView.setText("Max distance: " + String.valueOf(minValue) + " km");

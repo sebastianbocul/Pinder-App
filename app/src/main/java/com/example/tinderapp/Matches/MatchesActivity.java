@@ -261,12 +261,6 @@ public class MatchesActivity extends AppCompatActivity {
                     MatchesObject obj = new MatchesObject(userId,name,profileImageUrl,mLastMessage,createdByMe,mSortId,mutualTags);
 
 
-                    for(String str:usersID){
-
-                        if (!str.equals(usersID)) {
-
-                        }
-                    }
 
                     if(!usersID.contains(obj.getUserId())){
                         usersID.add(obj.getUserId());
