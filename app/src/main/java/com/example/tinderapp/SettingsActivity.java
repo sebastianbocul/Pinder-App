@@ -78,9 +78,15 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    dateOfBirth = dataSnapshot.child("dateOfBirth").getValue().toString();
-                    onStartDateOfBirth =dateOfBirth;
-                    date.setText(dateOfBirth);
+                    if(dataSnapshot.child("dateOfBirth").exists()){
+                        dateOfBirth = dataSnapshot.child("dateOfBirth").getValue().toString();
+                        onStartDateOfBirth =dateOfBirth;
+                        date.setText(dateOfBirth);
+                    }else {
+                        return;
+                    }
+
+
 
                     if (dataSnapshot.child("showMyLocation").getValue().toString().equals("true")) {
                         showMapLocation = true;

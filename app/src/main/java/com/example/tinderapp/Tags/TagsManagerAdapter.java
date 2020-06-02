@@ -78,7 +78,7 @@ public class TagsManagerAdapter extends RecyclerView.Adapter<TagsManagerAdapter.
         holder.tagName.setText("#"+currentItem.getTagName());
         holder.gender.setText(currentItem.getGender());
         if(currentItem.getmDistance().equals("100000")){
-            holder.distance.setText("w/o");
+            holder.distance.setText("∞");
         }else {
             holder.distance.setText(currentItem.getmDistance());
         }

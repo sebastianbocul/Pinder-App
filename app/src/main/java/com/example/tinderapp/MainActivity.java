@@ -525,11 +525,14 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("sex").exists()){
-                    myInfo.put("sex",dataSnapshot.child("sex").getValue().toString());
+                Log.d("maingetTag", "datasnapshot " + dataSnapshot);
+                if(dataSnapshot.child(currentUID).child("sex").exists()){
+                    Log.d("maingetTag", "myInfo.put sex ");
+                    myInfo.put("sex",dataSnapshot.child(currentUID).child("sex").getValue().toString());
                 }
-                if(dataSnapshot.child("dateOfBirth").exists()){
-                    int myAge = stringDateToAge(dataSnapshot.child("dateOfBirth").getValue().toString());
+                if(dataSnapshot.child(currentUID).child("dateOfBirth").exists()){
+                    int myAge = stringDateToAge(dataSnapshot.child(currentUID).child("dateOfBirth").getValue().toString());
+                    Log.d("maingetTag", "myInfo.put myage ");
                     myInfo.put("age", String.valueOf(myAge));
                 }
 
@@ -598,29 +601,38 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB=new StringBuilder();
         Map tagsMap = new HashMap<>();
-
+        Log.d("maingetTag", "gettagpreferencesUser ");
         try {
             int age = stringDateToAge(ds.child("dateOfBirth").getValue().toString());
             int myAge = Integer.parseInt(myInfo.get("age"));
+            Log.d("maingetTag", "try ");
             for (DataSnapshot dataTag : ds.child("tags").getChildren()) {
                 double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
                 double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
                 double distance = distance(myLatitude, myLongitude, latitude, longitude);
+                Log.d("maingetTag", "forFirst ");
                 for (TagsManagerObject tag : myTagsList) {
                     ///VALIDATING MY PREFERENCES
                     //comparing tags
+                    Log.d("maingetTag", "1st if: " +dataTag.getKey() + " == " +tag.getTagName());
                     if (dataTag.getKey().toString().equals(tag.getTagName())) {
                         //validating my gender preferences
+                        Log.d("maingetTag", "2nd if: " + tag.getGender() + " == " +ds.child("sex").getValue().toString() + "  ||  " + tag.getGender() + " == Any");
                         if (tag.getGender().equals(ds.child("sex").getValue().toString()) || tag.getGender().equals("Any")) {
+                            Log.d("maingetTag", "3rd if: " + dataTag.child("gender").getValue().toString() + " == " + myInfo.get("sex") + "  ||  " +  dataTag.child("gender").getValue().toString() + " == Any");
                             //validating user gender preferences
-                            if(dataTag.child("gender").getValue().toString().equals(myInfo.get("sex")) || dataTag.child("gender").getValue().toString().equals(myInfo.get("Any"))){
-                            //validating myTag age preferences with minAge and maxAge
+                            if(dataTag.child("gender").getValue().toString().equals(myInfo.get("sex")) || dataTag.child("gender").getValue().toString().equals("Any")){
+                                Log.d("maingetTag", "4th if: " + tag.getmAgeMin() + " <= " +age + "  &&  " + tag.getmAgeMax() + " >= " +age);
+                                //validating myTag age preferences with minAge and maxAge
                             if (Integer.parseInt(tag.getmAgeMin()) <= age && Integer.parseInt(tag.getmAgeMax()) >= age) {
+                                Log.d("maingetTag", "5th if: " + dataTag.child("minAge").getValue().toString() + " <= " + myAge + "  &&  " + dataTag.child("maxAge").getValue().toString()+ " >= " + myAge);
                                 //validating userTag age preferences with minAge and maxAge
                                 if(Integer.parseInt(dataTag.child("minAge").getValue().toString()) <= myAge && Integer.parseInt(dataTag.child("maxAge").getValue().toString()) >=myAge) {
+                                    Log.d("maingetTag", "6th if: " + tag.getmDistance() + " >= " +distance);
                                     //validating myTag distance preference
                                     if (Double.parseDouble(tag.getmDistance()) >= distance) {
                                         //validate userTag distance preference
+                                        Log.d("maingetTag", "7th if: " + dataTag.child("maxDistance").getValue().toString()+ " >= " +distance);
                                         if(Double.parseDouble(dataTag.child("maxDistance").getValue().toString())>=distance){
                                         ///CAN VALIDATE OTHER USER PREFERENCES
                                         mutalTagsList.add(tag.getTagName());
