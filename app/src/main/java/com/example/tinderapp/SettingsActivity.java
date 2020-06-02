@@ -261,6 +261,7 @@ public class SettingsActivity extends AppCompatActivity {
                             deleteUserTags();
                             deleteDatabaseAndStorage();
                             deleteMatches();
+                            deleteToken();
                            // logoutUser();
 
                         } else {
@@ -355,6 +356,25 @@ public class SettingsActivity extends AppCompatActivity {
                         // Uh-oh, an error occurred!
                     }
                 });
+
+
+    }
+
+    private void deleteToken(){
+        DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("Tokens");
+        tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child(userId).exists()){
+                    tokenRef.child(userId).removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
     }
