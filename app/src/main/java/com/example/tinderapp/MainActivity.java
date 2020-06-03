@@ -38,6 +38,7 @@ import com.example.tinderapp.Notifications.Token;
 import com.example.tinderapp.Tags.TagsAdapter;
 import com.example.tinderapp.Tags.TagsManagerActivity;
 import com.example.tinderapp.Tags.TagsManagerObject;
+import com.example.tinderapp.Tags.TagsPopularObject;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,6 +61,8 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -601,15 +604,15 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB=new StringBuilder();
         Map tagsMap = new HashMap<>();
-        Log.d("maingetTag", "gettagpreferencesUser ");
+        Log.d("maingetTag", "User Name " + ds.child("name").getValue().toString());
         try {
             int age = stringDateToAge(ds.child("dateOfBirth").getValue().toString());
             int myAge = Integer.parseInt(myInfo.get("age"));
             Log.d("maingetTag", "try ");
+            double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
+            double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
+            double distanceDouble = distance(myLatitude, myLongitude, latitude, longitude);
             for (DataSnapshot dataTag : ds.child("tags").getChildren()) {
-                double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
-                double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
-                double distance = distance(myLatitude, myLongitude, latitude, longitude);
                 Log.d("maingetTag", "forFirst ");
                 for (TagsManagerObject tag : myTagsList) {
                     ///VALIDATING MY PREFERENCES
@@ -628,12 +631,12 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("maingetTag", "5th if: " + dataTag.child("minAge").getValue().toString() + " <= " + myAge + "  &&  " + dataTag.child("maxAge").getValue().toString()+ " >= " + myAge);
                                 //validating userTag age preferences with minAge and maxAge
                                 if(Integer.parseInt(dataTag.child("minAge").getValue().toString()) <= myAge && Integer.parseInt(dataTag.child("maxAge").getValue().toString()) >=myAge) {
-                                    Log.d("maingetTag", "6th if: " + tag.getmDistance() + " >= " +distance);
+                                    Log.d("maingetTag", "6th if: " + tag.getmDistance() + " >= " +distanceDouble);
                                     //validating myTag distance preference
-                                    if (Double.parseDouble(tag.getmDistance()) >= distance) {
+                                    if (Double.parseDouble(tag.getmDistance()) >= distanceDouble) {
                                         //validate userTag distance preference
-                                        Log.d("maingetTag", "7th if: " + dataTag.child("maxDistance").getValue().toString()+ " >= " +distance);
-                                        if(Double.parseDouble(dataTag.child("maxDistance").getValue().toString())>=distance){
+                                        Log.d("maingetTag", "7th if: " + dataTag.child("maxDistance").getValue().toString()+ " >= " +distanceDouble);
+                                        if(Double.parseDouble(dataTag.child("maxDistance").getValue().toString())>=distanceDouble){
                                         ///CAN VALIDATE OTHER USER PREFERENCES
                                         mutalTagsList.add(tag.getTagName());
                                         tagsMap.put(tag.getTagName(), true);
@@ -656,8 +659,12 @@ public class MainActivity extends AppCompatActivity {
                         profileImageUrl = ds.child("profileImageUrl").getValue().toString();
                     }
                 } else profileImageUrl = "default";
-                cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap);
+                cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap, distanceDouble);
                 rowItems.add(item);
+                Collections.sort(rowItems, Comparator.comparing(cards::getDistance));
+//                for(cards card:rowItems){
+//                    Log.d("maingetTag", "User: " + card.getName() + " distance: " + card.getDistance());
+//                }
                 arrayAdapter.notifyDataSetChanged();
             }
         }catch (Exception e){

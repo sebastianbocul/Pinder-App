@@ -8,13 +8,15 @@ public class cards {
     private String profileImageUrl;
     private String tags;
     private Map mutualTagsMap;
+    private double distance;
 
-    public cards (String userId,String name, String profileImageUrl,String tags,Map mutualTagsMap){
+    public cards (String userId,String name, String profileImageUrl,String tags,Map mutualTagsMap,double distance){
         this.userId = userId;
         this.name = name;
         this.profileImageUrl = profileImageUrl;
         this.tags = tags;
         this.mutualTagsMap = mutualTagsMap;
+        this.distance=distance;
     }
 
     public String getUserId() {
@@ -53,7 +55,15 @@ public class cards {
         return mutualTagsMap;
     }
 
-    public void setTagsMap(Map mutualTagsMap) {
+    public void setMutualTagsMap(Map mutualTagsMap) {
         this.mutualTagsMap = mutualTagsMap;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }
