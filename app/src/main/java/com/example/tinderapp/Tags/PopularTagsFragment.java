@@ -98,7 +98,7 @@ public class PopularTagsFragment extends Fragment {
         popularTagsRecyclerView= getView().findViewById(R.id.popularTagsRecyclerView);
         DatabaseReference tagsDatabase = FirebaseDatabase.getInstance().getReference().child("Tags");
         tagsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -108,7 +108,8 @@ public class PopularTagsFragment extends Fragment {
                         TagsPopularObject popular_tag = new TagsPopularObject(tag_name,tag_popularity);
                         popularTagsList.add(popular_tag);
                     }
-                    Collections.sort(popularTagsList, Comparator.comparing(TagsPopularObject ::getTagPopularity).reversed());
+                    sortCollection();
+                    //Collections.sort(popularTagsList, Comparator.comparing(TagsPopularObject ::getTagPopularity).reversed());
                     popularTagsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
                     tagsPopularAdapter = new TagsPopularAdapter(getActivity().getApplicationContext(),popularTagsList);
                     popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
@@ -127,5 +128,23 @@ public class PopularTagsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+
+    private void sortCollection() {
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
+            Collections.sort(popularTagsList, Comparator.comparing(TagsPopularObject::getTagPopularity).reversed());
+        }
+        else {
+            Collections.sort(popularTagsList, new Comparator<TagsPopularObject>(){
+                public int compare(TagsPopularObject o1, TagsPopularObject o2){
+                    if(o1.getTagPopularity() == o2.getTagPopularity())
+                        return 0;
+                    return o1.getTagPopularity() < o2.getTagPopularity() ? -1 : 1;
+                }
+            });
+            Collections.reverse(popularTagsList);
+
+        }
     }
 }

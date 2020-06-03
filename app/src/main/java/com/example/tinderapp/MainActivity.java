@@ -527,7 +527,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         newUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d("maingetTag", "datasnapshot " + dataSnapshot);
@@ -554,7 +553,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("first", "after loop: " );
 
                 newUserDb.addChildEventListener(new ChildEventListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         if(dataSnapshot.child("sex").getValue()!=null){
@@ -602,7 +600,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+
     private void getTagsPreferencesUsers(DataSnapshot ds) {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB=new StringBuilder();
@@ -664,13 +662,28 @@ public class MainActivity extends AppCompatActivity {
                 } else profileImageUrl = "default";
                 cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap, distanceDouble);
                 rowItems.add(item);
-                Collections.sort(rowItems, Comparator.comparing(cards::getDistance));
-//                for(cards card:rowItems){
-//                    Log.d("maingetTag", "User: " + card.getName() + " distance: " + card.getDistance());
-//                }
+               // sortCollection();
+                for(cards card:rowItems){
+                    Log.d("maingetTag", "User: " + card.getName() + "   UserId: " + card.getUserId() +   "   distance: " + card.getDistance());
+                }
                 arrayAdapter.notifyDataSetChanged();
             }
         }catch (Exception e){
+        }
+    }
+
+    private void sortCollection() {
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
+            Collections.sort(rowItems, Comparator.comparing(cards::getDistance));
+        }
+        else {
+            Collections.sort(rowItems, new Comparator<cards>(){
+                public int compare(cards o1, cards o2){
+                    if(o1.getDistance() == o2.getDistance())
+                        return 0;
+                    return o1.getDistance() < o2.getDistance() ? -1 : 1;
+                }
+            });
         }
     }
 

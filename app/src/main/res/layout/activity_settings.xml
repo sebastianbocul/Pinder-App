@@ -50,6 +50,16 @@
        >
 
         <Button
+            android:layout_width="200sp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_marginBottom="10sp"
+            android:background="@drawable/rounded_button"
+            android:text="Restart matches"
+            android:id="@+id/restartMatches"/>
+
+
+        <Button
             android:id="@+id/logoutUser"
             android:layout_width="200sp"
             android:layout_height="wrap_content"

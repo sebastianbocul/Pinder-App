@@ -55,6 +55,7 @@ public class SettingsActivity extends AppCompatActivity {
     private boolean dateValid = false;
     private int dd,mm,yyyy;
     private String dateOfBirth,onStartDateOfBirth;
+    private Button restartMatches;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
         DatabaseReference myDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
 
         mapLocationSwitch = findViewById(R.id.mapLocationSwitch);
-
-
+        restartMatches = findViewById(R.id.restartMatches);
         logoutUser=findViewById(R.id.logoutUser);
         deleteUser=findViewById(R.id.deleteUser);
 
@@ -220,8 +220,120 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        restartMatches.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restartMatchesFun();
+            }
+        });
+
     }
 
+    private void restartMatchesFun() {
+        DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
+        DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+        users.child(userId).child("connections").child("matches").removeValue();
+        users.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Log.d("maingetTagT",ds.getKey());
+                    if (ds.child("connections").child("matches").child(userId).exists()) {
+                        users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
+                    }
+                    if (ds.child("connections").child("yes").child(userId).exists()) {
+                        users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
+                    }
+                    if (ds.child("connections").child("nope").child(userId).exists()) {
+                        users.child(ds.getKey()).child("connections").child("nope").child(userId).removeValue();
+                    }
+
+
+
+//                        if (ds.child("connections").child("matches").exists()) {
+//                        DatabaseReference matches = users.child(dataSnapshot.getKey()).child("connections").child("matches").child(userId);
+//                        matches.addListenerForSingleValueEvent(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                if (dataSnapshot.getKey().equals(userId)) {
+//                                    matches.removeValue();
+//                                    Log.d("maingetTagT","matchesDel");
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                            }
+//                        });
+//                    }
+//
+//                    if (ds.child("connections").child("yes").exists()) {
+//                        DatabaseReference yes = users.child(dataSnapshot.getKey()).child("connections").child("yes").child(userId);
+//                        yes.addListenerForSingleValueEvent(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                if (dataSnapshot.getKey().equals(userId)) {
+//                                    yes.removeValue();
+//                                    Log.d("maingetTagT","yesDel");
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                            }
+//                        });
+//                    }
+//                    if (ds.child("connections").child("nope").exists()) {
+//                        DatabaseReference nope = users.child(dataSnapshot.getKey()).child("connections").child("nope").child(userId);
+//                        nope.addListenerForSingleValueEvent(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                if (dataSnapshot.getKey().equals(userId)) {
+//                                    nope.removeValue();
+//                                    Log.d("maingetTagT","nopeDel");
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                            }
+//                        });
+//                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+//        users.child(userId).child("connections").child("matches").addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+//                    try {
+//                        users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
+//                        users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
+//
+//                    }catch (Exception e){
+//                        Toast.makeText(SettingsActivity.this,"Oooops something went wrong",Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//                users.child(userId).child("connections").child("matches").removeValue();
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+    }
 
 
     public void logoutUser() {

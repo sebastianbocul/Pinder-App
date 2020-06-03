@@ -80,7 +80,6 @@ public class MatchesActivity extends AppCompatActivity {
         loadTagsRecyclerView();
 
         allMatches.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                allMatchesFunction();
@@ -96,7 +95,6 @@ public class MatchesActivity extends AppCompatActivity {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void allMatchesFunction() {
         fillRecyclerViewByTags("AllButtonClicked");
     }
@@ -217,14 +215,13 @@ public class MatchesActivity extends AppCompatActivity {
         DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child(key);
 
         userDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
 
                 if(!dataSnapshot.exists()){
                     if(resultMatches.size()==matchesCount){
-                        Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
+                        resultMatches = sortCollection(resultMatches);
                         mMatchesAdapter.notifyDataSetChanged();
                     }
                 }
@@ -267,8 +264,8 @@ public class MatchesActivity extends AppCompatActivity {
                         resultMatches.add(obj);
                         oryginalMatches.add(obj);
                     }else {
-                        Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getUserId));
-                        Collections.sort(oryginalMatches, Comparator.comparing(MatchesObject ::getUserId));
+                        resultMatches = sortCollection(resultMatches);
+                        oryginalMatches = sortCollection(oryginalMatches);
 
                         for(MatchesObject m : resultMatches){
                         }
@@ -285,10 +282,7 @@ public class MatchesActivity extends AppCompatActivity {
                     }
 
                    // Collections.sort(usersID, Comparator.comparing(String ::getSortId).reversed());
-                    Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
-
-
-
+                    resultMatches = sortCollection(resultMatches);
                     mMatchesAdapter.notifyDataSetChanged();
                     if(resultMatches.size()==matchesCount){
                     }
@@ -378,7 +372,7 @@ public class MatchesActivity extends AppCompatActivity {
                     recyclerView.setAdapter(adapter);
 
                     adapter.setClickListener(new MatchesTagsAdapter.ItemClickListener() {
-                        @RequiresApi(api = Build.VERSION_CODES.N)
+
                         @Override
                         public void onItemClick(View view, int position) {
                             sortBy =  myTags.get(position);
@@ -400,14 +394,15 @@ public class MatchesActivity extends AppCompatActivity {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void fillRecyclerViewByTags(String tag){
         ArrayList mutualTags = new ArrayList();
         ArrayList<MatchesObject> bufforMatches = new ArrayList<MatchesObject>();
 
         if(tag.equals("AllButtonClicked")){
             sortByTextView.setText("#" + "all");
-            Collections.sort(oryginalMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
+
+            oryginalMatches = sortCollection(oryginalMatches);
+
             mMatchesAdapter = new MatchesAdapter(oryginalMatches,MatchesActivity.this);
             myRecyclerView.setAdapter(mMatchesAdapter);
             return;
@@ -426,7 +421,7 @@ public class MatchesActivity extends AppCompatActivity {
         if(bufforMatches.size()!=0){
             resultMatches.clear();
             resultMatches=bufforMatches;
-            Collections.sort(resultMatches, Comparator.comparing(MatchesObject ::getSortId).reversed());
+            resultMatches = sortCollection(resultMatches);
             mMatchesAdapter = new MatchesAdapter(resultMatches,MatchesActivity.this);
             myRecyclerView.setAdapter(mMatchesAdapter);
         }
@@ -434,6 +429,32 @@ public class MatchesActivity extends AppCompatActivity {
 
         }
 
+    private ArrayList<MatchesObject> sortCollection(ArrayList<MatchesObject> matchesList) {
+
+//        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
+//            Collections.sort(matchesList, Comparator.comparing(MatchesObject::getSortId).reversed());
+//
+//        }
+//        else {
+//            Collections.sort(matchesList, new Comparator<MatchesObject>(){
+//                @Override
+//                public int compare(MatchesObject o1, MatchesObject o2) {
+//                    return o1.getSortId().compareTo(o2.getSortId());
+//                }
+//            });
+//            Collections.reverse(matchesList);
+//        }
+
+        Collections.sort(matchesList, new Comparator<MatchesObject>(){
+            @Override
+            public int compare(MatchesObject o1, MatchesObject o2) {
+                return o1.getSortId().compareTo(o2.getSortId());
+            }
+        });
+        Collections.reverse(matchesList);
+
+        return matchesList;
+    }
 
 
 }
