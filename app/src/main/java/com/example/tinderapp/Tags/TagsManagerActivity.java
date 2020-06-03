@@ -66,7 +66,6 @@ public class TagsManagerActivity extends AppCompatActivity implements TagsManage
     private String currentUserId;
     private ArrayList<TagsManagerObject> myTagsList;
     private ArrayList<TagsManagerObject> removedTags;
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
