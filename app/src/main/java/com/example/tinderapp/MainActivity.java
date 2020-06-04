@@ -106,7 +106,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
-        currentUID = mAuth.getCurrentUser().getUid();
+        try {
+            currentUID = mAuth.getCurrentUser().getUid();
+        }catch (Exception e){
+
+        }
 
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
 
@@ -126,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        arrayAdapter = new arrayAdapter(this, R.layout.item,rowItems );
-        flingContainer.setAdapter(arrayAdapter);
+        //   arrayAdapter = new arrayAdapter(this, R.layout.item,rowItems );
+       // flingContainer.setAdapter(arrayAdapter);
 
         //create APISERVICE
         Client client = new Client();
@@ -572,14 +576,15 @@ public class MainActivity extends AppCompatActivity {
                         for(cards card:rowItems){
                             Log.d("maingetTag", "User: " + card.getName() + "   UserId: " + card.getUserId() +   "   distance: " + card.getDistance());
                         }
-
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                arrayAdapter.notifyDataSetChanged();
-                            }
-                        }, 500);
+                        flingContainer.setAdapter(arrayAdapter);
+                        arrayAdapter.notifyDataSetChanged();
+//                        final Handler handler = new Handler();
+//                        handler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                              arrayAdapter.notifyDataSetChanged();
+//                            }
+//                        }, 500);
 
                     }
 
@@ -731,7 +736,10 @@ public class MainActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()) {
                     myLatitude = Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString());
                     myLongitude = Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString());
-                    sortByDistance = dataSnapshot.child("sortByDistance").getValue().toString();
+                    if(dataSnapshot.child("sortByDistance").exists()){
+                        sortByDistance = dataSnapshot.child("sortByDistance").getValue().toString();
+                    }
+
                 }
             }
 
