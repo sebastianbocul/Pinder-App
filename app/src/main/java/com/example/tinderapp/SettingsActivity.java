@@ -49,9 +49,9 @@ public class SettingsActivity extends AppCompatActivity {
     private Context context=SettingsActivity.this;
     private Button logoutUser,deleteUser;
     private StorageReference filePath;
-    private Switch mapLocationSwitch;
+    private Switch mapLocationSwitch,sortUsersByDistanceSwitch;
     private EditText date;
-    private boolean showMapLocation,onStartShowMapLocation;
+    private boolean showMapLocation,onStartShowMapLocation,sortByDistance,onStartSortByDistance;
     private boolean dateValid = false;
     private int dd,mm,yyyy;
     private String dateOfBirth,onStartDateOfBirth;
@@ -65,7 +65,7 @@ public class SettingsActivity extends AppCompatActivity {
         userId= mAuth.getCurrentUser().getUid();
 
         DatabaseReference myDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-
+        sortUsersByDistanceSwitch = findViewById(R.id.sortUsersByDistance);
         mapLocationSwitch = findViewById(R.id.mapLocationSwitch);
         restartMatches = findViewById(R.id.restartMatches);
         logoutUser=findViewById(R.id.logoutUser);
@@ -98,6 +98,17 @@ public class SettingsActivity extends AppCompatActivity {
                         mapLocationSwitch.setChecked(showMapLocation);
                     }
 
+                    if(dataSnapshot.child("sortByDistance").exists()){
+                        if (dataSnapshot.child("sortByDistance").getValue().toString().equals("true")) {
+                            sortByDistance = true;
+                            onStartSortByDistance=true;
+                            sortUsersByDistanceSwitch.setChecked(sortByDistance);
+                        }else {
+                            sortByDistance = false;
+                            onStartSortByDistance=false;
+                            sortUsersByDistanceSwitch.setChecked(sortByDistance);
+                        }
+                    }
                 }
 
 
@@ -201,6 +212,17 @@ public class SettingsActivity extends AppCompatActivity {
                     showMapLocation=true;
                 }else {
                     showMapLocation=false;
+                }
+            }
+        });
+
+        sortUsersByDistanceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    sortByDistance=true;
+                }else {
+                    sortByDistance=false;
                 }
             }
         });
@@ -517,6 +539,11 @@ public class SettingsActivity extends AppCompatActivity {
         if(showMapLocation!=onStartShowMapLocation){
             myDatabaseReference.child("showMyLocation").setValue(showMapLocation);
         }
+
+        if(sortByDistance!=onStartSortByDistance){
+            myDatabaseReference.child("sortByDistance").setValue(sortByDistance);
+        }
+
 
         if(!dateValid==true) {
            // Toast.makeText(SettingsActivity.this, "Wrong date format", Toast.LENGTH_SHORT).show();

@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     String mUID;
     APIService apiService;
     boolean notify = false;
+    private String sortByDistance = "true";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -527,6 +528,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         newUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d("maingetTag", "datasnapshot " + dataSnapshot);
@@ -544,8 +546,8 @@ public class MainActivity extends AppCompatActivity {
                     for (DataSnapshot ds: dataSnapshot.child(currentUID).child("connections").child("yes").getChildren()){
                         if(!dataSnapshot.child(currentUID).child("connections").child("matches").hasChild(ds.getKey())){
                             Log.d("first", "onDataChange: " + ds.getKey());
-                            getTagsPreferencesUsers(dataSnapshot.child(ds.getKey()));
                             first.add(ds.getKey());
+                            getTagsPreferencesUsers(dataSnapshot.child(ds.getKey()),true);
                         }
                     }
                 }
@@ -553,6 +555,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("first", "after loop: " );
 
                 newUserDb.addChildEventListener(new ChildEventListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         if(dataSnapshot.child("sex").getValue()!=null){
@@ -562,10 +565,22 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("first", "OnChillAdded: " + dataSnapshot.getKey());
 
 
-                                getTagsPreferencesUsers(dataSnapshot);
+                                getTagsPreferencesUsers(dataSnapshot,false);
                             }
                         }
                         noMoreEditText.setText("There is no more users");
+                        for(cards card:rowItems){
+                            Log.d("maingetTag", "User: " + card.getName() + "   UserId: " + card.getUserId() +   "   distance: " + card.getDistance());
+                        }
+
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                arrayAdapter.notifyDataSetChanged();
+                            }
+                        }, 500);
+
                     }
 
                     @Override
@@ -601,7 +616,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private void getTagsPreferencesUsers(DataSnapshot ds) {
+    private void getTagsPreferencesUsers(DataSnapshot ds,Boolean likesMe) {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB=new StringBuilder();
         Map tagsMap = new HashMap<>();
@@ -660,13 +675,16 @@ public class MainActivity extends AppCompatActivity {
                         profileImageUrl = ds.child("profileImageUrl").getValue().toString();
                     }
                 } else profileImageUrl = "default";
-                cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap, distanceDouble);
+                cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap, distanceDouble,likesMe);
                 rowItems.add(item);
-               // sortCollection();
-                for(cards card:rowItems){
-                    Log.d("maingetTag", "User: " + card.getName() + "   UserId: " + card.getUserId() +   "   distance: " + card.getDistance());
+                if(sortByDistance.equals("true")){
+                    sortCollection();
                 }
-                arrayAdapter.notifyDataSetChanged();
+
+
+
+              //  Collections.sort(rowItems, Comparator.comparing(cards::getDistance));
+
             }
         }catch (Exception e){
         }
@@ -685,6 +703,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+
     }
 
 
@@ -697,20 +717,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        updateMyLoc();
+        updateMyInfo();
         fillTagsAdapter();
         if(rowItems.size()==0){
             getUsersFromDb();
         }
     }
-    private void updateMyLoc(){
-        DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID).child("location");
+    private void updateMyInfo(){
+        DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
         ds.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
-                    myLatitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
-                    myLongitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
+                    myLatitude = Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString());
+                    myLongitude = Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString());
+                    sortByDistance = dataSnapshot.child("sortByDistance").getValue().toString();
                 }
             }
 
