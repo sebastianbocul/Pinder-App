@@ -15,18 +15,22 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import io.reactivex.rxjava3.core.BackpressureStrategy;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.CompletableObserver;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.FlowableSubscriber;
+import io.reactivex.rxjava3.core.Observable;
 import com.example.tinderapp.Cards.arrayAdapter;
 import com.example.tinderapp.Cards.cards;
 import com.example.tinderapp.Matches.MatchesActivity;
@@ -38,7 +42,6 @@ import com.example.tinderapp.Notifications.Token;
 import com.example.tinderapp.Tags.TagsAdapter;
 import com.example.tinderapp.Tags.TagsManagerActivity;
 import com.example.tinderapp.Tags.TagsManagerObject;
-import com.example.tinderapp.Tags.TagsPopularObject;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -55,6 +58,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
+import org.reactivestreams.Subscription;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -70,11 +75,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Cancellable;
+import io.reactivex.rxjava3.internal.operators.single.SingleDoOnSuccess;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
 public class MainActivity extends AppCompatActivity {
     private cards cards_data;
@@ -100,7 +115,9 @@ public class MainActivity extends AppCompatActivity {
     APIService apiService;
     boolean notify = false;
     private String sortByDistance = "true";
-
+    private Observable myObservable;
+    private Observer observer;
+    private Observable observable;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
                             else Toast.makeText(MainActivity.this,"There is no more users",Toast.LENGTH_SHORT).show();
                         }
                     }
+
                 }
 
             }
@@ -531,91 +549,228 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        newUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("maingetTag", "datasnapshot " + dataSnapshot);
-                if(dataSnapshot.child(currentUID).child("sex").exists()){
-                    Log.d("maingetTag", "myInfo.put sex ");
-                    myInfo.put("sex",dataSnapshot.child(currentUID).child("sex").getValue().toString());
-                }
-                if(dataSnapshot.child(currentUID).child("dateOfBirth").exists()){
-                    int myAge = stringDateToAge(dataSnapshot.child(currentUID).child("dateOfBirth").getValue().toString());
-                    Log.d("maingetTag", "myInfo.put myage ");
-                    myInfo.put("age", String.valueOf(myAge));
-                }
 
-                if(dataSnapshot.child(currentUID).child("connections").child("yes").exists()){
-                    for (DataSnapshot ds: dataSnapshot.child(currentUID).child("connections").child("yes").getChildren()){
-                        if(!dataSnapshot.child(currentUID).child("connections").child("matches").hasChild(ds.getKey())){
-                            Log.d("first", "onDataChange: " + ds.getKey());
-                            first.add(ds.getKey());
-                            getTagsPreferencesUsers(dataSnapshot.child(ds.getKey()),true);
+         Single.create(emitter -> {
+             // register onChange callback to database
+             // callback will be called, when a value is available
+             // the Single will stay open, until emitter#onSuccess is called with a collected list.
+                    newUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.N)
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Log.d("maingetTag", "datasnapshot " + dataSnapshot);
+                            if (dataSnapshot.child(currentUID).child("sex").exists()) {
+                                Log.d("maingetTag", "myInfo.put sex ");
+                                myInfo.put("sex", dataSnapshot.child(currentUID).child("sex").getValue().toString());
+                            }
+                            if (dataSnapshot.child(currentUID).child("dateOfBirth").exists()) {
+                                int myAge = stringDateToAge(dataSnapshot.child(currentUID).child("dateOfBirth").getValue().toString());
+                                Log.d("maingetTag", "myInfo.put myage ");
+                                myInfo.put("age", String.valueOf(myAge));
+                            }
+
+                            if (dataSnapshot.child(currentUID).child("connections").child("yes").exists()) {
+                                for (DataSnapshot ds : dataSnapshot.child(currentUID).child("connections").child("yes").getChildren()) {
+                                    if (!dataSnapshot.child(currentUID).child("connections").child("matches").hasChild(ds.getKey())) {
+                                        Log.d("rxJava", "onDataChangeFirst: " + ds.getKey());
+                                        first.add(ds.getKey());
+                                        getTagsPreferencesUsers(dataSnapshot.child(ds.getKey()), true);
+                                    }
+                                }
+                            }
+                            List<cards> todosFromWeb =rowItems;
+                            emitter.onSuccess(listOf(todosFromWeb)); // return collected data from database here...
                         }
-                    }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+            // do some stuff
+            emitter.setCancellable(new Cancellable() {
+                @Override
+                public void cancel() throws Exception {
+                    //clean memory
                 }
+            });
+                // unregister addListenerForSingleValueEvent from newUserDb here
+         }).subscribeOn(Schedulers.computation())
+                .subscribe(new SingleObserver<Object>() {
+                               @Override
+                               public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                                   Log.d("rxJava", "First RxJAVA, onSubscribe");
+                               }
 
-                Log.d("first", "after loop: " );
+                               @Override
+                               public void onSuccess(Object o) {
+                                   Log.d("rxJava", "First RxJAVA, onSuccess");
+                                   for(cards card:rowItems){
+                                       Log.d("cardListFirst", "User: " + card.getName() + "   UserId: " + card.getUserId() +   "   distance: " + card.getDistance());
+                                   }
 
-                newUserDb.addChildEventListener(new ChildEventListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.N)
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        if(dataSnapshot.child("sex").getValue()!=null){
+                                   flingContainer.setAdapter(arrayAdapter);
+                                   arrayAdapter.notifyDataSetChanged();
+                               }
 
-                            if(dataSnapshot.exists() && !first.contains(dataSnapshot.getKey()) && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) &&!dataSnapshot.getKey().equals(newCurrentUID)){
-                                dataSnapshot.getKey().equals(currentUID);
-                                Log.d("first", "OnChillAdded: " + dataSnapshot.getKey());
+                               @Override
+                               public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                                   Log.d("rxJava", "First RxJAVA, onError");
+                               }
 
+                           }
 
-                                getTagsPreferencesUsers(dataSnapshot,false);
+                );
+
+        Single.create(emitter -> {
+            // register onChange callback to database
+            // callback will be called, when a value is available
+            // the Single will stay open, until emitter#onSuccess is called with a collected list.
+            newUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //
+                    for(DataSnapshot ds:dataSnapshot.getChildren()) {
+                        if (ds.child("sex").getValue() != null) {
+
+                            if (ds.exists() && !first.contains(ds.getKey()) && !ds.child("connections").child("nope").hasChild(currentUID) && !ds.child("connections").child("yes").hasChild(currentUID) && !ds.getKey().equals(newCurrentUID)) {
+                                ds.getKey().equals(currentUID);
+                                Log.d("first", "OnChillAdded: " + ds.getKey());
+
+                                Log.d("rxJava", "onDataChangeSecound2222: " + ds.getKey());
+                                getTagsPreferencesUsers(ds, false);
                             }
                         }
-                        noMoreEditText.setText("There is no more users");
-                        for(cards card:rowItems){
-                            Log.d("maingetTag", "User: " + card.getName() + "   UserId: " + card.getUserId() +   "   distance: " + card.getDistance());
+                    }
+                    noMoreEditText.setText("There is no more users");
+                    List<cards> todosFromWeb =rowItems;
+                    emitter.onSuccess(listOf(todosFromWeb));
+                    //emitter.onComplete();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            // do some stuff
+            emitter.setCancellable(new Cancellable() {
+                @Override
+                public void cancel() throws Exception {
+                    //clean memory
+                }
+            });
+            // unregister addListenerForSingleValueEvent from newUserDb here
+        }).subscribeOn(Schedulers.computation())
+                .subscribe(new SingleObserver<Object>() {
+                               @Override
+                               public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                                   Log.d("rxJava", "Secound RxJava, onSubscribe");
+                               }
+
+                               @Override
+                               public void onSuccess(Object o) {
+                                   Log.d("rxJava", "Secound RxJava, onSuccess");
+                                   for(cards card:rowItems){
+                                       Log.d("cardListSecound", "User: " + card.getName() + "   UserId: " + card.getUserId() +   "   distance: " + card.getDistance());
+                                   }
+                                   flingContainer.setAdapter(arrayAdapter);
+                                   arrayAdapter.notifyDataSetChanged();
+                               }
+
+                               @Override
+                               public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                                   Log.d("rxJava", "Secound RxJava, onError");
+                               }
+
+                           }
+
+                );
+
+/*
+        Flowable.create(emitter -> {
+            // register onChange callback to database
+            // callback will be called, when a value is available
+            // the Single will stay open, until emitter#onSuccess is called with a collected list.
+            newUserDb.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    if(dataSnapshot.child("sex").getValue()!=null){
+
+                        if(dataSnapshot.exists() && !first.contains(dataSnapshot.getKey()) && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) &&!dataSnapshot.getKey().equals(newCurrentUID)){
+                            dataSnapshot.getKey().equals(currentUID);
+                            Log.d("first", "OnChillAdded: " + dataSnapshot.getKey());
+
+                            Log.d("rxJava", "onDataChangeSecound: " + dataSnapshot.getKey());
+                            getTagsPreferencesUsers(dataSnapshot,false);
                         }
-                        flingContainer.setAdapter(arrayAdapter);
-                        arrayAdapter.notifyDataSetChanged();
-//                        final Handler handler = new Handler();
-//                        handler.postDelayed(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                              arrayAdapter.notifyDataSetChanged();
-//                            }
-//                        }, 500);
-
                     }
+                    noMoreEditText.setText("There is no more users");
+                    emitter.onComplete();
 
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                }
 
-                    }
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                }
 
-                    }
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                }
 
-                    }
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
 
-                    }
-                });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
+                }
+            });
+            // do some stuff
+            emitter.setCancellable(new Cancellable() {
+                @Override
+                public void cancel() throws Exception {
+                    //clean memory
+                }
+            });
+            // unregister addListenerForSingleValueEvent from newUserDb here
+        }, BackpressureStrategy.BUFFER).subscribeOn(Schedulers.computation())
+                .subscribe(new FlowableSubscriber<Object>() {
+                               @Override
+                               public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Subscription s) {
+                                   Log.d("rxJava", "onSubscribe: " + s);
+                               }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                               @Override
+                               public void onNext(Object o) {
+                                   Log.d("rxJava", "onNext: " +  o);
+                               }
 
-            }
-        });
+                               @Override
+                               public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                                   Log.d("rxJava", "Test RxJAVA2, onError");
+                               }
+
+                               @Override
+                               public void onComplete() {
+                                   Log.d("rxJava", "Test RxJAVA2, onComplete");
+                                   for(cards card:rowItems){
+                                       Log.d("cardList", "User: " + card.getName() + "   UserId: " + card.getUserId() +   "   distance: " + card.getDistance());
+                                   }
+                                   flingContainer.setAdapter(arrayAdapter);
+                                   arrayAdapter.notifyDataSetChanged();
+                               }
+
+                           }
+
+                );
+*/
+
     }
 
 
@@ -624,7 +779,7 @@ public class MainActivity extends AppCompatActivity {
     private void getTagsPreferencesUsers(DataSnapshot ds,Boolean likesMe) {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB=new StringBuilder();
-        Map tagsMap = new HashMap<>();
+        Map<Object, Object> tagsMap = new HashMap<>();
         Log.d("maingetTag", "User Name " + ds.child("name").getValue().toString());
         try {
             int age = stringDateToAge(ds.child("dateOfBirth").getValue().toString());
@@ -681,7 +836,22 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else profileImageUrl = "default";
                 cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap, distanceDouble,likesMe);
+
+//                observable = Observable.create(new ObservableOnSubscribe() {
+//                    @Override
+//                    public void subscribe(@io.reactivex.rxjava3.annotations.NonNull ObservableEmitter emitter) {
+//                        try {
+//                            Log.d("rxJava", "subscribe: " + item.getName());
+//                        }catch (Exception e){
+//                        }
+//                    }
+//                });
+
+
+
+            //    Log.d("rxJava", "User: " + item.getName() + "   UserId: " + item.getUserId() +   "   distance: " + item.getDistance());
                 rowItems.add(item);
+
                 if(sortByDistance.equals("true")){
                     sortCollection();
                 }
