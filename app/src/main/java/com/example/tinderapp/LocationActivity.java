@@ -301,7 +301,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         switch (requestCode){
             case 44:
                 if(grantResults.length>0 && grantResults[0]  == PackageManager.PERMISSION_GRANTED){
-                //    getLocation();
                 }
                 break;
         }
@@ -346,8 +345,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                 bitmap.getWidth() / 2, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
-        //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
-        //return _bmp;
         return output;
     }
 

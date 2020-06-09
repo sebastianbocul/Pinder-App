@@ -53,8 +53,6 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         RemoteMessage.Notification notification = remoteMessage.getNotification();
         int i = Integer.parseInt(user.replaceAll("[\\D]",""));
         Intent intent = new Intent(this, ChatActivity.class);
-        //Bundle bundle = new Bundle();
-       // bundle.putString("matchId",user);
         intent.putExtra("matchId",user);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pIntent = PendingIntent.getActivity(this ,i, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -81,8 +79,6 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         RemoteMessage.Notification notification = remoteMessage.getNotification();
         int i = Integer.parseInt(user.replaceAll("[\\D]",""));
         Intent intent = new Intent(this, ChatActivity.class);
-        //Bundle bundle = new Bundle();
-        // bundle.putString("matchId",user);
         intent.putExtra("matchId",user);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pIntent = PendingIntent.getActivity(this ,i, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -91,13 +87,6 @@ public class FirebaseMessaging extends FirebaseMessagingService {
 
         OreoAndAboveNotification notification1 = new OreoAndAboveNotification(this);
         Notification.Builder builder = notification1.getNotifications(title,body,pIntent,defSoundUri,icon);
-
-
-
-       // NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setSmallIcon(Integer.parseInt(icon))
-       //         .setContentText(body).setContentTitle(title).setAutoCancel(true).setSound(defSoundUri).setContentIntent(pIntent);
-       // NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
         int j=0;
         if(i>0){
             j=i;

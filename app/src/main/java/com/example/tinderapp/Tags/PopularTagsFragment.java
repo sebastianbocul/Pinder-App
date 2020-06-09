@@ -109,7 +109,6 @@ public class PopularTagsFragment extends Fragment {
                         popularTagsList.add(popular_tag);
                     }
                     sortCollection();
-                    //Collections.sort(popularTagsList, Comparator.comparing(TagsPopularObject ::getTagPopularity).reversed());
                     popularTagsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
                     tagsPopularAdapter = new TagsPopularAdapter(getActivity().getApplicationContext(),popularTagsList);
                     popularTagsRecyclerView.setAdapter(tagsPopularAdapter);

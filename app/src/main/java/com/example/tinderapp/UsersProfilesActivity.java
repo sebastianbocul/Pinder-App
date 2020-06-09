@@ -67,8 +67,6 @@ public class UsersProfilesActivity extends AppCompatActivity {
          if(intent.getStringArrayListExtra("mutualTags")!=null){
              mutualTagsExtras = intent.getStringArrayListExtra("mutualTags");
          }
-
-     //   imageView = (ImageView) findViewById(R.id.imageView);
         nameTextView = (TextView) findViewById(R.id.nameTextView);
         tagsTextView = (TextView) findViewById(R.id.tagsTextView);
         genderTextView= (TextView) findViewById(R.id.genderTextView);
@@ -122,7 +120,6 @@ public class UsersProfilesActivity extends AppCompatActivity {
         dislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //dislikeButton.setText("Clicked Dislike");
                 Intent i = new Intent(UsersProfilesActivity.this,MainActivity.class);
                 i.putExtra("fromUsersProfilesActivity","dislikeButtonClicked");
                 startActivity(i);
@@ -132,7 +129,6 @@ public class UsersProfilesActivity extends AppCompatActivity {
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //likeButton.setText("Clicked like");
                 Intent i = new Intent(UsersProfilesActivity.this,MainActivity.class);
                 i.putExtra("fromUsersProfilesActivity","likeButtonClicked");
                 startActivity(i);
@@ -148,9 +144,6 @@ public class UsersProfilesActivity extends AppCompatActivity {
 
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        //myId, userId
-                        //need to remove chat, move users from 'matched' to nopes
-                        //
                         try {
                             String chatId;
                             chatId = dataSnapshot.child("Users").child(myId).child("connections").child("matches").child(userId).child("ChatId").getValue().toString();
@@ -188,16 +181,9 @@ public class UsersProfilesActivity extends AppCompatActivity {
 
                     }
                 });
-
-                //again need some time to get response from database to update users in MatchesActivity
-
-
             }
 
         });
-        //method nr1/
-
-
         fillUserProfile();
         loadImages();
     }
@@ -302,9 +288,7 @@ public void fillUserProfile(){
                         descriptionTextView.setText("Description: " +description);
                     }else descriptionTextView.setText("Description:");
 
-
-
-                    //dataSnapshot.child("images").exists()
+                    
                     if(map.get("images")==null){
                         viewPager.setBackground(getDrawable(R.drawable.picture_default));
                     }

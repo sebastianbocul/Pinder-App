@@ -155,13 +155,6 @@ public class LoginActivity extends AppCompatActivity {
 
                         }
                     });
-                    /*
-                    myLayout.setVisibility(View.INVISIBLE);
-                    Intent intent  = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-
-                    finish();
-                    return;*/
                 }
             }
         };
@@ -303,58 +296,19 @@ public class LoginActivity extends AppCompatActivity {
     private void linkWithCredential(AuthCredential credential){
 
         mAuth = FirebaseAuth.getInstance();
-        //mAuth.getCurrentUser().linkWithCredential(credential)
              mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = task.getResult().getUser();
-                           // updateUI(user);
                         } else {
                             Log.w("myLog", "linkWithCredential:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             LoginManager.getInstance().logOut();
-                            //updateUI(null);
                         }
-
-                        // ...
                     }
                 });
     }
-
-
-
-    private void updateUI(final FirebaseUser user) {
-        final Map userInfo = new HashMap<>();
-        if(user!=null){
-            final DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getUid());
-            currentUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.child("name").getValue()==null){
-                        //userInfo.put("name",getFirstName(user.getDisplayName()));
-                        //userInfo.put("sex", "Male");
-                        //userInfo.put("profileImageUrl", user.getPhotoUrl());
-
-                        //currentUserDb.updateChildren(userInfo);
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
-    }
-
-    private String getFirstName(String displayName) {
-        String[] words = displayName.split(" ");
-        return words[0];
-    }
-
-
 }

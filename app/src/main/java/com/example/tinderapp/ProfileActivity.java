@@ -86,11 +86,8 @@ public class ProfileActivity extends AppCompatActivity {
         mProfileImage= (ImageView) findViewById(R.id.profileImage);
         descriptionEditText = (EditText)findViewById(R.id.description);
         mNameField = (EditText) findViewById(R.id.name);
-       // mPhoneField = (EditText) findViewById(R.id.phone);
         mAddImage = findViewById(R.id.addImage);
         mDeleteImage = findViewById(R.id.delImage);
-       // mBack = (Button) findViewById(R.id.back);
-       // mConfirm = (Button) findViewById(R.id.confirm);
         setDefaultButton= findViewById(R.id.setDefaultButton);
         mAuth =  FirebaseAuth.getInstance();
         userId= mAuth.getCurrentUser().getUid();
@@ -152,8 +149,6 @@ public class ProfileActivity extends AppCompatActivity {
                         DataSnapshot bufor,defaultBufor;
                         int i =0;
                         bufor = dataSnapshot.child("0");
-                        //buffor = dataSnapshot.child("5").getValue().toString();
-                        //defaultBuffor = dataSnapshot.child(String.valueOf(imagePosition)).getValue().toString();
                         defaultBufor = dataSnapshot.child(String.valueOf(imagePosition));
                         mImageDatabase.child("0").setValue(defaultBufor.getValue());
                         mImageDatabase.child(String.valueOf(imagePosition)).setValue(bufor.getValue());
@@ -250,14 +245,6 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
 
-        /*mBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                return;
-            }
-        });
-*/
         descriptionEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) { }
@@ -314,9 +301,6 @@ public class ProfileActivity extends AppCompatActivity {
                 for(DataSnapshot ds:dataSnapshot.getChildren()){
 
                     arrayList.add(ds.child("uri").getValue());
-                  /*  if(ds.getValue().equals("default") && dataSnapshot.getChildrenCount()!=1){
-                        arrayList.remove(0);
-                    }*/
                 }
                 mImages=arrayList;
                 ImageAdapter adapter = new ImageAdapter(ProfileActivity.this,mImages);
@@ -361,9 +345,6 @@ public class ProfileActivity extends AppCompatActivity {
 
                     // Now you can extract any Exif tag you want
                     // Assuming the image is a JPEG or supported raw format
-
-
-
                     int orientation = exifInterface.getAttributeInt(
                             ExifInterface.TAG_ORIENTATION,
                             ExifInterface.ORIENTATION_NORMAL);
@@ -431,14 +412,12 @@ public class ProfileActivity extends AppCompatActivity {
                             Toast.makeText(ProfileActivity.this,"Upload successful",Toast.LENGTH_SHORT).show();
                             loadImages();
                             getUserInfo();
-                           // finish();
                             return;
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
                             Toast.makeText(ProfileActivity.this,"Upload unsuccessful",Toast.LENGTH_SHORT).show();
-                            //finish();
                             return;
                         }
                     });
@@ -450,7 +429,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         }else {
             return;
-            //finish();
         }
 
 
@@ -472,10 +450,6 @@ public class ProfileActivity extends AppCompatActivity {
                         name = map.get("name").toString();
                         mNameField.setText(name);
                     }
-//                    if(map.get("phone")!=null){
-//                        phone = map.get("phone").toString();
-//                        mPhoneField.setText(phone);
-//                    }
                     if(map.get("sex")!=null){
                         userSex = map.get("sex").toString();
 
@@ -484,9 +458,6 @@ public class ProfileActivity extends AppCompatActivity {
                         description = map.get("description").toString();
                         descriptionEditText.setText(description);
                     }
-
-
-                    //dataSnapshot.child("images").exists()
                     try {
                         if(map.get("images")!=null){
                             ArrayList imageArray;
@@ -519,12 +490,10 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void saveUserInformation() {
         name = mNameField.getText().toString();
-        //phone = mPhoneField.getText().toString();
         description = descriptionEditText.getText().toString().trim();
 
         Map userInfo = new HashMap<>();
         userInfo.put("name", name);
-    //    userInfo.put("phone",phone);
         userInfo.put("description",description);
 
         mUserDatabase.updateChildren(userInfo);

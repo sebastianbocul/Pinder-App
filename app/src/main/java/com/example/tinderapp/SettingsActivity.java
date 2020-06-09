@@ -269,62 +269,6 @@ public class SettingsActivity extends AppCompatActivity {
                     if (ds.child("connections").child("nope").child(userId).exists()) {
                         users.child(ds.getKey()).child("connections").child("nope").child(userId).removeValue();
                     }
-
-
-
-//                        if (ds.child("connections").child("matches").exists()) {
-//                        DatabaseReference matches = users.child(dataSnapshot.getKey()).child("connections").child("matches").child(userId);
-//                        matches.addListenerForSingleValueEvent(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                if (dataSnapshot.getKey().equals(userId)) {
-//                                    matches.removeValue();
-//                                    Log.d("maingetTagT","matchesDel");
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                            }
-//                        });
-//                    }
-//
-//                    if (ds.child("connections").child("yes").exists()) {
-//                        DatabaseReference yes = users.child(dataSnapshot.getKey()).child("connections").child("yes").child(userId);
-//                        yes.addListenerForSingleValueEvent(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                if (dataSnapshot.getKey().equals(userId)) {
-//                                    yes.removeValue();
-//                                    Log.d("maingetTagT","yesDel");
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                            }
-//                        });
-//                    }
-//                    if (ds.child("connections").child("nope").exists()) {
-//                        DatabaseReference nope = users.child(dataSnapshot.getKey()).child("connections").child("nope").child(userId);
-//                        nope.addListenerForSingleValueEvent(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                if (dataSnapshot.getKey().equals(userId)) {
-//                                    nope.removeValue();
-//                                    Log.d("maingetTagT","nopeDel");
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                            }
-//                        });
-//                    }
-
                 }
             }
 
@@ -333,28 +277,6 @@ public class SettingsActivity extends AppCompatActivity {
 
             }
         });
-
-
-//        users.child(userId).child("connections").child("matches").addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-//                    try {
-//                        users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
-//                        users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
-//
-//                    }catch (Exception e){
-//                        Toast.makeText(SettingsActivity.this,"Oooops something went wrong",Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//                users.child(userId).child("connections").child("matches").removeValue();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
     }
 
 
@@ -453,9 +375,6 @@ public class SettingsActivity extends AppCompatActivity {
     private void deleteUserTags(){
         DatabaseReference usersTagReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("tags");
         DatabaseReference tagsReference = FirebaseDatabase.getInstance().getReference().child("Tags");
-
-        //DatabaseReference mTagsRemoved = FirebaseDatabase.getInstance().getReference().child("Tags").child(removedTags.getTagName()).child(userId);
-        //mTagsRemoved.removeValue();
         usersTagReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -546,7 +465,6 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         if(!dateValid==true) {
-           // Toast.makeText(SettingsActivity.this, "Wrong date format", Toast.LENGTH_SHORT).show();
             return;
         }
 

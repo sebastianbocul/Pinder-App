@@ -115,14 +115,6 @@ public class ChatActivity extends AppCompatActivity {
                     goToUsersProfile();
                 }
             });
-            //on back button click
-/*        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ChatActivity.this,MatchesActivity.class);
-                startActivity(intent);
-            }
-        });*/
             //this functions helps fix recyclerView while opening keyboards
             myRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                 @Override
@@ -337,10 +329,6 @@ public class ChatActivity extends AppCompatActivity {
 
         if(fromActivity.equals("LocationActivity")){
             finish();
-            /*
-            Intent i = new Intent(this, LocationActivity.class);
-            i.putExtra("matchId", matchId);
-            startActivity(i);*/
         }else {
         Intent i = new Intent(this, MatchesActivity.class);
         startActivity(i);
@@ -350,10 +338,6 @@ public class ChatActivity extends AppCompatActivity {
 
         if(fromActivity.equals("LocationActivity")){
             finish();
-            /*
-            Intent i = new Intent(this, LocationActivity.class);
-            i.putExtra("matchId", matchId);
-            startActivity(i);*/
         }else {
             Intent i = new Intent(this, MatchesActivity.class);
             startActivity(i);

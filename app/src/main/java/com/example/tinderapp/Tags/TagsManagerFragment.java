@@ -142,8 +142,6 @@ public class TagsManagerFragment extends Fragment {
         myTagsList.add(obj);
         listener.doSomethingWithData(myTagsList,removedTags);
         Toast.makeText(getActivity().getApplicationContext(), "Tag added!", Toast.LENGTH_SHORT).show();
-//        Intent send=new Intent(getActivity().getApplicationContext(),TagsManagerActivity.class);
-//        send.putExtra("myTagsList",myTagsList);
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
 
@@ -170,9 +168,6 @@ public class TagsManagerFragment extends Fragment {
                         String mDistance = ds.child("maxDistance").getValue().toString();
                         TagsManagerObject obj = new TagsManagerObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
                         myTagsList.add(obj);
-//                        Intent send2=new Intent(getActivity().getApplicationContext(),TagsManagerActivity.class);
-//                        send2.putExtra("myTagsList",myTagsList);
-
                         listener.doSomethingWithData(myTagsList,removedTags);
                         adapter.notifyDataSetChanged();
                         recyclerView.setAdapter(adapter);
@@ -202,10 +197,6 @@ public class TagsManagerFragment extends Fragment {
         myTagsList.remove(position);
         Toast.makeText(getActivity().getApplicationContext(), "Tag removed!", Toast.LENGTH_SHORT).show();
         listener.doSomethingWithData(myTagsList,removedTags);
-//        Intent send=new Intent(getActivity().getApplicationContext(),TagsManagerActivity.class);
-//        send.putExtra("removedTags",removedTags);
-//        Intent send2=new Intent(getActivity().getApplicationContext(),TagsManagerActivity.class);
-//        send2.putExtra("myTagsList",myTagsList);
         adapter.notifyItemRemoved(position);
     }
 

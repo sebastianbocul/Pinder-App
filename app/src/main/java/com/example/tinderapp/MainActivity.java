@@ -328,80 +328,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-//
-//    private String userSex;
-//    private String oppositeUserSex;
-//    public void checkUserSex(){
-//        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//        DatabaseReference userDb = usersDb.child(user.getUid());
-//        userDb.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//            if(dataSnapshot.getKey().equals(user.getUid())){
-//                if(dataSnapshot.exists()){
-//                    if(dataSnapshot.child("sex").getValue()!=null){
-//                        userSex=dataSnapshot.child("sex").getValue().toString();
-//                        switch (userSex){
-//                            case "Male":
-//                                oppositeUserSex="Female";
-//                                break;
-//                            case "Female":
-//                                oppositeUserSex="Male";
-//                                break;
-//                             }
-//                              getOppositeSexUsers();
-//                         }
-//                    else {
-//                        noMoreEditText.setText("There is no more users");
-//                    }
-//                    }
-//
-//                }
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
-
-//
-//    public void getOppositeSexUsers(){
-//        usersDb.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                if(dataSnapshot.child("sex").getValue()!=null){
-//
-//                    if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) && dataSnapshot.child("sex").getValue().toString().equals(oppositeUserSex)){
-//                        getTagsPreferencesUsers(dataSnapshot);
-//                    }
-//                }
-//                noMoreEditText.setText("There is no more users");
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
-//
-
 
     public void goToProfile(View view) {
 
@@ -644,7 +570,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     noMoreEditText.setText("There is no more users");
-                    List<cards> todosFromWeb =rowItems;
+                    List<cards> todosFromWeb = rowItems;
                     emitter.onSuccess(listOf(todosFromWeb));
                     //emitter.onComplete();
                 }
@@ -688,88 +614,7 @@ public class MainActivity extends AppCompatActivity {
 
                 );
 
-/*
-        Flowable.create(emitter -> {
-            // register onChange callback to database
-            // callback will be called, when a value is available
-            // the Single will stay open, until emitter#onSuccess is called with a collected list.
-            newUserDb.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    if(dataSnapshot.child("sex").getValue()!=null){
 
-                        if(dataSnapshot.exists() && !first.contains(dataSnapshot.getKey()) && !dataSnapshot.child("connections").child("nope").hasChild(currentUID) && !dataSnapshot.child("connections").child("yes").hasChild(currentUID) &&!dataSnapshot.getKey().equals(newCurrentUID)){
-                            dataSnapshot.getKey().equals(currentUID);
-                            Log.d("first", "OnChillAdded: " + dataSnapshot.getKey());
-
-                            Log.d("rxJava", "onDataChangeSecound: " + dataSnapshot.getKey());
-                            getTagsPreferencesUsers(dataSnapshot,false);
-                        }
-                    }
-                    noMoreEditText.setText("There is no more users");
-                    emitter.onComplete();
-
-                }
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-            // do some stuff
-            emitter.setCancellable(new Cancellable() {
-                @Override
-                public void cancel() throws Exception {
-                    //clean memory
-                }
-            });
-            // unregister addListenerForSingleValueEvent from newUserDb here
-        }, BackpressureStrategy.BUFFER).subscribeOn(Schedulers.computation())
-                .subscribe(new FlowableSubscriber<Object>() {
-                               @Override
-                               public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Subscription s) {
-                                   Log.d("rxJava", "onSubscribe: " + s);
-                               }
-
-                               @Override
-                               public void onNext(Object o) {
-                                   Log.d("rxJava", "onNext: " +  o);
-                               }
-
-                               @Override
-                               public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                                   Log.d("rxJava", "Test RxJAVA2, onError");
-                               }
-
-                               @Override
-                               public void onComplete() {
-                                   Log.d("rxJava", "Test RxJAVA2, onComplete");
-                                   for(cards card:rowItems){
-                                       Log.d("cardList", "User: " + card.getName() + "   UserId: " + card.getUserId() +   "   distance: " + card.getDistance());
-                                   }
-                                   flingContainer.setAdapter(arrayAdapter);
-                                   arrayAdapter.notifyDataSetChanged();
-                               }
-
-                           }
-
-                );
-*/
 
     }
 
@@ -836,30 +681,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else profileImageUrl = "default";
                 cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap, distanceDouble,likesMe);
-
-//                observable = Observable.create(new ObservableOnSubscribe() {
-//                    @Override
-//                    public void subscribe(@io.reactivex.rxjava3.annotations.NonNull ObservableEmitter emitter) {
-//                        try {
-//                            Log.d("rxJava", "subscribe: " + item.getName());
-//                        }catch (Exception e){
-//                        }
-//                    }
-//                });
-
-
-
-            //    Log.d("rxJava", "User: " + item.getName() + "   UserId: " + item.getUserId() +   "   distance: " + item.getDistance());
                 rowItems.add(item);
 
                 if(sortByDistance.equals("true")){
                     sortCollection();
                 }
-
-
-
-              //  Collections.sort(rowItems, Comparator.comparing(cards::getDistance));
-
             }
         }catch (Exception e){
         }
@@ -1037,7 +863,6 @@ public class MainActivity extends AppCompatActivity {
                     apiService.sendNotification(sender).enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            //       Toast.makeText(ChatActivity.this,""+response.message(),Toast.LENGTH_SHORT).show();
                         }
 
                         @Override

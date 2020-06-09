@@ -46,11 +46,7 @@ public class ImageAdapter extends PagerAdapter {
             Glide.with(mContext).load(R.drawable.picture_default).into(imageView);
         }else {
             Uri myUri = Uri.parse(imageUrl);
-
             Glide.with(mContext).load(imageUrl).into(imageView);
-           // Picasso.get().load(imageUrl).into(imageView);
-
-            //imageView.setImageURI(myUri);
         }
 
 

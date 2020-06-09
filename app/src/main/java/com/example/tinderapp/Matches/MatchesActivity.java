@@ -280,8 +280,6 @@ public class MatchesActivity extends AppCompatActivity {
                           }
                         }
                     }
-
-                   // Collections.sort(usersID, Comparator.comparing(String ::getSortId).reversed());
                     resultMatches = sortCollection(resultMatches);
                     mMatchesAdapter.notifyDataSetChanged();
                     if(resultMatches.size()==matchesCount){
@@ -335,7 +333,6 @@ public class MatchesActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()){
                      iterator = (int)dataSnapshot.getChildrenCount();
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
-                        //myTags.add("#"+ ds.getKey());
                         iterator--;
                         singeMatchTags(matchesReference.child(ds.getKey()));
 
@@ -430,21 +427,6 @@ public class MatchesActivity extends AppCompatActivity {
         }
 
     private ArrayList<MatchesObject> sortCollection(ArrayList<MatchesObject> matchesList) {
-
-//        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
-//            Collections.sort(matchesList, Comparator.comparing(MatchesObject::getSortId).reversed());
-//
-//        }
-//        else {
-//            Collections.sort(matchesList, new Comparator<MatchesObject>(){
-//                @Override
-//                public int compare(MatchesObject o1, MatchesObject o2) {
-//                    return o1.getSortId().compareTo(o2.getSortId());
-//                }
-//            });
-//            Collections.reverse(matchesList);
-//        }
-
         Collections.sort(matchesList, new Comparator<MatchesObject>(){
             @Override
             public int compare(MatchesObject o1, MatchesObject o2) {
