@@ -22,17 +22,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-<!--
-            <Button
-                android:id="@+id/backButton"
-                android:layout_width="50sp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="5sp"
-                android:text="Back" />
--->
-
             <TextView
             android:id="@+id/userName"
             android:layout_width="wrap_content"
@@ -44,20 +33,6 @@
             android:textSize="25sp"
             android:layout_toEndOf="@+id/profileImage"
             android:layout_toRightOf="@+id/profileImage"   />
-<!--
-            <Button
-                android:id="@+id/optionButton"
-                android:layout_width="50sp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginLeft="120sp"
-                android:layout_marginTop="5sp"
-                android:layout_marginEnd="15sp"
-                android:layout_marginRight="14dp"
-                android:text="..." />
--->
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profileImage"
                 android:layout_width="60sp"
@@ -66,9 +41,6 @@
                 android:layout_marginLeft="50dp"
                 android:padding="5sp"
                 android:src="@drawable/profile_default" />
-            <!--    android:layout_toEndOf="@+id/backButton"
-           android:layout_toRightOf="@+id/backButton"-->
-
         </RelativeLayout>
 
     </androidx.appcompat.widget.Toolbar>
@@ -122,8 +94,4 @@
             android:id="@+id/send"/>
 
     </LinearLayout>
-
-
-
-
 </LinearLayout>

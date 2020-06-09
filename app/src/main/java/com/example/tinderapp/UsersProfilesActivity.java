@@ -288,7 +288,7 @@ public void fillUserProfile(){
                         descriptionTextView.setText("Description: " +description);
                     }else descriptionTextView.setText("Description:");
 
-                    
+
                     if(map.get("images")==null){
                         viewPager.setBackground(getDrawable(R.drawable.picture_default));
                     }
@@ -306,11 +306,6 @@ public void fillUserProfile(){
 
 
     }
-
-
-
-
-
     private double distance(double lat1, double lon1, double lat2, double lon2) {
         double theta = lon1 - lon2;
         double dist = Math.sin(deg2rad(lat1))

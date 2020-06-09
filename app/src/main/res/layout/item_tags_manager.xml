@@ -21,7 +21,6 @@
         android:text="Item1"
         android:textSize="15sp"
         android:layout_marginRight="10sp"/>
-
     <TextView
         android:layout_weight="1"
         android:id="@+id/tag_age"
@@ -45,5 +44,4 @@
         android:layout_marginRight="5sp"
         android:src="@drawable/delete_tag"
         android:id="@+id/tag_delete"/>
-
 </LinearLayout>
