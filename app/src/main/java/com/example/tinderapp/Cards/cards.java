@@ -11,14 +11,14 @@ public class cards {
     private double distance;
     private boolean likesMe;
 
-    public cards (String userId,String name, String profileImageUrl,String tags,Map mutualTagsMap,double distance,boolean likesMe){
+    public cards(String userId, String name, String profileImageUrl, String tags, Map mutualTagsMap, double distance, boolean likesMe) {
         this.userId = userId;
         this.name = name;
         this.profileImageUrl = profileImageUrl;
         this.tags = tags;
         this.mutualTagsMap = mutualTagsMap;
-        this.distance=distance;
-        this.likesMe=likesMe;
+        this.distance = distance;
+        this.likesMe = likesMe;
     }
 
     public String getUserId() {
@@ -76,5 +76,4 @@ public class cards {
     public void setLikesMe(boolean likesMe) {
         this.likesMe = likesMe;
     }
-
 }

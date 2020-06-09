@@ -1,4 +1,5 @@
 package com.example.tinderapp.Tags;
+
 public class TagsManagerObject {
     private String tagName;
     private String gender;
@@ -6,14 +7,13 @@ public class TagsManagerObject {
     private String mAgeMax;
     private String mDistance;
 
-    public TagsManagerObject(String tagName, String gender,String mAgeMin, String mAgeMax ,String mDistance){
+    public TagsManagerObject(String tagName, String gender, String mAgeMin, String mAgeMax, String mDistance) {
         this.tagName = tagName;
-        this.gender=gender;
-        this.mAgeMin=mAgeMin;
+        this.gender = gender;
+        this.mAgeMin = mAgeMin;
         this.mAgeMax = mAgeMax;
-        this.mDistance =mDistance;
+        this.mDistance = mDistance;
     }
-
 
     public String getTagName() {
         return tagName;
@@ -54,6 +54,4 @@ public class TagsManagerObject {
     public void setmDistance(String mDistance) {
         this.mDistance = mDistance;
     }
-
-
 }

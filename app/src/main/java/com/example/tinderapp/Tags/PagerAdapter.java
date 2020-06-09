@@ -10,27 +10,22 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     public PagerAdapter(@NonNull FragmentManager fm, int NumberOfTabs) {
         super(fm);
-        this.mNoOfTabs=NumberOfTabs;
+        this.mNoOfTabs = NumberOfTabs;
     }
-
 
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        switch (position)
-        {
+        switch (position) {
             case 0:
                 TagsManagerFragment tagsManagerFragment = new TagsManagerFragment();
                 return tagsManagerFragment;
             case 1:
-
                 PopularTagsFragment popularTagsFragment = new PopularTagsFragment();
                 return popularTagsFragment;
-
             default:
                 return null;
         }
-
     }
 
     @Override

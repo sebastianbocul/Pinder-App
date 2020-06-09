@@ -1,138 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegistrationActivity"
     android:orientation="vertical"
     android:padding="50sp"
-  >
+    tools:context=".RegistrationActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/mainLayout">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:text="Email:"/>
-
-    <EditText
-        android:paddingTop="2sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Email"
-        android:inputType="text"
-        android:id="@+id/email"/>
-        <TextView
-            android:layout_marginTop="5sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:text="Password:"/>
-    <EditText
-        android:paddingTop="2sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:id="@+id/password"/>
-    <Button
-        android:layout_marginLeft="2sp"
-        android:layout_marginRight="2sp"
-        android:layout_width="match_parent"
-        android:layout_height="30sp"
-        android:layout_gravity="center"
-        android:text="LOGIN"
-        android:id="@+id/login"
-        android:background = "@drawable/rounded_button"/>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-    <TextView
-        android:paddingTop="5sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Register with email? Click "/>
-    <Button
-        android:layout_width="40sp"
-        android:layout_height="20sp"
-        android:text="HERE"
-        android:textSize="15sp"
-        android:textColor="#0000ff"
-        android:background="#00000000"
-        android:id="@+id/register"/>
-    <TextView
-        android:paddingTop="5sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=" ."/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="20sp"
-        android:orientation="vertical">
-
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/login_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="15sp"
-        android:paddingBottom="15sp"
-        android:textSize="15sp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="3sp"
-        android:layout_marginRight="3sp"
-        android:layout_weight="1"/>
-
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:textSize="15sp"
-            android:layout_marginBottom="10dp"
-            android:layout_weight="1"/>
-    </LinearLayout>
+        android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/mainLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_weight="1">
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/smallLogo"
-            android:layout_width="match_parent"
-            android:layout_height="250sp"
-            android:layout_gravity="bottom"
-            android:src="@drawable/login_photo" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email:"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:inputType="text"
+                android:paddingTop="2sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5sp"
+                android:text="Password:"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:paddingTop="2sp" />
+
+            <Button
+                android:id="@+id/login"
+                android:layout_width="match_parent"
+                android:layout_height="30sp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="2sp"
+                android:layout_marginRight="2sp"
+                android:background="@drawable/rounded_button"
+                android:text="LOGIN" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5sp"
+                    android:text="Register with email? Click " />
+
+                <Button
+                    android:id="@+id/register"
+                    android:layout_width="40sp"
+                    android:layout_height="20sp"
+                    android:background="#00000000"
+                    android:text="HERE"
+                    android:textColor="#0000ff"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5sp"
+                    android:text=" ." />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="20sp">
+
+                <com.facebook.login.widget.LoginButton
+                    android:id="@+id/login_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="3sp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="3sp"
+                    android:layout_weight="1"
+                    android:paddingTop="15sp"
+                    android:paddingBottom="15sp"
+                    android:textSize="15sp" />
+
+                <com.google.android.gms.common.SignInButton
+                    android:id="@+id/sign_in_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_weight="1"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="1">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/smallLogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="250sp"
+                    android:layout_gravity="bottom"
+                    android:src="@drawable/login_photo" />
+
+
+            </LinearLayout>
 
 
         </LinearLayout>
 
-
-
-
-    </LinearLayout>
-
         <LinearLayout
+            android:id="@+id/logoLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:id="@+id/logoLayout">
+            android:orientation="vertical">
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/bigLogo"
                 android:layout_width="match_parent"

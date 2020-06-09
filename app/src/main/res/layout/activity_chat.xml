@@ -4,35 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".Chat.ChatActivity"
-    android:orientation="vertical">
-    <Button android:id="@+id/back"
+    android:orientation="vertical"
+    tools:context=".Chat.ChatActivity">
+
+    <Button
+        android:id="@+id/back"
         android:layout_width="50sp"
         android:layout_height="50sp"
-        android:text="Back!"
-        android:onClick="onBack" />
+        android:onClick="onBack"
+        android:text="Back!" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        >
+        android:layout_alignParentTop="true">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <TextView
-            android:id="@+id/userName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5sp"
-            android:layout_marginTop="14sp"
-            android:text="Name"
-            android:textColor="@android:color/black"
-            android:textSize="25sp"
-            android:layout_toEndOf="@+id/profileImage"
-            android:layout_toRightOf="@+id/profileImage"   />
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5sp"
+                android:layout_marginTop="14sp"
+                android:layout_toEndOf="@+id/profileImage"
+                android:layout_toRightOf="@+id/profileImage"
+                android:text="Name"
+                android:textColor="@android:color/black"
+                android:textSize="25sp" />
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profileImage"
                 android:layout_width="60sp"
@@ -48,24 +51,24 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#EEEAEAEA"/>
+        android:background="#EEEAEAEA" />
+
     <RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_weight="100">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="100">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/recyclerView"
             android:scrollbars="vertical"
             app:stackFromEnd="true">
 
         </androidx.recyclerview.widget.RecyclerView>
 
 
-
-</RelativeLayout>
+    </RelativeLayout>
 
 
     <LinearLayout
@@ -73,25 +76,26 @@
         android:layout_width="match_parent"
         android:layout_height="50sp"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
         <EditText
-            android:layout_weight="0.8"
-            android:width="0dp"
+            android:id="@+id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/message"
-            android:hint="message..."/>
+            android:layout_weight="0.8"
+            android:width="0dp"
+            android:hint="message..." />
 
         <Button
-            android:layout_weight="0.2"
-            android:width="0dp"
-            android:layout_marginRight="4sp"
+            android:id="@+id/send"
             android:layout_width="100sp"
             android:layout_height="30sp"
-            android:text="Send"
-            android:background = "@drawable/rounded_button"
-            android:id="@+id/send"/>
+            android:layout_marginRight="4sp"
+            android:layout_weight="0.2"
+            android:width="0dp"
+            android:background="@drawable/rounded_button"
+            android:text="Send" />
 
     </LinearLayout>
 </LinearLayout>

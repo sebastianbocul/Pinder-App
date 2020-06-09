@@ -2,22 +2,18 @@ package com.example.tinderapp.Tags;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
-import  android.view.View;
-
 import com.example.tinderapp.R;
 
 import java.util.List;
 
-
-public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder>{
-
+public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> {
     private List<String> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
@@ -48,22 +44,6 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder>{
         return mData.size();
     }
 
-
-    // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
-        ViewHolder(View itemView) {
-            super(itemView);
-            myTextView = itemView.findViewById(R.id.myTags);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
-        }
-    }
-
     // convenience method for getting data at click position
     String getItem(int id) {
         return mData.get(id);
@@ -79,4 +59,19 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder>{
         void onItemClick(View view, int position);
     }
 
+    // stores and recycles views as they are scrolled off screen
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView myTextView;
+
+        ViewHolder(View itemView) {
+            super(itemView);
+            myTextView = itemView.findViewById(R.id.myTags);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+        }
+    }
 }

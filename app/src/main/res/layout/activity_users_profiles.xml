@@ -1,118 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="false">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".UsersProfilesActivity">
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
-
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="500sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="10sp">
+        tools:context=".UsersProfilesActivity">
 
-        <TextView
-            android:id="@+id/nameTextView"
-            android:textSize="30sp"
-            android:textColor="@android:color/black"
-            tools:text="name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/locationTextView"
-            android:textSize="20sp"
-            android:textColor="@android:color/black"
-            tools:text="location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/distanceTextView"
-            android:textSize="20sp"
-            android:textColor="@android:color/black"
-            tools:text="distance:"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/tagsTextView"
-            android:textSize="20sp"
-            android:textColor="@android:color/black"
-            tools:text="Mutual tags"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/genderTextView"
-            android:textSize="20sp"
-            android:textColor="@android:color/black"
-            tools:text="gender"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/descriptionTextView"
-            android:textSize="20sp"
-            android:textColor="@android:color/black"
-            tools:text="description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="10sp"
-        android:layout_marginTop="10sp">
-        <Button
-            android:background = "@drawable/rounded_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/unmatchButton"
-            android:layout_marginLeft="100sp"
-            android:layout_marginRight="100sp"
-            android:text="unmatch"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-            android:paddingBottom="10sp">
-            <ImageView
-                android:id="@+id/dislikeButton"
-                android:layout_width="20sp"
-                android:layout_height="75sp"
-                android:layout_weight="1"
-                android:text="DISLIKE"
-                android:src="@drawable/dislike"
-                android:paddingLeft="50sp"/>
-
-            <ImageView
-                android:id="@+id/likeButton"
-                android:layout_width="20sp"
-                android:layout_height="75sp"
-                android:layout_weight="1"
-                android:text="LIKE"
-                android:src="@drawable/like"
-                android:paddingRight="50sp"
-                />
-
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="500sp" />
         </LinearLayout>
-    </RelativeLayout>
-</LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10sp">
+
+            <TextView
+                android:id="@+id/nameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="30sp"
+                tools:text="name" />
+
+            <TextView
+                android:id="@+id/locationTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                tools:text="location" />
+
+            <TextView
+                android:id="@+id/distanceTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                tools:text="distance:" />
+
+            <TextView
+                android:id="@+id/tagsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                tools:text="Mutual tags" />
+
+            <TextView
+                android:id="@+id/genderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                tools:text="gender" />
+
+            <TextView
+                android:id="@+id/descriptionTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                tools:text="description" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10sp"
+            android:paddingTop="10sp">
+
+            <Button
+                android:id="@+id/unmatchButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="100sp"
+                android:layout_marginRight="100sp"
+                android:background="@drawable/rounded_button"
+                android:text="unmatch" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+
+                android:paddingBottom="10sp">
+
+                <ImageView
+                    android:id="@+id/dislikeButton"
+                    android:layout_width="20sp"
+                    android:layout_height="75sp"
+                    android:layout_weight="1"
+                    android:paddingLeft="50sp"
+                    android:src="@drawable/dislike"
+                    android:text="DISLIKE" />
+
+                <ImageView
+                    android:id="@+id/likeButton"
+                    android:layout_width="20sp"
+                    android:layout_height="75sp"
+                    android:layout_weight="1"
+                    android:paddingRight="50sp"
+                    android:src="@drawable/like"
+                    android:text="LIKE" />
+
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
 </ScrollView>

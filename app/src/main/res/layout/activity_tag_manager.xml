@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".SettingsActivity">
-    <Button android:id="@+id/back"
+
+    <Button
+        android:id="@+id/back"
         android:layout_width="50sp"
         android:layout_height="50sp"
-        android:text="Back!"
-        android:onClick="onBack" />
+        android:onClick="onBack"
+        android:text="Back!" />
 
 
     <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tablayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tablayout"
         android:background="#eeffffff"
-        app:tabTextColor="#000000"
         android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:tabTextColor="#000000">
 
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/pager">
+        android:layout_height="fill_parent">
 
     </androidx.viewpager.widget.ViewPager>
 

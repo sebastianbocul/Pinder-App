@@ -11,16 +11,15 @@ public class MatchesObject {
     private String sortId;
     private ArrayList<String> mutualTags;
 
-    public MatchesObject (String userId,String name,String profileImageUrl,String lastMessage,boolean createdByMe,String sortId,  ArrayList<String> mutualTags){
+    public MatchesObject(String userId, String name, String profileImageUrl, String lastMessage, boolean createdByMe, String sortId, ArrayList<String> mutualTags) {
         this.userId = userId;
-        this.name=name;
-        this.profileImageUrl=profileImageUrl;
+        this.name = name;
+        this.profileImageUrl = profileImageUrl;
         this.lastMessage = lastMessage;
-        this.createdByMe =createdByMe;
+        this.createdByMe = createdByMe;
         this.sortId = sortId;
-        this.mutualTags=mutualTags;
+        this.mutualTags = mutualTags;
     }
-
 
     public String getName() {
         return name;
@@ -77,5 +76,4 @@ public class MatchesObject {
     public void setMutualTags(ArrayList<String> mutualTags) {
         this.mutualTags = mutualTags;
     }
-
 }

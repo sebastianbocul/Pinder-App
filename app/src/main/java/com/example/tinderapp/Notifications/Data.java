@@ -7,17 +7,16 @@ public class Data {
     private String title;
     private String sent;
 
-    public Data(String user,int icon,String body,String title,String sent){
-        this.user=user;
-        this.icon=icon;
-        this.body=body;
-        this.title=title;
-        this.sent=sent;
+    public Data(String user, int icon, String body, String title, String sent) {
+        this.user = user;
+        this.icon = icon;
+        this.body = body;
+        this.title = title;
+        this.sent = sent;
     }
 
-    public Data(){}
-
-
+    public Data() {
+    }
 
     public String getUser() {
         return user;
@@ -58,6 +57,4 @@ public class Data {
     public void setSent(String sent) {
         this.sent = sent;
     }
-
-
 }

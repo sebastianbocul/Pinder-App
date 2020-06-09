@@ -3,17 +3,15 @@ package com.example.tinderapp.Tags;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tinderapp.R;
 import com.google.firebase.database.DataSnapshot;
@@ -36,14 +34,12 @@ public class PopularTagsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private OnFragmentInteractionListener mListener;
-
     private RecyclerView popularTagsRecyclerView;
-    private ArrayList<TagsPopularObject> popularTagsList=new ArrayList<>();
+    private ArrayList<TagsPopularObject> popularTagsList = new ArrayList<>();
     private TagsPopularAdapter tagsPopularAdapter;
 
     public PopularTagsFragment() {
@@ -75,75 +71,60 @@ public class PopularTagsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
-
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-
-
         return inflater.inflate(R.layout.fragment_popular_tags, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         //popularTagsRecyclerView
-        popularTagsRecyclerView= getView().findViewById(R.id.popularTagsRecyclerView);
+        popularTagsRecyclerView = getView().findViewById(R.id.popularTagsRecyclerView);
         DatabaseReference tagsDatabase = FirebaseDatabase.getInstance().getReference().child("Tags");
         tagsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    for (DataSnapshot ds : dataSnapshot.getChildren()){
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         String tag_name = ds.getKey();
                         int tag_popularity = (int) ds.getChildrenCount();
-                        TagsPopularObject popular_tag = new TagsPopularObject(tag_name,tag_popularity);
+                        TagsPopularObject popular_tag = new TagsPopularObject(tag_name, tag_popularity);
                         popularTagsList.add(popular_tag);
                     }
                     sortCollection();
                     popularTagsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-                    tagsPopularAdapter = new TagsPopularAdapter(getActivity().getApplicationContext(),popularTagsList);
+                    tagsPopularAdapter = new TagsPopularAdapter(getActivity().getApplicationContext(), popularTagsList);
                     popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
-
     }
-
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-
 
     private void sortCollection() {
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Collections.sort(popularTagsList, Comparator.comparing(TagsPopularObject::getTagPopularity).reversed());
-        }
-        else {
-            Collections.sort(popularTagsList, new Comparator<TagsPopularObject>(){
-                public int compare(TagsPopularObject o1, TagsPopularObject o2){
-                    if(o1.getTagPopularity() == o2.getTagPopularity())
+        } else {
+            Collections.sort(popularTagsList, new Comparator<TagsPopularObject>() {
+                public int compare(TagsPopularObject o1, TagsPopularObject o2) {
+                    if (o1.getTagPopularity() == o2.getTagPopularity())
                         return 0;
                     return o1.getTagPopularity() < o2.getTagPopularity() ? -1 : 1;
                 }
             });
             Collections.reverse(popularTagsList);
-
         }
+    }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
     }
 }

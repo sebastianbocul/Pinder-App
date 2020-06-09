@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -10,38 +9,41 @@
         android:id="@+id/tag"
         android:layout_width="80sp"
         android:layout_height="30sp"
-         android:text="Item1"
-        android:textSize="15sp"
-        android:layout_weight="5"/>
+        android:layout_weight="5"
+        android:text="Item1"
+        android:textSize="15sp" />
+
     <TextView
-        android:layout_weight="1"
         android:id="@+id/tag_gender"
         android:layout_width="40sp"
         android:layout_height="30sp"
-        android:text="Item1"
-        android:textSize="15sp"
-        android:layout_marginRight="10sp"/>
-    <TextView
+        android:layout_marginRight="10sp"
         android:layout_weight="1"
+        android:text="Item1"
+        android:textSize="15sp" />
+
+    <TextView
         android:id="@+id/tag_age"
         android:layout_width="30sp"
         android:layout_height="30sp"
-        android:text="Item1"
-        android:textSize="15sp"
-        android:layout_marginRight="10sp"/>
-    <TextView
+        android:layout_marginRight="10sp"
         android:layout_weight="1"
+        android:text="Item1"
+        android:textSize="15sp" />
+
+    <TextView
         android:id="@+id/tag_distance"
         android:layout_width="30sp"
         android:layout_height="30sp"
+        android:layout_marginRight="10sp"
+        android:layout_weight="1"
         android:text="Item1"
-        android:textSize="15sp"
-        android:layout_marginRight="10sp"/>
+        android:textSize="15sp" />
 
     <ImageView
+        android:id="@+id/tag_delete"
         android:layout_width="22sp"
         android:layout_height="22sp"
         android:layout_marginRight="5sp"
-        android:src="@drawable/delete_tag"
-        android:id="@+id/tag_delete"/>
+        android:src="@drawable/delete_tag" />
 </LinearLayout>

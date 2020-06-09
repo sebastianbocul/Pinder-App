@@ -8,19 +8,18 @@
     tools:context=".MainActivity">
 
 
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50sp"
         android:orientation="horizontal"
         android:paddingTop="10sp">
 
-        <Button android:id="@+id/back"
+        <Button
+            android:id="@+id/back"
             android:layout_width="50sp"
             android:layout_height="50sp"
-            android:text="Back!"
-            android:onClick="onBack" />
+            android:onClick="onBack"
+            android:text="Back!" />
 
 
         <ImageView
@@ -29,8 +28,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="goToSettings"
-            android:text="Settings"
-            android:src="@drawable/settings"/>
+            android:src="@drawable/settings"
+            android:text="Settings" />
 
         <ImageView
             android:id="@+id/tags"
@@ -38,24 +37,26 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="goToTags"
-            android:text="Tags"
-            android:src="@drawable/tags"/>
+            android:src="@drawable/tags"
+            android:text="Tags" />
+
         <ImageView
             android:id="@+id/matches"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="goToMatches"
-            android:text="Matches"
-            android:src="@drawable/matches"/>
+            android:src="@drawable/matches"
+            android:text="Matches" />
+
         <ImageView
             android:id="@+id/profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="goToProfile"
-            android:text="Profle"
-            android:src="@drawable/profile"/>
+            android:src="@drawable/profile"
+            android:text="Profle" />
 
     </LinearLayout>
 
@@ -72,34 +73,35 @@
             android:orientation="horizontal" />
     </LinearLayout>
 
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="top"
-    android:layout_weight="1"
-    android:orientation="horizontal">
-
-
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Loading users"
-        android:gravity="center"
-        android:id="@+id/noMore"
-        android:textSize="25sp"/>
-
-    <com.lorentzos.flingswipe.SwipeFlingAdapterView
-        android:id="@+id/frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="@android:color/transparent"
-        app:rotation_degrees="15.5"
-        tools:context=".MyActivity"
-        android:layout_weight="1"/>
+        android:layout_gravity="top"
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/noMore"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Loading users"
+            android:textSize="25sp" />
+
+        <com.lorentzos.flingswipe.SwipeFlingAdapterView
+            android:id="@+id/frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            app:rotation_degrees="15.5"
+            tools:context=".MyActivity" />
+
+
+    </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -112,19 +114,18 @@
             android:layout_width="20sp"
             android:layout_height="75sp"
             android:layout_weight="1"
-            android:text="DISLIKE"
+            android:paddingLeft="50sp"
             android:src="@drawable/dislike"
-            android:paddingLeft="50sp"/>
+            android:text="DISLIKE" />
 
         <ImageView
             android:id="@+id/likeButton"
             android:layout_width="20sp"
             android:layout_height="75sp"
             android:layout_weight="1"
-            android:text="LIKE"
-            android:src="@drawable/like"
             android:paddingRight="50sp"
-            />
+            android:src="@drawable/like"
+            android:text="LIKE" />
     </LinearLayout>
 
 

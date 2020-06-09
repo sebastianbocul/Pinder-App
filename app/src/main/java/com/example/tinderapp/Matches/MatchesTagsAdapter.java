@@ -11,13 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tinderapp.R;
-import com.example.tinderapp.Tags.TagsAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MatchesTagsAdapter extends RecyclerView.Adapter<MatchesTagsAdapter.ViewHolder> {
-
     private List<String> mData;
     private LayoutInflater mInflater;
     private MatchesTagsAdapter.ItemClickListener mClickListener;
@@ -47,26 +44,6 @@ public class MatchesTagsAdapter extends RecyclerView.Adapter<MatchesTagsAdapter.
         return mData.size();
     }
 
-
-    // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        Button myTagButton;
-        TextView sortByTextView;
-        String sortBy;
-        ViewHolder(View itemView) {
-            super(itemView);
-            myTagButton = itemView.findViewById(R.id.itemTagButton);
-            sortByTextView=itemView.findViewById(R.id.sortByText);
-            myTagButton.setOnClickListener(this);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
-        }
-    }
-
     // convenience method for getting data at click position
     String getItem(int id) {
         return mData.get(id);
@@ -80,8 +57,26 @@ public class MatchesTagsAdapter extends RecyclerView.Adapter<MatchesTagsAdapter.
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
-
     }
 
+    // stores and recycles views as they are scrolled off screen
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        Button myTagButton;
+        TextView sortByTextView;
+        String sortBy;
+
+        ViewHolder(View itemView) {
+            super(itemView);
+            myTagButton = itemView.findViewById(R.id.itemTagButton);
+            sortByTextView = itemView.findViewById(R.id.sortByText);
+            myTagButton.setOnClickListener(this);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+        }
+    }
 }
 

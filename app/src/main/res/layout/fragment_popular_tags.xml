@@ -9,36 +9,37 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="5sp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="5sp">
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Most popular tags:"
-            android:textSize="12sp"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Popularity:"
-            android:paddingRight="10sp"
-            android:textSize="12sp"
-            android:gravity="right"
-            android:layout_weight="1"
-            />
-    </LinearLayout>
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/popularTagsRecyclerView"
+            android:orientation="horizontal">
 
-        />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Most popular tags:"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:paddingRight="10sp"
+                android:text="Popularity:"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/popularTagsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            />
     </LinearLayout>
 
 </FrameLayout>

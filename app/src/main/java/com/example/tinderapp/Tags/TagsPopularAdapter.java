@@ -2,19 +2,17 @@ package com.example.tinderapp.Tags;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tinderapp.R;
-import android.view.View;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TagsPopularAdapter extends RecyclerView.Adapter<TagsPopularAdapter.ViewHolder> {
-
     private ArrayList<TagsPopularObject> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
@@ -48,24 +46,6 @@ public class TagsPopularAdapter extends RecyclerView.Adapter<TagsPopularAdapter.
         return mData.size();
     }
 
-
-    // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tagName,tagPopularity;
-
-        ViewHolder(View itemView) {
-            super(itemView);
-            tagPopularity=itemView.findViewById(R.id.tag_popularity);
-            tagName = itemView.findViewById(R.id.tag_name);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
-        }
-    }
-
     // convenience method for getting data at click position
     TagsPopularObject getItem(int id) {
         return mData.get(id);
@@ -79,6 +59,23 @@ public class TagsPopularAdapter extends RecyclerView.Adapter<TagsPopularAdapter.
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
+    }
+
+    // stores and recycles views as they are scrolled off screen
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView tagName, tagPopularity;
+
+        ViewHolder(View itemView) {
+            super(itemView);
+            tagPopularity = itemView.findViewById(R.id.tag_popularity);
+            tagName = itemView.findViewById(R.id.tag_name);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+        }
     }
 }
 

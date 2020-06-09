@@ -1,10 +1,6 @@
 package com.example.tinderapp.Chat;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -15,9 +11,7 @@ import com.example.tinderapp.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-
 public class ChatViewHolders extends ViewHolder implements View.OnClickListener {
-
     public TextView mMessaage;
     public LinearLayout mContainer;
     public CircleImageView mChatImage;
@@ -31,7 +25,6 @@ public class ChatViewHolders extends ViewHolder implements View.OnClickListener 
     }
 
     @Override
-    public void onClick(View view){
-
+    public void onClick(View view) {
     }
 }

@@ -1,12 +1,12 @@
 package com.example.tinderapp.Tags;
-public class TagsPopularObject {
 
+public class TagsPopularObject {
     private String tagName;
     private int tagPopularity;
 
-    public TagsPopularObject(String tagName, int tagPopularity){
+    public TagsPopularObject(String tagName, int tagPopularity) {
         this.tagName = tagName;
-        this.tagPopularity=tagPopularity;
+        this.tagPopularity = tagPopularity;
     }
 
     public String getTagName() {
