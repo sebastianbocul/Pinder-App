@@ -3,6 +3,7 @@ package com.example.tinderapp.Tags;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +84,7 @@ public class PopularTagsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         //popularTagsRecyclerView
+        Log.d("tagsManagerFragment", "filling popular tags");
         popularTagsRecyclerView = getView().findViewById(R.id.popularTagsRecyclerView);
         DatabaseReference tagsDatabase = FirebaseDatabase.getInstance().getReference().child("Tags");
         tagsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {

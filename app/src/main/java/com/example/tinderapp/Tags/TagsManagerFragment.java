@@ -3,6 +3,7 @@ package com.example.tinderapp.Tags;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -127,6 +128,7 @@ public class TagsManagerFragment extends Fragment {
     }
 
     private void fillTagsAdapter() {
+        Log.d("tagsManagerFragment", "FillingTagsAdapter");
         DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserId).child("tags");
         ArrayList<String> myTags = new ArrayList<>();
         RecyclerView recyclerView = getView().findViewById(R.id.tagsRecyclerView);

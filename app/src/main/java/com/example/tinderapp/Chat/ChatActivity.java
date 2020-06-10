@@ -3,7 +3,9 @@ package com.example.tinderapp.Chat;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,11 +15,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.tinderapp.Cards.cards;
 import com.example.tinderapp.Matches.MatchesActivity;
 import com.example.tinderapp.Notifications.APIService;
 import com.example.tinderapp.Notifications.Client;
@@ -40,10 +44,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Cancellable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
 public class ChatActivity extends AppCompatActivity {
     DatabaseReference mDatabaseUserChat, mDatabaseChat, mDatabaseUser;
@@ -73,11 +84,13 @@ public class ChatActivity extends AppCompatActivity {
         userNameTextView = findViewById(R.id.userName);
         matchId = getIntent().getExtras().getString("matchId");
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         mDatabaseUserChat = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId).child("ChatId");
         mDatabaseChat = FirebaseDatabase.getInstance().getReference().child("Chat");
         mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("Users");
-        getChatId();
         fillImagesAndName();
+
+
         if (getIntent().getExtras().getString("fromActivity") != null) {
             fromActivity = getIntent().getExtras().getString("fromActivity");
         }
@@ -157,6 +170,7 @@ public class ChatActivity extends AppCompatActivity {
                             Glide.with(getApplication()).load(profileImageUrl).into(profileImage);
                             break;
                     }
+                    getChatId();
                 } catch (Exception e) {
                     Toast.makeText(ChatActivity.this, "Oooops something went wrong ", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(ChatActivity.this, MatchesActivity.class);
@@ -244,10 +258,96 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+
+
     private void getChatMessages() {
+//
+//        Single.create(emitter -> {
+//            // register onChange callback to database
+//            // callback will be called, when a value is available
+//            // the Single will stay open, until emitter#onSuccess is called with a collected list.
+//            mDatabaseChat.addChildEventListener(new ChildEventListener() {
+//                @Override
+//                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                    Log.d("chatActivity", "datasnapshot " +  dataSnapshot.child("createdByUser").getValue().toString());
+//                    if (dataSnapshot.exists()) {
+//                        String message = null;
+//                        String createdByUser = null;
+//                        if (dataSnapshot.child("text").getValue() != null) {
+//                            message = dataSnapshot.child("text").getValue().toString();
+//                        }
+//                        if (dataSnapshot.child("createdByUser").getValue() != null) {
+//                            createdByUser = dataSnapshot.child("createdByUser").getValue().toString();
+//                        }
+//                        if (message != null && createdByUser != null) {
+//                            Boolean currentUserBoolean = false;
+//                            String imageUrl = profileImageUrl;
+//                            if (createdByUser.equals(currentUserID)) {
+//                                currentUserBoolean = true;
+//                                imageUrl = myProfileImageUrl;
+//                            }
+//                            ChatObject newMessage = new ChatObject(message, currentUserBoolean, imageUrl);
+//                            resultChat.add(newMessage);
+//                          //  mChatAdapter.notifyDataSetChanged();
+//                        }
+//                    }
+//
+//                }
+//
+//                @Override
+//                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                }
+//
+//                @Override
+//                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//                }
+//
+//                @Override
+//                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//                }
+//            });
+//            // do some stuff
+//            emitter.setCancellable(new Cancellable() {
+//                @Override
+//                public void cancel() throws Exception {
+//                    //clean memory
+//                }
+//            });
+//            // unregister addListenerForSingleValueEvent from newUserDb here
+//        }).subscribeOn(Schedulers.computation())
+//                .subscribe(new SingleObserver<Object>() {
+//                               @Override
+//                               public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+//                                   Log.d("chatActivity", "First RxJAVA, onSubscribe");
+//                               }
+//
+//                               @Override
+//                               public void onSuccess(Object o) {
+//                                   Log.d("chatActivity", "First RxJAVA, onSuccess");
+//                                   for (ChatObject card : resultChat) {
+//                                       Log.d("chatActivity", "CurrentUser: " + card.getCurrentUser() + " mess: "+ card.getMessage()  + "  image: " +  card.getProfileImageUrl());
+//                                   }
+//
+//                                   mChatAdapter.notifyDataSetChanged();
+//                                   myRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+//                               }
+//
+//                               @Override
+//                               public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+//                                   Log.d("chatActivity", "First RxJAVA, onError");
+//                               }
+//                           }
+//                );
+
+        Log.d("chatActivity", "created By user: " + currentUserID);
         mDatabaseChat.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d("chatActivity", "datasnapshot " +  dataSnapshot.child("createdByUser").getValue().toString() + " myProfileImageUrl " + myProfileImageUrl);
                 if (dataSnapshot.exists()) {
                     String message = null;
                     String createdByUser = null;
@@ -266,6 +366,9 @@ public class ChatActivity extends AppCompatActivity {
                         }
                         ChatObject newMessage = new ChatObject(message, currentUserBoolean, imageUrl);
                         resultChat.add(newMessage);
+                        for (ChatObject card : resultChat) {
+                            Log.d("chatActivity", "CurrentUser: " + card.getCurrentUser() + " mess: "+ card.getMessage()  + "  image: " +  card.getProfileImageUrl());
+                        }
                         mChatAdapter.notifyDataSetChanged();
                     }
                 }
