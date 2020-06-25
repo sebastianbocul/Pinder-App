@@ -213,7 +213,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
                     lat2 = (double) mapLoc.get("latitude");
                     lon2 = (double) mapLoc.get("longitude");
                     double distance = distance(lat1, lon1, lat2, lon2);
-                    distanceTextView.setText("Distance: " + Math.round(distance) + " km");
+                    distanceTextView.setText(", " + Math.round(distance) + " km away");
                     //tags
                     StringBuilder strB = new StringBuilder();
                     if (mutualTagsExtras != null) {
@@ -230,9 +230,9 @@ public class UsersProfilesActivity extends AppCompatActivity {
                         }
                     }
                     if (strB.length() != 0) {
-                        tagsTextView.setText("Mutual tags: " + strB.toString());
+                        tagsTextView.setText(strB.toString());
                     } else {
-                        tagsTextView.setText("Mutual tags: ");
+                        tagsTextView.setText(" ");
                     }
                     userAge = "";
                     if (map.get("dateOfBirth") != null) {
@@ -247,18 +247,18 @@ public class UsersProfilesActivity extends AppCompatActivity {
                     //sex
                     if (map.get("sex") != null) {
                         gender = map.get("sex").toString();
-                        genderTextView.setText("Gender: " + gender);
+                        genderTextView.setText(gender);
                     } else descriptionTextView.setText("Gender:");
                     //location
                     if (mapLoc.get("locality") != null) {
                         location = mapLoc.get("locality").toString();
-                        locationTextView.setText("Location: " + location);
-                    } else locationTextView.setText("Location:");
+                        locationTextView.setText(location);
+                    } else locationTextView.setText("");
                     //description
                     if (map.get("description") != null) {
                         description = map.get("description").toString();
-                        descriptionTextView.setText("Description: " + description);
-                    } else descriptionTextView.setText("Description:");
+                        descriptionTextView.setText(description);
+                    } else descriptionTextView.setText("");
                     if (map.get("images") == null) {
                         viewPager.setBackground(getDrawable(R.drawable.picture_default));
                     }

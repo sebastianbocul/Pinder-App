@@ -1,6 +1,11 @@
 package com.example.tinderapp;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,7 +20,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -24,8 +32,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class RegistrationActivity extends AppCompatActivity {
@@ -38,7 +49,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private boolean dateValid = false;
     private int dd, mm, yyyy;
     private TextView title;
-
+    private FusedLocationProviderClient fusedLocationProviderClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +67,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 }
             }
         };
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         mRegister = findViewById(R.id.register);
         mEmail = findViewById(R.id.email);
         mPassword = findViewById(R.id.password);
@@ -164,6 +176,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         Toast.makeText(RegistrationActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
                     mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -189,6 +202,11 @@ public class RegistrationActivity extends AppCompatActivity {
                                 userInfo.put("dateOfBirth", dateOfBirth);
                                 userInfo.put("tags", tagsMap);
                                 userInfo.put("showMyLocation", true);
+                                if (ActivityCompat.checkSelfPermission(RegistrationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                    updateLocation();
+                                } else {
+                                    ActivityCompat.requestPermissions(RegistrationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+                                }
                                 currentUserDb.updateChildren(userInfo);
                                 DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
                                 tags.child("default").child(userId).setValue(true);
@@ -225,5 +243,41 @@ public class RegistrationActivity extends AppCompatActivity {
     public void onBack(View view) {
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
+    }
+    public void updateLocation() {
+        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                Location location = task.getResult();
+                if (location != null) {
+                    try {
+                        Geocoder geocoder = new Geocoder(RegistrationActivity.this, Locale.getDefault());
+                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        String currentUID = mAuth.getCurrentUser().getUid();
+                        DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+                        DatabaseReference myRef = usersDb.child(currentUID).child("location");
+                        myRef.child("longitude").setValue(addresses.get(0).getLongitude());
+                        myRef.child("latitude").setValue(addresses.get(0).getLatitude());
+                        if (addresses.get(0).getCountryName() != null) {
+                            myRef.child("countryName").setValue(addresses.get(0).getCountryName());
+                        } else {
+                            myRef.child("countryName").setValue("Not found");
+                        }
+                        if (addresses.get(0).getLocality() != null) {
+                            myRef.child("locality").setValue(addresses.get(0).getLocality());
+                        } else {
+                            myRef.child("locality").setValue("Not found");
+                        }
+                        if (addresses.get(0).getAddressLine(0) != null) {
+                            myRef.child("address").setValue(addresses.get(0).getAddressLine(0));
+                        } else {
+                            myRef.child("address").setValue("Not found");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 }
