@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -128,6 +129,7 @@ public class ProfileActivity extends AppCompatActivity {
         mImageDatabase = mUserDatabase.child("images");
         viewPager = findViewById(R.id.viewPager);
         //get user images
+        sortImagesDatabase();
         loadImages();
         getUserInfo();
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -276,16 +278,26 @@ public class ProfileActivity extends AppCompatActivity {
         mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Map imagesMap = new HashMap<>();
+                boolean needSort=false;
                 int i = 0;
                 String key;
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    key = String.valueOf(i);
-                    imagesMap.put(key, ds.getValue().toString());
+                    if(!ds.getKey().equals(String.valueOf(i))) needSort=true;
                     i++;
                 }
-                mImageDatabase.removeValue();
-                mImageDatabase.updateChildren(imagesMap);
+                if(needSort==true){
+                    Map imagesMap = new HashMap<>();
+                    i = 0;
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        key = String.valueOf(i);
+                        imagesMap.put(key, ds.getValue());
+                        i++;
+                    }
+                    Log.d("profileActivity", "imagesMap: " + imagesMap);
+                    mImageDatabase.removeValue();
+                    mImageDatabase.updateChildren(imagesMap);
+                }
+
             }
 
             @Override
@@ -301,7 +313,12 @@ public class ProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getChildrenCount() != 0) {
                     viewPager.setBackground(null);
-                    imageName = dataSnapshot.child(String.valueOf(imagePosition)).child("name").getValue().toString();
+                    try {
+                        imageName = dataSnapshot.child(String.valueOf(imagePosition)).child("name").getValue().toString();
+                    }
+                    catch (Exception e){
+
+                    }
                 }
                 ArrayList arrayList = new ArrayList();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {

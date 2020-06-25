@@ -8,11 +8,11 @@
     tools:context=".RegistrationActivity">
 
     <Button
-        android:id="@+id/back"
-        android:layout_width="50sp"
-        android:layout_height="50sp"
-        android:onClick="onBack"
-        android:text="Back!" />
+    android:id="@+id/back"
+    android:layout_width="0sp"
+    android:layout_height="0sp"
+    android:onClick="onBack"
+    android:text="Back!" />
 
     <TextView
         android:id="@+id/title"
