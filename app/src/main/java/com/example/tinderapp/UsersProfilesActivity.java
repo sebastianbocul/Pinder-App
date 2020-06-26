@@ -43,7 +43,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
     private TextView nameTextView, tagsTextView, genderTextView, distanceTextView, locationTextView, descriptionTextView;
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase, mUserProfileDatabase, myDatabaseReference;
-    private ImageView dislikeButton, likeButton;
+    private ImageView dislikeButton, likeButton, reportUserButton;
     private Button unmatchButton;
     private String userAge;
     private ArrayList imagesList, mImages;
@@ -79,6 +79,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
         descriptionTextView = findViewById(R.id.descriptionTextView);
         unmatchButton = findViewById(R.id.unmatchButton);
         dislikeButton = findViewById(R.id.dislikeButton);
+        reportUserButton=findViewById(R.id.reportUserImage);
         likeButton = findViewById(R.id.likeButton);
         mAuth = FirebaseAuth.getInstance();
         myId = mAuth.getCurrentUser().getUid();
@@ -130,6 +131,12 @@ public class UsersProfilesActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+        reportUserButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openReportDialog();
+            }
+        });
         unmatchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -175,6 +182,11 @@ public class UsersProfilesActivity extends AppCompatActivity {
         });
         fillUserProfile();
         loadImages();
+    }
+
+    private void openReportDialog() {
+        ReportUserDialog reportUserDialog = new ReportUserDialog(myId,userId);
+        reportUserDialog.show(getSupportFragmentManager(),"Report User Dialog");
     }
 
     private void loadImages() {

@@ -4,21 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="false"
+    android:fillViewport="true"
+    android:padding="20sp"
     tools:context=".SettingsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="600sp"
-        android:orientation="vertical"
-        android:padding="20sp">
-
+        android:layout_height="match_parent"
+        android:orientation="vertical">
         <Button
     android:id="@+id/back"
     android:layout_width="0sp"
     android:layout_height="0sp"
     android:onClick="onBack"
     android:text="Back!" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User settings:"
+            android:gravity="left"
+            android:textSize="20sp"
+            android:paddingBottom="10sp"
+            android:layout_gravity="left"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -53,7 +62,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:gravity="bottom"
             android:orientation="vertical"
@@ -83,12 +92,57 @@
                 android:layout_width="200sp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
-                android:layout_marginBottom="10sp"
+                android:layout_marginBottom="50sp"
                 android:background="@drawable/rounded_button"
-                android:text="Delete account"
+                android:text="Delete account" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:gravity="center|bottom"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Legal information:"
+                android:gravity="left"
+                android:textSize="20sp"
+                android:paddingBottom="10sp"
+                android:layout_gravity="left"
                 />
 
+            <Button
+                android:id="@+id/privacy_policy"
+                android:layout_width="200sp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5sp"
+                android:background="@drawable/rounded_button"
+                android:text="Privacy policy" />
+
+            <Button
+                android:id="@+id/licence"
+                android:layout_width="200sp"
+                android:layout_height="wrap_content"
+                android:text="Licence"
+                android:background="@drawable/rounded_button"
+                android:layout_marginBottom="20sp"
+                />
+            <ImageView
+                android:id="@+id/tags"
+                android:layout_width="100sp"
+                android:layout_height="100sp"
+                android:scaleX="1"
+                android:scaleY="1"
+                android:src="@drawable/login_photo"
+                android:text="Tags" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Version: 1.0"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -437,8 +437,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (dataSnapshot.child(currentUID).child("connections").child("yes").exists()) {
                         for (DataSnapshot ds : dataSnapshot.child(currentUID).child("connections").child("yes").getChildren()) {
-                            if (!dataSnapshot.child(currentUID).child("connections").child("matches").hasChild(ds.getKey())) {
-                                Log.d("rxJava", "onDataChangeFirst: " + ds.getKey());
+                            if (!dataSnapshot.child(currentUID).child("connections").child("matches").hasChild(ds.getKey()) && !dataSnapshot.child(ds.getKey()).child("connections").child("nope").hasChild(currentUID)) {
+                                Log.d("rxJava", "onDataChangeFirst: " + ds.getKey() + "  myID " + currentUID);
+                                Log.d("MaindataSnapshot", "dataSnapshot: " + dataSnapshot.child(ds.getKey()).child("connections").child("nope") +  "  myID " + currentUID);
                                 first.add(ds.getKey());
                                 getTagsPreferencesUsers(dataSnapshot.child(ds.getKey()), true);
                             }

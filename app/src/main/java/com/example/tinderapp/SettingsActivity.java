@@ -203,30 +203,45 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void restartMatchesFun() {
-        DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
-        DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-        users.child(userId).child("connections").child("matches").removeValue();
-        users.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Log.d("maingetTagT", ds.getKey());
-                    if (ds.child("connections").child("matches").child(userId).exists()) {
-                        users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
-                    }
-                    if (ds.child("connections").child("yes").child(userId).exists()) {
-                        users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
-                    }
-                    if (ds.child("connections").child("nope").child(userId).exists()) {
-                        users.child(ds.getKey()).child("connections").child("nope").child(userId).removeValue();
-                    }
-                }
-            }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to restart your matches?").setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
+                        DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+                        users.child(userId).child("connections").child("matches").removeValue();
+                        users.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                    Log.d("maingetTagT", ds.getKey());
+                                    if (ds.child("connections").child("matches").child(userId).exists()) {
+                                        users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
+                                    }
+                                    if (ds.child("connections").child("yes").child(userId).exists()) {
+                                        users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
+                                    }
+                                    if (ds.child("connections").child("nope").child(userId).exists()) {
+                                        users.child(ds.getKey()).child("connections").child("nope").child(userId).removeValue();
+                                    }
+                                }
+                            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //  Toast.makeText(SettingsActivity.this,"No clicked",Toast.LENGTH_LONG).show();
+                    }
+                });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     public void logoutUser() {
