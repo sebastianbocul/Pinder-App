@@ -54,7 +54,7 @@
                 android:paddingLeft="20sp"
                 android:paddingBottom="15sp"
                 android:textColor="@android:color/black"
-                android:textSize="30sp"
+                android:textSize="20sp"
                 tools:text="tags" />
 
 
