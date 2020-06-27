@@ -16,7 +16,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
+            <TextView
+                android:id="@+id/regulationsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:text="By logging in you accept our regulations. Information on how we use your data can be found here."
+                android:paddingBottom="15sp"
+                android:textSize="12sp"
+                />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -62,25 +71,11 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/registerTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingTop="5sp"
-                    android:text="Register with email? Click " />
-
-                <Button
-                    android:id="@+id/register"
-                    android:layout_width="40sp"
-                    android:layout_height="20sp"
-                    android:background="#00000000"
-                    android:text="HERE"
-                    android:textColor="#0000ff"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="5sp"
-                    android:text=" ." />
+                    android:text="Register with email? Click HERE." />
             </LinearLayout>
 
             <LinearLayout
@@ -116,17 +111,17 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
+                android:layout_gravity="bottom|center"
                 android:layout_weight="1">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/smallLogo"
+                <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="250sp"
-                    android:layout_gravity="bottom"
-                    android:src="@drawable/login_photo" />
-
-
+                    android:layout_height="200sp"
+                    android:src="@drawable/login_photo"
+                    android:layout_weight="0"
+                    android:layout_gravity="bottom|center"
+                    android:paddingTop="20sp"
+                    />
             </LinearLayout>
 
 

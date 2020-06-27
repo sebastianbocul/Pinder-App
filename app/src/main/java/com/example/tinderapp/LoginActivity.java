@@ -6,6 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -55,13 +59,13 @@ public class LoginActivity extends AppCompatActivity {
     private static final String EMAIL = "email";
     CallbackManager callbackManager;
     GoogleSignInClient mGoogleSignInClient;
-    private Button mLogin, mRegister;
+    private Button mLogin;
     private int RC_SIGN_IN = 0;
     private EditText mEmail, mPassword;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
     private LoginButton loginButton;
-    private TextView facebookRegister;
+    private TextView regulationsTextView, registerTextView;
     private SignInButton googleSignIn;
     private LinearLayout myLayout, logoLayout;
 
@@ -83,7 +87,6 @@ public class LoginActivity extends AppCompatActivity {
         mLogin = findViewById(R.id.login);
         mEmail = findViewById(R.id.email);
         mPassword = findViewById(R.id.password);
-        mRegister = findViewById(R.id.register);
         NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
         // Configure sign-in to request the user's ID, email address, and basic
@@ -106,6 +109,9 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        setRegulationsClickable();
+        setRegisterClickable();
         checkLocationPermission();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -172,15 +178,49 @@ public class LoginActivity extends AppCompatActivity {
                 logInEmailPassword();
             }
         });
-        mRegister.setOnClickListener(new View.OnClickListener() {
+    }
+
+    private void setRegisterClickable() {
+        registerTextView = findViewById(R.id.registerTextView);
+        String text = registerTextView.getText().toString();
+        SpannableString ss = new SpannableString(text);
+        ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View widget) {
                 Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
                 startActivity(intent);
                 finish();
                 return;
             }
-        });
+        };
+        ss.setSpan(clickableSpan,27,31, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        registerTextView.setText(ss);
+        registerTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+    }
+
+    private void setRegulationsClickable() {
+        regulationsTextView = findViewById(R.id.regulationsTextView);
+        String text = regulationsTextView.getText().toString();
+        SpannableString ss = new SpannableString(text);
+        ClickableSpan clickableSpan1 = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                Toast.makeText(LoginActivity.this,"ONE",Toast.LENGTH_SHORT).show();
+            }
+        };
+        ClickableSpan clickableSpan2 = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                Toast.makeText(LoginActivity.this,"TWO",Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        ss.setSpan(clickableSpan1,29,40, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(clickableSpan2,91,95,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        regulationsTextView.setText(ss);
+        regulationsTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
     }
 
     private void checkLocationPermission() {
