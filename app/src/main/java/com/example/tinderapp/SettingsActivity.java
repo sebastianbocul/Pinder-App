@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String userId;
     private Context context = SettingsActivity.this;
-    private Button logoutUser, deleteUser;
+    private Button logoutUser, deleteUser, privacyPolicyButton,termsButton,licenceButton;
     private StorageReference filePath;
     private Switch mapLocationSwitch, sortUsersByDistanceSwitch;
     private EditText date;
@@ -63,6 +64,9 @@ public class SettingsActivity extends AppCompatActivity {
         logoutUser = findViewById(R.id.logoutUser);
         deleteUser = findViewById(R.id.deleteUser);
         date = findViewById(R.id.date);
+        privacyPolicyButton = findViewById(R.id.privacyPolicyButton);
+        termsButton = findViewById(R.id.termsButton);
+        licenceButton=findViewById(R.id.licenceButton);
         myDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -199,6 +203,18 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 restartMatchesFun();
             }
+        });
+        privacyPolicyButton.setOnClickListener(v -> {
+            PrivacyDialog pd = new PrivacyDialog();
+            pd.show(getSupportFragmentManager(),"Privacy dialog");
+        });
+        termsButton.setOnClickListener(v -> {
+            TermsDialog td = new TermsDialog();
+            td.show(getSupportFragmentManager(),"Terms Dialog");
+        });
+        licenceButton.setOnClickListener(v -> {
+            LicencesDialog ld = new LicencesDialog();
+            ld.show(getSupportFragmentManager(),"Licences Dialog");
         });
     }
 

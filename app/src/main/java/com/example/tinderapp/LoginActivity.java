@@ -206,8 +206,8 @@ public class LoginActivity extends AppCompatActivity {
         ClickableSpan clickableSpan1 = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
-                RegulationsDialog rg = new RegulationsDialog();
-                rg.show(getSupportFragmentManager(),"Regulations Dialog");
+                TermsDialog rg = new TermsDialog();
+                rg.show(getSupportFragmentManager(),"Terms Dialog");
             }
         };
         ClickableSpan clickableSpan2 = new ClickableSpan() {
@@ -218,8 +218,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-        ss.setSpan(clickableSpan1,29,40, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ss.setSpan(clickableSpan2,91,95,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(clickableSpan1,29,34, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(clickableSpan2,39,53,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         regulationsTextView.setText(ss);
         regulationsTextView.setMovementMethod(LinkMovementMethod.getInstance());
 

@@ -11,16 +11,12 @@
         android:orientation="vertical"
         android:paddingLeft="10sp">
 
-
-
-
         <TextView
-            android:id="@+id/privacyTextView"
+            android:id="@+id/termsTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="policy"
+            android:text="Terms and Conditions"
             />
-
 
     </LinearLayout>
     </ScrollView>

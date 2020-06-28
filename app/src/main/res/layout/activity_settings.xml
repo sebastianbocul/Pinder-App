@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:padding="20sp"
+    android:paddingLeft="20sp"
+    android:paddingRight="20sp"
+    android:scrollbars="none"
     tools:context=".SettingsActivity">
 
     <LinearLayout
@@ -20,6 +22,7 @@
     android:text="Back!" />
 
         <TextView
+            android:paddingTop="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="User settings:"
@@ -70,31 +73,37 @@
 
             <Button
                 android:id="@+id/restartMatches"
-                android:layout_width="200sp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="10sp"
+                android:paddingLeft="10sp"
+                android:paddingRight="10sp"
                 android:background="@drawable/rounded_button"
                 android:text="Restart matches" />
 
 
             <Button
                 android:id="@+id/logoutUser"
-                android:layout_width="200sp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="10sp"
                 android:background="@drawable/rounded_button"
-                android:text="SignOut" />
+                android:text="SignOut"
+                android:paddingLeft="10sp"
+                android:paddingRight="10sp"/>
 
             <Button
                 android:id="@+id/deleteUser"
-                android:layout_width="200sp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="50sp"
                 android:background="@drawable/rounded_button"
-                android:text="Delete account" />
+                android:text="Delete account"
+                android:paddingLeft="10sp"
+                android:paddingRight="10sp"/>
 
         </LinearLayout>
 
@@ -115,21 +124,37 @@
                 />
 
             <Button
-                android:id="@+id/privacy_policy"
-                android:layout_width="200sp"
+                android:id="@+id/privacyPolicyButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5sp"
                 android:background="@drawable/rounded_button"
-                android:text="Privacy policy" />
+                android:text="Privacy policy"
+                android:paddingLeft="10sp"
+                android:paddingRight="10sp"/>
+
 
             <Button
-                android:id="@+id/licence"
-                android:layout_width="200sp"
+                android:id="@+id/termsButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Licence"
+                android:layout_marginBottom="5sp"
                 android:background="@drawable/rounded_button"
-                android:layout_marginBottom="20sp"
-                />
+                android:text="Terms &amp; Conditinons"
+                android:paddingLeft="10sp"
+                android:paddingRight="10sp"/>
+
+
+            <Button
+            android:id="@+id/licenceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Licence"
+            android:background="@drawable/rounded_button"
+            android:layout_marginBottom="20sp"
+                android:paddingLeft="10sp"
+                android:paddingRight="10sp"/>
+
             <ImageView
                 android:id="@+id/tags"
                 android:layout_width="100sp"
@@ -142,7 +167,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Version: 1.0"/>
+                android:text="Version: 1.0"
+                android:gravity="top"
+                android:paddingBottom="20sp"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

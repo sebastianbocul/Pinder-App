@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:text="By logging in you accept our regulations. Information on how we use your data can be found here."
+                android:text="By logging in you accept our Terms and Privacy Policy."
                 android:paddingBottom="15sp"
                 android:textSize="12sp"
                 />
