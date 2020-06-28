@@ -206,13 +206,15 @@ public class LoginActivity extends AppCompatActivity {
         ClickableSpan clickableSpan1 = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
-                Toast.makeText(LoginActivity.this,"ONE",Toast.LENGTH_SHORT).show();
+                RegulationsDialog rg = new RegulationsDialog();
+                rg.show(getSupportFragmentManager(),"Regulations Dialog");
             }
         };
         ClickableSpan clickableSpan2 = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
-                Toast.makeText(LoginActivity.this,"TWO",Toast.LENGTH_SHORT).show();
+                PrivacyDialog pd = new PrivacyDialog();
+                pd.show(getSupportFragmentManager(),"Privacy Dialog");
             }
         };
 
