@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.tinderapp">
+    package="com.pinder.app">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -17,32 +17,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".MainFragmentMenager"></activity>
-        <activity android:name=".Tags.TagsManagerActivity" />
-        <activity android:name=".FillInfoActivity" />
+        <activity android:name="com.pinder.app.MainFragmentMenager"></activity>
+        <activity android:name="com.pinder.app.Tags.TagsManagerActivity" />
+        <activity android:name="com.pinder.app.FillInfoActivity" />
         <activity
-            android:name=".PopActivity"
+            android:name="com.pinder.app.PopActivity"
             android:theme="@style/AppTheme.PopMe" />
-        <activity android:name=".UsersProfilesActivity" />
-        <activity android:name=".SettingsActivity" />
+        <activity android:name="com.pinder.app.UsersProfilesActivity" />
+        <activity android:name="com.pinder.app.SettingsActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_key" />
 
-        <activity android:name=".LocationActivity" />
-        <activity android:name=".Chat.ChatActivity" />
-        <activity android:name=".Matches.MatchesActivity" />
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name="com.pinder.app.LocationActivity" />
+        <activity android:name="com.pinder.app.Chat.ChatActivity" />
+        <activity android:name="com.pinder.app.Matches.MatchesActivity" />
+        <activity android:name="com.pinder.app.ProfileActivity" />
+        <activity android:name="com.pinder.app.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegistrationActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name="com.pinder.app.RegistrationActivity" />
+        <activity android:name="com.pinder.app.MainActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -66,7 +66,7 @@
         </activity>
 
         <service
-            android:name=".Notifications.MyFirebaseService"
+            android:name="com.pinder.app.Notifications.MyFirebaseService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -74,7 +74,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".Notifications.FirebaseMessaging"
+            android:name="com.pinder.app.Notifications.FirebaseMessaging"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

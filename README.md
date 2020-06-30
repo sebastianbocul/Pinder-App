@@ -3,4 +3,4 @@ Don't forget to connect app to your credentials (firebase,fb button, google butt
 
 questions:
 # seba23495-gmail.com
-Tinder App Android Studio
+Pinder App Android Studio
