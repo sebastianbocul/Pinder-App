@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.pinder.app.Cards.arrayAdapter;
 import com.pinder.app.Cards.cards;
+import com.pinder.app.Matches.MatchesActivity;
 import com.pinder.app.Notifications.APIService;
 import com.pinder.app.Notifications.Client;
 import com.pinder.app.Notifications.Data;
@@ -312,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToMatches(View view) {
-        Intent intent = new Intent(MainActivity.this, MainFragmentMenager.class);
+        Intent intent = new Intent(MainActivity.this, MatchesActivity.class);
         startActivity(intent);
         return;
     }
@@ -547,8 +548,8 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB = new StringBuilder();
         Map<Object, Object> tagsMap = new HashMap<>();
-        Log.d("maingetTag", "User Name " + ds.child("name").getValue().toString());
         try {
+            Log.d("maingetTag", "User Name " + ds.child("name").getValue().toString());
             int age = stringDateToAge(ds.child("dateOfBirth").getValue().toString());
             Log.d("maingetTag", "try 2");
             int myAge = Integer.parseInt(myInfo.get("age"));

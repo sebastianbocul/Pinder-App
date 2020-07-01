@@ -16,3 +16,8 @@
 .project
 app/google-services.json
 app/src/main/res/values/strings.xml
+app/release/app-release.aab
+app/release/app-release.apk
+app/release/app-release.aab
+app/release/app-release.aab
+app/release/app-release.apk

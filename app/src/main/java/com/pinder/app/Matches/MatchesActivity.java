@@ -197,14 +197,14 @@ public class MatchesActivity extends AppCompatActivity {
                     String profileImageUrl = "";
                     String lastMessageM = message;
                     StringBuilder stringBuilder = new StringBuilder();
-                    String s = StringUtils.left(lastMessageM, 15);
+                    String s = StringUtils.left(lastMessageM, 20);
                     stringBuilder.append(s);
                     ArrayList<String> mutualTags = new ArrayList<>();
                     Map tagMap = new HashMap();
                     for (DataSnapshot ds : dataSnapshot.child("connections").child("matches").child(currentUserID).child("mutualTags").getChildren()) {
                         mutualTags.add(ds.getKey());
                     }
-                    if (lastMessageM.length() >= 15) stringBuilder.append("...");
+                    if (lastMessageM.length() >= 20) stringBuilder.append("...");
                     String mLastMessage = stringBuilder.toString();
                     if (dataSnapshot.child("name").getValue() != null) {
                         name = dataSnapshot.child("name").getValue().toString();
