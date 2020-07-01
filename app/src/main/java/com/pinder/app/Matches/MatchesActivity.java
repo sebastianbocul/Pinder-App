@@ -2,6 +2,7 @@ package com.pinder.app.Matches;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -138,6 +139,7 @@ public class MatchesActivity extends AppCompatActivity {
                 boolean createdByMe = true;
                 String message = "No messages...";
                 sortId = chatId;
+                Log.d("matchesactivity", "onChildAdded ds : " + dataSnapshot.toString());
                 if (dataSnapshot.exists()) {
                     DataSnapshot ds = dataSnapshot;
                     message = ds.child("text").getValue().toString();
@@ -218,12 +220,11 @@ public class MatchesActivity extends AppCompatActivity {
                         resultMatches.add(obj);
                         oryginalMatches.add(obj);
                     } else {
+
                         resultMatches = sortCollection(resultMatches);
                         oryginalMatches = sortCollection(oryginalMatches);
-                        for (MatchesObject m : resultMatches) {
-                        }
                         for (int i = 0; i < resultMatches.size(); i++) {
-                            if (usersID.get(i).equals(obj.getUserId())) {
+                            if (resultMatches.get(i).getUserId().equals(obj.getUserId())) {
                                 oryginalMatches.get(i).setLastMessage(obj.getLastMessage());
                                 oryginalMatches.get(i).setSortId(obj.getSortId());
                                 oryginalMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
