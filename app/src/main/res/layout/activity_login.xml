@@ -139,7 +139,7 @@
                 android:layout_height="500sp"
                 android:layout_weight="1"
                 android:padding="10sp"
-                android:src="@drawable/login_photo" />
+                android:src="@drawable/logo1024" />
 
         </LinearLayout>
     </RelativeLayout>
