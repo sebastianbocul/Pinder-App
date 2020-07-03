@@ -13,5 +13,5 @@ or share the software for any purpose.
 ```
 
 questions:
-# seba23495-gmail.com
+# seba23495@gmail.com
 Pinder App Android Studio
