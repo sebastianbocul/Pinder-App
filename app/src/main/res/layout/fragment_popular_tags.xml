@@ -12,7 +12,6 @@
         android:orientation="vertical"
         android:padding="5sp">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,9 +36,6 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/popularTagsRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
-            />
+            android:layout_height="match_parent" />
     </LinearLayout>
-
 </FrameLayout>

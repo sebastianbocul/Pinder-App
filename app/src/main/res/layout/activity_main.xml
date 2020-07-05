@@ -7,7 +7,6 @@
     android:orientation="vertical"
     tools:context="com.pinder.app.MainActivity">
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50sp"
@@ -15,12 +14,11 @@
         android:paddingTop="10sp">
 
         <Button
-    android:id="@+id/back"
-    android:layout_width="0sp"
-    android:layout_height="0sp"
-    android:onClick="onBack"
-    android:text="Back!" />
-
+            android:id="@+id/back"
+            android:layout_width="0sp"
+            android:layout_height="0sp"
+            android:onClick="onBack"
+            android:text="Back!" />
 
         <ImageView
             android:id="@+id/settins"
@@ -57,9 +55,7 @@
             android:onClick="goToProfile"
             android:src="@drawable/profile"
             android:text="Profle" />
-
     </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -80,7 +76,6 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-
         <TextView
             android:id="@+id/noMore"
             android:layout_width="match_parent"
@@ -98,7 +93,6 @@
             android:background="@android:color/transparent"
             app:rotation_degrees="15.5"
             tools:context=".MyActivity" />
-
 
     </RelativeLayout>
 
@@ -127,7 +121,5 @@
             android:src="@drawable/like"
             android:text="LIKE" />
     </LinearLayout>
-
-
 </LinearLayout>
 

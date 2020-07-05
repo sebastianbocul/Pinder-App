@@ -8,11 +8,11 @@
     tools:context="com.pinder.app.Chat.ChatActivity">
 
     <Button
-    android:id="@+id/back"
-    android:layout_width="0sp"
-    android:layout_height="0sp"
-    android:onClick="onBack"
-    android:text="Back!" />
+        android:id="@+id/back"
+        android:layout_width="0sp"
+        android:layout_height="0sp"
+        android:onClick="onBack"
+        android:text="Back!" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
@@ -45,7 +45,6 @@
                 android:padding="5sp"
                 android:src="@drawable/profile_default" />
         </RelativeLayout>
-
     </androidx.appcompat.widget.Toolbar>
 
     <View
@@ -63,13 +62,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
-            app:stackFromEnd="true">
-
-        </androidx.recyclerview.widget.RecyclerView>
-
-
+            app:stackFromEnd="true"/>
     </RelativeLayout>
-
 
     <LinearLayout
         android:id="@+id/sendLayout"

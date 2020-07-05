@@ -8,11 +8,11 @@
     tools:context="com.pinder.app.RegistrationActivity">
 
     <Button
-    android:id="@+id/back"
-    android:layout_width="0sp"
-    android:layout_height="0sp"
-    android:onClick="onBack"
-    android:text="Back!" />
+        android:id="@+id/back"
+        android:layout_width="0sp"
+        android:layout_height="0sp"
+        android:onClick="onBack"
+        android:text="Back!" />
 
     <TextView
         android:id="@+id/title"
@@ -24,7 +24,6 @@
         android:textSize="15sp" />
 
     <TextView
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Name:"
@@ -94,14 +93,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        />
+        android:layout_weight="1" />
+
     <ImageView
         android:layout_width="200sp"
         android:layout_height="200sp"
-        android:src="@drawable/login_photo"
-        android:layout_weight="0"
         android:layout_gravity="bottom|center"
+        android:layout_weight="0"
         android:paddingTop="20sp"
-        />
+        android:src="@drawable/login_photo" />
 </LinearLayout>

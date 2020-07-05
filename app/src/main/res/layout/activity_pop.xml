@@ -8,7 +8,6 @@
     android:orientation="vertical"
     tools:context="com.pinder.app.PopActivity">
 
-
     <TextView
         android:id="@+id/topTextView"
         android:layout_width="match_parent"

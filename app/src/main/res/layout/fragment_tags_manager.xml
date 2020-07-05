@@ -57,8 +57,6 @@
                 android:gravity="right"
                 android:text="Delete: "
                 android:textSize="12sp" />
-
-
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -104,7 +102,6 @@
                     android:layout_weight="1"
                     android:background="@drawable/rounded_button"
                     android:text="ADD" />
-
             </LinearLayout>
 
             <TextView
@@ -186,8 +183,6 @@
                 app:max_value="1000"
                 app:min_value="1"
                 app:position="left" />
-
         </LinearLayout>
     </LinearLayout>
-
 </FrameLayout>

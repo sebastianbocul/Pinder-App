@@ -5,18 +5,16 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical"
-
     tools:context="com.pinder.app.LocationActivity">
 
     <Button
-    android:id="@+id/back"
-    android:layout_width="0sp"
-    android:layout_height="0sp"
-    android:onClick="onBack"
-    android:text="Back!" />
+        android:id="@+id/back"
+        android:layout_width="0sp"
+        android:layout_height="0sp"
+        android:onClick="onBack"
+        android:text="Back!" />
 
     <fragment
-
         android:id="@+id/google_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
@@ -59,5 +57,4 @@
             android:src="@drawable/matches" />
 
     </LinearLayout>
-
 </RelativeLayout>

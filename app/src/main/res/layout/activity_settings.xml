@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,23 +13,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <Button
-    android:id="@+id/back"
-    android:layout_width="0sp"
-    android:layout_height="0sp"
-    android:onClick="onBack"
-    android:text="Back!" />
+            android:id="@+id/back"
+            android:layout_width="0sp"
+            android:layout_height="0sp"
+            android:onClick="onBack"
+            android:text="Back!" />
 
         <TextView
-            android:paddingTop="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="User settings:"
-            android:gravity="left"
-            android:textSize="20sp"
-            android:paddingBottom="10sp"
             android:layout_gravity="left"
-            />
+            android:gravity="left"
+            android:paddingTop="20sp"
+            android:paddingBottom="10sp"
+            android:text="User settings:"
+            android:textSize="20sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -77,11 +76,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="10sp"
+                android:background="@drawable/rounded_button"
                 android:paddingLeft="10sp"
                 android:paddingRight="10sp"
-                android:background="@drawable/rounded_button"
                 android:text="Restart matches" />
-
 
             <Button
                 android:id="@+id/logoutUser"
@@ -90,9 +88,9 @@
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="10sp"
                 android:background="@drawable/rounded_button"
-                android:text="SignOut"
                 android:paddingLeft="10sp"
-                android:paddingRight="10sp"/>
+                android:paddingRight="10sp"
+                android:text="SignOut" />
 
             <Button
                 android:id="@+id/deleteUser"
@@ -101,10 +99,9 @@
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="50sp"
                 android:background="@drawable/rounded_button"
-                android:text="Delete account"
                 android:paddingLeft="10sp"
-                android:paddingRight="10sp"/>
-
+                android:paddingRight="10sp"
+                android:text="Delete account" />
         </LinearLayout>
 
         <LinearLayout
@@ -113,15 +110,15 @@
             android:layout_gravity="bottom"
             android:gravity="center|bottom"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Legal information:"
-                android:gravity="left"
-                android:textSize="20sp"
-                android:paddingBottom="10sp"
                 android:layout_gravity="left"
-                />
+                android:gravity="left"
+                android:paddingBottom="10sp"
+                android:text="Legal information:"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/privacyPolicyButton"
@@ -129,10 +126,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5sp"
                 android:background="@drawable/rounded_button"
-                android:text="Privacy policy"
                 android:paddingLeft="10sp"
-                android:paddingRight="10sp"/>
-
+                android:paddingRight="10sp"
+                android:text="Privacy policy" />
 
             <Button
                 android:id="@+id/termsButton"
@@ -140,20 +136,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5sp"
                 android:background="@drawable/rounded_button"
-                android:text="Terms &amp; Conditinons"
                 android:paddingLeft="10sp"
-                android:paddingRight="10sp"/>
-
+                android:paddingRight="10sp"
+                android:text="Terms &amp; Conditinons" />
 
             <Button
-            android:id="@+id/licenceButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Licence"
-            android:background="@drawable/rounded_button"
-            android:layout_marginBottom="20sp"
+                android:id="@+id/licenceButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20sp"
+                android:background="@drawable/rounded_button"
                 android:paddingLeft="10sp"
-                android:paddingRight="10sp"/>
+                android:paddingRight="10sp"
+                android:text="Licence" />
 
             <ImageView
                 android:id="@+id/tags"
@@ -167,9 +162,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Version: 1.0"
                 android:gravity="top"
-                android:paddingBottom="20sp"/>
+                android:paddingBottom="20sp"
+                android:text="Version: 1.0" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

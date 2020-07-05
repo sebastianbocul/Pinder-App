@@ -1,191 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="1000sp"
+    android:orientation="vertical"
     android:paddingTop="10sp">
 
     <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingLeft="10sp"
         android:paddingRight="10sp">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5sp"
+            android:paddingTop="5sp"
+            android:paddingRight="5sp"
+            android:text="RxJava:"
+            android:textSize="14sp" />
 
         <TextView
             android:layout_width="match_parent"
-            android:paddingLeft="5sp"
-            android:paddingRight="5sp"
-            android:paddingTop="5sp"
-            android:textSize="14sp"
             android:layout_height="wrap_content"
-            android:text="RxJava:"
-            />
-        <TextView
-            android:layout_width="match_parent"
             android:padding="5sp"
-            android:textSize="14sp"
-            android:layout_height="wrap_content"
             android:text="https://github.com/ReactiveX/RxJava"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:id="@+id/rxJavaLicence"
             android:layout_width="match_parent"
-            android:padding="5sp"
             android:layout_height="wrap_content"
-            android:text="Rx Java Licences"
             android:background="#E8E8E8"
-            />
+            android:padding="5sp"
+            android:text="Rx Java Licences" />
+
         <TextView
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5sp"
             android:paddingTop="20sp"
             android:paddingRight="5sp"
-            android:paddingLeft="5sp"
-            android:textSize="14sp"
-            android:layout_height="wrap_content"
             android:text="Google Play Services:"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:layout_width="match_parent"
-            android:padding="5sp"
-            android:textSize="14sp"
             android:layout_height="wrap_content"
+            android:padding="5sp"
             android:text="https://developers.google.com/android/guides/overview"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:id="@+id/googlePlayServicesLicence"
             android:layout_width="match_parent"
-            android:padding="5sp"
             android:layout_height="wrap_content"
-            android:text="Google play services"
             android:background="#E8E8E8"
-            />
+            android:padding="5sp"
+            android:text="Google play services" />
 
         <TextView
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5sp"
             android:paddingTop="20sp"
             android:paddingRight="5sp"
-            android:paddingLeft="5sp"
-            android:textSize="14sp"
-            android:layout_height="wrap_content"
             android:text="Retrofit:"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:layout_width="match_parent"
-            android:padding="5sp"
-            android:textSize="14sp"
             android:layout_height="wrap_content"
+            android:padding="5sp"
             android:text="https://square.github.io/retrofit"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:id="@+id/retrofitLicence"
             android:layout_width="match_parent"
-            android:padding="5sp"
             android:layout_height="wrap_content"
-            android:text="Retrofit licence"
             android:background="#E8E8E8"
-            />
+            android:padding="5sp"
+            android:text="Retrofit licence" />
 
         <TextView
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5sp"
             android:paddingTop="20sp"
             android:paddingRight="5sp"
-            android:paddingLeft="5sp"
-            android:textSize="14sp"
-            android:layout_height="wrap_content"
             android:text="Glide:"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:layout_width="match_parent"
-            android:padding="5sp"
-            android:textSize="14sp"
             android:layout_height="wrap_content"
+            android:padding="5sp"
             android:text="https://github.com/bumptech/glide"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:id="@+id/glideLicence"
             android:layout_width="match_parent"
-            android:padding="5sp"
             android:layout_height="wrap_content"
-            android:text="Glide Licence"
             android:background="#E8E8E8"
-            />
+            android:padding="5sp"
+            android:text="Glide Licence" />
 
         <TextView
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5sp"
             android:paddingTop="20sp"
             android:paddingRight="5sp"
-            android:paddingLeft="5sp"
-            android:textSize="14sp"
-            android:layout_height="wrap_content"
             android:text="Swipecards:"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:layout_width="match_parent"
-            android:padding="5sp"
-            android:textSize="14sp"
             android:layout_height="wrap_content"
+            android:padding="5sp"
             android:text="https://github.com/Diolor/Swipecards"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:id="@+id/swipecardsLicence"
             android:layout_width="match_parent"
-            android:padding="5sp"
             android:layout_height="wrap_content"
-            android:text="Swipecards Licence"
             android:background="#E8E8E8"
-            />
+            android:padding="5sp"
+            android:text="Swipecards Licence" />
+
         <TextView
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5sp"
             android:paddingTop="20sp"
             android:paddingRight="5sp"
-            android:paddingLeft="5sp"
-            android:textSize="14sp"
-            android:layout_height="wrap_content"
             android:text="CircleImageView:"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:layout_width="match_parent"
-            android:padding="5sp"
-            android:textSize="14sp"
             android:layout_height="wrap_content"
+            android:padding="5sp"
             android:text="https://github.com/hdodenhof/CircleImageView"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:id="@+id/circleImageViewLicecne"
             android:layout_width="match_parent"
-            android:padding="5sp"
             android:layout_height="wrap_content"
-            android:text="CircleImageView Licence"
             android:background="#E8E8E8"
-            />
+            android:padding="5sp"
+            android:text="CircleImageView Licence" />
 
         <TextView
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5sp"
             android:paddingTop="20sp"
             android:paddingRight="5sp"
-            android:paddingLeft="5sp"
-            android:textSize="14sp"
-            android:layout_height="wrap_content"
             android:text="Crystal Range Seeker:"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:layout_width="match_parent"
-            android:padding="5sp"
-            android:textSize="14sp"
             android:layout_height="wrap_content"
+            android:padding="5sp"
             android:text="https://github.com/syedowaisali/crystal-range-seekbar"
-            />
+            android:textSize="14sp" />
+
         <TextView
             android:id="@+id/crystalrange_licence"
             android:layout_width="match_parent"
-            android:padding="5sp"
             android:layout_height="wrap_content"
-            android:text="CrystalRange Licence"
             android:background="#E8E8E8"
-            />
-
+            android:padding="5sp"
+            android:text="CrystalRange Licence" />
 
     </LinearLayout>
-    </ScrollView>
+</ScrollView>

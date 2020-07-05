@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,11 +12,11 @@
         tools:context="com.pinder.app.ProfileActivity">
 
         <Button
-    android:id="@+id/back"
-    android:layout_width="0sp"
-    android:layout_height="0sp"
-    android:onClick="onBack"
-    android:text="Back!" />
+            android:id="@+id/back"
+            android:layout_width="0sp"
+            android:layout_height="0sp"
+            android:onClick="onBack"
+            android:text="Back!" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -31,7 +30,7 @@
                 android:id="@+id/viewPager"
                 android:layout_width="match_parent"
                 android:layout_height="500sp"
-                android:background="@drawable/profile_default"></androidx.viewpager.widget.ViewPager>
+                android:background="@drawable/profile_default" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -97,13 +96,11 @@
                 android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:layout_marginBottom="20sp"
                 android:gravity="top"
                 android:hint="Description"
                 android:maxLength="200"
                 android:maxLines="10" />
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>

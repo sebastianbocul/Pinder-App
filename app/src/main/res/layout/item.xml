@@ -12,7 +12,6 @@
     android:paddingRight="10sp"
     android:paddingBottom="10sp">
 
-
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
@@ -35,7 +34,6 @@
                 android:scaleType="centerCrop" />
 
             <TextView
-
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -56,9 +54,6 @@
                 android:textColor="@android:color/black"
                 android:textSize="20sp"
                 tools:text="tags" />
-
-
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
 </LinearLayout>

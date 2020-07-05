@@ -13,11 +13,11 @@
         tools:context="com.pinder.app.ProfileActivity">
 
         <Button
-    android:id="@+id/back"
-    android:layout_width="0sp"
-    android:layout_height="0sp"
-    android:onClick="onBack"
-    android:text="Back!" />
+            android:id="@+id/back"
+            android:layout_width="0sp"
+            android:layout_height="0sp"
+            android:onClick="onBack"
+            android:text="Back!" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -104,6 +104,5 @@
                 android:maxLength="200"
                 android:maxLines="10" />
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>

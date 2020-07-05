@@ -8,34 +8,31 @@
     tools:context="com.pinder.app.SettingsActivity">
 
     <Button
-    android:id="@+id/back"
-    android:layout_width="0sp"
-    android:layout_height="0sp"
-    android:onClick="onBack"
-    android:text="Back!" />
-
+        android:id="@+id/back"
+        android:layout_width="0sp"
+        android:layout_height="0sp"
+        android:onClick="onBack"
+        android:text="Back!" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tablayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:tabTextColor="#000000">
-
     </com.google.android.material.tabs.TabLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#EEEAEAEA"
-        android:layout_weight="0"/>
+        android:layout_weight="0"
+        android:background="#EEEAEAEA" />
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="fill_parent">
-
     </androidx.viewpager.widget.ViewPager>
-
 </LinearLayout>
 

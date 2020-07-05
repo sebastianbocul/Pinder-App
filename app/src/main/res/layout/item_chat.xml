@@ -13,7 +13,6 @@
         android:padding="2sp"
         android:radius="25sp">
 
-
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/chatImage"
             android:layout_width="50sp"
@@ -28,7 +27,6 @@
             android:paddingBottom="0sp"
             android:text="Text"
             android:textSize="15sp" />
-
 
     </LinearLayout>
 </LinearLayout>
