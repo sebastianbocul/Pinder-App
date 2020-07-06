@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pinder.app.Cards.arrayAdapter;
 import com.pinder.app.Cards.cards;
 import com.pinder.app.Matches.MatchesActivity;
+import com.pinder.app.MyFunctions.StringDateToAge;
 import com.pinder.app.Notifications.APIService;
 import com.pinder.app.Notifications.Client;
 import com.pinder.app.Notifications.Data;
@@ -107,15 +108,6 @@ public class MainActivity extends AppCompatActivity {
     private Observer observer;
     private Observable observable;
     private ArrayList<String> first;
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static int calculateAge(LocalDate birthDate, LocalDate currentDate) {
-        if ((birthDate != null) && (currentDate != null)) {
-            return Period.between(birthDate, currentDate).getYears();
-        } else {
-            return 0;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -430,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
                         myInfo.put("sex", dataSnapshot.child(currentUID).child("sex").getValue().toString());
                     }
                     if (dataSnapshot.child(currentUID).child("dateOfBirth").exists()) {
-                        int myAge = stringDateToAge(dataSnapshot.child(currentUID).child("dateOfBirth").getValue().toString());
+                        int myAge = new StringDateToAge().stringDateToAge(dataSnapshot.child(currentUID).child("dateOfBirth").getValue().toString());
                         Log.d("maingetTag", "myInfo.put myage ");
                         myInfo.put("age", String.valueOf(myAge));
                     }
@@ -550,7 +542,7 @@ public class MainActivity extends AppCompatActivity {
         Map<Object, Object> tagsMap = new HashMap<>();
         try {
             Log.d("maingetTag", "User Name " + ds.child("name").getValue().toString());
-            int age = stringDateToAge(ds.child("dateOfBirth").getValue().toString());
+            int age = new StringDateToAge().stringDateToAge(ds.child("dateOfBirth").getValue().toString());
             Log.d("maingetTag", "try 2");
             int myAge = Integer.parseInt(myInfo.get("age"));
             double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
@@ -668,51 +660,6 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-    }
-
-    public int stringDateToAge(String strDate) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return stringDateToAgeOreo(strDate);
-        } else {
-            return stringDateToAgeOld(strDate);
-        }
-    }
-
-    public int stringDateToAgeOld(String strDate) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Calendar dob = Calendar.getInstance();
-        try {
-            dob.setTime(sdf.parse(strDate));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar today = Calendar.getInstance();
-        int curYear = today.get(Calendar.YEAR);
-        int dobYear = dob.get(Calendar.YEAR);
-        int age = curYear - dobYear;
-        // if dob is month or day is behind today's month or day
-        // reduce age by 1
-        int curMonth = today.get(Calendar.MONTH);
-        int dobMonth = dob.get(Calendar.MONTH);
-        if (dobMonth > curMonth) { // this year can't be counted!
-            age--;
-        } else if (dobMonth == curMonth) { // same month? check for day
-            int curDay = today.get(Calendar.DAY_OF_MONTH);
-            int dobDay = dob.get(Calendar.DAY_OF_MONTH);
-            if (dobDay > curDay) { // this year can't be counted!
-                age--;
-            }
-        }
-        return age;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public int stringDateToAgeOreo(String strDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
-        LocalDate date = LocalDate.parse(strDate, formatter);
-        Date c = Calendar.getInstance().getTime();
-        LocalDate today = LocalDate.now();
-        return calculateAge(date, today);
     }
 
     private double distance(double lat1, double lon1, double lat2, double lon2) {
