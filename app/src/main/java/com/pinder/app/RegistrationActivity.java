@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.pinder.app.MyFunctions.StringDateToAge;
 import com.pinder.app.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -156,9 +157,14 @@ public class RegistrationActivity extends AppCompatActivity {
                     final String password = mPassword.getText().toString();
                     final String name = mName.getText().toString();
                     final String repeatpassword = mRepeatPassword.getText().toString();
+                    int age = new StringDateToAge().stringDateToAge(date.getText().toString());
                     final RadioButton radioButton = findViewById(selectedId);
                     if (!dateValid == true) {
                         Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if(age<18){
+                        Toast.makeText(RegistrationActivity.this, "You must be 18+", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     if (mRadioGroup.getCheckedRadioButtonId() == -1) {

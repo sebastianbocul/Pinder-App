@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.pinder.app.MyFunctions.StringDateToAge;
 import com.pinder.app.R;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -138,9 +139,14 @@ public class FillInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int selectedId = mRadioGroup.getCheckedRadioButtonId();
+                int age = new StringDateToAge().stringDateToAge(date.getText().toString());
                 final String name = mName.getText().toString();
                 if (!dateValid == true) {
                     Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(age<18){
+                    Toast.makeText(FillInfoActivity.this, "You must be 18+", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (mRadioGroup.getCheckedRadioButtonId() == -1) {
