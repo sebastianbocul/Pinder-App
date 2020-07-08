@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.pinder.app.MyFunctions.StringDateToAge;
 import com.pinder.app.R;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -151,7 +152,23 @@ public class SettingsActivity extends AppCompatActivity {
                             dd = day;
                             mm = mon;
                             yyyy = year;
+                            String legal;
                             clean = String.format("%02d%02d%02d", day, mon, year);
+                            String strToAge = String.format("%s/%s/%s", clean.substring(0, 2),
+                                    clean.substring(2, 4),
+                                    clean.substring(4, 8));
+                            int age = new StringDateToAge().stringDateToAge(strToAge);
+                            if(age<18) {
+                                Calendar today = Calendar.getInstance();
+                                int curYear = today.get(Calendar.YEAR);
+                                year=curYear-18;
+                                int curMon = today.get(Calendar.MONTH);
+                                mon=curMon;
+                                int curDay = today.get(Calendar.DAY_OF_MONTH);
+                                day=curDay;
+                                clean = String.format("%02d%02d%02d", day, mon, year);
+                                Toast.makeText(SettingsActivity.this,"You must be 18+",Toast.LENGTH_SHORT).show();
+                            }
                         }
                         clean = String.format("%s/%s/%s", clean.substring(0, 2),
                                 clean.substring(2, 4),
@@ -167,7 +184,6 @@ public class SettingsActivity extends AppCompatActivity {
                     date.setText("");
                 }
             }
-
             //set max lines in descriptions field
             @Override
             public void afterTextChanged(Editable editable) {
