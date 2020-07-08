@@ -1,7 +1,7 @@
 # Pinder App 
 <img src="screenshots/landscapelogo.png" width="800" />
 
-Screenshots: \
+ Screenshots: \
 <img src="screenshots/login.png" width="200" />
 <img src="screenshots/register.png" width="200" />
 <img src="screenshots/mytags.png" width="200" />
@@ -15,8 +15,11 @@ Screenshots: \
 <img src="screenshots/profile.png" width="200" />
 <img src="screenshots/userprofile.png" width="200" />
 \
+# Links:
+web: https://seba23495.wixsite.com/pinder \
+google play store: https://play.google.com/store/apps/details?id=com.pinder.app
 
-Any questions:
+# Questions:
 # seba23495@gmail.com
 
 \
