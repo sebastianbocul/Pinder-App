@@ -27,13 +27,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pinder.app.Cards.arrayAdapter;
 import com.pinder.app.Cards.cards;
 import com.pinder.app.Matches.MatchesActivity;
+import com.pinder.app.MyFunctions.CalculateDistance;
 import com.pinder.app.MyFunctions.StringDateToAge;
 import com.pinder.app.Notifications.APIService;
 import com.pinder.app.Notifications.Client;
 import com.pinder.app.Notifications.Data;
 import com.pinder.app.Notifications.Sender;
 import com.pinder.app.Notifications.Token;
-import com.pinder.app.R;
 import com.pinder.app.Tags.TagsAdapter;
 import com.pinder.app.Tags.TagsManagerActivity;
 import com.pinder.app.Tags.TagsManagerObject;
@@ -53,16 +53,9 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -138,8 +131,6 @@ public class MainActivity extends AppCompatActivity {
         Client client = new Client();
         apiService = client.getClient("https://fcm.googleapis.com/").create(APIService.class);
         //Client.
-        //   api= client.get
-        //  getUsersFromDb();
         checkUserStatus();
         //update token
         updateToken(FirebaseInstanceId.getInstance().getToken());
@@ -161,31 +152,10 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "There is no more users", Toast.LENGTH_SHORT).show();
             }
         });
-        //created delay so flingContainer is loaded - coudnt find other solutin
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = getIntent();
-                if (flingContainer != null) {
-                    if (intent.getStringExtra("fromUsersProfilesActivity") != null) {
-                        String s = intent.getStringExtra("fromUsersProfilesActivity");
-                        if (s.equals("likeButtonClicked")) {
-                            if (flingContainer.getChildCount() != 0)
-                                flingContainer.getTopCardListener().selectRight();
-                            else
-                                Toast.makeText(MainActivity.this, "There is no more users", Toast.LENGTH_SHORT).show();
-                        }
-                        if (s.equals("dislikeButtonClicked")) {
-                            if (flingContainer.getChildCount() != 0)
-                                flingContainer.getTopCardListener().selectLeft();
-                            else
-                                Toast.makeText(MainActivity.this, "There is no more users", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-            }
-        }, 300);
+
+
+        swipeIfButtonClickedInUserProfile();
+
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
             @Override
             public void removeFirstObjectInAdapter() {
@@ -245,6 +215,38 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+    }
+
+    private void swipeIfButtonClickedInUserProfile() {
+        //created delay so flingContainer is loaded - coudnt find other solutin
+        //while we click like/dislike in userprofile we need wait to load cards so swipe left/right will run
+        //perhaps if we switch from activities to fragments we wont need to load data and delay will be useless
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = getIntent();
+                if (flingContainer != null) {
+                    if (intent.getStringExtra("fromUsersProfilesActivity") != null) {
+                        String s = intent.getStringExtra("fromUsersProfilesActivity");
+                        if (s.equals("likeButtonClicked")) {
+                            if (flingContainer.getChildCount() != 0)
+                                flingContainer.getTopCardListener().selectRight();
+                            else
+                                Toast.makeText(MainActivity.this, "There is no more users", Toast.LENGTH_SHORT).show();
+                        }
+                        if (s.equals("dislikeButtonClicked")) {
+                            if (flingContainer.getChildCount() != 0)
+                                flingContainer.getTopCardListener().selectLeft();
+                            else
+                                Toast.makeText(MainActivity.this, "There is no more users", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
+        }, 300);
     }
 
     private void isConnectionMatch(final String userId, cards obj) {
@@ -547,7 +549,7 @@ public class MainActivity extends AppCompatActivity {
             int myAge = Integer.parseInt(myInfo.get("age"));
             double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
             double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
-            double distanceDouble = distance(myLatitude, myLongitude, latitude, longitude);
+            double distanceDouble = new CalculateDistance().distance(myLatitude, myLongitude, latitude, longitude);
             for (DataSnapshot dataTag : ds.child("tags").getChildren()) {
                 Log.d("maingetTag", "forFirst ");
                 for (TagsManagerObject tag : myTagsList) {
@@ -662,26 +664,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private double distance(double lat1, double lon1, double lat2, double lon2) {
-        double theta = lon1 - lon2;
-        double dist = Math.sin(deg2rad(lat1))
-                * Math.sin(deg2rad(lat2))
-                + Math.cos(deg2rad(lat1))
-                * Math.cos(deg2rad(lat2))
-                * Math.cos(deg2rad(theta));
-        dist = Math.acos(dist);
-        dist = rad2deg(dist);
-        dist = dist * 60 * 1.1515 * 1.609344;
-        return (dist);
-    }
-
-    private double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
-    }
-
-    private double rad2deg(double rad) {
-        return (rad * 180.0 / Math.PI);
-    }
 
     public void updateToken(String token) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Tokens");

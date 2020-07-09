@@ -18,8 +18,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.pinder.app.LegalInfo.LicencesDialog;
+import com.pinder.app.LegalInfo.PrivacyDialog;
+import com.pinder.app.LegalInfo.TermsDialog;
 import com.pinder.app.MyFunctions.StringDateToAge;
-import com.pinder.app.R;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;

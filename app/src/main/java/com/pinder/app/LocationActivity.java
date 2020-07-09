@@ -27,6 +27,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.pinder.app.Chat.ChatActivity;
 import com.pinder.app.Matches.MatchesActivity;
+import com.pinder.app.MyFunctions.CalculateDistance;
 import com.pinder.app.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -211,7 +212,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                                 userName = dataSnapshot.child("name").getValue().toString();
                                 double latitude = Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString());
                                 double longitude = Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString());
-                                double distance = distance(myLatitude, myLongitude, latitude, longitude);
+                                double distance =  new CalculateDistance().distance(myLatitude, myLongitude, latitude, longitude);
                                 LatLng latLngFB = new LatLng(latitude, longitude);
                                 if (dataSnapshot.child("profileImageUrl").getValue().toString().equals("default")) {
                                     Log.d("locTag", "onDataChange datasnap1: " + dataSnapshot.child("profileImageUrl").getValue().toString());
@@ -281,26 +282,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
-    private double distance(double lat1, double lon1, double lat2, double lon2) {
-        double theta = lon1 - lon2;
-        double dist = Math.sin(deg2rad(lat1))
-                * Math.sin(deg2rad(lat2))
-                + Math.cos(deg2rad(lat1))
-                * Math.cos(deg2rad(lat2))
-                * Math.cos(deg2rad(theta));
-        dist = Math.acos(dist);
-        dist = rad2deg(dist);
-        dist = dist * 60 * 1.1515 * 1.609344;
-        return (dist);
-    }
-
-    private double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
-    }
-
-    private double rad2deg(double rad) {
-        return (rad * 180.0 / Math.PI);
-    }
 
     public Bitmap getCroppedBitmap(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),

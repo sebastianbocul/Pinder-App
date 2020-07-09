@@ -142,7 +142,6 @@ public class RegistrationActivity extends AppCompatActivity {
                     date.setText("");
                 }
             }
-
             //set max lines in descriptions field
             @Override
             public void afterTextChanged(Editable editable) {

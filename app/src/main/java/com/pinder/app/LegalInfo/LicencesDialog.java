@@ -1,4 +1,4 @@
-package com.pinder.app;
+package com.pinder.app.LegalInfo;
 
 import android.app.Dialog;
 import android.content.DialogInterface;

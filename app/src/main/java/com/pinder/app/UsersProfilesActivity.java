@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,7 +18,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.pinder.app.Images.ImageAdapter;
 import com.pinder.app.Matches.MatchesActivity;
+import com.pinder.app.MyFunctions.CalculateDistance;
 import com.pinder.app.MyFunctions.StringDateToAge;
+import com.pinder.app.Notifications.Data;
 import com.pinder.app.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -49,13 +52,14 @@ public class UsersProfilesActivity extends AppCompatActivity {
     private Button unmatchButton;
     private String userAge;
     private ArrayList imagesList, mImages;
-    private ArrayList<String> mutualTagsExtras;
+    private ArrayList<String> mutualTagsExtras = null;
+    private ArrayList<String> myTags = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users_profiles);
-        mutualTagsExtras = null;
+
         final Intent intent = getIntent();
         userId = intent.getStringExtra("userId");
         if (intent.getStringExtra("fromActivity") != null) {
@@ -81,33 +85,54 @@ public class UsersProfilesActivity extends AppCompatActivity {
         myDatabaseReference = FirebaseDatabase.getInstance().getReference();
         viewPager = findViewById(R.id.viewPager);
         mImageDatabase = mUserDatabase.child(userId).child("images");
-        mUserProfileDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                unmatchButton.setVisibility(View.INVISIBLE);
-                dislikeButton.setVisibility(View.VISIBLE);
-                likeButton.setVisibility(View.VISIBLE);
-                if (!dataSnapshot.exists()) return;
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    if (userId.equals(ds.getKey())) {
-                        unmatchButton.setVisibility(View.VISIBLE);
-                        dislikeButton.setVisibility(View.INVISIBLE);
-                        likeButton.setVisibility(View.INVISIBLE);
-                    }
-                }
-                if (getIntent().hasExtra("userId")) {
-                    if (intent.getStringExtra("userId").equals(myId)) {
-                        unmatchButton.setVisibility(View.INVISIBLE);
-                        dislikeButton.setVisibility(View.INVISIBLE);
-                        likeButton.setVisibility(View.INVISIBLE);
-                    }
-                }
-            }
+        Log.d("userProfilesActivityLog", "myId: " +intent.getStringExtra("userId").equals(myId) );
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+        if (getIntent().hasExtra("userId")) {
+            if (intent.getStringExtra("userId").equals(myId)) {
+                unmatchButton.setVisibility(View.INVISIBLE);
+                dislikeButton.setVisibility(View.INVISIBLE);
+                likeButton.setVisibility(View.INVISIBLE);
+                reportUserButton.setEnabled(false);
+                mUserDatabase.child(myId).child("tags").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot ds: dataSnapshot.getChildren()){
+                            if(ds.exists()){
+                                myTags.add(ds.getKey());
+                            }
+                        }
+                        mutualTagsExtras=myTags;
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+            }else {
+                reportUserButton.setEnabled(true);
+                mUserProfileDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        unmatchButton.setVisibility(View.INVISIBLE);
+                        dislikeButton.setVisibility(View.VISIBLE);
+                        likeButton.setVisibility(View.VISIBLE);
+                        if (!dataSnapshot.exists()) return;
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            if (userId.equals(ds.getKey())) {
+                                unmatchButton.setVisibility(View.VISIBLE);
+                                dislikeButton.setVisibility(View.INVISIBLE);
+                                likeButton.setVisibility(View.INVISIBLE);
+                            }
+                        }
+
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
             }
-        });
+        }
+
         dislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -217,7 +242,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
                     lon1 = (double) mapMyLoc.get("longitude");
                     lat2 = (double) mapLoc.get("latitude");
                     lon2 = (double) mapLoc.get("longitude");
-                    double distance = distance(lat1, lon1, lat2, lon2);
+                    double distance = new CalculateDistance().distance(lat1, lon1, lat2, lon2);
                     distanceTextView.setText(", " + Math.round(distance) + " km away");
                     //tags
                     StringBuilder strB = new StringBuilder();
@@ -274,25 +299,5 @@ public class UsersProfilesActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-    }
-
-    private double distance(double lat1, double lon1, double lat2, double lon2) {
-        double theta = lon1 - lon2;
-        double dist = Math.sin(deg2rad(lat1))
-                * Math.sin(deg2rad(lat2))
-                + Math.cos(deg2rad(lat1))
-                * Math.cos(deg2rad(lat2))
-                * Math.cos(deg2rad(theta));
-        dist = Math.acos(dist);
-        dist = rad2deg(dist);
-        dist = dist * 60 * 1.1515 * 1.609344;
-        return (dist);
-    }
-
-    private double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
-    }
-    private double rad2deg(double rad) {
-        return (rad * 180.0 / Math.PI);
     }
 }

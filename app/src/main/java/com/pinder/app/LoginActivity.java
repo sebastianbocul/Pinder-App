@@ -22,7 +22,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.pinder.app.R;
+import com.pinder.app.LegalInfo.PrivacyDialog;
+import com.pinder.app.LegalInfo.TermsDialog;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
