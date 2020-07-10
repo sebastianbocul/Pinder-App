@@ -430,6 +430,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (dataSnapshot.child(currentUID).child("connections").child("yes").exists()) {
                         for (DataSnapshot ds : dataSnapshot.child(currentUID).child("connections").child("yes").getChildren()) {
+                            Log.d("rxJavaEmitter", "myUsers: ");
                             if (!dataSnapshot.child(currentUID).child("connections").child("matches").hasChild(ds.getKey()) && !dataSnapshot.child(ds.getKey()).child("connections").child("nope").hasChild(currentUID)) {
                                 Log.d("rxJava", "onDataChangeFirst: " + ds.getKey() + "  myID " + currentUID);
                                 Log.d("MaindataSnapshot", "dataSnapshot: " + dataSnapshot.child(ds.getKey()).child("connections").child("nope") +  "  myID " + currentUID);
@@ -439,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     List<cards> todosFromWeb = rowItems;
-                    emitter.onSuccess(listOf(todosFromWeb)); // return collected data from database here...
+                    emitter.onSuccess(listOf(todosFromWeb)); //return collected data from database here...
                 }
 
                 @Override
@@ -484,8 +485,8 @@ public class MainActivity extends AppCompatActivity {
             newUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    //
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        Log.d("rxJavaEmitter", "allUsers: ");
                         if (ds.child("sex").getValue() != null) {
                             if (ds.exists() && !first.contains(ds.getKey()) && !ds.child("connections").child("nope").hasChild(currentUID) && !ds.child("connections").child("yes").hasChild(currentUID) && !ds.getKey().equals(newCurrentUID)) {
                                 ds.getKey().equals(currentUID);
@@ -500,7 +501,6 @@ public class MainActivity extends AppCompatActivity {
                     emitter.onSuccess(listOf(todosFromWeb));
                     //emitter.onComplete();
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
@@ -537,7 +537,6 @@ public class MainActivity extends AppCompatActivity {
                            }
                 );
     }
-
     private void getTagsPreferencesUsers(DataSnapshot ds, Boolean likesMe) {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB = new StringBuilder();

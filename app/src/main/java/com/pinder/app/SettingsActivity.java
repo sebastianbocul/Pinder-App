@@ -3,6 +3,7 @@ package com.pinder.app;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,9 +16,11 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.pinder.app.Cards.cards;
 import com.pinder.app.LegalInfo.LicencesDialog;
 import com.pinder.app.LegalInfo.PrivacyDialog;
 import com.pinder.app.LegalInfo.TermsDialog;
@@ -39,6 +42,18 @@ import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.Calendar;
+import java.util.List;
+
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Cancellable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
 public class SettingsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -319,6 +334,65 @@ public class SettingsActivity extends AppCompatActivity {
                             deleteDatabaseAndStorage();
                             deleteMatches();
                             deleteToken();
+//                            Observable.just(deleteUserTags(), deleteDatabaseAndStorage(),deleteMatches(),deleteToken())
+//                                    .subscribeOn(Schedulers.trampoline())
+//                                    .subscribe(new Observer<T>() {
+//                                        @Override
+//                                        public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+//                                        }
+//
+//                                        @Override
+//                                        public void onNext(T t) {
+//                                        }
+//
+//                                        @Override
+//                                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+//                                        }
+//
+//                                        @Override
+//                                        public void onComplete() {
+//                                        }
+//                                    });
+//
+//                            Single.create(emitter -> {
+//                                // register onChange callback to database
+//                                // callback will be called, when a value is available
+//                                // the Single will stay open, until emitter#onSuccess is called with a collected list.
+//                                deleteUserTags();
+//                                deleteDatabaseAndStorage();
+//                                deleteMatches();
+//                                deleteToken();
+//                                List<cards> todosFromWeb = rowItems;
+//                                emitter.onSuccess(listOf(todosFromWeb)); // return collected data from database here...
+//                                // do some stuff
+//                                emitter.setCancellable(new Cancellable() {
+//                                    @Override
+//                                    public void cancel() throws Exception {
+//                                        //clean memory
+//                                    }
+//                                });
+//                                // unregister addListenerForSingleValueEvent from newUserDb here
+//                            }).subscribeOn(Schedulers.computation())
+//                                    .subscribe(new SingleObserver<Object>() {
+//                                                   @Override
+//                                                   public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+//                                                       Log.d("rxJava", "First RxJAVA, onSubscribe");
+//                                                   }
+//
+//                                                   @Override
+//                                                   public void onSuccess(Object o) {
+//                                                       Log.d("rxJava", "First RxJAVA, onSuccess");
+//                                                   }
+//
+//                                                   @Override
+//                                                   public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+//                                                       Log.d("rxJava", "First RxJAVA, onError");
+//                                                   }
+//                                               }
+//                                    );
+
+
+
                             // logoutUser();
                         } else {
                             AlertDialog.Builder error = new AlertDialog.Builder(context);
@@ -335,6 +409,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     private void deleteMatches() {
         DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -378,7 +453,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void deleteDatabaseAndStorage() {
+    private void  deleteDatabaseAndStorage() {
         filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId);
         StorageReference storageRef = filePath;
         // Delete the userStorage

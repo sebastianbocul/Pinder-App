@@ -1,6 +1,7 @@
 package com.pinder.app;
 
 import android.Manifest;
+import android.app.Application;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.facebook.login.Login;
 import com.pinder.app.LegalInfo.PrivacyDialog;
 import com.pinder.app.LegalInfo.TermsDialog;
 import com.facebook.AccessToken;
@@ -328,5 +330,20 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 44:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    finish();
+                    Toast.makeText(LoginActivity.this, "You need to accept permission!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 }
