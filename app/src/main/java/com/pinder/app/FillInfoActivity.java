@@ -215,7 +215,7 @@ public class FillInfoActivity extends AppCompatActivity {
     }
 
     private void changeActivty() {
-        Intent intent = new Intent(FillInfoActivity.this, MainActivity.class);
+        Intent intent = new Intent(FillInfoActivity.this, MainFragmentMenager.class);
         startActivity(intent);
         finish();
         return;

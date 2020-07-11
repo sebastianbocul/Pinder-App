@@ -138,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             for (DataSnapshot ds : dataSnapshot.child("Users").getChildren()) {
                                 if (ds.getKey().equals(user.getUid())) {
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    Intent intent = new Intent(LoginActivity.this, MainFragmentMenager.class);
                                     startActivity(intent);
                                     finish();
                                     return;
