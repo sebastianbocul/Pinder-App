@@ -44,6 +44,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.Calendar;
 import java.util.List;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.Scheduler;
@@ -330,69 +331,14 @@ public class SettingsActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(SettingsActivity.this, "User account deleted.", Toast.LENGTH_LONG).show();
-                            deleteUserTags();
-                            deleteDatabaseAndStorage();
-                            deleteMatches();
-                            deleteToken();
-//                            Observable.just(deleteUserTags(), deleteDatabaseAndStorage(),deleteMatches(),deleteToken())
-//                                    .subscribeOn(Schedulers.trampoline())
-//                                    .subscribe(new Observer<T>() {
-//                                        @Override
-//                                        public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-//                                        }
-//
-//                                        @Override
-//                                        public void onNext(T t) {
-//                                        }
-//
-//                                        @Override
-//                                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-//                                        }
-//
-//                                        @Override
-//                                        public void onComplete() {
-//                                        }
-//                                    });
-//
-//                            Single.create(emitter -> {
-//                                // register onChange callback to database
-//                                // callback will be called, when a value is available
-//                                // the Single will stay open, until emitter#onSuccess is called with a collected list.
-//                                deleteUserTags();
-//                                deleteDatabaseAndStorage();
-//                                deleteMatches();
-//                                deleteToken();
-//                                List<cards> todosFromWeb = rowItems;
-//                                emitter.onSuccess(listOf(todosFromWeb)); // return collected data from database here...
-//                                // do some stuff
-//                                emitter.setCancellable(new Cancellable() {
-//                                    @Override
-//                                    public void cancel() throws Exception {
-//                                        //clean memory
-//                                    }
-//                                });
-//                                // unregister addListenerForSingleValueEvent from newUserDb here
-//                            }).subscribeOn(Schedulers.computation())
-//                                    .subscribe(new SingleObserver<Object>() {
-//                                                   @Override
-//                                                   public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-//                                                       Log.d("rxJava", "First RxJAVA, onSubscribe");
-//                                                   }
-//
-//                                                   @Override
-//                                                   public void onSuccess(Object o) {
-//                                                       Log.d("rxJava", "First RxJAVA, onSuccess");
-//                                                   }
-//
-//                                                   @Override
-//                                                   public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-//                                                       Log.d("rxJava", "First RxJAVA, onError");
-//                                                   }
-//                                               }
-//                                    );
 
 
+                            deleteWithRxJava();
 
+                            // deleteUserTags();
+                            //deleteDatabaseAndStorage();
+                            //deleteMatches();
+                            //deleteToken();
                             // logoutUser();
                         } else {
                             AlertDialog.Builder error = new AlertDialog.Builder(context);
@@ -410,6 +356,161 @@ public class SettingsActivity extends AppCompatActivity {
                 });
     }
 
+    private void deleteWithRxJava() {
+
+        Observable<Object> deleteUserTagsObservable = Single.create(emitter -> {
+            DatabaseReference usersTagReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("tags");
+            DatabaseReference tagsReference = FirebaseDatabase.getInstance().getReference().child("Tags");
+            usersTagReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        Log.d("deleteRx", "deleteUserTagsObservable: " +ds.child(userId).toString());
+                        tagsReference.child(ds.getKey()).child(userId).removeValue();
+                    }
+                    Log.d("deleteRx", "deleteUserTagsObservable finished: ");
+                    emitter.onSuccess("finished");
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }).toObservable();
+
+        Observable<Object> deleteDatabseAndStorageObservable = Single.create(emitter -> {
+            filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId);
+            StorageReference storageRef = filePath;
+            // Delete the userStorage
+            storageRef.listAll()
+                    .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                        @Override
+                        public void onSuccess(ListResult listResult) {
+                            for (StorageReference item : listResult.getItems()) {
+                                // All the items under listRef.
+                                Log.d("deleteRx", "deleteDatabseAndStorageObservable: " +filePath.toString());
+                                item.delete();
+                            }
+                            Log.d("deleteRx", "deleteDatabseAndStorageObservable finished: ");
+                            emitter.onSuccess("finished");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Uh-oh, an error occurred!
+                        }
+                    });
+        }).toObservable();
+
+        Observable<Object> deleteMatchesObservable = Single.create(emitter -> {
+            DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
+            users.child(userId).child("connections").child("matches").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        try {
+                            Log.d("deleteRx", "deleteMatchesObservable 1: ");
+                            users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
+                            Log.d("deleteRx", "deleteMatchesObservable 2: ");
+                            users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
+                            Log.d("deleteRx", "deleteMatchesObservable:  " +ds.child("connections").child("matches").child(userId).toString());
+                            Log.d("deleteRx", "deleteMatchesObservable:  " +ds.child("connections").child("yes").child(userId).toString());
+                        } catch (Exception e) {
+                            Log.d("deleteRx", "deleteMatchesObservable:  " + e.toString());
+                            Toast.makeText(SettingsActivity.this, "Oooops something went wrong", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    Log.d("deleteRx", "deleteMatchesObservable finished: ");
+                    emitter.onSuccess("finished");
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }).toObservable();
+
+        Observable<Object> deleteTokensAndUserObservable = Single.create(emitter -> {
+            DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("Tokens");
+            DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+            mUserDatabase.removeValue();
+            tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.child(userId).exists()) {
+                        tokenRef.child(userId).removeValue();
+                        Log.d("deleteRx", "deleteTokensObservable: " +tokenRef.child(userId).toString());
+                    }
+                    Log.d("deleteRx", "deleteTokensObservable finished: ");
+                    emitter.onSuccess("finished");
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }).toObservable();
+
+//        Observable<Object> deleteUserObservable = Single.create(emitter -> {
+//            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//            user.delete()
+//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<Void> task) {
+//                            if (task.isSuccessful()) {
+//                                Toast.makeText(SettingsActivity.this, "User account deleted.", Toast.LENGTH_LONG).show();
+//                                // deleteUserTags();
+//                                //deleteDatabaseAndStorage();
+//                                //deleteMatches();
+//                                //deleteToken();
+//
+//                                // logoutUser();
+//                                emitter.onSuccess("finished");
+//                            } else {
+//                                AlertDialog.Builder error = new AlertDialog.Builder(context);
+//                                error.setMessage("Due to safety reasons please re-login and try again").setCancelable(false)
+//                                        .setTitle("Credentials too old")
+//                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which) {
+//                                            }
+//                                        });
+//                                AlertDialog alertDialog = error.create();
+//                                alertDialog.show();
+//                            }
+//                        }
+//                    });
+//        }).toObservable();
+
+        Observable.concat(deleteUserTagsObservable,deleteDatabseAndStorageObservable,deleteMatchesObservable,deleteTokensAndUserObservable)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Object>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                        Log.d("deleteRObs: ", "onSubscribe: " );
+                    }
+
+                    @Override
+                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull Object o) {
+                        Log.d("deleteRObs: ", "onNext: " +o);
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                        Log.d("deleteRObs: ", "onError: " );
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("deleteRObs: ", "onComplete: " );
+                        logoutUser();
+                    }
+                });
+
+
+    }
 
     private void deleteMatches() {
         DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -495,13 +596,13 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         updateMyDb();
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, MainFragmentMenager.class);
         startActivity(i);
     }
 
     public void onBack(View view) {
         updateMyDb();
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, MainFragmentMenager.class);
         startActivity(i);
         return;
     }

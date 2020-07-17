@@ -70,50 +70,6 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText descriptionEditText;
     private ArrayList imagesList, mImages;
 
-    public static Bitmap rotateImage(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
-                matrix, true);
-    }
-
-    private static int getExifOrientation(String src) throws IOException {
-        int orientation = 1;
-        try {
-            /**
-             * if your are targeting only api level >= 5
-             * ExifInterface exif = new ExifInterface(src);
-             * orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
-             */
-            if (Build.VERSION.SDK_INT >= 5) {
-                Class<?> exifClass = Class.forName("android.media.ExifInterface");
-                Constructor<?> exifConstructor = exifClass.getConstructor(String.class);
-                Object exifInstance = exifConstructor.newInstance(src);
-                Method getAttributeInt = exifClass.getMethod("getAttributeInt", String.class, int.class);
-                Field tagOrientationField = exifClass.getField("TAG_ORIENTATION");
-                String tagOrientation = (String) tagOrientationField.get(null);
-                orientation = (Integer) getAttributeInt.invoke(exifInstance, new Object[]{tagOrientation, 1});
-            }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-        return orientation;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -490,14 +446,14 @@ public class ProfileActivity extends AppCompatActivity {
     public void onBackPressed() {
         saveUserInformation();
         finish();
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, MainFragmentMenager.class);
         startActivity(i);
     }
 
     public void onBack(View view) {
         saveUserInformation();
         finish();
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, MainFragmentMenager.class);
         startActivity(i);
     }
 
@@ -514,5 +470,48 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
             return true;
         }
+    }
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
+    }
+
+    private static int getExifOrientation(String src) throws IOException {
+        int orientation = 1;
+        try {
+            /**
+             * if your are targeting only api level >= 5
+             * ExifInterface exif = new ExifInterface(src);
+             * orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+             */
+            if (Build.VERSION.SDK_INT >= 5) {
+                Class<?> exifClass = Class.forName("android.media.ExifInterface");
+                Constructor<?> exifConstructor = exifClass.getConstructor(String.class);
+                Object exifInstance = exifConstructor.newInstance(src);
+                Method getAttributeInt = exifClass.getMethod("getAttributeInt", String.class, int.class);
+                Field tagOrientationField = exifClass.getField("TAG_ORIENTATION");
+                String tagOrientation = (String) tagOrientationField.get(null);
+                orientation = (Integer) getAttributeInt.invoke(exifInstance, new Object[]{tagOrientation, 1});
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return orientation;
     }
 }

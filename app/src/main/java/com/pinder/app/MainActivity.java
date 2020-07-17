@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void goToProfile(View view) {
         //     checkUserSex();
-        Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+        Intent intent = new Intent(MainActivity.this, ProfileFragment.class);
         //     intent.putExtra("userSex", userSex);
         startActivity(intent);
         return;

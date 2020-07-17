@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.pinder.app.MainActivity;
+import com.pinder.app.MainActivityFragment;
+import com.pinder.app.MainFragmentMenager;
 import com.pinder.app.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,7 +74,7 @@ public class TagsManagerActivity extends AppCompatActivity implements TagsManage
             return;
         }
         updateDb();
-        Intent startMain = new Intent(this.getApplicationContext(), MainActivity.class);
+        Intent startMain = new Intent(this.getApplicationContext(), MainFragmentMenager.class);
         startActivity(startMain);
     }
 
@@ -84,7 +86,7 @@ public class TagsManagerActivity extends AppCompatActivity implements TagsManage
             return;
         }
         updateDb();
-        Intent startMain = new Intent(this.getApplicationContext(), MainActivity.class);
+        Intent startMain = new Intent(this.getApplicationContext(), MainFragmentMenager.class);
         startActivity(startMain);
     }
 

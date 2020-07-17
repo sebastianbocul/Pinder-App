@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.pinder.app.LocationActivity;
 import com.pinder.app.MainActivity;
+import com.pinder.app.MainActivityFragment;
+import com.pinder.app.MainFragmentMenager;
 import com.pinder.app.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -249,12 +251,12 @@ public class MatchesActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent startMain = new Intent(this, MainActivity.class);
+        Intent startMain = new Intent(this, MainFragmentMenager.class);
         startActivity(startMain);
     }
 
     public void onBack(View view) {
-        Intent startMain = new Intent(this, MainActivity.class);
+        Intent startMain = new Intent(this, MainFragmentMenager.class);
         startActivity(startMain);
     }
 

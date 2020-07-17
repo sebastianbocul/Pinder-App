@@ -523,13 +523,13 @@ public class ProfileFragment extends Fragment {
 
     public void onBackPressed() {
         saveUserInformation();
-        Intent i = new Intent(getContext(), MainActivity.class);
+        Intent i = new Intent(getContext(), MainFragmentMenager.class);
         startActivity(i);
     }
 
     public void onBack(View view) {
         saveUserInformation();
-        Intent i = new Intent(getContext(), MainActivity.class);
+        Intent i = new Intent(getContext(), MainFragmentMenager.class);
         startActivity(i);
     }
 
