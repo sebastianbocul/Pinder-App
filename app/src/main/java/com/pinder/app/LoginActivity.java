@@ -136,13 +136,11 @@ public class LoginActivity extends AppCompatActivity {
                     dr.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot ds : dataSnapshot.child("Users").getChildren()) {
-                                if (ds.getKey().equals(user.getUid())) {
+                            if(dataSnapshot.child("Users").child(user.getUid()).exists()){
                                     Intent intent = new Intent(LoginActivity.this, MainFragmentMenager.class);
                                     startActivity(intent);
                                     finish();
                                     return;
-                                }
                             }
                             Intent intent = new Intent(LoginActivity.this, FillInfoActivity.class);
                             startActivity(intent);
