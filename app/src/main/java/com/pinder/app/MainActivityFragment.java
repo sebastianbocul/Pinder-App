@@ -100,6 +100,7 @@ public class MainActivityFragment extends Fragment {
     public SwipeFlingAdapterView flingContainer;
     ListView listView;
     List<cards> rowItems;
+    List<cards> rowItemsRxJava;
     String mUID;
     APIService apiService;
     boolean notify = false;
@@ -172,6 +173,7 @@ public class MainActivityFragment extends Fragment {
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         noMoreEditText = getView().findViewById(R.id.noMore);
         rowItems = new ArrayList<cards>();
+        rowItemsRxJava = new ArrayList<cards>();
         arrayAdapter = new arrayAdapter(getContext(), R.layout.item, rowItems);
         likeButton = getView().findViewById(R.id.likeButton);
         dislikeButton = getView().findViewById(R.id.dislikeButton);
@@ -493,7 +495,8 @@ public class MainActivityFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         DatabaseReference newUserDb = FirebaseDatabase.getInstance().getReference().child("Users");
         String newCurrentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Single.create(emitter -> {
+        Single<List<cards>> sinlgeObs1 = Single.create(emitter -> {
+
             // register onChange callback to database
             // callback will be called, when a value is available
             // the Single will stay open, until emitter#onSuccess is called with a collected list.
@@ -522,8 +525,11 @@ public class MainActivityFragment extends Fragment {
                             }
                         }
                     }
-                    List<cards> todosFromWeb = rowItems;
-                    emitter.onSuccess(listOf(todosFromWeb)); //return collected data from database here...
+                    Log.d("rxMergeJavaSingle", "sinlgeObs1: "+ rowItemsRxJava.toString());
+                    List<cards> likedMeList = rowItemsRxJava;
+                    emitter.onSuccess(likedMeList); //return collected data from database here...
+                    rowItemsRxJava.clear();
+                    Log.d("rowItemsRxJava", "rowItemsRxJava DELETE OBS1: " + rowItemsRxJava.toString());
                 }
 
                 @Override
@@ -538,30 +544,10 @@ public class MainActivityFragment extends Fragment {
                 }
             });
             // unregister addListenerForSingleValueEvent from newUserDb here
-        }).subscribeOn(Schedulers.computation())
-                .subscribe(new SingleObserver<Object>() {
-                               @Override
-                               public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                                   Log.d("rxJava", "First RxJAVA, onSubscribe");
-                               }
+        });
 
-                               @Override
-                               public void onSuccess(Object o) {
-                                   Log.d("rxJava", "First RxJAVA, onSuccess");
-                                   for (cards card : rowItems) {
-                                       Log.d("cardListFirst", "User: " + card.getName() + "   UserId: " + card.getUserId() + "   distance: " + card.getDistance());
-                                   }
-                                   flingContainer.setAdapter(arrayAdapter);
-                                   arrayAdapter.notifyDataSetChanged();
-                               }
+        Single<List<cards>> sinlgeObs2 = Single.create(emitter -> {
 
-                               @Override
-                               public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                                   Log.d("rxJava", "First RxJAVA, onError");
-                               }
-                           }
-                );
-        Single.create(emitter -> {
             // register onChange callback to database
             // callback will be called, when a value is available
             // the Single will stay open, until emitter#onSuccess is called with a collected list.
@@ -579,9 +565,12 @@ public class MainActivityFragment extends Fragment {
                             }
                         }
                     }
+                    Log.d("rxMergeJavaSingle", "sinlgeObs2: "+ rowItemsRxJava.toString());
                     noMoreEditText.setText("There is no more users");
-                    List<cards> todosFromWeb = rowItems;
-                    emitter.onSuccess(listOf(todosFromWeb));
+                    List<cards> notLikedMeList = rowItemsRxJava;
+                    emitter.onSuccess(notLikedMeList);
+                    rowItemsRxJava.clear();
+                    Log.d("rowItemsRxJava", "rowItemsRxJava DELETE OBS2: " + rowItemsRxJava.toString());
                     //emitter.onComplete();
                 }
                 @Override
@@ -596,29 +585,44 @@ public class MainActivityFragment extends Fragment {
                 }
             });
             // unregister addListenerForSingleValueEvent from newUserDb here
-        }).subscribeOn(Schedulers.computation())
-                .subscribe(new SingleObserver<Object>() {
-                               @Override
-                               public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                                   Log.d("rxJava", "Secound RxJava, onSubscribe");
-                               }
+        });
 
-                               @Override
-                               public void onSuccess(Object o) {
-                                   Log.d("rxJava", "Secound RxJava, onSuccess");
-                                   for (cards card : rowItems) {
-                                       Log.d("cardListSecound", "User: " + card.getName() + "   UserId: " + card.getUserId() + "   distance: " + card.getDistance());
-                                   }
-                                   flingContainer.setAdapter(arrayAdapter);
-                                   arrayAdapter.notifyDataSetChanged();
-                               }
+        Observable.merge(sinlgeObs1.toObservable(),sinlgeObs2.toObservable())
+                .subscribeOn(Schedulers.computation())
+                .subscribe(new Observer<List<cards>>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                        Log.d("rxMergeJava", "onSubscribe: ");
+                    }
 
-                               @Override
-                               public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                                   Log.d("rxJava", "Secound RxJava, onError");
-                               }
-                           }
-                );
+                    @Override
+                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull List<cards> o) {
+                        if (sortByDistance.equals("true")) {
+                            o = sortCollection(o);
+                            rowItems.addAll(o);
+                        }else {
+                            rowItems.addAll(o);
+                        }
+                        Log.d("rxMergeJava", "onNext: " +o.toString());
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                        Log.d("rxMergeJava", "onError: ");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("rxMergeJava", "onComplete: ");
+                        for(cards cs:rowItems){
+                            Log.d("rxMergeJava: ",cs.getName().toString() + "   dist: "+ cs.getDistance());
+                        }
+
+                         arrayAdapter = new arrayAdapter(getContext(), R.layout.item, rowItems);
+                         flingContainer.setAdapter(arrayAdapter);
+                         arrayAdapter.notifyDataSetChanged();
+                    }
+                });
     }
     private void getTagsPreferencesUsers(DataSnapshot ds, Boolean likesMe) {
         ArrayList<String> mutalTagsList = new ArrayList<>();
@@ -678,28 +682,22 @@ public class MainActivityFragment extends Fragment {
                     }
                 } else profileImageUrl = "default";
                 cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap, distanceDouble, likesMe);
-                rowItems.add(item);
-
-                if (sortByDistance.equals("true")) {
-                    sortCollection();
-                }
-                for(cards cs:rowItems){
-                    Log.d("rowitems: ",cs.getName().toString());
-                }
-                arrayAdapter = new arrayAdapter(getContext(), R.layout.item, rowItems);
-                flingContainer.setAdapter(arrayAdapter);
-                arrayAdapter.notifyDataSetChanged();
+                rowItemsRxJava.add(item);
+                Log.d("rowItemsRxJava", "rowItemsRxJava: "+ rowItemsRxJava.toString());
+                Log.d("rxMergeJavaLoop: ",item.getName().toString() + " likesMe " + likesMe);
+            }
+            else {
             }
         } catch (Exception e) {
             Log.d("maingetTag", "tryError " + e.toString());
         }
     }
 
-    private void sortCollection() {
+    private List<cards> sortCollection(List<cards> list) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Collections.sort(rowItems, Comparator.comparing(cards::getDistance));
+            Collections.sort(list, Comparator.comparing(cards::getDistance));
         } else {
-            Collections.sort(rowItems, new Comparator<cards>() {
+            Collections.sort(list, new Comparator<cards>() {
                 public int compare(cards o1, cards o2) {
                     if (o1.getDistance() == o2.getDistance())
                         return 0;
@@ -707,6 +705,7 @@ public class MainActivityFragment extends Fragment {
                 }
             });
         }
+        return list;
     }
 
     public void goToTags(View view) {

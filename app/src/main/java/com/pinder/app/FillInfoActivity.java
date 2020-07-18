@@ -234,7 +234,7 @@ public class FillInfoActivity extends AppCompatActivity {
         Map userInfo = new HashMap<>();
         tagInfo.put("minAge", "18");
         tagInfo.put("maxAge", "99");
-        tagInfo.put("maxDistance", "100");
+        tagInfo.put("maxDistance", "100000");
         if (radioButton.getText().toString().equals("Male")) {
             tagInfo.put("gender", "Female");
         } else tagInfo.put("gender", "Male");
