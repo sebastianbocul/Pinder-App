@@ -186,7 +186,7 @@ public class MainActivityFragment extends Fragment {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
         //check location permission
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            //  updateLocation();
+              updateLocation();
         } else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -116,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
 
         setRegulationsClickable();
         setRegisterClickable();
-        checkLocationPermission();
+   //     checkLocationPermission();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             myLayout.setVisibility(View.VISIBLE);
@@ -137,15 +138,21 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if(dataSnapshot.child("Users").child(user.getUid()).exists()){
+                                if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                     Intent intent = new Intent(LoginActivity.this, MainFragmentMenager.class);
                                     startActivity(intent);
                                     finish();
                                     return;
+                                } else {
+                                    ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+                                }
+
+                            }else {
+                                Intent intent = new Intent(LoginActivity.this, FillInfoActivity.class);
+                                startActivity(intent);
+                                finish();
+                                return;
                             }
-                            Intent intent = new Intent(LoginActivity.this, FillInfoActivity.class);
-                            startActivity(intent);
-                            finish();
-                            return;
                         }
 
                         @Override
@@ -334,9 +341,19 @@ public class LoginActivity extends AppCompatActivity {
         switch (requestCode) {
             case 44:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                } else {
+                    Intent intent = new Intent(LoginActivity.this, MainFragmentMenager.class);
+                    startActivity(intent);
                     finish();
+                } else {
+                    //finish();
                     Toast.makeText(LoginActivity.this, "You need to accept permission!", Toast.LENGTH_SHORT).show();
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            checkLocationPermission();
+                        }
+                    }, 2000);
                     return;
                 }
                 break;

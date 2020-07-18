@@ -7,6 +7,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -66,6 +67,13 @@ public class RegistrationActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                     return;
+//                    if (ActivityCompat.checkSelfPermission(RegistrationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//
+//                    } else {
+//                        ActivityCompat.requestPermissions(RegistrationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+//                    }
+
+
                 }
             }
         };
@@ -150,83 +158,86 @@ public class RegistrationActivity extends AppCompatActivity {
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    int selectedId = mRadioGroup.getCheckedRadioButtonId();
-                    final String email = mEmail.getText().toString();
-                    final String password = mPassword.getText().toString();
-                    final String name = mName.getText().toString();
-                    final String repeatpassword = mRepeatPassword.getText().toString();
-                    int age = new StringDateToAge().stringDateToAge(date.getText().toString());
-                    final RadioButton radioButton = findViewById(selectedId);
-                    if (!dateValid == true) {
-                        Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if(age<18){
-                        Toast.makeText(RegistrationActivity.this, "You must be 18+", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if (mRadioGroup.getCheckedRadioButtonId() == -1) {
-                        Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if (email.isEmpty() || password.isEmpty() || repeatpassword.isEmpty() || name.isEmpty()) {
-                        Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if (password.length() < 6) {
-                        Toast.makeText(RegistrationActivity.this, "Password too short. Minimum length is 6 characters", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if (!password.equals(repeatpassword)) {
-                        Toast.makeText(RegistrationActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (!task.isSuccessful()) {
-                                Toast.makeText(RegistrationActivity.this, "sign_up_error", Toast.LENGTH_SHORT).show();
-                            } else {
-                                String userId = mAuth.getCurrentUser().getUid();
-                                DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-                                String dateOfBirth = date.getText().toString();
-                                Map tagsMap = new HashMap<>();
-                                Map tagInfo = new HashMap<>();
-                                Map userInfo = new HashMap<>();
-                                tagInfo.put("minAge", "18");
-                                tagInfo.put("maxAge", "99");
-                                tagInfo.put("maxDistance", "100000");
-                                if (radioButton.getText().toString().equals("Male")) {
-                                    tagInfo.put("gender", "Female");
-                                } else tagInfo.put("gender", "Male");
-                                tagsMap.put("default", tagInfo);
-                                userInfo.put("name", name);
-                                userInfo.put("sex", radioButton.getText().toString());
-                                userInfo.put("profileImageUrl", "default");
-                                userInfo.put("dateOfBirth", dateOfBirth);
-                                userInfo.put("tags", tagsMap);
-                                userInfo.put("showMyLocation", true);
-                                if (ActivityCompat.checkSelfPermission(RegistrationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                    updateLocation();
-                                } else {
-                                    ActivityCompat.requestPermissions(RegistrationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-                                }
-                                currentUserDb.updateChildren(userInfo);
-                                DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
-                                tags.child("default").child(userId).setValue(true);
-                                Toast.makeText(RegistrationActivity.this, "Register successful!", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                } catch (Exception e) {
-                    Log.d("myError", e.toString());
-                    Toast.makeText(RegistrationActivity.this, "Fill all fields!", Toast.LENGTH_SHORT).show();
-                }
+                register();
             }
         });
     }
+
+    private void register() {
+        try {
+            int selectedId = mRadioGroup.getCheckedRadioButtonId();
+            final String email = mEmail.getText().toString();
+            final String password = mPassword.getText().toString();
+            final String name = mName.getText().toString();
+            final String repeatpassword = mRepeatPassword.getText().toString();
+            final RadioButton radioButton = findViewById(selectedId);
+            if (!dateValid == true) {
+                Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            int age = new StringDateToAge().stringDateToAge(date.getText().toString());
+            if(age<18){
+                Toast.makeText(RegistrationActivity.this, "You must be 18+", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (mRadioGroup.getCheckedRadioButtonId() == -1) {
+                Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (email.isEmpty() || password.isEmpty() || repeatpassword.isEmpty() || name.isEmpty()) {
+                Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (password.length() < 6) {
+                Toast.makeText(RegistrationActivity.this, "Password too short. Minimum length is 6 characters", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!password.equals(repeatpassword)) {
+                Toast.makeText(RegistrationActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (ActivityCompat.checkSelfPermission(RegistrationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(RegistrationActivity.this, "sign_up_error", Toast.LENGTH_SHORT).show();
+                        } else {
+                            String userId = mAuth.getCurrentUser().getUid();
+                            DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+                            String dateOfBirth = date.getText().toString();
+                            Map tagsMap = new HashMap<>();
+                            Map tagInfo = new HashMap<>();
+                            Map userInfo = new HashMap<>();
+                            tagInfo.put("minAge", "18");
+                            tagInfo.put("maxAge", "99");
+                            tagInfo.put("maxDistance", "100000");
+                            if (radioButton.getText().toString().equals("Male")) {
+                                tagInfo.put("gender", "Female");
+                            } else tagInfo.put("gender", "Male");
+                            tagsMap.put("default", tagInfo);
+                            userInfo.put("name", name);
+                            userInfo.put("sex", radioButton.getText().toString());
+                            userInfo.put("profileImageUrl", "default");
+                            userInfo.put("dateOfBirth", dateOfBirth);
+                            userInfo.put("tags", tagsMap);
+                            userInfo.put("showMyLocation", true);
+                            updateLocation();
+                            currentUserDb.updateChildren(userInfo);
+                            DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
+                            tags.child("default").child(userId).setValue(true);
+                            Toast.makeText(RegistrationActivity.this, "Register successful!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            } else {
+                ActivityCompat.requestPermissions(RegistrationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+            }
+        } catch (Exception e) {
+            Log.d("myError", e.toString());
+            Toast.makeText(RegistrationActivity.this, "Fill all fields!", Toast.LENGTH_SHORT).show();
+        }
+}
 
     @Override
     protected void onStart() {
@@ -285,5 +296,21 @@ public class RegistrationActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 44:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    register();
+                } else {
+                    //finish();
+                    Toast.makeText(RegistrationActivity.this, "You need to accept permission!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 }

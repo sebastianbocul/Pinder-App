@@ -138,38 +138,43 @@ public class FillInfoActivity extends AppCompatActivity {
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int selectedId = mRadioGroup.getCheckedRadioButtonId();
-                int age = new StringDateToAge().stringDateToAge(date.getText().toString());
-                final String name = mName.getText().toString();
-                if (!dateValid == true) {
-                    Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(age<18){
-                    Toast.makeText(FillInfoActivity.this, "You must be 18+", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (mRadioGroup.getCheckedRadioButtonId() == -1) {
-                    Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (name.isEmpty()) {
-                    Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (ActivityCompat.checkSelfPermission(FillInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    updateLocation();
-                } else {
-                    ActivityCompat.requestPermissions(FillInfoActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-                }
-                try {
-                    updateDb();
-                    changeActivty();
-                } catch (Exception e) {
-                    Toast.makeText(FillInfoActivity.this, "Opps something went wrong", Toast.LENGTH_SHORT).show();
-                }
+                register();
             }
         });
+    }
+
+    private void register() {
+        int selectedId = mRadioGroup.getCheckedRadioButtonId();
+        final String name = mName.getText().toString();
+        if (!dateValid == true) {
+            Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int age = new StringDateToAge().stringDateToAge(date.getText().toString());
+        if(age<18){
+            Toast.makeText(FillInfoActivity.this, "You must be 18+", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (mRadioGroup.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (name.isEmpty()) {
+            Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (ActivityCompat.checkSelfPermission(FillInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            updateLocation();
+            try {
+                updateDb();
+                changeActivty();
+            } catch (Exception e) {
+                Toast.makeText(FillInfoActivity.this, "Opps something went wrong", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            ActivityCompat.requestPermissions(FillInfoActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+        }
+
     }
 
     @Override
@@ -291,5 +296,21 @@ public class FillInfoActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 44:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    register();
+                } else {
+                    //finish();
+                    Toast.makeText(this, "You need to accept permission!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 }
