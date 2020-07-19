@@ -243,6 +243,9 @@ public class MainActivityFragment extends Fragment {
         });
         swipeIfButtonClickedInUserProfile();
 
+
+
+
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
             @Override
             public void removeFirstObjectInAdapter() {
@@ -472,21 +475,6 @@ public class MainActivityFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-    }
-
-
-    public void onBackPressed() {
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
-    }
-
-    public void onBack(View view) {
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
     }
 
     private void getUsersFromDb() {
@@ -797,4 +785,7 @@ public class MainActivityFragment extends Fragment {
             }
         });
     }
+
+
+
 }

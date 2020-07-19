@@ -69,6 +69,7 @@ public class SettingsActivity extends AppCompatActivity {
     private int dd, mm, yyyy;
     private String dateOfBirth, onStartDateOfBirth;
     private Button restartMatches;
+    private Button bugsAndImprovements;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +87,7 @@ public class SettingsActivity extends AppCompatActivity {
         privacyPolicyButton = findViewById(R.id.privacyPolicyButton);
         termsButton = findViewById(R.id.termsButton);
         licenceButton=findViewById(R.id.licenceButton);
+        bugsAndImprovements = findViewById(R.id.bugs_improvement);
         myDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -250,6 +252,10 @@ public class SettingsActivity extends AppCompatActivity {
             LicencesDialog ld = new LicencesDialog();
             ld.show(getSupportFragmentManager(),"Licences Dialog");
         });
+        bugsAndImprovements.setOnClickListener(v->{
+            openReportDialog();
+        });
+
     }
 
     private void restartMatchesFun() {
@@ -305,7 +311,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void deleteAccount() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure you want to delete account?").setCancelable(false)
+        builder.setMessage("Are you sure you want to delete account?").setCancelable(true)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -622,5 +628,11 @@ public class SettingsActivity extends AppCompatActivity {
         if (!dateOfBirth.equals(onStartDateOfBirth)) {
             myDatabaseReference.child("dateOfBirth").setValue(dateOfBirth);
         }
+    }
+
+    private void openReportDialog() {
+        String myId = mAuth.getCurrentUser().getUid();
+        BugsAndImprovementsDialog bugsAndImprovementsDialog = new BugsAndImprovementsDialog(myId);
+        bugsAndImprovementsDialog.show(getSupportFragmentManager(),"Bugs and improvements");
     }
 }
