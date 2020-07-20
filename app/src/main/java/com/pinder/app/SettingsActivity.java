@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.Navigation;
 
 import com.pinder.app.Cards.cards;
 import com.pinder.app.LegalInfo.LicencesDialog;
@@ -602,8 +603,12 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         updateMyDb();
-        Intent i = new Intent(this, MainFragmentMenager.class);
-        startActivity(i);
+//        View v = findViewById(R.id.profileFragment);
+//        Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_mainFragment2);
+
+//        Intent i = new Intent(this, MainFragment.class);
+//        startActivity(i);
+        super.onBackPressed();
     }
 
     public void onBack(View view) {

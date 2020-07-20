@@ -15,6 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -68,7 +71,6 @@ import java.util.Map;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Cancellable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -82,10 +84,10 @@ import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link MainActivityFragment#newInstance} factory method to
+ * Use the {@link MainFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MainActivityFragment extends Fragment {
+public class MainFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -124,7 +126,7 @@ public class MainActivityFragment extends Fragment {
 
 
 
-    public MainActivityFragment() {
+    public MainFragment() {
         // Required empty public constructor
     }
 
@@ -134,11 +136,11 @@ public class MainActivityFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MainActivityFragment.
+     * @return A new instance of fragment MainFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MainActivityFragment newInstance(String param1, String param2) {
-        MainActivityFragment fragment = new MainActivityFragment();
+    public static MainFragment newInstance(String param1, String param2) {
+        MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -165,6 +167,7 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         mAuth = FirebaseAuth.getInstance();
         try {
             currentUID = mAuth.getCurrentUser().getUid();
@@ -182,11 +185,12 @@ public class MainActivityFragment extends Fragment {
         tagsButton= getView().findViewById(R.id.tags);
         matchesButton= getView().findViewById(R.id.matches);
         profileButton= getView().findViewById(R.id.profile);
-
+        Log.d("mainfragmentfunctions", "onViewCreated: " + rowItems.size());
+        ProfileFragment profileFragment = new ProfileFragment();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
         //check location permission
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-              updateLocation();
+             // updateLocation();
         } else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
@@ -238,7 +242,7 @@ public class MainActivityFragment extends Fragment {
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToProfile(v);
+                goToProfile(profileFragment,v);
             }
         });
         swipeIfButtonClickedInUserProfile();
@@ -380,18 +384,30 @@ public class MainActivityFragment extends Fragment {
         });
     }
 
-    public void goToProfile(View view) {
-        //     checkUserSex();
-        Intent intent = new Intent(getContext(), ProfileActivity.class);
-        //     intent.putExtra("userSex", userSex);
-        startActivity(intent);
-        return;
+    public void goToProfile(Fragment fragment,View view) {
+        //fragment
+        Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_profileFragment);
+//
+//        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//
+//
+//        fragmentTransaction.replace(R.id.main_fragment,fragment);
+//        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.commit();
+
+        //activity
+//        Intent intent = new Intent(getContext(), ProfileActivity.class);
+//        startActivity(intent);
+//        return;
     }
 
     public void goToSettings(View view) {
-        Intent intent = new Intent(getContext(), SettingsActivity.class);
-        startActivity(intent);
-        return;
+
+        Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_settingsActivity);
+//        Intent intent = new Intent(getContext(), SettingsActivity.class);
+//        startActivity(intent);
+//        return;
     }
 
     public void goToMatches(View view) {
@@ -447,6 +463,7 @@ public class MainActivityFragment extends Fragment {
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
+        Log.d("mainfragmentfunctions","fillTagsAdapter");
         ds.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -708,6 +725,7 @@ public class MainActivityFragment extends Fragment {
         updateMyInfo();
         fillTagsAdapter();
         Log.d("mainActivity", "rowItems on Start: " + rowItems.size());
+        Log.d("mainfragmentfunctions","onStart: "+rowItems.size());
         if (rowItems.size() == 0) {
             getUsersFromDb();
         }
@@ -742,6 +760,8 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onResume() {
+        Toast.makeText(getContext(),"ON RESUME",Toast.LENGTH_SHORT).show();
+        Log.d("mainfragmentfunctions","onResume: "+rowItems.size());
         checkUserStatus();
         super.onResume();
     }

@@ -15,8 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pinder.app.LocationActivity;
-import com.pinder.app.MainActivity;
-import com.pinder.app.MainActivityFragment;
 import com.pinder.app.MainFragmentMenager;
 import com.pinder.app.R;
 import com.google.firebase.auth.FirebaseAuth;

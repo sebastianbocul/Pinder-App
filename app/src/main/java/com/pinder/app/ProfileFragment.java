@@ -17,6 +17,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -523,6 +524,8 @@ public class ProfileFragment extends Fragment {
 
     public void onBackPressed() {
         saveUserInformation();
+        Log.d("goToMain","PROFILE FRAGMENT TO MAIN FRAGMENT");
+        Toast.makeText(getContext(),"PROFILE FRAGMENT TO MAIN FRAGMENT",Toast.LENGTH_SHORT).show();
         Intent i = new Intent(getContext(), MainFragmentMenager.class);
         startActivity(i);
     }

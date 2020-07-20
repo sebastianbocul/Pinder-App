@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.exifinterface.media.ExifInterface;
+import androidx.navigation.Navigation;
 import androidx.viewpager.widget.ViewPager;
 
 import com.pinder.app.Images.ImageAdapter;
@@ -444,7 +445,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Log.d("goToMain","PROFILE ACTIVITY TO MAIN FRAGMENT");
         saveUserInformation();
+//        View v = findViewById(R.id.profileFragment);
+//        Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_mainFragment3);
+       // super.onBackPressed();
         finish();
         Intent i = new Intent(this, MainFragmentMenager.class);
         startActivity(i);

@@ -11,8 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import com.pinder.app.MainActivity;
-import com.pinder.app.MainActivityFragment;
 import com.pinder.app.MainFragmentMenager;
 import com.pinder.app.R;
 import com.google.android.material.tabs.TabLayout;
@@ -65,17 +63,24 @@ public class TagsManagerActivity extends AppCompatActivity implements TagsManage
         });
     }
 
+//    @Override
+//    public void onBackPressed() {
+//        Log.d("TMAlog", "onBackPressed myTags: " + myTagsList);
+//        Log.d("TMAlog", "onBackPressed removedTags: " + removedTags);
+//
+//        Intent startMain = new Intent(this.getApplicationContext(), MainFragmentMenager.class);
+//        startActivity(startMain);
+//
+//    }
+
     @Override
     public void onBackPressed() {
-        Log.d("TMAlog", "onBackPressed myTags: " + myTagsList);
-        Log.d("TMAlog", "onBackPressed removedTags: " + removedTags);
         if (myTagsList.size() == 0) {
             Toast.makeText(this, "Add at least one tag!", Toast.LENGTH_SHORT).show();
             return;
         }
         updateDb();
-        Intent startMain = new Intent(this.getApplicationContext(), MainFragmentMenager.class);
-        startActivity(startMain);
+        super.onBackPressed();
     }
 
     public void onBack(View view) {
