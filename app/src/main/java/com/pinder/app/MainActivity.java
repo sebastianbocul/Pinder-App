@@ -34,9 +34,9 @@ import com.pinder.app.Notifications.Client;
 import com.pinder.app.Notifications.Data;
 import com.pinder.app.Notifications.Sender;
 import com.pinder.app.Notifications.Token;
-import com.pinder.app.Tags.TagsAdapter;
+import com.pinder.app.Tags.TagsManagerAdapter;
 import com.pinder.app.Tags.TagsManagerActivity;
-import com.pinder.app.Tags.TagsManagerObject;
+import com.pinder.app.Tags.TagsObject;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -92,8 +92,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private TextView tags;
     private DatabaseReference usersDb;
-    private TagsAdapter adapter;
-    private ArrayList<TagsManagerObject> myTagsList = new ArrayList<>();
+    private TagsManagerAdapter adapter;
+    private ArrayList<TagsObject> myTagsList = new ArrayList<>();
     private double myLatitude, myLongitude;
     private Map<String, String> myInfo = new HashMap<>();
     private String sortByDistance = "true";
@@ -371,14 +371,14 @@ public class MainActivity extends AppCompatActivity {
                         String mAgeMax = ds.child("maxAge").getValue().toString();
                         String mAgeMin = ds.child("minAge").getValue().toString();
                         String mDistance = ds.child("maxDistance").getValue().toString();
-                        TagsManagerObject obj = new TagsManagerObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
+                        TagsObject obj = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
                         myTagsList.add(obj);
                     }
-                    adapter = new TagsAdapter(MainActivity.this, myTags);
+                    adapter = new TagsManagerAdapter(MainActivity.this, myTags);
                     recyclerView.setAdapter(adapter);
                 } else {
                     myTags.add("Add tags in options first!");
-                    adapter = new TagsAdapter(MainActivity.this, myTags);
+                    adapter = new TagsManagerAdapter(MainActivity.this, myTags);
                     recyclerView.setAdapter(adapter);
                 }
             }
@@ -551,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
             double distanceDouble = new CalculateDistance().distance(myLatitude, myLongitude, latitude, longitude);
             for (DataSnapshot dataTag : ds.child("tags").getChildren()) {
                 Log.d("maingetTag", "forFirst ");
-                for (TagsManagerObject tag : myTagsList) {
+                for (TagsObject tag : myTagsList) {
                     ///VALIDATING MY PREFERENCES
                     //comparing tags
                     Log.d("maingetTag", "1st if: " + dataTag.getKey() + " == " + tag.getTagName());

@@ -1,77 +1,94 @@
 package com.pinder.app.Tags;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pinder.app.R;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> {
-    private List<String> mData;
+public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ExampleViewHolder> {
+    private ArrayList<TagsObject> mTagsManagerObject;
+    private OnItemClickListener mListener;
     private LayoutInflater mInflater;
-    private ItemClickListener mClickListener;
 
-    // data is passed into the constructor
-    public TagsAdapter(Context context, List<String> data) {
-        this.mInflater = LayoutInflater.from(context);
-        this.mData = data;
+    public TagsAdapter(ArrayList<TagsObject> exampleList) {
+        mTagsManagerObject = exampleList;
     }
 
-    // inflates the row layout from xml when needed
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.item_tags, parent, false);
-        return new ViewHolder(view);
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String tag = mData.get(position);
-        holder.myTextView.setText(tag);
+    public ExampleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tags_manager, parent, false);
+        ExampleViewHolder evh = new ExampleViewHolder(v, mListener);
+        return evh;
     }
-    // binds the data to the TextView in each row
 
-    // total number of rows
+    @Override
+    public void onBindViewHolder(ExampleViewHolder holder, int position) {
+        TagsObject currentItem = mTagsManagerObject.get(position);
+        holder.tagName.setText("#" + currentItem.getTagName());
+        holder.gender.setText(currentItem.getGender());
+        if (currentItem.getmDistance().equals("100000")) {
+            holder.distance.setText("∞");
+        } else {
+            holder.distance.setText(currentItem.getmDistance());
+        }
+        holder.tagAge.setText(currentItem.getmAgeMin() + "-" + mTagsManagerObject.get(position).getmAgeMax());
+    }
+
     @Override
     public int getItemCount() {
-        return mData.size();
+        return mTagsManagerObject.size();
     }
 
-    // convenience method for getting data at click position
-    String getItem(int id) {
-        return mData.get(id);
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+
+        void onDeleteClick(int position);
     }
 
-    // allows clicks events to be caught
-    void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
-    }
+    public static class ExampleViewHolder extends RecyclerView.ViewHolder {
+        private TextView tagName, gender, tagAge, distance;
+        private ImageView mDeleteImage;
 
-    // parent activity will implement this method to respond to click events
-    public interface ItemClickListener {
-        void onItemClick(View view, int position);
-    }
-
-    // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
-
-        ViewHolder(View itemView) {
+        public ExampleViewHolder(View itemView, final OnItemClickListener listener) {
             super(itemView);
-            myTextView = itemView.findViewById(R.id.myTags);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            tagName = itemView.findViewById(R.id.tag);
+            gender = itemView.findViewById(R.id.tag_gender);
+            distance = itemView.findViewById(R.id.tag_distance);
+            tagAge = itemView.findViewById(R.id.tag_age);
+            mDeleteImage = itemView.findViewById(R.id.tag_delete);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+            mDeleteImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onDeleteClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 }

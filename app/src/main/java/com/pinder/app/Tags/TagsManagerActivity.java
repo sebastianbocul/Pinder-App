@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TagsManagerActivity extends AppCompatActivity implements TagsManagerFragment.OnFragmentInteractionListener, PopularTagsFragment.OnFragmentInteractionListener, MyInterface {
+public class TagsManagerActivity extends AppCompatActivity implements TagsFragment.OnFragmentInteractionListener, PopularTagsFragment.OnFragmentInteractionListener, MyInterface {
     private FirebaseAuth mAuth;
     private String currentUserId;
-    private ArrayList<TagsManagerObject> myTagsList;
-    private ArrayList<TagsManagerObject> removedTags;
+    private ArrayList<TagsObject> myTagsList;
+    private ArrayList<TagsObject> removedTags;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +37,8 @@ public class TagsManagerActivity extends AppCompatActivity implements TagsManage
         setContentView(R.layout.activity_tag_manager);
         mAuth = FirebaseAuth.getInstance();
         currentUserId = mAuth.getCurrentUser().getUid();
-        myTagsList = new ArrayList<TagsManagerObject>();
-        removedTags = new ArrayList<TagsManagerObject>();
+        myTagsList = new ArrayList<TagsObject>();
+        removedTags = new ArrayList<TagsObject>();
         TabLayout tabLayout = findViewById(R.id.tablayout);
         tabLayout.addTab(tabLayout.newTab().setText("My tags"));
         tabLayout.addTab(tabLayout.newTab().setText("Popular tags"));
@@ -98,7 +98,7 @@ public class TagsManagerActivity extends AppCompatActivity implements TagsManage
     private void updateDb() {
         String userId = mAuth.getCurrentUser().getUid();
         ArrayList<String> myTagsListStr = new ArrayList<>();
-        for (TagsManagerObject tgo : myTagsList) {
+        for (TagsObject tgo : myTagsList) {
             myTagsListStr.add(tgo.getTagName());
             DatabaseReference mTagsDatabase = FirebaseDatabase.getInstance().getReference().child("Tags").child(tgo.getTagName()).child(userId);
             mTagsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -116,7 +116,7 @@ public class TagsManagerActivity extends AppCompatActivity implements TagsManage
                 }
             });
         }
-        for (TagsManagerObject removedTags : removedTags) {
+        for (TagsObject removedTags : removedTags) {
             if (!myTagsListStr.contains(removedTags.getTagName())) {
                 DatabaseReference mTagsRemoved = FirebaseDatabase.getInstance().getReference().child("Tags").child(removedTags.getTagName()).child(userId);
                 mTagsRemoved.removeValue();
@@ -126,7 +126,7 @@ public class TagsManagerActivity extends AppCompatActivity implements TagsManage
         DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
         Map userInfo = new HashMap<>();
         Map tagsMap = new HashMap<>();
-        for (TagsManagerObject tgo : myTagsList) {
+        for (TagsObject tgo : myTagsList) {
             Map tagInfo = new HashMap<>();
             tagInfo.put("minAge", tgo.getmAgeMin());
             tagInfo.put("maxAge", tgo.getmAgeMax());
@@ -143,7 +143,7 @@ public class TagsManagerActivity extends AppCompatActivity implements TagsManage
     }
 
     @Override
-    public void doSomethingWithData(ArrayList<TagsManagerObject> myTagsList2, ArrayList<TagsManagerObject> removedTags2) {
+    public void doSomethingWithData(ArrayList<TagsObject> myTagsList2, ArrayList<TagsObject> removedTags2) {
         myTagsList = myTagsList2;
         removedTags = removedTags2;
     }

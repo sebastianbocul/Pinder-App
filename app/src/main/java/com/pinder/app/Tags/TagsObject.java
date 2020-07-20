@@ -1,13 +1,13 @@
 package com.pinder.app.Tags;
 
-public class TagsManagerObject {
+public class TagsObject {
     private String tagName;
     private String gender;
     private String mAgeMin;
     private String mAgeMax;
     private String mDistance;
 
-    public TagsManagerObject(String tagName, String gender, String mAgeMin, String mAgeMax, String mDistance) {
+    public TagsObject(String tagName, String gender, String mAgeMin, String mAgeMax, String mDistance) {
         this.tagName = tagName;
         this.gender = gender;
         this.mAgeMin = mAgeMin;
