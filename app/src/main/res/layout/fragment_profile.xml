@@ -12,13 +12,6 @@
         android:orientation="vertical"
         tools:context="com.pinder.app.PrfileFragment">
 
-        <Button
-            android:id="@+id/back"
-            android:layout_width="0sp"
-            android:layout_height="0sp"
-            android:onClick="onBack"
-            android:text="Back!" />
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

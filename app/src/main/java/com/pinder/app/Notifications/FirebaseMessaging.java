@@ -14,17 +14,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import com.pinder.app.Chat.ChatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.pinder.app.Chat.ChatActivity;
 
 public class FirebaseMessaging extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        //getcurrentUserFromSharedPreferences
         SharedPreferences sp = getSharedPreferences("SP_USER", MODE_PRIVATE);
         String saveCurrentUser = sp.getString("Current_USERID", "None");
         String sent = remoteMessage.getData().get("sent");

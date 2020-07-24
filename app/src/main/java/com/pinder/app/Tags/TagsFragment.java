@@ -1,6 +1,5 @@
 package com.pinder.app.Tags;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,14 +23,13 @@ import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.interfaces.OnSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar;
-import com.pinder.app.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageReference;
+import com.pinder.app.R;
 
 import java.util.ArrayList;
 
@@ -43,12 +41,13 @@ import java.util.ArrayList;
 public class TagsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private FirebaseAuth mAuth;
     private String currentUserId;
-    private StorageReference filePath;
-    // get seekbar from view
     private TextView ageRangeTextView, maxDistanceTextView;
     private CrystalRangeSeekbar ageRangeSeeker;
     private CrystalSeekbar maxDistanceSeeker;
@@ -61,10 +60,6 @@ public class TagsFragment extends Fragment {
     private ArrayList<TagsObject> removedTags;
     private RecyclerView recyclerView;
     private MyInterface listener;
-    private OnFragmentInteractionListener mListener;
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public TagsFragment() {
         // Required empty public constructor
@@ -91,13 +86,11 @@ public class TagsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -116,14 +109,12 @@ public class TagsFragment extends Fragment {
         maxDistanceTextView = getView().findViewById(R.id.maxDistanceTextView);
         listener = (MyInterface) new TagsManagerFragment();
         Log.d("tagsManager", "getParentFragment " + getParentFragment());
-   //     onAttachToParentFragment(getParentFragment());
         fillTagsAdapter();
         addTagButton = getView().findViewById(R.id.addButton);
         tagsEditText = getView().findViewById(R.id.tagsEditText);
         mRadioGroup = getView().findViewById(R.id.radioGroup);
         maxDistanceSeeker.setMinStartValue(100);
         maxDistanceSeeker.apply();
-        ///RecyclerView
         myTagsList = new ArrayList<TagsObject>();
         removedTags = new ArrayList<TagsObject>();
         recyclerView = getView().findViewById(R.id.tagsRecyclerView);
@@ -140,7 +131,6 @@ public class TagsFragment extends Fragment {
                 ageMax = maxValue.toString();
             }
         });
-        // set listener
         maxDistanceSeeker.setOnSeekbarChangeListener(new OnSeekbarChangeListener() {
             @Override
             public void valueChanged(Number minValue) {
@@ -171,44 +161,6 @@ public class TagsFragment extends Fragment {
         });
     }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof MyInterface) {
-//            listener = (MyInterface) context;
-//        }
-//    }
-
-//    @Override
-//    public void onAttachFragment(@NonNull Fragment childFragment) {
-//        Log.d("naviagionLog","TagsFragment - onAttachFragment()     childFragment:" + childFragment.toString());
-//        try
-//        {
-//            listener = (MyInterface) childFragment;
-//        }
-//        catch (ClassCastException e)
-//        {
-//            Toast.makeText(getContext(), "Ooops something went wrong!", Toast.LENGTH_SHORT).show();
-//        }
-//        super.onAttachFragment(childFragment);
-//    }
-
-
-    public void onAttachToParentFragment(Fragment fragment)
-    {
-        Log.d("naviagionLog","TagsFragment - onAttachToParentFragment()     childFragment:" + fragment.toString());
-        try
-        {
-
-
-        }
-        catch (ClassCastException e)
-        {
-            throw new ClassCastException(
-                    fragment.toString() + " must implement OnPlayerSelectionSetListener");
-        }
-    }
-
     @Override
     public void onDetach() {
         listener = null;
@@ -219,7 +171,6 @@ public class TagsFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
 
     private void addTagButtonFunction() {
         if (tagsEditText.getText().toString().length() == 0) {
@@ -276,10 +227,6 @@ public class TagsFragment extends Fragment {
                         recyclerView.setAdapter(adapter);
                     }
                 } else {
-//                    TagsObject obj = new TagsObject("default", "Any", "18", "99", "100");
-//                    myTagsList.add(obj);
-//                    adapter.notifyDataSetChanged();
-//                    recyclerView.setAdapter(adapter);
                 }
             }
 

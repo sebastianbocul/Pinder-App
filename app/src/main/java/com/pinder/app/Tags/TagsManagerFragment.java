@@ -1,21 +1,17 @@
 package com.pinder.app.Tags;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.viewpager.widget.ViewPager;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,7 +20,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pinder.app.MainFragmentMenager;
 import com.pinder.app.R;
 
 import java.util.ArrayList;
@@ -36,7 +31,7 @@ import java.util.Map;
  * Use the {@link TagsManagerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TagsManagerFragment extends Fragment implements TagsFragment.OnFragmentInteractionListener, PopularTagsFragment.OnFragmentInteractionListener, MyInterface{
+public class TagsManagerFragment extends Fragment implements TagsFragment.OnFragmentInteractionListener, PopularTagsFragment.OnFragmentInteractionListener, MyInterface {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -44,9 +39,7 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
     private FirebaseAuth mAuth;
-    private String currentUserId;
     private ArrayList<TagsObject> myTagsList;
     private ArrayList<TagsObject> removedTags;
 
@@ -75,14 +68,11 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("naviagionLog","TagsManagerFragment - onCreate() ");
+        Log.d("naviagionLog", "TagsManagerFragment - onCreate() ");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
-
     }
 
     @Override
@@ -96,12 +86,9 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-        currentUserId = mAuth.getCurrentUser().getUid();
-        TagsFragment fragment = (TagsFragment) getChildFragmentManager().findFragmentById(R.id.tagsManagerFragment);
-
-        myTagsList = new ArrayList<TagsObject>();
-        removedTags = new ArrayList<TagsObject>();
-        Log.d("naviagionLog","TagsManagerFragment - onViewCreated() ");
+        myTagsList = new ArrayList<>();
+        removedTags = new ArrayList<>();
+        Log.d("naviagionLog", "TagsManagerFragment - onViewCreated() ");
         TabLayout tabLayout = getActivity().findViewById(R.id.tablayout);
         tabLayout.addTab(tabLayout.newTab().setText("My tags"));
         tabLayout.addTab(tabLayout.newTab().setText("Popular tags"));
@@ -128,8 +115,8 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
     }
 
     private void updateDb() {
-        Log.d("naviagionLog","TagsManagerFragment - updateDb()");
-        Log.d("naviagionLog","TagsManagerFragment - updateDb()     myTagsList:" + myTagsList + "removedTags:"+removedTags);
+        Log.d("naviagionLog", "TagsManagerFragment - updateDb()");
+        Log.d("naviagionLog", "TagsManagerFragment - updateDb()     myTagsList:" + myTagsList + "removedTags:" + removedTags);
         mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser().getUid();
         ArrayList<String> myTagsListStr = new ArrayList<>();
@@ -157,7 +144,6 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
                 mTagsRemoved.removeValue();
             }
         }
-        //userDb
         DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
         Map userInfo = new HashMap<>();
         Map tagsMap = new HashMap<>();
@@ -173,8 +159,6 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
         mUserDatabase.updateChildren(userInfo);
     }
 
-
-
     @Override
     public void onFragmentInteraction(Uri uri) {
     }
@@ -184,24 +168,6 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
         myTagsList = myTagsList2;
         removedTags = removedTags2;
         updateDb();
-        Log.d("naviagionLog","TagsManagerFragment - doSomethingWithData()     myTagsList:" + myTagsList + "removedTags:"+removedTags);
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d("naviagionLog","TagsManagerFragment - onDestroy() ");
-        super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyView() {
-        Log.d("naviagionLog","TagsManagerFragment - onDestroyView() "   + "myTagsList:" + myTagsList + "removedTags:"+removedTags);
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDetach() {
-        Log.d("naviagionLog","TagsManagerFragment - onDetach() "   + "myTagsList:" + myTagsList + "removedTags:"+removedTags);
-        super.onDetach();
+        Log.d("naviagionLog", "TagsManagerFragment - doSomethingWithData()     myTagsList:" + myTagsList + "removedTags:" + removedTags);
     }
 }

@@ -1,7 +1,6 @@
 package com.pinder.app;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -22,8 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.pinder.app.MyFunctions.StringDateToAge;
-import com.pinder.app.R;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -33,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.pinder.app.MyFunctions.StringDateToAge;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -43,16 +41,14 @@ import java.util.Map;
 
 public class FillInfoActivity extends AppCompatActivity {
     private Button mRegister;
-    private EditText mEmail, mPassword, mName, mRepeatPassword;
+    private EditText mName;
     private RadioGroup mRadioGroup;
     private boolean dateValid = false;
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
-    private Context context = FillInfoActivity.this;
     private EditText date;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private TextView title;
-    private int dd, mm, yyyy;
+    private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,9 +106,6 @@ public class FillInfoActivity extends AppCompatActivity {
                             //would be automatically corrected to 28/02/2012
                             dateValid = true;
                             day = (day < 1) ? 1 : (day > cal.getActualMaximum(Calendar.DATE)) ? cal.getActualMaximum(Calendar.DATE) : day;
-                            dd = day;
-                            mm = mon;
-                            yyyy = year;
                             clean = String.format("%02d%02d%02d", day, mon, year);
                         }
                         clean = String.format("%s/%s/%s", clean.substring(0, 2),
@@ -144,14 +137,13 @@ public class FillInfoActivity extends AppCompatActivity {
     }
 
     private void register() {
-        int selectedId = mRadioGroup.getCheckedRadioButtonId();
         final String name = mName.getText().toString();
         if (!dateValid == true) {
             Toast.makeText(FillInfoActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
         int age = new StringDateToAge().stringDateToAge(date.getText().toString());
-        if(age<18){
+        if (age < 18) {
             Toast.makeText(FillInfoActivity.this, "You must be 18+", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -174,13 +166,11 @@ public class FillInfoActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(FillInfoActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        // mAuth.addAuthStateListener(firebaseAuthStateListener);
     }
 
     @Override
@@ -191,11 +181,6 @@ public class FillInfoActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        deleteUser();
-        logoutUser();
-    }
-
-    public void onBack(View view) {
         deleteUser();
         logoutUser();
     }
@@ -305,7 +290,6 @@ public class FillInfoActivity extends AppCompatActivity {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     register();
                 } else {
-                    //finish();
                     Toast.makeText(this, "You need to accept permission!", Toast.LENGTH_SHORT).show();
                 }
                 break;

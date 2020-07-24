@@ -16,13 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name="com.pinder.app.MainFragmentMenager"></activity>
-        <activity android:name="com.pinder.app.Tags.TagsManagerActivity" />
         <activity android:name="com.pinder.app.FillInfoActivity" />
         <activity
             android:name="com.pinder.app.PopActivity"
             android:theme="@style/AppTheme.PopMe" />
         <activity android:name="com.pinder.app.UsersProfilesActivity" />
-        <activity android:name="com.pinder.app.SettingsActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -30,8 +28,6 @@
 
         <activity android:name="com.pinder.app.LocationActivity" />
         <activity android:name="com.pinder.app.Chat.ChatActivity" />
-        <activity android:name="com.pinder.app.Matches.MatchesActivity" />
-        <activity android:name="com.pinder.app.ProfileActivity" />
         <activity android:name="com.pinder.app.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,7 +36,6 @@
             </intent-filter>
         </activity>
         <activity android:name="com.pinder.app.RegistrationActivity" />
-        <activity android:name="com.pinder.app.MainActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

@@ -9,25 +9,22 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -45,7 +42,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.pinder.app.Cards.arrayAdapter;
 import com.pinder.app.Cards.cards;
-import com.pinder.app.Matches.MatchesActivity;
 import com.pinder.app.MyFunctions.CalculateDistance;
 import com.pinder.app.MyFunctions.StringDateToAge;
 import com.pinder.app.Notifications.APIService;
@@ -54,8 +50,6 @@ import com.pinder.app.Notifications.Data;
 import com.pinder.app.Notifications.Sender;
 import com.pinder.app.Notifications.Token;
 import com.pinder.app.Tags.TagsManagerAdapter;
-import com.pinder.app.Tags.TagsManagerActivity;
-import com.pinder.app.Tags.TagsManagerFragment;
 import com.pinder.app.Tags.TagsObject;
 
 import java.io.IOException;
@@ -79,7 +73,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -94,36 +87,25 @@ public class MainFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-    public ImageView likeButton, dislikeButton;
-    public String currentUID;
-    public TextView noMoreEditText;
-    public SwipeFlingAdapterView flingContainer;
-    ListView listView;
+    private ImageView likeButton, dislikeButton;
+    private String currentUID;
+    private TextView noMoreEditText;
+    private SwipeFlingAdapterView flingContainer;
     List<cards> rowItems;
     List<cards> rowItemsRxJava;
     String mUID;
     APIService apiService;
     boolean notify = false;
-    private cards cards_data;
     private com.pinder.app.Cards.arrayAdapter arrayAdapter;
-    private int i;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private FirebaseAuth mAuth;
-    private TextView tags;
     private DatabaseReference usersDb;
     private TagsManagerAdapter adapter;
     private ArrayList<TagsObject> myTagsList = new ArrayList<>();
     private double myLatitude, myLongitude;
     private Map<String, String> myInfo = new HashMap<>();
     private String sortByDistance = "true";
-    private Observable myObservable;
-    private Observer observer;
-    private Observable observable;
     private ArrayList<String> first;
-    private ImageView settingsButton, tagsButton,matchesButton,profileButton;
-
-
 
     public MainFragment() {
         // Required empty public constructor
@@ -166,7 +148,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         mAuth = FirebaseAuth.getInstance();
         try {
             currentUID = mAuth.getCurrentUser().getUid();
@@ -180,25 +161,19 @@ public class MainFragment extends Fragment {
         likeButton = getView().findViewById(R.id.likeButton);
         dislikeButton = getView().findViewById(R.id.dislikeButton);
         flingContainer = getView().findViewById(R.id.frame);
-        settingsButton =getView().findViewById(R.id.settings);
-        tagsButton= getView().findViewById(R.id.tags);
-        matchesButton= getView().findViewById(R.id.matches);
-        profileButton= getView().findViewById(R.id.profile);
         Log.d("mainfragmentfunctions", "onViewCreated: " + rowItems.size());
         ProfileFragment profileFragment = new ProfileFragment();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
         //check location permission
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-             // updateLocation();
+            // updateLocation();
         } else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
         flingContainer.setAdapter(arrayAdapter);
-
         //create APISERVICE
         Client client = new Client();
         apiService = client.getClient("https://fcm.googleapis.com/").create(APIService.class);
-        //Client.
         checkUserStatus();
         //update token
         updateToken(FirebaseInstanceId.getInstance().getToken());
@@ -220,35 +195,7 @@ public class MainFragment extends Fragment {
                     Toast.makeText(getContext(), "There is no more users", Toast.LENGTH_SHORT).show();
             }
         });
-//        settingsButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                goToSettings(v);
-//            }
-//        });
-//        tagsButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                goToTags(v);
-//            }
-//        });
-//        matchesButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                goToMatches(v);
-//            }
-//        });
-//        profileButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                goToProfile(profileFragment,v);
-//            }
-//        });
         swipeIfButtonClickedInUserProfile();
-
-
-
-
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
             @Override
             public void removeFirstObjectInAdapter() {
@@ -318,7 +265,7 @@ public class MainFragment extends Fragment {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(getActivity()==null){
+                if (getActivity() == null) {
                     return;
                 }
                 Intent intent = getActivity().getIntent();
@@ -371,7 +318,6 @@ public class MainFragment extends Fragment {
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                         }
                     });
-                    //notify
                     notify = true;
                     //popactivity when matched
                     Intent i = new Intent(getActivity().getApplicationContext(), PopActivity.class);
@@ -384,38 +330,6 @@ public class MainFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-    }
-
-    public void goToProfile(Fragment fragment,View view) {
-        //fragment
-        Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_profileFragment);
-//
-//        FragmentManager fragmentManager = getFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//
-//
-//        fragmentTransaction.replace(R.id.main_fragment,fragment);
-//        fragmentTransaction.addToBackStack(null);
-//        fragmentTransaction.commit();
-
-        //activity
-//        Intent intent = new Intent(getContext(), ProfileActivity.class);
-//        startActivity(intent);
-//        return;
-    }
-
-    public void goToSettings(View view) {
-
-        Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_settingsActivity);
-//        Intent intent = new Intent(getContext(), SettingsActivity.class);
-//        startActivity(intent);
-//        return;
-    }
-
-    public void goToMatches(View view) {
-        Intent intent = new Intent(getContext(), MatchesActivity.class);
-        startActivity(intent);
-        return;
     }
 
     public void updateLocation() {
@@ -465,14 +379,13 @@ public class MainFragment extends Fragment {
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
-        Log.d("mainfragmentfunctions","fillTagsAdapter");
+        Log.d("mainfragmentfunctions", "fillTagsAdapter");
         ds.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         myTags.add("#" + ds.getKey());
-                        //  myTagsList.add(ds.getKey());
                         String tagName = ds.getKey().toLowerCase();
                         String gender = ds.child("gender").getValue().toString();
                         String mAgeMax = ds.child("maxAge").getValue().toString();
@@ -481,15 +394,14 @@ public class MainFragment extends Fragment {
                         TagsObject obj = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
                         myTagsList.add(obj);
                     }
-                    if(getContext()!=null){
+                    if (getContext() != null) {
                         adapter = new TagsManagerAdapter(getContext(), myTags);
                     }
-
                     recyclerView.setAdapter(adapter);
                 } else {
                     myTags.add("Add tags in options first!");
-                    if(getContext()!=null){
-                    adapter = new TagsManagerAdapter(getContext(), myTags);
+                    if (getContext() != null) {
+                        adapter = new TagsManagerAdapter(getContext(), myTags);
                     }
                     recyclerView.setAdapter(adapter);
                 }
@@ -508,7 +420,6 @@ public class MainFragment extends Fragment {
         DatabaseReference newUserDb = FirebaseDatabase.getInstance().getReference().child("Users");
         String newCurrentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Single<List<cards>> sinlgeObs1 = Single.create(emitter -> {
-
             // register onChange callback to database
             // callback will be called, when a value is available
             // the Single will stay open, until emitter#onSuccess is called with a collected list.
@@ -531,13 +442,13 @@ public class MainFragment extends Fragment {
                             Log.d("rxJavaEmitter", "myUsers: ");
                             if (!dataSnapshot.child(currentUID).child("connections").child("matches").hasChild(ds.getKey()) && !dataSnapshot.child(ds.getKey()).child("connections").child("nope").hasChild(currentUID)) {
                                 Log.d("rxJava", "onDataChangeFirst: " + ds.getKey() + "  myID " + currentUID);
-                                Log.d("MaindataSnapshot", "dataSnapshot: " + dataSnapshot.child(ds.getKey()).child("connections").child("nope") +  "  myID " + currentUID);
+                                Log.d("MaindataSnapshot", "dataSnapshot: " + dataSnapshot.child(ds.getKey()).child("connections").child("nope") + "  myID " + currentUID);
                                 first.add(ds.getKey());
                                 getTagsPreferencesUsers(dataSnapshot.child(ds.getKey()), true);
                             }
                         }
                     }
-                    Log.d("rxMergeJavaSingle", "sinlgeObs1: "+ rowItemsRxJava.toString());
+                    Log.d("rxMergeJavaSingle", "sinlgeObs1: " + rowItemsRxJava.toString());
                     List<cards> likedMeList = rowItemsRxJava;
                     emitter.onSuccess(likedMeList); //return collected data from database here...
                     rowItemsRxJava.clear();
@@ -555,11 +466,8 @@ public class MainFragment extends Fragment {
                     //clean memory
                 }
             });
-            // unregister addListenerForSingleValueEvent from newUserDb here
         });
-
         Single<List<cards>> sinlgeObs2 = Single.create(emitter -> {
-
             // register onChange callback to database
             // callback will be called, when a value is available
             // the Single will stay open, until emitter#onSuccess is called with a collected list.
@@ -577,14 +485,14 @@ public class MainFragment extends Fragment {
                             }
                         }
                     }
-                    Log.d("rxMergeJavaSingle", "sinlgeObs2: "+ rowItemsRxJava.toString());
+                    Log.d("rxMergeJavaSingle", "sinlgeObs2: " + rowItemsRxJava.toString());
                     noMoreEditText.setText("There is no more users");
                     List<cards> notLikedMeList = rowItemsRxJava;
                     emitter.onSuccess(notLikedMeList);
                     rowItemsRxJava.clear();
                     Log.d("rowItemsRxJava", "rowItemsRxJava DELETE OBS2: " + rowItemsRxJava.toString());
-                    //emitter.onComplete();
                 }
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
@@ -596,10 +504,8 @@ public class MainFragment extends Fragment {
                     //clean memory
                 }
             });
-            // unregister addListenerForSingleValueEvent from newUserDb here
         });
-
-        Observable.merge(sinlgeObs1.toObservable(),sinlgeObs2.toObservable())
+        Observable.merge(sinlgeObs1.toObservable(), sinlgeObs2.toObservable())
                 .subscribeOn(Schedulers.computation())
                 .subscribe(new Observer<List<cards>>() {
                     @Override
@@ -612,10 +518,10 @@ public class MainFragment extends Fragment {
                         if (sortByDistance.equals("true")) {
                             o = sortCollection(o);
                             rowItems.addAll(o);
-                        }else {
+                        } else {
                             rowItems.addAll(o);
                         }
-                        Log.d("rxMergeJava", "onNext: " +o.toString());
+                        Log.d("rxMergeJava", "onNext: " + o.toString());
                     }
 
                     @Override
@@ -626,10 +532,10 @@ public class MainFragment extends Fragment {
                     @Override
                     public void onComplete() {
                         Log.d("rxMergeJava", "onComplete: ");
-                        for(cards cs:rowItems){
-                            Log.d("rxMergeJava: ",cs.getName().toString() + "   dist: "+ cs.getDistance());
+                        for (cards cs : rowItems) {
+                            Log.d("rxMergeJava: ", cs.getName() + "   dist: " + cs.getDistance());
                         }
-                        if(getActivity()!=null){
+                        if (getActivity() != null) {
                             arrayAdapter = new arrayAdapter(getActivity(), R.layout.item, rowItems);
                             flingContainer.setAdapter(arrayAdapter);
                             arrayAdapter.notifyDataSetChanged();
@@ -637,6 +543,7 @@ public class MainFragment extends Fragment {
                     }
                 });
     }
+
     private void getTagsPreferencesUsers(DataSnapshot ds, Boolean likesMe) {
         ArrayList<String> mutalTagsList = new ArrayList<>();
         StringBuilder mutalTagsSB = new StringBuilder();
@@ -696,10 +603,9 @@ public class MainFragment extends Fragment {
                 } else profileImageUrl = "default";
                 cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap, distanceDouble, likesMe);
                 rowItemsRxJava.add(item);
-                Log.d("rowItemsRxJava", "rowItemsRxJava: "+ rowItemsRxJava.toString());
-                Log.d("rxMergeJavaLoop: ",item.getName().toString() + " likesMe " + likesMe);
-            }
-            else {
+                Log.d("rowItemsRxJava", "rowItemsRxJava: " + rowItemsRxJava.toString());
+                Log.d("rxMergeJavaLoop: ", item.getName().toString() + " likesMe " + likesMe);
+            } else {
             }
         } catch (Exception e) {
             Log.d("maingetTag", "tryError " + e.toString());
@@ -721,20 +627,13 @@ public class MainFragment extends Fragment {
         return list;
     }
 
-    public void goToTags(View view) {
-        Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_tagsManagerFragment);
-//        Intent intent = new Intent(getContext(), TagsManagerFragment.class);
-//        startActivity(intent);
-//        return;
-    }
-
     @Override
     public void onStart() {
         super.onStart();
         updateMyInfo();
         fillTagsAdapter();
         Log.d("mainActivity", "rowItems on Start: " + rowItems.size());
-        Log.d("mainfragmentfunctions","onStart: "+rowItems.size());
+        Log.d("mainfragmentfunctions", "onStart: " + rowItems.size());
         if (rowItems.size() == 0) {
             getUsersFromDb();
         }
@@ -760,7 +659,6 @@ public class MainFragment extends Fragment {
         });
     }
 
-
     public void updateToken(String token) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Tokens");
         Token mToken = new Token(token);
@@ -769,7 +667,7 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.d("mainfragmentfunctions","onResume: "+rowItems.size());
+        Log.d("mainfragmentfunctions", "onResume: " + rowItems.size());
         checkUserStatus();
         super.onResume();
     }
@@ -813,18 +711,4 @@ public class MainFragment extends Fragment {
             }
         });
     }
-    
-    
-   
-    public void onBackPressed() {
-        Toast.makeText(getContext(), "MAIN QUIT", Toast.LENGTH_SHORT).show();
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
-    }
-
-
-
-
 }

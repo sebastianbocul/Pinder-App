@@ -6,6 +6,16 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,20 +24,6 @@ import androidx.exifinterface.media.ExifInterface;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import com.pinder.app.Images.ImageAdapter;
-import com.pinder.app.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,14 +35,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.pinder.app.Images.ImageAdapter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,24 +50,20 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
-
-    private static final int RQS_READ_EXTERNAL_STORAGE = 2;
     private static int RESULT_LOAD_IMAGE = 1;
     DatabaseReference mImageDatabase;
     ViewPager viewPager;
     StorageReference filePath;
     private Uri resultUri;
-    private ImageView mProfileImage, mAddImage, mDeleteImage, setDefaultButton;
-    private EditText mNameField, mPhoneField;
-    private Button mBack, mConfirm;
+    private ImageView mAddImage, mDeleteImage, setDefaultButton;
+    private EditText mNameField;
     private String imageName;
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
-    private String userId, name, phone, description, imageStorageKey, userSex, profileImageUrl;
+    private String userId, name, description, imageStorageKey;
     private int imagePosition = 0;
     private EditText descriptionEditText;
     private ArrayList imagesList, mImages;
-
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -118,7 +107,6 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
@@ -146,18 +134,16 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mProfileImage =  getView().findViewById(R.id.profileImage);
-        descriptionEditText =  getView().findViewById(R.id.description);
-        mNameField =  getView().findViewById(R.id.name);
-        mAddImage =  getView().findViewById(R.id.addImage);
-        mDeleteImage =  getView().findViewById(R.id.delImage);
-        setDefaultButton =  getView().findViewById(R.id.setDefaultButton);
+        descriptionEditText = getView().findViewById(R.id.description);
+        mNameField = getView().findViewById(R.id.name);
+        mAddImage = getView().findViewById(R.id.addImage);
+        mDeleteImage = getView().findViewById(R.id.delImage);
+        setDefaultButton = getView().findViewById(R.id.setDefaultButton);
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
         mImageDatabase = mUserDatabase.child("images");
-        viewPager =  getView().findViewById(R.id.viewPager);
-        //get user images
+        viewPager = getView().findViewById(R.id.viewPager);
         loadImages();
         getUserInfo();
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -194,8 +180,6 @@ public class ProfileFragment extends Fragment {
             }
         });
         setDefaultButton.setOnClickListener(new View.OnClickListener() {
-            private String buffor, defaultBuffor;
-
             @Override
             public void onClick(View v) {
                 if (viewPager.getAdapter().getCount() != 0) {
@@ -203,7 +187,6 @@ public class ProfileFragment extends Fragment {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             DataSnapshot bufor, defaultBufor;
-                            int i = 0;
                             bufor = dataSnapshot.child("0");
                             defaultBufor = dataSnapshot.child(String.valueOf(imagePosition));
                             mImageDatabase.child("0").setValue(defaultBufor.getValue());
@@ -234,17 +217,17 @@ public class ProfileFragment extends Fragment {
                             StorageReference storageRef = filePath;
                             // Create a reference to the file to delete
                             StorageReference desertRef = storageRef.child(imageName);
-                            // storageRef.getAl
                             // Delete the file
-                            Toast.makeText(getContext(), "File from Storage deleted successfully", Toast.LENGTH_SHORT).show();
                             desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
+                                    Toast.makeText(getContext(), "File from Storage deleted successfully", Toast.LENGTH_SHORT).show();
                                     // File deleted successfully
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception exception) {
+                                    Toast.makeText(getContext(), "Uh-oh, an error occurred!", Toast.LENGTH_SHORT).show();
                                     // Uh-oh, an error occurred!
                                 }
                             });
@@ -256,8 +239,6 @@ public class ProfileFragment extends Fragment {
                     });
                     mImageDatabase.child(String.valueOf(imagePosition)).removeValue();
                     mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                        String imageKey;
-
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Map imagesMap = new HashMap<>();
@@ -302,49 +283,11 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-
     public static Bitmap rotateImage(Bitmap source, float angle) {
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
                 matrix, true);
-    }
-
-    private static int getExifOrientation(String src) throws IOException {
-        int orientation = 1;
-        try {
-            /**
-             * if your are targeting only api level >= 5
-             * ExifInterface exif = new ExifInterface(src);
-             * orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
-             */
-            if (Build.VERSION.SDK_INT >= 5) {
-                Class<?> exifClass = Class.forName("android.media.ExifInterface");
-                Constructor<?> exifConstructor = exifClass.getConstructor(String.class);
-                Object exifInstance = exifConstructor.newInstance(src);
-                Method getAttributeInt = exifClass.getMethod("getAttributeInt", String.class, int.class);
-                Field tagOrientationField = exifClass.getField("TAG_ORIENTATION");
-                String tagOrientation = (String) tagOrientationField.get(null);
-                orientation = (Integer) getAttributeInt.invoke(exifInstance, new Object[]{tagOrientation, 1});
-            }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (java.lang.InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-        return orientation;
     }
 
     private void loadImages() {
@@ -383,7 +326,6 @@ public class ProfileFragment extends Fragment {
             Toast.makeText(getContext(), "Uploading image...", Toast.LENGTH_SHORT).show();
         }
         if (resultUri != null) {
-            String size = String.valueOf(mImages.size());
             imageStorageKey = mImageDatabase.push().getKey();
             filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId).child(imageStorageKey);
             Bitmap bitmap = null;
@@ -468,7 +410,9 @@ public class ProfileFragment extends Fragment {
             return;
         }
     }
-    private Map<String, Object> map=null;
+
+    private Map<String, Object> map = null;
+
     private void getUserInfo() {
         mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -479,9 +423,6 @@ public class ProfileFragment extends Fragment {
                     if (map.get("name") != null) {
                         name = map.get("name").toString();
                         mNameField.setText(name);
-                    }
-                    if (map.get("sex") != null) {
-                        userSex = map.get("sex").toString();
                     }
                     if (map.get("description") != null) {
                         description = map.get("description").toString();
@@ -495,7 +436,6 @@ public class ProfileFragment extends Fragment {
                             imageMap = (Map) imageArray.get(0);
                             String imageDef = imageMap.get("uri").toString();
                             mUserDatabase.child("profileImageUrl").setValue(imageDef);
-                            profileImageUrl = imageDef;
                         } else {
                             mUserDatabase.child("profileImageUrl").setValue("default");
                             viewPager.setBackground(getActivity().getDrawable(R.drawable.profile_default));
@@ -512,7 +452,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void saveUserInformation() {
-        if(map==null){
+        if (map == null) {
             return;
         }
         name = mNameField.getText().toString();
@@ -526,7 +466,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onDetach() {
         saveUserInformation();
-        Log.d("goToMain","PROFILE FRAGMENT TO MAIN FRAGMENT");
+        Log.d("goToMain", "PROFILE FRAGMENT TO MAIN FRAGMENT");
         super.onDetach();
     }
 }

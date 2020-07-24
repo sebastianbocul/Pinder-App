@@ -9,9 +9,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.mikhaellopez.circularimageview.CircularImageView;
 import com.pinder.app.Chat.ChatActivity;
 import com.pinder.app.R;
-import com.mikhaellopez.circularimageview.CircularImageView;
 
 public class MatchesViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
     public TextView mMatchName, mLastMessage;

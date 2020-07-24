@@ -21,7 +21,7 @@ public class TermsDialog extends AppCompatDialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_terms,null);
+        View view = inflater.inflate(R.layout.dialog_terms, null);
         TextView textView = view.findViewById(R.id.termsTextView);
         textView.setText(Html.fromHtml(getString(R.string.terms_conditions)));
         builder.setView(view)

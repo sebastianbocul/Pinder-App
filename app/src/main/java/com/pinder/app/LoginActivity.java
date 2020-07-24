@@ -1,7 +1,6 @@
 package com.pinder.app;
 
 import android.Manifest;
-import android.app.Application;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -24,9 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.facebook.login.Login;
-import com.pinder.app.LegalInfo.PrivacyDialog;
-import com.pinder.app.LegalInfo.TermsDialog;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -56,9 +52,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pinder.app.LegalInfo.PrivacyDialog;
+import com.pinder.app.LegalInfo.TermsDialog;
 
 import java.util.Arrays;
-//import com.firebase.ui.auth.AuthUI;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String EMAIL = "email";
@@ -78,9 +75,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        //Intent intent  = new Intent(LoginActivity.this, LoginTest.class);
-        // startActivity(intent);
-        //FACEBOOK
         mAuth = FirebaseAuth.getInstance();
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(getApplication());
@@ -114,10 +108,8 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-
         setRegulationsClickable();
         setRegisterClickable();
-   //     checkLocationPermission();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             myLayout.setVisibility(View.VISIBLE);
@@ -132,12 +124,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                int i = 0;
                 if (user != null) {
                     dr.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.child("Users").child(user.getUid()).exists()){
+                            if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
                                 if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                     Intent intent = new Intent(LoginActivity.this, MainFragmentMenager.class);
                                     startActivity(intent);
@@ -146,8 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                                 } else {
                                     ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
                                 }
-
-                            }else {
+                            } else {
                                 Intent intent = new Intent(LoginActivity.this, FillInfoActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -166,19 +156,15 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                // App code
                 handleFacebookToken(loginResult.getAccessToken());
-                //fill database
             }
 
             @Override
             public void onCancel() {
-                // App code
             }
 
             @Override
             public void onError(FacebookException exception) {
-                // App code
             }
         });
         mLogin.setOnClickListener(new View.OnClickListener() {
@@ -202,10 +188,9 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
         };
-        ss.setSpan(clickableSpan,27,31, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(clickableSpan, 27, 31, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         registerTextView.setText(ss);
         registerTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
     }
 
     private void setRegulationsClickable() {
@@ -216,22 +201,20 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(@NonNull View widget) {
                 TermsDialog rg = new TermsDialog();
-                rg.show(getSupportFragmentManager(),"Terms Dialog");
+                rg.show(getSupportFragmentManager(), "Terms Dialog");
             }
         };
         ClickableSpan clickableSpan2 = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
                 PrivacyDialog pd = new PrivacyDialog();
-                pd.show(getSupportFragmentManager(),"Privacy Dialog");
+                pd.show(getSupportFragmentManager(), "Privacy Dialog");
             }
         };
-
-        ss.setSpan(clickableSpan1,29,34, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ss.setSpan(clickableSpan2,39,53,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(clickableSpan1, 29, 34, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(clickableSpan2, 39, 53, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         regulationsTextView.setText(ss);
         regulationsTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
     }
 
     private void checkLocationPermission() {
@@ -336,6 +319,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -345,7 +329,6 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 } else {
-                    //finish();
                     Toast.makeText(LoginActivity.this, "You need to accept permission!", Toast.LENGTH_SHORT).show();
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {

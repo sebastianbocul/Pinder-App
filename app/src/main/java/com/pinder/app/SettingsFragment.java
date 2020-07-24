@@ -1,6 +1,5 @@
 package com.pinder.app;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -64,14 +63,12 @@ public class SettingsFragment extends Fragment {
     private String mParam2;
     private FirebaseAuth mAuth;
     private String userId;
-    private Context context = getContext();
     private Button logoutUser, deleteUser, privacyPolicyButton, termsButton, licenceButton;
     private StorageReference filePath;
     private Switch mapLocationSwitch, sortUsersByDistanceSwitch;
     private EditText date;
     private boolean showMapLocation, onStartShowMapLocation, sortByDistance, onStartSortByDistance;
     private boolean dateValid = false;
-    private int dd, mm, yyyy;
     private String dateOfBirth, onStartDateOfBirth;
     private Button restartMatches;
     private Button bugsAndImprovements;
@@ -211,10 +208,6 @@ public class SettingsFragment extends Fragment {
                             //would be automatically corrected to 28/02/2012
                             dateValid = true;
                             day = (day < 1) ? 1 : (day > cal.getActualMaximum(Calendar.DATE)) ? cal.getActualMaximum(Calendar.DATE) : day;
-                            dd = day;
-                            mm = mon;
-                            yyyy = year;
-                            String legal;
                             clean = String.format("%02d%02d%02d", day, mon, year);
                             String strToAge = String.format("%s/%s/%s", clean.substring(0, 2),
                                     clean.substring(2, 4),
@@ -247,7 +240,6 @@ public class SettingsFragment extends Fragment {
                 }
             }
 
-            //set max lines in descriptions field
             @Override
             public void afterTextChanged(Editable editable) {
             }
@@ -382,11 +374,6 @@ public class SettingsFragment extends Fragment {
                         if (task.isSuccessful()) {
                             Toast.makeText(getContext(), "User account deleted.", Toast.LENGTH_LONG).show();
                             deleteWithRxJava();
-                            // deleteUserTags();
-                            //deleteDatabaseAndStorage();
-                            //deleteMatches();
-                            //deleteToken();
-                            // logoutUser();
                         } else {
                             AlertDialog.Builder error = new AlertDialog.Builder(getContext());
                             error.setMessage("Due to safety reasons please re-login and try again").setCancelable(false)
@@ -520,87 +507,6 @@ public class SettingsFragment extends Fragment {
                 });
     }
 
-    private void deleteMatches() {
-        DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
-        DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-        mUserDatabase.removeValue();
-        users.child(userId).child("connections").child("matches").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    try {
-                        users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
-                        users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
-                        deleteUserTags();
-                    } catch (Exception e) {
-                        Toast.makeText(getContext(), "Oooops something went wrong", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void deleteUserTags() {
-        DatabaseReference usersTagReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("tags");
-        DatabaseReference tagsReference = FirebaseDatabase.getInstance().getReference().child("Tags");
-        usersTagReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    tagsReference.child(ds.getKey()).child(userId).removeValue();
-                }
-                deleteDatabaseAndStorage();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void deleteDatabaseAndStorage() {
-        filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId);
-        StorageReference storageRef = filePath;
-        // Delete the userStorage
-        storageRef.listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-                        for (StorageReference item : listResult.getItems()) {
-                            // All the items under listRef.
-                            item.delete();
-                        }
-                        logoutUser();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Uh-oh, an error occurred!
-                    }
-                });
-    }
-
-    private void deleteToken() {
-        DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("Tokens");
-        tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(userId).exists()) {
-                    tokenRef.child(userId).removeValue();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
     private void updateMyDb() {
         DatabaseReference myDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
         if (showMapLocation != onStartShowMapLocation) {
@@ -623,7 +529,4 @@ public class SettingsFragment extends Fragment {
         BugsAndImprovementsDialog bugsAndImprovementsDialog = new BugsAndImprovementsDialog(myId);
         bugsAndImprovementsDialog.show(getActivity().getSupportFragmentManager(), "Bugs and improvements");
     }
-
-
-
 }

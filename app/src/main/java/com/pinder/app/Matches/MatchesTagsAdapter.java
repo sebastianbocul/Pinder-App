@@ -63,7 +63,6 @@ public class MatchesTagsAdapter extends RecyclerView.Adapter<MatchesTagsAdapter.
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         Button myTagButton;
         TextView sortByTextView;
-        String sortBy;
 
         ViewHolder(View itemView) {
             super(itemView);

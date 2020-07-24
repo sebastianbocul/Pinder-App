@@ -21,13 +21,11 @@ public class PrivacyDialog extends AppCompatDialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_privacy,null);
+        View view = inflater.inflate(R.layout.dialog_privacy, null);
         TextView textView = view.findViewById(R.id.privacyTextView);
         textView.setText(Html.fromHtml(getString(R.string.privacy_policy)));
         builder.setView(view)
-
                 .setCancelable(false)
-                //.setTitle("Privacy")
                 .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

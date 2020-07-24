@@ -20,10 +20,6 @@ import java.util.List;
 public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
     private List<ChatObject> chatList;
     private Context context;
-    private float scale;
-    private int dpAsPixels;
-    private int dpAsPixels2;
-    private int dpAsPixels3;
     private LinearLayout.LayoutParams paramsText;
     private LinearLayout.LayoutParams paramsContainer, paramsContainer2;
 
@@ -96,7 +92,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
                 holder.mChatImage.getLayoutParams().height = 125;
                 holder.mChatImage.getLayoutParams().width = 125;
             }
-            //   holder.mChatImage.setVisibility(View.INVISIBLE);
             if (chatList.get(position).getProfileImageUrl().equals("default")) {
                 Glide.with(context).load(R.drawable.picture_default).into(holder.mChatImage);
             } else {

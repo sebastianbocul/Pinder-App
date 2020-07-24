@@ -21,10 +21,9 @@ public class LicencesDialog extends AppCompatDialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_licences,null);
+        View view = inflater.inflate(R.layout.dialog_licences, null);
         TextView rxJavaTextView = view.findViewById(R.id.rxJavaLicence);
         rxJavaTextView.setText(Html.fromHtml(getString(R.string.rx_java_licence)));
-
         TextView googlePlayServicesTextView = view.findViewById(R.id.googlePlayServicesLicence);
         googlePlayServicesTextView.setText(Html.fromHtml(getString(R.string.google_play_services_licence)));
         TextView retrofitTextView = view.findViewById(R.id.retrofitLicence);
@@ -37,10 +36,6 @@ public class LicencesDialog extends AppCompatDialogFragment {
         circleImageTextView.setText(Html.fromHtml(getString(R.string.circleimageview_licence)));
         TextView crystalrangeseekerTextView = view.findViewById(R.id.crystalrange_licence);
         crystalrangeseekerTextView.setText(Html.fromHtml(getString(R.string.crystalrange_licence)));
-
-
-
-
         builder.setView(view)
                 .setCancelable(false)
                 .setPositiveButton("ok", new DialogInterface.OnClickListener() {

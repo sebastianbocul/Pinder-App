@@ -15,7 +15,6 @@ import java.util.ArrayList;
 public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ExampleViewHolder> {
     private ArrayList<TagsObject> mTagsManagerObject;
     private OnItemClickListener mListener;
-    private LayoutInflater mInflater;
 
     public TagsAdapter(ArrayList<TagsObject> exampleList) {
         mTagsManagerObject = exampleList;
@@ -91,5 +90,4 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ExampleViewHol
             });
         }
     }
-
 }

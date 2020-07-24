@@ -11,12 +11,7 @@
         android:orientation="vertical"
         android:padding="5sp">
 
-        <Button
-            android:id="@+id/back"
-            android:layout_width="0sp"
-            android:layout_height="0sp"
-            android:onClick="onBack"
-            android:text="Back!" />
+
 
         <ImageView
             android:id="@+id/locationButton"

@@ -7,7 +7,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,15 +15,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.pinder.app.MyFunctions.StringDateToAge;
-import com.pinder.app.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.pinder.app.MyFunctions.StringDateToAge;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -50,9 +47,8 @@ public class RegistrationActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
     private EditText date;
     private boolean dateValid = false;
-    private int dd, mm, yyyy;
-    private TextView title;
     private FusedLocationProviderClient fusedLocationProviderClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,14 +62,6 @@ public class RegistrationActivity extends AppCompatActivity {
                     Intent intent = new Intent(RegistrationActivity.this, MainFragmentMenager.class);
                     startActivity(intent);
                     finish();
-                    return;
-//                    if (ActivityCompat.checkSelfPermission(RegistrationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//
-//                    } else {
-//                        ActivityCompat.requestPermissions(RegistrationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-//                    }
-
-
                 }
             }
         };
@@ -83,11 +71,9 @@ public class RegistrationActivity extends AppCompatActivity {
         mPassword = findViewById(R.id.password);
         mRepeatPassword = findViewById(R.id.repeatpassword);
         mRadioGroup = findViewById(R.id.radioGroup);
-        title = findViewById(R.id.title);
         date = findViewById(R.id.date);
         mAuth = FirebaseAuth.getInstance();
         mName = findViewById(R.id.name);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         date.addTextChangedListener(new TextWatcher() {
             String clean;
             String cleanC;
@@ -131,9 +117,6 @@ public class RegistrationActivity extends AppCompatActivity {
                             //would be automatically corrected to 28/02/2012
                             dateValid = true;
                             day = (day < 1) ? 1 : (day > cal.getActualMaximum(Calendar.DATE)) ? cal.getActualMaximum(Calendar.DATE) : day;
-                            dd = day;
-                            mm = mon;
-                            yyyy = year;
                             clean = String.format("%02d%02d%02d", day, mon, year);
                         }
                         clean = String.format("%s/%s/%s", clean.substring(0, 2),
@@ -150,7 +133,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     date.setText("");
                 }
             }
-            //set max lines in descriptions field
+
             @Override
             public void afterTextChanged(Editable editable) {
             }
@@ -171,12 +154,12 @@ public class RegistrationActivity extends AppCompatActivity {
             final String name = mName.getText().toString();
             final String repeatpassword = mRepeatPassword.getText().toString();
             final RadioButton radioButton = findViewById(selectedId);
-            if (!dateValid == true) {
+            if (!dateValid) {
                 Toast.makeText(RegistrationActivity.this, "Fill all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
             int age = new StringDateToAge().stringDateToAge(date.getText().toString());
-            if(age<18){
+            if (age < 18) {
                 Toast.makeText(RegistrationActivity.this, "You must be 18+", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -237,7 +220,7 @@ public class RegistrationActivity extends AppCompatActivity {
             Log.d("myError", e.toString());
             Toast.makeText(RegistrationActivity.this, "Fill all fields!", Toast.LENGTH_SHORT).show();
         }
-}
+    }
 
     @Override
     protected void onStart() {
@@ -257,10 +240,6 @@ public class RegistrationActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public void onBack(View view) {
-        Intent i = new Intent(this, LoginActivity.class);
-        startActivity(i);
-    }
     public void updateLocation() {
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
@@ -305,7 +284,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     register();
                 } else {
-                    //finish();
                     Toast.makeText(RegistrationActivity.this, "You need to accept permission!", Toast.LENGTH_SHORT).show();
                 }
                 break;

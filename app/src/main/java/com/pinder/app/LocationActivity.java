@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,10 +24,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.pinder.app.Chat.ChatActivity;
-import com.pinder.app.Matches.MatchesActivity;
-import com.pinder.app.MyFunctions.CalculateDistance;
-import com.pinder.app.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -45,11 +40,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pinder.app.Chat.ChatActivity;
+import com.pinder.app.MyFunctions.CalculateDistance;
 
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback {
     public String currentUID;
-    Button btLocation;
-    TextView textView1, textView2, textView3, textView4, textView5, name;
+    TextView name;
     FusedLocationProviderClient fusedLocationProviderClient;
     FirebaseDatabase database;
     DatabaseReference usersReference;
@@ -60,7 +56,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     private DatabaseReference usersDb;
     private DatabaseReference myRef;
     private ImageView profileImage, goToChat;
-    private boolean toggleMapToolBarVisibility;
     private String matchId, myId;
     private boolean mapRdy = false;
 
@@ -136,7 +131,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                     myGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLngMap));
                     myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLngMap, 15));
                     mapRdy = true;
-                    //
                 }
                 //set my marker at start
                 MarkerOptions markerOptionsFB;
@@ -200,8 +194,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             try {
-
-                                Log.d("LocationActivity",dataSnapshot.toString());
+                                Log.d("LocationActivity", dataSnapshot.toString());
                                 if (dataSnapshot.child("showMyLocation").getValue().toString().equals("false")) {
                                     return;
                                 }
@@ -212,7 +205,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                                 userName = dataSnapshot.child("name").getValue().toString();
                                 double latitude = Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString());
                                 double longitude = Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString());
-                                double distance =  new CalculateDistance().distance(myLatitude, myLongitude, latitude, longitude);
+                                double distance = new CalculateDistance().distance(myLatitude, myLongitude, latitude, longitude);
                                 LatLng latLngFB = new LatLng(latitude, longitude);
                                 if (dataSnapshot.child("profileImageUrl").getValue().toString().equals("default")) {
                                     Log.d("locTag", "onDataChange datasnap1: " + dataSnapshot.child("profileImageUrl").getValue().toString());
@@ -254,8 +247,8 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                                                 }
                                             });
                                 }
-                            }catch (Exception e){
-                                Log.d("Error",e.toString());
+                            } catch (Exception e) {
+                                Log.d("Error", e.toString());
                             }
                         }
 
@@ -282,7 +275,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
-
     public Bitmap getCroppedBitmap(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
                 bitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -293,7 +285,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);
-        // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
         canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
                 bitmap.getWidth() / 2, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));

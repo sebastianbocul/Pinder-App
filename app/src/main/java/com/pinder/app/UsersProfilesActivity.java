@@ -16,43 +16,31 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import com.pinder.app.Images.ImageAdapter;
-import com.pinder.app.Matches.MatchesActivity;
-import com.pinder.app.Matches.MatchesFragment;
-import com.pinder.app.MyFunctions.CalculateDistance;
-import com.pinder.app.MyFunctions.StringDateToAge;
-import com.pinder.app.Notifications.Data;
-import com.pinder.app.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pinder.app.Images.ImageAdapter;
+import com.pinder.app.MyFunctions.CalculateDistance;
+import com.pinder.app.MyFunctions.StringDateToAge;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
 
 public class UsersProfilesActivity extends AppCompatActivity {
-    public String name, tags, gender, distance, location, description, phone, profileImageUrl;
+    public String name, tags, gender, distance, location, description, profileImageUrl;
     public String userId, myId, fromActivity = "empty";
     ViewPager viewPager;
     DatabaseReference mImageDatabase;
-    private ImageView imageView;
     private TextView nameTextView, tagsTextView, genderTextView, distanceTextView, locationTextView, descriptionTextView;
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase, mUserProfileDatabase, myDatabaseReference;
     private ImageView dislikeButton, likeButton, reportUserButton;
     private Button unmatchButton;
     private String userAge;
-    private ArrayList imagesList, mImages;
+    private ArrayList mImages;
     private ArrayList<String> mutualTagsExtras = null;
     private ArrayList<String> myTags = new ArrayList<>();
 
@@ -60,7 +48,6 @@ public class UsersProfilesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users_profiles);
-
         final Intent intent = getIntent();
         userId = intent.getStringExtra("userId");
         if (intent.getStringExtra("fromActivity") != null) {
@@ -77,7 +64,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
         descriptionTextView = findViewById(R.id.descriptionTextView);
         unmatchButton = findViewById(R.id.unmatchButton);
         dislikeButton = findViewById(R.id.dislikeButton);
-        reportUserButton=findViewById(R.id.reportUserImage);
+        reportUserButton = findViewById(R.id.reportUserImage);
         likeButton = findViewById(R.id.likeButton);
         mAuth = FirebaseAuth.getInstance();
         myId = mAuth.getCurrentUser().getUid();
@@ -86,8 +73,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
         myDatabaseReference = FirebaseDatabase.getInstance().getReference();
         viewPager = findViewById(R.id.viewPager);
         mImageDatabase = mUserDatabase.child(userId).child("images");
-        Log.d("userProfilesActivityLog", "myId: " +intent.getStringExtra("userId").equals(myId) );
-
+        Log.d("userProfilesActivityLog", "myId: " + intent.getStringExtra("userId").equals(myId));
         if (getIntent().hasExtra("userId")) {
             if (intent.getStringExtra("userId").equals(myId)) {
                 unmatchButton.setVisibility(View.INVISIBLE);
@@ -97,19 +83,19 @@ public class UsersProfilesActivity extends AppCompatActivity {
                 mUserDatabase.child(myId).child("tags").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot ds: dataSnapshot.getChildren()){
-                            if(ds.exists()){
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            if (ds.exists()) {
                                 myTags.add(ds.getKey());
                             }
                         }
-                        mutualTagsExtras=myTags;
+                        mutualTagsExtras = myTags;
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
                 });
-            }else {
+            } else {
                 reportUserButton.setEnabled(true);
                 mUserProfileDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -125,15 +111,14 @@ public class UsersProfilesActivity extends AppCompatActivity {
                                 likeButton.setVisibility(View.INVISIBLE);
                             }
                         }
-
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                     }
                 });
             }
         }
-
         dislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,22 +149,6 @@ public class UsersProfilesActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         try {
-//                            String chatId;
-//                            chatId = dataSnapshot.child("Users").child(myId).child("connections").child("matches").child(userId).child("ChatId").getValue().toString();
-//                            //for chat
-//                            DatabaseReference mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
-//                            mRemoveChild.removeValue();
-//                            //for me
-//                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(myId).child("connections");
-//                            mRemoveChild.child("nope").child(userId).setValue(true);
-//                            mRemoveChild.child("yes").child(userId).removeValue();
-//                            mRemoveChild.child("matches").child(userId).removeValue();
-//                            //for user
-//                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("connections");
-//                            mRemoveChild.child("nope").child(myId).setValue(true);
-//                            mRemoveChild.child("yes").child(myId).removeValue();
-//                            mRemoveChild.child("matches").child(myId).removeValue();
-                            /////
                             final Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
@@ -204,12 +173,11 @@ public class UsersProfilesActivity extends AppCompatActivity {
     }
 
     private void openReportDialog() {
-        ReportUserDialog reportUserDialog = new ReportUserDialog(myId,userId);
-        reportUserDialog.show(getSupportFragmentManager(),"Report User Dialog");
+        ReportUserDialog reportUserDialog = new ReportUserDialog(myId, userId);
+        reportUserDialog.show(getSupportFragmentManager(), "Report User Dialog");
     }
 
     private void loadImages() {
-        imagesList = new ArrayList<String>();
         mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.pinder.app.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -22,11 +21,11 @@ public class ReportUserDialog extends AppCompatDialogFragment {
     private String myId;
     private String reporetedUserId;
     private EditText editText;
-    public ReportUserDialog( String myId,String reporetedUserId){
+
+    public ReportUserDialog(String myId, String reporetedUserId) {
         this.myId = myId;
         this.reporetedUserId = reporetedUserId;
     }
-
 
     @NonNull
     @Override
@@ -34,12 +33,9 @@ public class ReportUserDialog extends AppCompatDialogFragment {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Reports").child(reporetedUserId);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.layout_report_dialog,null);
+        View view = inflater.inflate(R.layout.layout_report_dialog, null);
         editText = view.findViewById(R.id.report_text);
-
-
         builder.setView(view)
-                // .setMessage("Are you sure you want to report user?"  + " myID " + myId)
                 .setMessage("Please write report message")
                 .setCancelable(false)
                 .setTitle("Report user")
@@ -52,13 +48,13 @@ public class ReportUserDialog extends AppCompatDialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String message = "";
-                        if(editText!=null){
+                        if (editText != null) {
                             message = editText.getText().toString().trim();
                         }
-                        Toast.makeText(getContext(),"User reported :(",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "User reported :(", Toast.LENGTH_SHORT).show();
                         Log.d("reportUser", "message: " + message);
-                        long millis=System.currentTimeMillis();
-                        java.sql.Date date=new java.sql.Date(millis);
+                        long millis = System.currentTimeMillis();
+                        java.sql.Date date = new java.sql.Date(millis);
                         reference.child("reportedBy").setValue(myId);
                         reference.child("message").setValue(message);
                         reference.child("date").setValue(date.toString());
