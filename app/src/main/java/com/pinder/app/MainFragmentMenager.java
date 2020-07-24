@@ -33,6 +33,7 @@ public class MainFragmentMenager extends AppCompatActivity implements MyInterfac
         ImageView main = findViewById(R.id.main);
         ImageView tags = findViewById(R.id.tags);
         ImageView profile = findViewById(R.id.profile);
+        ImageView settings = findViewById(R.id.settings);
 
         main.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +54,11 @@ public class MainFragmentMenager extends AppCompatActivity implements MyInterfac
         profile.setOnClickListener(v -> {
             Toast.makeText(MainFragmentMenager.this, "Go to profile"+ fragmentContainer, Toast.LENGTH_SHORT).show();
             getSupportFragmentManager().beginTransaction().replace(fragmentContainer,new ProfileFragment()).commit();
+        });
+
+        settings.setOnClickListener(v -> {
+            Toast.makeText(MainFragmentMenager.this, "Go to settings"+ fragmentContainer, Toast.LENGTH_SHORT).show();
+            getSupportFragmentManager().beginTransaction().replace(fragmentContainer,new SettingsFragment()).commit();
         });
 
 

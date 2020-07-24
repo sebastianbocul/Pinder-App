@@ -3,12 +3,13 @@ package com.pinder.app;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -16,16 +17,10 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.Navigation;
+import androidx.fragment.app.Fragment;
 
-import com.pinder.app.Cards.cards;
-import com.pinder.app.LegalInfo.LicencesDialog;
-import com.pinder.app.LegalInfo.PrivacyDialog;
-import com.pinder.app.LegalInfo.TermsDialog;
-import com.pinder.app.MyFunctions.StringDateToAge;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -41,27 +36,36 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
+import com.pinder.app.LegalInfo.LicencesDialog;
+import com.pinder.app.LegalInfo.PrivacyDialog;
+import com.pinder.app.LegalInfo.TermsDialog;
+import com.pinder.app.MyFunctions.StringDateToAge;
 
 import java.util.Calendar;
-import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.Cancellable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
-import static com.google.android.gms.common.util.CollectionUtils.listOf;
-
-public class SettingsActivity extends AppCompatActivity {
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link SettingsFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class SettingsFragment extends Fragment {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
     private FirebaseAuth mAuth;
     private String userId;
-    private Context context = SettingsActivity.this;
-    private Button logoutUser, deleteUser, privacyPolicyButton,termsButton,licenceButton;
+    private Context context = getContext();
+    private Button logoutUser, deleteUser, privacyPolicyButton, termsButton, licenceButton;
     private StorageReference filePath;
     private Switch mapLocationSwitch, sortUsersByDistanceSwitch;
     private EditText date;
@@ -72,23 +76,60 @@ public class SettingsActivity extends AppCompatActivity {
     private Button restartMatches;
     private Button bugsAndImprovements;
 
+    public SettingsFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment SettingsFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static SettingsFragment newInstance(String param1, String param2) {
+        SettingsFragment fragment = new SettingsFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_settings, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
         DatabaseReference myDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-        sortUsersByDistanceSwitch = findViewById(R.id.sortUsersByDistance);
-        mapLocationSwitch = findViewById(R.id.mapLocationSwitch);
-        restartMatches = findViewById(R.id.restartMatches);
-        logoutUser = findViewById(R.id.logoutUser);
-        deleteUser = findViewById(R.id.deleteUser);
-        date = findViewById(R.id.date);
-        privacyPolicyButton = findViewById(R.id.privacyPolicyButton);
-        termsButton = findViewById(R.id.termsButton);
-        licenceButton=findViewById(R.id.licenceButton);
-        bugsAndImprovements = findViewById(R.id.bugs_improvement);
+        sortUsersByDistanceSwitch = getView().findViewById(R.id.sortUsersByDistance);
+        mapLocationSwitch = getView().findViewById(R.id.mapLocationSwitch);
+        restartMatches = getView().findViewById(R.id.restartMatches);
+        logoutUser = getView().findViewById(R.id.logoutUser);
+        deleteUser = getView().findViewById(R.id.deleteUser);
+        date = getView().findViewById(R.id.date);
+        privacyPolicyButton = getView().findViewById(R.id.privacyPolicyButton);
+        termsButton = getView().findViewById(R.id.termsButton);
+        licenceButton = getView().findViewById(R.id.licenceButton);
+        bugsAndImprovements = getView().findViewById(R.id.bugs_improvement);
         myDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -179,16 +220,16 @@ public class SettingsActivity extends AppCompatActivity {
                                     clean.substring(2, 4),
                                     clean.substring(4, 8));
                             int age = new StringDateToAge().stringDateToAge(strToAge);
-                            if(age<18) {
+                            if (age < 18) {
                                 Calendar today = Calendar.getInstance();
                                 int curYear = today.get(Calendar.YEAR);
-                                year=curYear-18;
+                                year = curYear - 18;
                                 int curMon = today.get(Calendar.MONTH);
-                                mon=curMon;
+                                mon = curMon;
                                 int curDay = today.get(Calendar.DAY_OF_MONTH);
-                                day=curDay;
+                                day = curDay;
                                 clean = String.format("%02d%02d%02d", day, mon, year);
-                                Toast.makeText(SettingsActivity.this,"You must be 18+",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "You must be 18+", Toast.LENGTH_SHORT).show();
                             }
                         }
                         clean = String.format("%s/%s/%s", clean.substring(0, 2),
@@ -201,10 +242,11 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 } catch (Exception e) {
                     dateValid = false;
-                    Toast.makeText(SettingsActivity.this, "Invalid date format", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Invalid date format", Toast.LENGTH_SHORT).show();
                     date.setText("");
                 }
             }
+
             //set max lines in descriptions field
             @Override
             public void afterTextChanged(Editable editable) {
@@ -243,24 +285,29 @@ public class SettingsActivity extends AppCompatActivity {
         });
         privacyPolicyButton.setOnClickListener(v -> {
             PrivacyDialog pd = new PrivacyDialog();
-            pd.show(getSupportFragmentManager(),"Privacy dialog");
+            pd.show(getActivity().getSupportFragmentManager(), "Privacy dialog");
         });
         termsButton.setOnClickListener(v -> {
             TermsDialog td = new TermsDialog();
-            td.show(getSupportFragmentManager(),"Terms Dialog");
+            td.show(getActivity().getSupportFragmentManager(), "Terms Dialog");
         });
         licenceButton.setOnClickListener(v -> {
             LicencesDialog ld = new LicencesDialog();
-            ld.show(getSupportFragmentManager(),"Licences Dialog");
+            ld.show(getActivity().getSupportFragmentManager(), "Licences Dialog");
         });
-        bugsAndImprovements.setOnClickListener(v->{
+        bugsAndImprovements.setOnClickListener(v -> {
             openReportDialog();
         });
+    }
 
+    @Override
+    public void onDetach() {
+        updateMyDb();
+        super.onDetach();
     }
 
     private void restartMatchesFun() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Are you sure you want to restart your matches?").setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
@@ -304,14 +351,13 @@ public class SettingsActivity extends AppCompatActivity {
     public void logoutUser() {
         mAuth.signOut();
         LoginManager.getInstance().logOut();
-        Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+        Intent intent = new Intent(getContext(), LoginActivity.class);
         startActivity(intent);
-        finish();
         return;
     }
 
     public void deleteAccount() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Are you sure you want to delete account?").setCancelable(true)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
@@ -337,18 +383,15 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(SettingsActivity.this, "User account deleted.", Toast.LENGTH_LONG).show();
-
-
+                            Toast.makeText(getContext(), "User account deleted.", Toast.LENGTH_LONG).show();
                             deleteWithRxJava();
-
                             // deleteUserTags();
                             //deleteDatabaseAndStorage();
                             //deleteMatches();
                             //deleteToken();
                             // logoutUser();
                         } else {
-                            AlertDialog.Builder error = new AlertDialog.Builder(context);
+                            AlertDialog.Builder error = new AlertDialog.Builder(getContext());
                             error.setMessage("Due to safety reasons please re-login and try again").setCancelable(false)
                                     .setTitle("Credentials too old")
                                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -364,7 +407,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void deleteWithRxJava() {
-
         Observable<Object> deleteUserTagsObservable = Single.create(emitter -> {
             DatabaseReference usersTagReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("tags");
             DatabaseReference tagsReference = FirebaseDatabase.getInstance().getReference().child("Tags");
@@ -372,7 +414,7 @@ public class SettingsActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        Log.d("deleteRx", "deleteUserTagsObservable: " +ds.child(userId).toString());
+                        Log.d("deleteRx", "deleteUserTagsObservable: " + ds.child(userId).toString());
                         tagsReference.child(ds.getKey()).child(userId).removeValue();
                     }
                     Log.d("deleteRx", "deleteUserTagsObservable finished: ");
@@ -384,7 +426,6 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             });
         }).toObservable();
-
         Observable<Object> deleteDatabseAndStorageObservable = Single.create(emitter -> {
             filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId);
             StorageReference storageRef = filePath;
@@ -395,7 +436,7 @@ public class SettingsActivity extends AppCompatActivity {
                         public void onSuccess(ListResult listResult) {
                             for (StorageReference item : listResult.getItems()) {
                                 // All the items under listRef.
-                                Log.d("deleteRx", "deleteDatabseAndStorageObservable: " +filePath.toString());
+                                Log.d("deleteRx", "deleteDatabseAndStorageObservable: " + filePath.toString());
                                 item.delete();
                             }
                             Log.d("deleteRx", "deleteDatabseAndStorageObservable finished: ");
@@ -409,7 +450,6 @@ public class SettingsActivity extends AppCompatActivity {
                         }
                     });
         }).toObservable();
-
         Observable<Object> deleteMatchesObservable = Single.create(emitter -> {
             DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
             users.child(userId).child("connections").child("matches").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -421,16 +461,15 @@ public class SettingsActivity extends AppCompatActivity {
                             users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
                             Log.d("deleteRx", "deleteMatchesObservable 2: ");
                             users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
-                            Log.d("deleteRx", "deleteMatchesObservable:  " +ds.child("connections").child("matches").child(userId).toString());
-                            Log.d("deleteRx", "deleteMatchesObservable:  " +ds.child("connections").child("yes").child(userId).toString());
+                            Log.d("deleteRx", "deleteMatchesObservable:  " + ds.child("connections").child("matches").child(userId).toString());
+                            Log.d("deleteRx", "deleteMatchesObservable:  " + ds.child("connections").child("yes").child(userId).toString());
                         } catch (Exception e) {
                             Log.d("deleteRx", "deleteMatchesObservable:  " + e.toString());
-                            Toast.makeText(SettingsActivity.this, "Oooops something went wrong", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Oooops something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     }
                     Log.d("deleteRx", "deleteMatchesObservable finished: ");
                     emitter.onSuccess("finished");
-
                 }
 
                 @Override
@@ -438,7 +477,6 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             });
         }).toObservable();
-
         Observable<Object> deleteTokensAndUserObservable = Single.create(emitter -> {
             DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("Tokens");
             DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
@@ -448,7 +486,7 @@ public class SettingsActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.child(userId).exists()) {
                         tokenRef.child(userId).removeValue();
-                        Log.d("deleteRx", "deleteTokensObservable: " +tokenRef.child(userId).toString());
+                        Log.d("deleteRx", "deleteTokensObservable: " + tokenRef.child(userId).toString());
                     }
                     Log.d("deleteRx", "deleteTokensObservable finished: ");
                     emitter.onSuccess("finished");
@@ -459,7 +497,6 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             });
         }).toObservable();
-
 //        Observable<Object> deleteUserObservable = Single.create(emitter -> {
 //            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 //            user.delete()
@@ -490,33 +527,30 @@ public class SettingsActivity extends AppCompatActivity {
 //                        }
 //                    });
 //        }).toObservable();
-
-        Observable.concat(deleteUserTagsObservable,deleteDatabseAndStorageObservable,deleteMatchesObservable,deleteTokensAndUserObservable)
+        Observable.concat(deleteUserTagsObservable, deleteDatabseAndStorageObservable, deleteMatchesObservable, deleteTokensAndUserObservable)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Object>() {
                     @Override
                     public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                        Log.d("deleteRObs: ", "onSubscribe: " );
+                        Log.d("deleteRObs: ", "onSubscribe: ");
                     }
 
                     @Override
                     public void onNext(@io.reactivex.rxjava3.annotations.NonNull Object o) {
-                        Log.d("deleteRObs: ", "onNext: " +o);
+                        Log.d("deleteRObs: ", "onNext: " + o);
                     }
 
                     @Override
                     public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                        Log.d("deleteRObs: ", "onError: " );
+                        Log.d("deleteRObs: ", "onError: ");
                     }
 
                     @Override
                     public void onComplete() {
-                        Log.d("deleteRObs: ", "onComplete: " );
+                        Log.d("deleteRObs: ", "onComplete: ");
                         logoutUser();
                     }
                 });
-
-
     }
 
     private void deleteMatches() {
@@ -532,7 +566,7 @@ public class SettingsActivity extends AppCompatActivity {
                         users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
                         deleteUserTags();
                     } catch (Exception e) {
-                        Toast.makeText(SettingsActivity.this, "Oooops something went wrong", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Oooops something went wrong", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -561,7 +595,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void  deleteDatabaseAndStorage() {
+    private void deleteDatabaseAndStorage() {
         filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId);
         StorageReference storageRef = filePath;
         // Delete the userStorage
@@ -600,18 +634,6 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        updateMyDb();
-//        View v = findViewById(R.id.profileFragment);
-//        Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_mainFragment2);
-
-//        Intent i = new Intent(this, MainFragment.class);
-//        startActivity(i);
-        super.onBackPressed();
-    }
-
-
     private void updateMyDb() {
         DatabaseReference myDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
         if (showMapLocation != onStartShowMapLocation) {
@@ -632,6 +654,6 @@ public class SettingsActivity extends AppCompatActivity {
     private void openReportDialog() {
         String myId = mAuth.getCurrentUser().getUid();
         BugsAndImprovementsDialog bugsAndImprovementsDialog = new BugsAndImprovementsDialog(myId);
-        bugsAndImprovementsDialog.show(getSupportFragmentManager(),"Bugs and improvements");
+        bugsAndImprovementsDialog.show(getActivity().getSupportFragmentManager(), "Bugs and improvements");
     }
 }
