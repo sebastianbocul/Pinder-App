@@ -1,5 +1,6 @@
 package com.pinder.app;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -8,74 +9,56 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.pinder.app.R;
+import com.pinder.app.Tags.MyInterface;
+import com.pinder.app.Tags.TagsManagerFragment;
+import com.pinder.app.Tags.TagsObject;
 
-public class MainFragmentMenager extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class MainFragmentMenager extends AppCompatActivity implements MyInterface {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_fragment_menager);
-//        if (findViewById(R.id.fragment_layout) != null) {
-//
-//            // However, if we're being restored from a previous state,
-//            // then we don't need to do anything and should return or else
-//            // we could end up with overlapping fragments.
-//            if (savedInstanceState != null) {
-//                return;
-//            }
-//
-//            // Create an instance of Fragment1
-//            MainFragment firstFragment = new MainFragment();
-//
-//            // In case this activity was started with special instructions from an Intent,
-//            // pass the Intent's extras to the fragment as arguments
-//            firstFragment.setArguments(getIntent().getExtras());
-//
-//            // Add the fragment to the 'fragment_container' FrameLayout
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.fragment_layout, firstFragment).commit();
-//        }
-//        final ViewPager viewPager = findViewById(R.id.pager);
-//        MatchesFragment matchesFrag = new MatchesFragment();
-//        viewPager.setAdapter(adapter);
-//        viewPager.setCurrentItem(matchesFrag);
-//        ProfileFragment textFragment = (ProfileFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.profile_fragment);
-    }
-//    @Override
-//    public void onBackPressed() {
-////        Fragment profileFragment = new ProfileFragment();
-////        FragmentManager fm = getSupportFragmentManager();
-////        FragmentTransaction transaction = fm.beginTransaction();
-////        transaction.replace(R.id.main_fragment,profileFragment);
-////        transaction.commit();
-//
-//
-//        // Create an instance of Fragment1
-//        ProfileFragment firstFragment = new ProfileFragment();
-//
-//        // In case this activity was started with special instructions from an Intent,
-//        // pass the Intent's extras to the fragment as arguments
-//        firstFragment.setArguments(getIntent().getExtras());
-//
-//        // Add the fragment to the 'fragment_container' FrameLayout
-//        getSupportFragmentManager().beginTransaction()
-//                .add(R.id.fragment_layout, firstFragment).commit();
-//
-//   //     setContentView(R.layout.fragment_profile);
-////        Intent startMain = new Intent(Intent.ACTION_MAIN);
-////        startMain.addCategory(Intent.CATEGORY_HOME);
-////        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-////        startActivity(startMain);
-//    }
+        int fragmentContainer = R.id.fragment_container;
+        getSupportFragmentManager().beginTransaction().replace(fragmentContainer,new MainFragment()).commit();
 
-    public void onBack(View view) {
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
+        ImageView main = findViewById(R.id.main);
+        ImageView tags = findViewById(R.id.tags);
+        ImageView profile = findViewById(R.id.profile);
+
+        main.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                getSupportFragmentManager().beginTransaction().replace(fragmentContainer,new MainFragment()).commit();
+                Toast.makeText(MainFragmentMenager.this, "Go to main" + fragmentContainer, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        tags.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainFragmentMenager.this, "Go to tags"+ fragmentContainer, Toast.LENGTH_SHORT).show();
+                getSupportFragmentManager().beginTransaction().replace(fragmentContainer,new TagsManagerFragment()).commit();
+            }
+        });
+        profile.setOnClickListener(v -> {
+            Toast.makeText(MainFragmentMenager.this, "Go to profile"+ fragmentContainer, Toast.LENGTH_SHORT).show();
+            getSupportFragmentManager().beginTransaction().replace(fragmentContainer,new ProfileFragment()).commit();
+        });
+
+
     }
 
+    @Override
+    public void doSomethingWithData(ArrayList<TagsObject> myTagsList2, ArrayList<TagsObject> removedTagList2) {
+    }
 }

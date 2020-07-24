@@ -550,4 +550,10 @@ public class ProfileFragment extends Fragment {
 //            return true;
 //        }
 //    }
+
+    @Override
+    public void onDetach() {
+        Toast.makeText(getContext(), "onDetach ProfileFragment", Toast.LENGTH_SHORT).show();
+        super.onDetach();
+    }
 }

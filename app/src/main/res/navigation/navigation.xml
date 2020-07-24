@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_mainFragment_to_profileFragment2"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_tagsManagerFragment"
+            app:destination="@id/tagsManagerFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -33,4 +36,13 @@
         android:name="com.pinder.app.SettingsActivity"
         android:label="activity_settings"
         tools:layout="@layout/activity_settings" />
+    <fragment
+        android:id="@+id/tagsManagerFragment"
+        android:name="com.pinder.app.Tags.TagsManagerFragment"
+        android:label="fragment_tags_manager"
+        tools:layout="@layout/fragment_tags_manager" >
+        <action
+            android:id="@+id/action_tagsManagerFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
 </navigation>

@@ -91,4 +91,5 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ExampleViewHol
             });
         }
     }
+
 }

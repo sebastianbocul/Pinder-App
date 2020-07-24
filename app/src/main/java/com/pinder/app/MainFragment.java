@@ -55,6 +55,7 @@ import com.pinder.app.Notifications.Sender;
 import com.pinder.app.Notifications.Token;
 import com.pinder.app.Tags.TagsManagerAdapter;
 import com.pinder.app.Tags.TagsManagerActivity;
+import com.pinder.app.Tags.TagsManagerFragment;
 import com.pinder.app.Tags.TagsObject;
 
 import java.io.IOException;
@@ -219,30 +220,30 @@ public class MainFragment extends Fragment {
                     Toast.makeText(getContext(), "There is no more users", Toast.LENGTH_SHORT).show();
             }
         });
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToSettings(v);
-            }
-        });
-        tagsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToTags(v);
-            }
-        });
-        matchesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToMatches(v);
-            }
-        });
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToProfile(profileFragment,v);
-            }
-        });
+//        settingsButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                goToSettings(v);
+//            }
+//        });
+//        tagsButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                goToTags(v);
+//            }
+//        });
+//        matchesButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                goToMatches(v);
+//            }
+//        });
+//        profileButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                goToProfile(profileFragment,v);
+//            }
+//        });
         swipeIfButtonClickedInUserProfile();
 
 
@@ -712,9 +713,10 @@ public class MainFragment extends Fragment {
     }
 
     public void goToTags(View view) {
-        Intent intent = new Intent(getContext(), TagsManagerActivity.class);
-        startActivity(intent);
-        return;
+        Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_tagsManagerFragment);
+//        Intent intent = new Intent(getContext(), TagsManagerFragment.class);
+//        startActivity(intent);
+//        return;
     }
 
     @Override
@@ -803,6 +805,17 @@ public class MainFragment extends Fragment {
             }
         });
     }
+    
+    
+   
+    public void onBackPressed() {
+        Toast.makeText(getContext(), "MAIN QUIT", Toast.LENGTH_SHORT).show();
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
+
 
 
 

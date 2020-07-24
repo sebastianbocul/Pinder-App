@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -128,5 +129,23 @@ public class PopularTagsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onDetach() {
+        Toast.makeText(getContext(), "onDetach PopularTags", Toast.LENGTH_SHORT).show();
+        super.onDetach();
+    }
+
+    @Override
+    public void onStop() {
+        Toast.makeText(getContext(), "OnStop PopularTags", Toast.LENGTH_SHORT).show();
+        super.onStop();
+    }
+
+    @Override
+    public void onPause() {
+        Toast.makeText(getContext(), "onPause PopularTags", Toast.LENGTH_SHORT).show();
+        super.onPause();
     }
 }

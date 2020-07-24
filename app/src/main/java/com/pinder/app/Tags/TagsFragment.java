@@ -252,6 +252,7 @@ public class TagsFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        Toast.makeText(getContext(), "onDetach TagsFragment", Toast.LENGTH_SHORT).show();
         listener = null;
         super.onDetach();
     }
