@@ -318,6 +318,9 @@ public class MainFragment extends Fragment {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                if(getActivity()==null){
+                    return;
+                }
                 Intent intent = getActivity().getIntent();
                 if (flingContainer != null) {
                     if (intent.getStringExtra("fromUsersProfilesActivity") != null) {
@@ -478,11 +481,16 @@ public class MainFragment extends Fragment {
                         TagsObject obj = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
                         myTagsList.add(obj);
                     }
-                    adapter = new TagsManagerAdapter(getContext(), myTags);
+                    if(getContext()!=null){
+                        adapter = new TagsManagerAdapter(getContext(), myTags);
+                    }
+
                     recyclerView.setAdapter(adapter);
                 } else {
                     myTags.add("Add tags in options first!");
+                    if(getContext()!=null){
                     adapter = new TagsManagerAdapter(getContext(), myTags);
+                    }
                     recyclerView.setAdapter(adapter);
                 }
             }
@@ -621,10 +629,11 @@ public class MainFragment extends Fragment {
                         for(cards cs:rowItems){
                             Log.d("rxMergeJava: ",cs.getName().toString() + "   dist: "+ cs.getDistance());
                         }
-
-                         arrayAdapter = new arrayAdapter(getContext(), R.layout.item, rowItems);
-                         flingContainer.setAdapter(arrayAdapter);
-                         arrayAdapter.notifyDataSetChanged();
+                        if(getActivity()!=null){
+                            arrayAdapter = new arrayAdapter(getActivity(), R.layout.item, rowItems);
+                            flingContainer.setAdapter(arrayAdapter);
+                            arrayAdapter.notifyDataSetChanged();
+                        }
                     }
                 });
     }

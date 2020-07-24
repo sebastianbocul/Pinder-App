@@ -468,14 +468,14 @@ public class ProfileFragment extends Fragment {
             return;
         }
     }
-
+    private Map<String, Object> map=null;
     private void getUserInfo() {
         mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    map = (Map<String, Object>) dataSnapshot.getValue();
                     if (map.get("name") != null) {
                         name = map.get("name").toString();
                         mNameField.setText(name);
@@ -501,7 +501,6 @@ public class ProfileFragment extends Fragment {
                             viewPager.setBackground(getActivity().getDrawable(R.drawable.profile_default));
                         }
                     } catch (Exception e) {
-                        Toast.makeText(getContext(), "Opps something went wrong", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -513,6 +512,9 @@ public class ProfileFragment extends Fragment {
     }
 
     private void saveUserInformation() {
+        if(map==null){
+            return;
+        }
         name = mNameField.getText().toString();
         description = descriptionEditText.getText().toString().trim();
         Map userInfo = new HashMap<>();

@@ -351,16 +351,18 @@ public class MatchesFragment extends Fragment {
                 myTags.clear();
                 myTags.addAll(set);
                 if (iterator == 0) {
-                    adapter = new MatchesTagsAdapter(getContext(), myTags);
-                    recyclerView.setAdapter(adapter);
-                    adapter.setClickListener(new MatchesTagsAdapter.ItemClickListener() {
-                        @Override
-                        public void onItemClick(View view, int position) {
-                            sortBy = myTags.get(position);
-                            sortByTextView.setText("#" + sortBy);
-                            fillRecyclerViewByTags(sortBy);
-                        }
-                    });
+                    if(getContext()!=null){
+                        adapter = new MatchesTagsAdapter(getContext(), myTags);
+                        recyclerView.setAdapter(adapter);
+                        adapter.setClickListener(new MatchesTagsAdapter.ItemClickListener() {
+                            @Override
+                            public void onItemClick(View view, int position) {
+                                sortBy = myTags.get(position);
+                                sortByTextView.setText("#" + sortBy);
+                                fillRecyclerViewByTags(sortBy);
+                            }
+                        });
+                    }
                 }
             }
 
