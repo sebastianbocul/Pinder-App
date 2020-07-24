@@ -521,39 +521,10 @@ public class ProfileFragment extends Fragment {
         mUserDatabase.updateChildren(userInfo);
     }
 
-
-    public void onBackPressed() {
-        saveUserInformation();
-        Log.d("goToMain","PROFILE FRAGMENT TO MAIN FRAGMENT");
-        Toast.makeText(getContext(),"PROFILE FRAGMENT TO MAIN FRAGMENT",Toast.LENGTH_SHORT).show();
-        Intent i = new Intent(getContext(), MainFragmentMenager.class);
-        startActivity(i);
-    }
-
-    public void onBack(View view) {
-        saveUserInformation();
-        Intent i = new Intent(getContext(), MainFragmentMenager.class);
-        startActivity(i);
-    }
-
-//    private boolean CheckPermission_READ_EXTERNAL_STORAGE() {
-//        // return true: have permission
-//        // return false: no permission
-//        if (ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.READ_EXTERNAL_STORAGE)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(getActivity(),
-//                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-//                    RQS_READ_EXTERNAL_STORAGE);
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
-
     @Override
     public void onDetach() {
-        Toast.makeText(getContext(), "onDetach ProfileFragment", Toast.LENGTH_SHORT).show();
+        saveUserInformation();
+        Log.d("goToMain","PROFILE FRAGMENT TO MAIN FRAGMENT");
         super.onDetach();
     }
 }

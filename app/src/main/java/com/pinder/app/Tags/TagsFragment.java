@@ -91,11 +91,135 @@ public class TagsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_tags, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        mAuth = FirebaseAuth.getInstance();
+        currentUserId = mAuth.getCurrentUser().getUid();
+        ageRangeSeeker = getView().findViewById(R.id.ageRangeSeeker);
+        ageRangeTextView = getView().findViewById(R.id.ageRangeTextView);
+        maxDistanceSeeker = getView().findViewById(R.id.distanceSeeker);
+        maxDistanceTextView = getView().findViewById(R.id.maxDistanceTextView);
+        listener = (MyInterface) new TagsManagerFragment();
+        Log.d("tagsManager", "getParentFragment " + getParentFragment());
+   //     onAttachToParentFragment(getParentFragment());
+        fillTagsAdapter();
+        addTagButton = getView().findViewById(R.id.addButton);
+        tagsEditText = getView().findViewById(R.id.tagsEditText);
+        mRadioGroup = getView().findViewById(R.id.radioGroup);
+        maxDistanceSeeker.setMinStartValue(100);
+        maxDistanceSeeker.apply();
+        ///RecyclerView
+        myTagsList = new ArrayList<TagsObject>();
+        removedTags = new ArrayList<TagsObject>();
+        recyclerView = getView().findViewById(R.id.tagsRecyclerView);
+        LinearLayoutManager horizontalLayoutManager
+                = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(horizontalLayoutManager);
+        adapter = new TagsAdapter(myTagsList);
+        recyclerView.setAdapter(adapter);
+        ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
+            @Override
+            public void valueChanged(Number minValue, Number maxValue) {
+                ageRangeTextView.setText("Age range: " + minValue.toString() + " - " + maxValue.toString());
+                ageMin = minValue.toString();
+                ageMax = maxValue.toString();
+            }
+        });
+        // set listener
+        maxDistanceSeeker.setOnSeekbarChangeListener(new OnSeekbarChangeListener() {
+            @Override
+            public void valueChanged(Number minValue) {
+                if (minValue.intValue() == 1000) {
+                    minValue = 100000;
+                    maxDistanceTextView.setText("Max distance: " + "∞");
+                } else {
+                    maxDistanceTextView.setText("Max distance: " + minValue + " km");
+                }
+                distanceMax = minValue.toString();
+            }
+        });
+        addTagButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTagButtonFunction();
+            }
+        });
+        adapter.setOnItemClickListener(new TagsAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+            }
+
+            @Override
+            public void onDeleteClick(int position) {
+                removeItem(position);
+            }
+        });
+    }
+
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//        if (context instanceof MyInterface) {
+//            listener = (MyInterface) context;
+//        }
+//    }
+
+//    @Override
+//    public void onAttachFragment(@NonNull Fragment childFragment) {
+//        Log.d("naviagionLog","TagsFragment - onAttachFragment()     childFragment:" + childFragment.toString());
+//        try
+//        {
+//            listener = (MyInterface) childFragment;
+//        }
+//        catch (ClassCastException e)
+//        {
+//            Toast.makeText(getContext(), "Ooops something went wrong!", Toast.LENGTH_SHORT).show();
+//        }
+//        super.onAttachFragment(childFragment);
+//    }
+
+
+    public void onAttachToParentFragment(Fragment fragment)
+    {
+        Log.d("naviagionLog","TagsFragment - onAttachToParentFragment()     childFragment:" + fragment.toString());
+        try
+        {
+
+
+        }
+        catch (ClassCastException e)
+        {
+            throw new ClassCastException(
+                    fragment.toString() + " must implement OnPlayerSelectionSetListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        listener = null;
+        super.onDetach();
+    }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }
+
 
     private void addTagButtonFunction() {
         if (tagsEditText.getText().toString().length() == 0) {
@@ -152,10 +276,10 @@ public class TagsFragment extends Fragment {
                         recyclerView.setAdapter(adapter);
                     }
                 } else {
-                    TagsObject obj = new TagsObject("default", "Any", "18", "99", "100");
-                    myTagsList.add(obj);
-                    adapter.notifyDataSetChanged();
-                    recyclerView.setAdapter(adapter);
+//                    TagsObject obj = new TagsObject("default", "Any", "18", "99", "100");
+//                    myTagsList.add(obj);
+//                    adapter.notifyDataSetChanged();
+//                    recyclerView.setAdapter(adapter);
                 }
             }
 
@@ -171,94 +295,5 @@ public class TagsFragment extends Fragment {
         Toast.makeText(getActivity().getApplicationContext(), "Tag removed!", Toast.LENGTH_SHORT).show();
         listener.doSomethingWithData(myTagsList, removedTags);
         adapter.notifyItemRemoved(position);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tags, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mAuth = FirebaseAuth.getInstance();
-        currentUserId = mAuth.getCurrentUser().getUid();
-        ageRangeSeeker = getView().findViewById(R.id.ageRangeSeeker);
-        ageRangeTextView = getView().findViewById(R.id.ageRangeTextView);
-        maxDistanceSeeker = getView().findViewById(R.id.distanceSeeker);
-        maxDistanceTextView = getView().findViewById(R.id.maxDistanceTextView);
-        fillTagsAdapter();
-        addTagButton = getView().findViewById(R.id.addButton);
-        tagsEditText = getView().findViewById(R.id.tagsEditText);
-        mRadioGroup = getView().findViewById(R.id.radioGroup);
-        maxDistanceSeeker.setMinStartValue(100);
-        maxDistanceSeeker.apply();
-        ///RecyclerView
-        myTagsList = new ArrayList<TagsObject>();
-        removedTags = new ArrayList<TagsObject>();
-        recyclerView = getView().findViewById(R.id.tagsRecyclerView);
-        LinearLayoutManager horizontalLayoutManager
-                = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(horizontalLayoutManager);
-        adapter = new TagsAdapter(myTagsList);
-        recyclerView.setAdapter(adapter);
-        ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
-            @Override
-            public void valueChanged(Number minValue, Number maxValue) {
-                ageRangeTextView.setText("Age range: " + minValue.toString() + " - " + maxValue.toString());
-                ageMin = minValue.toString();
-                ageMax = maxValue.toString();
-            }
-        });
-        // set listener
-        maxDistanceSeeker.setOnSeekbarChangeListener(new OnSeekbarChangeListener() {
-            @Override
-            public void valueChanged(Number minValue) {
-                if (minValue.intValue() == 1000) {
-                    minValue = 100000;
-                    maxDistanceTextView.setText("Max distance: " + "∞");
-                } else {
-                    maxDistanceTextView.setText("Max distance: " + minValue + " km");
-                }
-                distanceMax = minValue.toString();
-            }
-        });
-        addTagButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addTagButtonFunction();
-            }
-        });
-        adapter.setOnItemClickListener(new TagsAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-            }
-
-            @Override
-            public void onDeleteClick(int position) {
-                removeItem(position);
-            }
-        });
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof MyInterface) {
-            listener = (MyInterface) context;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        Toast.makeText(getContext(), "onDetach TagsFragment", Toast.LENGTH_SHORT).show();
-        listener = null;
-        super.onDetach();
-    }
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }

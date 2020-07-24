@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +17,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.pinder.app.LocationActivity;
-import com.pinder.app.MainActivity;
-import com.pinder.app.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +24,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pinder.app.LocationActivity;
+import com.pinder.app.MainFragmentMenager;
+import com.pinder.app.R;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -44,6 +45,14 @@ import java.util.Set;
  * create an instance of this fragment.
  */
 public class MatchesFragment extends Fragment {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
     RecyclerView recyclerView;
     MatchesTagsAdapter adapter;
     ArrayList<String> myTags = new ArrayList<>();
@@ -62,13 +71,6 @@ public class MatchesFragment extends Fragment {
     private ArrayList<MatchesObject> oryginalMatches = new ArrayList<MatchesObject>();
     private ArrayList<String> usersID = new ArrayList<>();
     private String sortId;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public MatchesFragment() {
         // Required empty public constructor
@@ -109,17 +111,18 @@ public class MatchesFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         locationButton = getView().findViewById(R.id.locationButton);
         allMatches = getView().findViewById(R.id.allMatches);
         sortByTextView = getView().findViewById(R.id.sortByText);
-        myRecyclerView =  getView().findViewById(R.id.recyclerView);
+        myRecyclerView = getView().findViewById(R.id.recyclerView);
         myRecyclerView.setNestedScrollingEnabled(false);
         myRecyclerView.setHasFixedSize(true);
         mMatchesLayoutManager = new LinearLayoutManager(getContext());
         myRecyclerView.setLayoutManager(mMatchesLayoutManager);
-        recyclerView =getView().findViewById(R.id.tagsRecyclerViewMatches);
+        recyclerView = getView().findViewById(R.id.tagsRecyclerViewMatches);
         mMatchesAdapter = new MatchesAdapter(getDataSetMatches(), getContext());
         myRecyclerView.setAdapter(mMatchesAdapter);
         getUserMatchId();
@@ -137,8 +140,6 @@ public class MatchesFragment extends Fragment {
             }
         });
     }
-
-
 
     private void allMatchesFunction() {
         fillRecyclerViewByTags("AllButtonClicked");
@@ -191,6 +192,7 @@ public class MatchesFragment extends Fragment {
                 boolean createdByMe = true;
                 String message = "No messages...";
                 sortId = chatId;
+                Log.d("matchesactivity", "onChildAdded ds : " + dataSnapshot.toString());
                 if (dataSnapshot.exists()) {
                     DataSnapshot ds = dataSnapshot;
                     message = ds.child("text").getValue().toString();
@@ -250,14 +252,14 @@ public class MatchesFragment extends Fragment {
                     String profileImageUrl = "";
                     String lastMessageM = message;
                     StringBuilder stringBuilder = new StringBuilder();
-                    String s = StringUtils.left(lastMessageM, 10);
+                    String s = StringUtils.left(lastMessageM, 20);
                     stringBuilder.append(s);
                     ArrayList<String> mutualTags = new ArrayList<>();
                     Map tagMap = new HashMap();
                     for (DataSnapshot ds : dataSnapshot.child("connections").child("matches").child(currentUserID).child("mutualTags").getChildren()) {
                         mutualTags.add(ds.getKey());
                     }
-                    if (lastMessageM.length() >= 10) stringBuilder.append("...");
+                    if (lastMessageM.length() >= 20) stringBuilder.append("...");
                     String mLastMessage = stringBuilder.toString();
                     if (dataSnapshot.child("name").getValue() != null) {
                         name = dataSnapshot.child("name").getValue().toString();
@@ -271,12 +273,11 @@ public class MatchesFragment extends Fragment {
                         resultMatches.add(obj);
                         oryginalMatches.add(obj);
                     } else {
+
                         resultMatches = sortCollection(resultMatches);
                         oryginalMatches = sortCollection(oryginalMatches);
-                        for (MatchesObject m : resultMatches) {
-                        }
                         for (int i = 0; i < resultMatches.size(); i++) {
-                            if (usersID.get(i).equals(obj.getUserId())) {
+                            if (resultMatches.get(i).getUserId().equals(obj.getUserId())) {
                                 oryginalMatches.get(i).setLastMessage(obj.getLastMessage());
                                 oryginalMatches.get(i).setSortId(obj.getSortId());
                                 oryginalMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
@@ -300,12 +301,12 @@ public class MatchesFragment extends Fragment {
     }
 
     public void onBackPressed() {
-        Intent startMain = new Intent(getContext(), MainActivity.class);
+        Intent startMain = new Intent(getContext(), MainFragmentMenager.class);
         startActivity(startMain);
     }
 
     public void onBack(View view) {
-        Intent startMain = new Intent(getContext(), MainActivity.class);
+        Intent startMain = new Intent(getContext(), MainFragmentMenager.class);
         startActivity(startMain);
     }
 

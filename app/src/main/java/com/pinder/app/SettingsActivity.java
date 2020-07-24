@@ -634,4 +634,5 @@ public class SettingsActivity extends AppCompatActivity {
         BugsAndImprovementsDialog bugsAndImprovementsDialog = new BugsAndImprovementsDialog(myId);
         bugsAndImprovementsDialog.show(getSupportFragmentManager(),"Bugs and improvements");
     }
+
 }

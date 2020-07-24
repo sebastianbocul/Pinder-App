@@ -133,19 +133,16 @@ public class PopularTagsFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        Toast.makeText(getContext(), "onDetach PopularTags", Toast.LENGTH_SHORT).show();
         super.onDetach();
     }
 
     @Override
     public void onStop() {
-        Toast.makeText(getContext(), "OnStop PopularTags", Toast.LENGTH_SHORT).show();
         super.onStop();
     }
 
     @Override
     public void onPause() {
-        Toast.makeText(getContext(), "onPause PopularTags", Toast.LENGTH_SHORT).show();
         super.onPause();
     }
 }

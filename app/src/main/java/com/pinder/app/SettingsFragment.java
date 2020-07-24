@@ -341,7 +341,6 @@ public class SettingsFragment extends Fragment {
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //  Toast.makeText(SettingsActivity.this,"No clicked",Toast.LENGTH_LONG).show();
                     }
                 });
         AlertDialog alertDialog = builder.create();
@@ -362,14 +361,12 @@ public class SettingsFragment extends Fragment {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // Toast.makeText(SettingsActivity.this,"Yes clicked",Toast.LENGTH_LONG).show();
                         deleteUser();
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //  Toast.makeText(SettingsActivity.this,"No clicked",Toast.LENGTH_LONG).show();
                     }
                 });
         AlertDialog alertDialog = builder.create();
@@ -497,36 +494,6 @@ public class SettingsFragment extends Fragment {
                 }
             });
         }).toObservable();
-//        Observable<Object> deleteUserObservable = Single.create(emitter -> {
-//            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//            user.delete()
-//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<Void> task) {
-//                            if (task.isSuccessful()) {
-//                                Toast.makeText(SettingsActivity.this, "User account deleted.", Toast.LENGTH_LONG).show();
-//                                // deleteUserTags();
-//                                //deleteDatabaseAndStorage();
-//                                //deleteMatches();
-//                                //deleteToken();
-//
-//                                // logoutUser();
-//                                emitter.onSuccess("finished");
-//                            } else {
-//                                AlertDialog.Builder error = new AlertDialog.Builder(context);
-//                                error.setMessage("Due to safety reasons please re-login and try again").setCancelable(false)
-//                                        .setTitle("Credentials too old")
-//                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(DialogInterface dialog, int which) {
-//                                            }
-//                                        });
-//                                AlertDialog alertDialog = error.create();
-//                                alertDialog.show();
-//                            }
-//                        }
-//                    });
-//        }).toObservable();
         Observable.concat(deleteUserTagsObservable, deleteDatabseAndStorageObservable, deleteMatchesObservable, deleteTokensAndUserObservable)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Object>() {
@@ -656,4 +623,7 @@ public class SettingsFragment extends Fragment {
         BugsAndImprovementsDialog bugsAndImprovementsDialog = new BugsAndImprovementsDialog(myId);
         bugsAndImprovementsDialog.show(getActivity().getSupportFragmentManager(), "Bugs and improvements");
     }
+
+
+
 }

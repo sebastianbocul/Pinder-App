@@ -18,6 +18,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.pinder.app.Images.ImageAdapter;
 import com.pinder.app.Matches.MatchesActivity;
+import com.pinder.app.Matches.MatchesFragment;
 import com.pinder.app.MyFunctions.CalculateDistance;
 import com.pinder.app.MyFunctions.StringDateToAge;
 import com.pinder.app.Notifications.Data;
@@ -163,27 +164,27 @@ public class UsersProfilesActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         try {
-                            String chatId;
-                            chatId = dataSnapshot.child("Users").child(myId).child("connections").child("matches").child(userId).child("ChatId").getValue().toString();
-                            //for chat
-                            DatabaseReference mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
-                            mRemoveChild.removeValue();
-                            //for me
-                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(myId).child("connections");
-                            mRemoveChild.child("nope").child(userId).setValue(true);
-                            mRemoveChild.child("yes").child(userId).removeValue();
-                            mRemoveChild.child("matches").child(userId).removeValue();
-                            //for user
-                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("connections");
-                            mRemoveChild.child("nope").child(myId).setValue(true);
-                            mRemoveChild.child("yes").child(myId).removeValue();
-                            mRemoveChild.child("matches").child(myId).removeValue();
+//                            String chatId;
+//                            chatId = dataSnapshot.child("Users").child(myId).child("connections").child("matches").child(userId).child("ChatId").getValue().toString();
+//                            //for chat
+//                            DatabaseReference mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
+//                            mRemoveChild.removeValue();
+//                            //for me
+//                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(myId).child("connections");
+//                            mRemoveChild.child("nope").child(userId).setValue(true);
+//                            mRemoveChild.child("yes").child(userId).removeValue();
+//                            mRemoveChild.child("matches").child(userId).removeValue();
+//                            //for user
+//                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("connections");
+//                            mRemoveChild.child("nope").child(myId).setValue(true);
+//                            mRemoveChild.child("yes").child(myId).removeValue();
+//                            mRemoveChild.child("matches").child(myId).removeValue();
                             /////
                             final Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Intent intent = new Intent(UsersProfilesActivity.this, MatchesActivity.class);
+                                    Intent intent = new Intent(UsersProfilesActivity.this, MainFragmentMenager.class);
                                     startActivity(intent);
                                 }
                             }, 500);

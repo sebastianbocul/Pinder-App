@@ -314,15 +314,4 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         intent.putExtra("fromActivity", "LocationActivity");
         startActivity(intent);
     }
-
-    @Override
-    public void onBackPressed() {
-        Intent i = new Intent(this, MatchesActivity.class);
-        startActivity(i);
-    }
-
-    public void onBack(View view) {
-        Intent i = new Intent(this, MatchesActivity.class);
-        startActivity(i);
-    }
 }

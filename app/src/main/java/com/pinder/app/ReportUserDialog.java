@@ -55,7 +55,7 @@ public class ReportUserDialog extends AppCompatDialogFragment {
                         if(editText!=null){
                             message = editText.getText().toString().trim();
                         }
-                        Toast.makeText(getContext(),"Works!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(),"User reported :(",Toast.LENGTH_SHORT).show();
                         Log.d("reportUser", "message: " + message);
                         long millis=System.currentTimeMillis();
                         java.sql.Date date=new java.sql.Date(millis);

@@ -75,6 +75,7 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("naviagionLog","TagsManagerFragment - onCreate() ");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -97,8 +98,10 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
         mAuth = FirebaseAuth.getInstance();
         currentUserId = mAuth.getCurrentUser().getUid();
         TagsFragment fragment = (TagsFragment) getChildFragmentManager().findFragmentById(R.id.tagsManagerFragment);
+
         myTagsList = new ArrayList<TagsObject>();
         removedTags = new ArrayList<TagsObject>();
+        Log.d("naviagionLog","TagsManagerFragment - onViewCreated() ");
         TabLayout tabLayout = getActivity().findViewById(R.id.tablayout);
         tabLayout.addTab(tabLayout.newTab().setText("My tags"));
         tabLayout.addTab(tabLayout.newTab().setText("Popular tags"));
@@ -122,40 +125,12 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
-            @Override
-            public void handleOnBackPressed() {
-                Toast.makeText(getContext(), "BACK FROM TAGSMANAGERR", Toast.LENGTH_SHORT).show();
-                return;
-                // Handle the back button event
-            }
-        };
-    }
-
-
-
-    public void onBackPressed(View view) {
-        if (myTagsList.size() == 0) {
-            Toast.makeText(getContext(), "Add at least one tag!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Navigation.findNavController(view).navigate(R.id.action_tagsManagerFragment_to_mainFragment);
-        updateDb();
-    }
-
-    public void onBack(View view) {
-        Log.d("TMAlog", "onBackPressed myTags: " + myTagsList);
-        Log.d("TMAlog", "onBackPressed removedTags: " + removedTags);
-        if (myTagsList.size() == 0) {
-            Toast.makeText(getContext(), "Add at least one tag!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        updateDb();
-        Intent startMain = new Intent(getContext(), MainFragmentMenager.class);
-        startActivity(startMain);
     }
 
     private void updateDb() {
+        Log.d("naviagionLog","TagsManagerFragment - updateDb()");
+        Log.d("naviagionLog","TagsManagerFragment - updateDb()     myTagsList:" + myTagsList + "removedTags:"+removedTags);
+        mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser().getUid();
         ArrayList<String> myTagsListStr = new ArrayList<>();
         for (TagsObject tgo : myTagsList) {
@@ -208,5 +183,25 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
     public void doSomethingWithData(ArrayList<TagsObject> myTagsList2, ArrayList<TagsObject> removedTags2) {
         myTagsList = myTagsList2;
         removedTags = removedTags2;
+        updateDb();
+        Log.d("naviagionLog","TagsManagerFragment - doSomethingWithData()     myTagsList:" + myTagsList + "removedTags:"+removedTags);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("naviagionLog","TagsManagerFragment - onDestroy() ");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDestroyView() {
+        Log.d("naviagionLog","TagsManagerFragment - onDestroyView() "   + "myTagsList:" + myTagsList + "removedTags:"+removedTags);
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDetach() {
+        Log.d("naviagionLog","TagsManagerFragment - onDetach() "   + "myTagsList:" + myTagsList + "removedTags:"+removedTags);
+        super.onDetach();
     }
 }

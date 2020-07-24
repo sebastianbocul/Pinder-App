@@ -217,7 +217,6 @@ public class ChatActivity extends AppCompatActivity {
                     apiService.sendNotification(sender).enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            //       Toast.makeText(ChatActivity.this,""+response.message(),Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
@@ -387,24 +386,5 @@ public class ChatActivity extends AppCompatActivity {
 
     private List<ChatObject> getDataSetChat() {
         return resultChat;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (fromActivity.equals("LocationActivity")) {
-            finish();
-        } else {
-            Intent i = new Intent(this, MatchesActivity.class);
-            startActivity(i);
-        }
-    }
-
-    public void onBack(View view) {
-        if (fromActivity.equals("LocationActivity")) {
-            finish();
-        } else {
-            Intent i = new Intent(this, MatchesActivity.class);
-            startActivity(i);
-        }
     }
 }

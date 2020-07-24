@@ -760,7 +760,6 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Toast.makeText(getContext(),"ON RESUME",Toast.LENGTH_SHORT).show();
         Log.d("mainfragmentfunctions","onResume: "+rowItems.size());
         checkUserStatus();
         super.onResume();
