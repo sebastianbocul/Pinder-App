@@ -7,8 +7,6 @@
     android:orientation="vertical"
     tools:context="com.pinder.app.Chat.ChatActivity">
 
-
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
@@ -57,7 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
-            app:stackFromEnd="true"/>
+            app:stackFromEnd="true" />
     </RelativeLayout>
 
     <LinearLayout

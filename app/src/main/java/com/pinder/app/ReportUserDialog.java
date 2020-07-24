@@ -33,7 +33,7 @@ public class ReportUserDialog extends AppCompatDialogFragment {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Reports").child(reporetedUserId);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.layout_report_dialog, null);
+        View view = inflater.inflate(R.layout.dialog_report, null);
         editText = view.findViewById(R.id.report_text);
         builder.setView(view)
                 .setMessage("Please write report message")

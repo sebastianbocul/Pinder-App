@@ -7,8 +7,6 @@
     android:padding="50sp"
     tools:context="com.pinder.app.RegistrationActivity">
 
-
-
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"

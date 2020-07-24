@@ -100,8 +100,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
-                android:text="Want to report bug or advise improvement?"
-                android:paddingBottom="5sp"/>
+                android:paddingBottom="5sp"
+                android:text="Want to report bug or advise improvement?" />
+
             <Button
                 android:id="@+id/bugs_improvement"
                 android:layout_width="wrap_content"
@@ -121,7 +122,6 @@
             android:gravity="center|bottom"
             android:orientation="vertical">
 
-
             <ImageView
                 android:id="@+id/tags"
                 android:layout_width="100sp"
@@ -137,11 +137,12 @@
                 android:gravity="top"
                 android:paddingBottom="20sp"
                 android:text="Beta Version: 1.1" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
+
                 <Button
                     android:id="@+id/privacyPolicyButton"
                     android:layout_width="wrap_content"
@@ -150,8 +151,8 @@
                     android:background="@android:color/transparent"
                     android:paddingLeft="10sp"
                     android:paddingRight="10sp"
-                    android:textSize="12sp"
-                    android:text="Privacy policy" />
+                    android:text="Privacy policy"
+                    android:textSize="12sp" />
 
                 <Button
                     android:id="@+id/termsButton"
@@ -161,8 +162,8 @@
                     android:background="@android:color/transparent"
                     android:paddingLeft="10sp"
                     android:paddingRight="10sp"
-                    android:textSize="12sp"
-                    android:text="Terms &amp; Conditinons" />
+                    android:text="Terms &amp; Conditinons"
+                    android:textSize="12sp" />
 
                 <Button
                     android:id="@+id/licenceButton"
@@ -172,8 +173,8 @@
                     android:background="@android:color/transparent"
                     android:paddingLeft="10sp"
                     android:paddingRight="10sp"
-                    android:textSize="12sp"
-                    android:text="Licence" />
+                    android:text="Licence"
+                    android:textSize="12sp" />
 
             </LinearLayout>
         </LinearLayout>
