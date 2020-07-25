@@ -8,22 +8,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,9 +36,6 @@ public class PopularTagsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private OnFragmentInteractionListener mListener;
-    private RecyclerView popularTagsRecyclerView;
-    private ArrayList<PopularTagsObject> popularTagsList = new ArrayList<>();
-    private PopularTagsAdapter tagsPopularAdapter;
 
     public PopularTagsFragment() {
         // Required empty public constructor
@@ -81,51 +75,29 @@ public class PopularTagsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_popular_tags, container, false);
     }
 
-
+    //private PopularTagsAdapter tagsPopularAdapter;
+    private PopularTagsFragmentViewModel popularTagsFragmentViewModel;
+    PopularTagsAdapter tagsPopularAdapter;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         Log.d("tagsManagerFragment", "filling popular tags");
+        RecyclerView popularTagsRecyclerView;
         popularTagsRecyclerView = getView().findViewById(R.id.popularTagsRecyclerView);
-        DatabaseReference tagsDatabase = FirebaseDatabase.getInstance().getReference().child("Tags");
-        tagsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
+        popularTagsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        ArrayList<PopularTagsObject> arrayList = new ArrayList<>();
+        tagsPopularAdapter = new PopularTagsAdapter(getContext(), arrayList);
+        popularTagsFragmentViewModel = new ViewModelProvider(this).get(PopularTagsFragmentViewModel.class);
+        popularTagsFragmentViewModel.getAllPopularTags().observe(getActivity(), new Observer<List<PopularTagsObject>>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        String tag_name = ds.getKey();
-                        int tag_popularity = (int) ds.getChildrenCount();
-                        PopularTagsObject popular_tag = new PopularTagsObject(tag_name, tag_popularity);
-                        popularTagsList.add(popular_tag);
-                    }
-                    sortCollection();
-                    popularTagsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-                    tagsPopularAdapter = new PopularTagsAdapter(getActivity().getApplicationContext(), popularTagsList);
-                    popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onChanged(List<PopularTagsObject> popularTagsObjects) {
+                arrayList.addAll(popularTagsObjects);
+                tagsPopularAdapter = new PopularTagsAdapter(getContext(), arrayList);
+                popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
             }
         });
     }
-
-    private void sortCollection() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Collections.sort(popularTagsList, Comparator.comparing(PopularTagsObject::getTagPopularity).reversed());
-        } else {
-            Collections.sort(popularTagsList, new Comparator<PopularTagsObject>() {
-                public int compare(PopularTagsObject o1, PopularTagsObject o2) {
-                    if (o1.getTagPopularity() == o2.getTagPopularity())
-                        return 0;
-                    return o1.getTagPopularity() < o2.getTagPopularity() ? -1 : 1;
-                }
-            });
-            Collections.reverse(popularTagsList);
-        }
-    }
-
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

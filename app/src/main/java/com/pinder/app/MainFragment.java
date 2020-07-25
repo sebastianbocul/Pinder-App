@@ -213,7 +213,7 @@ public class MainFragment extends Fragment {
                 cards obj = (cards) dataObject;
                 String userId = obj.getUserId();
                 usersDb.child(userId).child("connections").child("nope").child(currentUID).setValue(true);
-                Toast.makeText(getContext(), "left", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Disliked!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -222,7 +222,7 @@ public class MainFragment extends Fragment {
                 String userId = obj.getUserId();
                 usersDb.child(userId).child("connections").child("yes").child(currentUID).setValue(true);
                 isConnectionMatch(userId, obj);
-                Toast.makeText(getContext(), "right", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Liked!", Toast.LENGTH_SHORT).show();
             }
 
             @Override

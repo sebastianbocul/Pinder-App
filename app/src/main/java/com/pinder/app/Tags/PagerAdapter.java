@@ -21,11 +21,12 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                TagsFragment tagsManagerFragment = new TagsFragment();
-                return tagsManagerFragment;
-            case 1:
                 PopularTagsFragment popularTagsFragment = new PopularTagsFragment();
                 return popularTagsFragment;
+            case 1:
+                TagsFragment tagsManagerFragment = new TagsFragment();
+                return tagsManagerFragment;
+
             default:
                 return null;
         }
