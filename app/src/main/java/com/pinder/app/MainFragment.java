@@ -50,7 +50,7 @@ import com.pinder.app.Notifications.Data;
 import com.pinder.app.Notifications.Sender;
 import com.pinder.app.Notifications.Token;
 import com.pinder.app.Tags.TagsManagerAdapter;
-import com.pinder.app.Tags.TagsObject;
+import com.pinder.app.Tags.MainTags.TagsObject;
 
 import java.io.IOException;
 import java.util.ArrayList;

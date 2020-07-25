@@ -1,4 +1,4 @@
-package com.pinder.app.Tags;
+package com.pinder.app.Tags.PopularTags;
 
 import android.net.Uri;
 import android.os.Build;
@@ -40,8 +40,8 @@ public class PopularTagsFragment extends Fragment {
     private String mParam2;
     private OnFragmentInteractionListener mListener;
     private RecyclerView popularTagsRecyclerView;
-    private ArrayList<TagsPopularObject> popularTagsList = new ArrayList<>();
-    private TagsPopularAdapter tagsPopularAdapter;
+    private ArrayList<PopularTagsObject> popularTagsList = new ArrayList<>();
+    private PopularTagsAdapter tagsPopularAdapter;
 
     public PopularTagsFragment() {
         // Required empty public constructor
@@ -81,6 +81,8 @@ public class PopularTagsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_popular_tags, container, false);
     }
 
+
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         Log.d("tagsManagerFragment", "filling popular tags");
@@ -93,12 +95,12 @@ public class PopularTagsFragment extends Fragment {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         String tag_name = ds.getKey();
                         int tag_popularity = (int) ds.getChildrenCount();
-                        TagsPopularObject popular_tag = new TagsPopularObject(tag_name, tag_popularity);
+                        PopularTagsObject popular_tag = new PopularTagsObject(tag_name, tag_popularity);
                         popularTagsList.add(popular_tag);
                     }
                     sortCollection();
                     popularTagsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-                    tagsPopularAdapter = new TagsPopularAdapter(getActivity().getApplicationContext(), popularTagsList);
+                    tagsPopularAdapter = new PopularTagsAdapter(getActivity().getApplicationContext(), popularTagsList);
                     popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
                 }
             }
@@ -111,10 +113,10 @@ public class PopularTagsFragment extends Fragment {
 
     private void sortCollection() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Collections.sort(popularTagsList, Comparator.comparing(TagsPopularObject::getTagPopularity).reversed());
+            Collections.sort(popularTagsList, Comparator.comparing(PopularTagsObject::getTagPopularity).reversed());
         } else {
-            Collections.sort(popularTagsList, new Comparator<TagsPopularObject>() {
-                public int compare(TagsPopularObject o1, TagsPopularObject o2) {
+            Collections.sort(popularTagsList, new Comparator<PopularTagsObject>() {
+                public int compare(PopularTagsObject o1, PopularTagsObject o2) {
                     if (o1.getTagPopularity() == o2.getTagPopularity())
                         return 0;
                     return o1.getTagPopularity() < o2.getTagPopularity() ? -1 : 1;

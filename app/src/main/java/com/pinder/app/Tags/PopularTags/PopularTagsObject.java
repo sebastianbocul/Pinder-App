@@ -1,10 +1,10 @@
-package com.pinder.app.Tags;
+package com.pinder.app.Tags.PopularTags;
 
-public class TagsPopularObject {
+public class PopularTagsObject {
     private String tagName;
     private int tagPopularity;
 
-    public TagsPopularObject(String tagName, int tagPopularity) {
+    public PopularTagsObject(String tagName, int tagPopularity) {
         this.tagName = tagName;
         this.tagPopularity = tagPopularity;
     }

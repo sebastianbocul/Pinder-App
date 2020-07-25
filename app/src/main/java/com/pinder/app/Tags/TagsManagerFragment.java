@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +20,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.R;
+import com.pinder.app.Tags.MainTags.TagsFragment;
+import com.pinder.app.Tags.MainTags.TagsObject;
+import com.pinder.app.Tags.PopularTags.PopularTagsFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,7 +107,7 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                Toast.makeText(getContext(), "Tab : " + tab.toString(), Toast.LENGTH_SHORT).show();
+
             }
 
             @Override

@@ -1,4 +1,4 @@
-package com.pinder.app.Tags;
+package com.pinder.app.Tags.MainTags;
 
 import android.view.LayoutInflater;
 import android.view.View;

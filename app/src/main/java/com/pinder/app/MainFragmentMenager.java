@@ -1,6 +1,5 @@
 package com.pinder.app;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 
@@ -9,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.pinder.app.Matches.MatchesFragment;
 import com.pinder.app.Tags.MyInterface;
 import com.pinder.app.Tags.TagsManagerFragment;
-import com.pinder.app.Tags.TagsObject;
+import com.pinder.app.Tags.MainTags.TagsObject;
 
 import java.util.ArrayList;
 

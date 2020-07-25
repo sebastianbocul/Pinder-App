@@ -1,4 +1,4 @@
-package com.pinder.app.Tags;
+package com.pinder.app.Tags.MainTags;
 
 public class TagsObject {
     private String tagName;

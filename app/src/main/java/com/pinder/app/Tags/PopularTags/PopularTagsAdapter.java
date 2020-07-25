@@ -1,4 +1,4 @@
-package com.pinder.app.Tags;
+package com.pinder.app.Tags.PopularTags;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,13 +12,13 @@ import com.pinder.app.R;
 
 import java.util.ArrayList;
 
-public class TagsPopularAdapter extends RecyclerView.Adapter<TagsPopularAdapter.ViewHolder> {
-    private ArrayList<TagsPopularObject> mData;
+public class PopularTagsAdapter extends RecyclerView.Adapter<PopularTagsAdapter.ViewHolder> {
+    private ArrayList<PopularTagsObject> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    TagsPopularAdapter(Context context, ArrayList<TagsPopularObject> data) {
+    PopularTagsAdapter(Context context, ArrayList<PopularTagsObject> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -33,7 +33,7 @@ public class TagsPopularAdapter extends RecyclerView.Adapter<TagsPopularAdapter.
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        TagsPopularObject current = mData.get(position);
+        PopularTagsObject current = mData.get(position);
         String tagNameStr = current.getTagName();
         int tagPopularityStr = current.getTagPopularity();
         holder.tagName.setText(tagNameStr);
@@ -47,7 +47,7 @@ public class TagsPopularAdapter extends RecyclerView.Adapter<TagsPopularAdapter.
     }
 
     // convenience method for getting data at click position
-    TagsPopularObject getItem(int id) {
+    PopularTagsObject getItem(int id) {
         return mData.get(id);
     }
 
