@@ -1,7 +1,6 @@
 package com.pinder.app.Tags.PopularTags;
 
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pinder.app.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -75,13 +72,12 @@ public class PopularTagsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_popular_tags, container, false);
     }
 
-    //private PopularTagsAdapter tagsPopularAdapter;
     private PopularTagsFragmentViewModel popularTagsFragmentViewModel;
     PopularTagsAdapter tagsPopularAdapter;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Log.d("tagsManagerFragment", "filling popular tags");
+        Log.d("PopularTagsMVVM", "Fragment onViewCreated: ");
         RecyclerView popularTagsRecyclerView;
         popularTagsRecyclerView = getView().findViewById(R.id.popularTagsRecyclerView);
         popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
@@ -92,12 +88,15 @@ public class PopularTagsFragment extends Fragment {
         popularTagsFragmentViewModel.getAllPopularTags().observe(getActivity(), new Observer<List<PopularTagsObject>>() {
             @Override
             public void onChanged(List<PopularTagsObject> popularTagsObjects) {
+                Log.d("PopularTagsMVVM", "Fragment onChanged: ");
+                arrayList.clear();
                 arrayList.addAll(popularTagsObjects);
                 tagsPopularAdapter = new PopularTagsAdapter(getContext(), arrayList);
                 popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
             }
         });
     }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

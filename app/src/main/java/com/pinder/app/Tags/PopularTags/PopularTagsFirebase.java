@@ -1,76 +1,102 @@
 package com.pinder.app.Tags.PopularTags;
 
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class PopularTagsFirebase implements PopularTagsFirebaseDAO {
-    private static PopularTagsFirebase instance=null;
+    private static PopularTagsFirebase instance = null;
+    private ArrayList<PopularTagsObject> popularTagsList = new ArrayList<>();
+    private MutableLiveData<List<PopularTagsObject>> result = new MutableLiveData<List<PopularTagsObject>>();
 
-    public static synchronized  PopularTagsFirebase getInstance() {
+    public static synchronized PopularTagsFirebase getInstance() {
         if (instance == null) {
-            Log.d("PopularTagsFragment", "Firebase getInstance: ");
+            Log.d("PopularTagsMVVM", "FB Firebase getInstance: ");
             instance = new PopularTagsFirebase();
+            instance.loadDataFromDb();
         }
         return instance;
     }
 
-    @Override
-    public MutableLiveData<List<PopularTagsObject>> getAllPopularTags() {
-        MutableLiveData<List<PopularTagsObject>> result = new MutableLiveData<List<PopularTagsObject>>();
-        Log.d("PopularTagsFragment", "getAllPopularTags: ");
+    private void loadDataFromDb() {
+        Log.d("PopularTagsMVVM", "FB getAllPopularTags: ");
         DatabaseReference tagsDatabase = FirebaseDatabase.getInstance().getReference().child("Tags");
-        tagsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        ///downloads data once
+//        tagsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                ArrayList<PopularTagsObject> popularTagsList = new ArrayList<>();
+//                if (dataSnapshot.exists()) {
+//                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+//                        String tag_name = ds.getKey();
+//                        int tag_popularity = (int) ds.getChildrenCount();
+//                        PopularTagsObject popular_tag = new PopularTagsObject(tag_name, tag_popularity);
+//                        popularTagsList.add(popular_tag);
+//                    }
+//                }
+//                Log.d("PopularTagsFragment", "onDataChange: ");
+//                result.postValue(popularTagsList);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//            }
+//        });
+        //real time update
+        tagsDatabase.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<PopularTagsObject> popularTagsList = new ArrayList<>();
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        String tag_name = ds.getKey();
-                        int tag_popularity = (int) ds.getChildrenCount();
-                        PopularTagsObject popular_tag = new PopularTagsObject(tag_name, tag_popularity);
-                        popularTagsList.add(popular_tag);
-                    }
-                }
-                Log.d("PopularTagsFragment", "onDataChange: ");
-                popularTagsList = sortCollection(popularTagsList);
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                String tag_name = snapshot.getKey();
+                int tag_popularity = (int) snapshot.getChildrenCount();
+                PopularTagsObject popular_tag = new PopularTagsObject(tag_name, tag_popularity);
+                popularTagsList.add(popular_tag);
                 result.postValue(popularTagsList);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                //Log.d("PopularTagsMVVM", "onChildChanged: ");
+                String tag_name = snapshot.getKey();
+                int tag_popularity = (int) snapshot.getChildrenCount();
+                PopularTagsObject popular_tag = new PopularTagsObject(tag_name, tag_popularity);
+                for (int i = 0; i < popularTagsList.size(); i++) {
+                    if (popularTagsList.get(i).getTagName().equals(popular_tag.getTagName())) {
+                        popularTagsList.remove(i);
+                    }
+                }
+                popularTagsList.add(popular_tag);
+                result.postValue(popularTagsList);
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                Log.d("PopularTagsMVVM", "FB onChildRemoved: ");
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Log.d("PopularTagsMVVM", "FB onChildMoved: ");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+    }
+
+    @Override
+    public MutableLiveData<List<PopularTagsObject>> getAllPopularTags() {
         return result;
     }
-
-    private ArrayList<PopularTagsObject> sortCollection(ArrayList<PopularTagsObject> popularTagsList) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Collections.sort(popularTagsList, Comparator.comparing(PopularTagsObject::getTagPopularity).reversed());
-        } else {
-            Collections.sort(popularTagsList, new Comparator<PopularTagsObject>() {
-                public int compare(PopularTagsObject o1, PopularTagsObject o2) {
-                    if (o1.getTagPopularity() == o2.getTagPopularity())
-                        return 0;
-                    return o1.getTagPopularity() < o2.getTagPopularity() ? -1 : 1;
-                }
-            });
-            Collections.reverse(popularTagsList);
-        }
-        return popularTagsList;
-    }
-
 }

@@ -12,18 +12,15 @@ public class PopularTagsRepository {
 
     public static synchronized PopularTagsRepository getInstance() {
         if (instance == null) {
-            Log.d("PopularTagsFragment", "Repository getInstance: ");
-            PopularTagsFirebase popularTagsFirebase = new PopularTagsFirebase().getInstance();
-            allPopularTags = popularTagsFirebase.getAllPopularTags();
+            Log.d("PopularTagsMVVM", "REP Repository getInstance: ");
             instance = new PopularTagsRepository();
         }
         return instance;
     }
 
-    public PopularTagsRepository() {
-    }
-
     public LiveData<List<PopularTagsObject>> getAllPopularTags() {
+        allPopularTags = new PopularTagsFirebase().getInstance().getAllPopularTags();
+        Log.d("PopularTagsMVVM", "REP getAllPopularTags: ");
         return allPopularTags;
     }
 }
