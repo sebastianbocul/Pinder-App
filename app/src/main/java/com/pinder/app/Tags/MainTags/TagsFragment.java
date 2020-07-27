@@ -16,6 +16,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,9 +33,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.R;
 import com.pinder.app.Tags.MyInterface;
+import com.pinder.app.Tags.PopularTags.PopularTagsObject;
 import com.pinder.app.Tags.TagsManagerFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -203,42 +207,59 @@ public class TagsFragment extends Fragment {
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
     }
-
+    private TagsFragmentViewModel tagsFragmentViewModel;
     private void fillTagsAdapter() {
         Log.d("tagsManagerFragment", "FillingTagsAdapter");
         DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserId).child("tags");
-        ArrayList<String> myTags = new ArrayList<>();
-        RecyclerView recyclerView = getView().findViewById(R.id.tagsRecyclerView);
+        recyclerView = getView().findViewById(R.id.tagsRecyclerView);
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
-        ds.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        String tagName = ds.getKey();
-                        String gender = ds.child("gender").getValue().toString();
-                        String mAgeMax = ds.child("maxAge").getValue().toString();
-                        String mAgeMin = ds.child("minAge").getValue().toString();
-                        String mDistance = ds.child("maxDistance").getValue().toString();
-                        TagsObject obj = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
-                        myTagsList.add(obj);
-                        listener.doSomethingWithData(myTagsList, removedTags);
-                        adapter.notifyDataSetChanged();
-                        recyclerView.setAdapter(adapter);
-                    }
-                } else {
-                }
-            }
 
+        ArrayList<TagsObject> arrayList = new ArrayList<>();
+        tagsFragmentViewModel = new ViewModelProvider(this).get(TagsFragmentViewModel.class);
+        tagsFragmentViewModel.getAllTags().observe(getActivity(), new Observer<List<TagsObject>>() {
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onChanged(List<TagsObject> tagsObjects) {
+                        Log.d("tagsFragment", "onChanged tagsObjectsz" + tagsObjects.toString());
+                        arrayList.clear();
+                        arrayList.addAll(tagsObjects);
+                         Log.d("tagsFragment", "onChanged" + tagsObjects.toString());
+                        adapter = new TagsAdapter(arrayList);
+                         adapter.notifyDataSetChanged();
+                        recyclerView.setAdapter(adapter);
             }
-        });
+        }) ;
+
+//
+//        ds.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()) {
+//                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+//                        String tagName = ds.getKey();
+//                        String gender = ds.child("gender").getValue().toString();
+//                        String mAgeMax = ds.child("maxAge").getValue().toString();
+//                        String mAgeMin = ds.child("minAge").getValue().toString();
+//                        String mDistance = ds.child("maxDistance").getValue().toString();
+//                        TagsObject obj = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
+//                        myTagsList.add(obj);
+//                        listener.doSomethingWithData(myTagsList, removedTags);
+//                        adapter.notifyDataSetChanged();
+//                        recyclerView.setAdapter(adapter);
+//                    }
+//                } else {
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//            }
+//        });
     }
 
     public void removeItem(int position) {
+
         removedTags.add(myTagsList.get(position));
         myTagsList.remove(position);
         Toast.makeText(getActivity().getApplicationContext(), "Tag removed!", Toast.LENGTH_SHORT).show();

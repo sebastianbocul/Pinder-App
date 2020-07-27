@@ -30,7 +30,7 @@ public class PopularTagsFragmentViewModel extends AndroidViewModel {
         return allPopularTags;
     }
 
-    private List<PopularTagsObject> sortCollection(List<PopularTagsObject> popularTagsList) {
+    public List<PopularTagsObject> sortCollection(List<PopularTagsObject> popularTagsList) {
         Log.d("PopularTagsMVVM", "VM sortCollection: ");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Collections.sort(popularTagsList, Comparator.comparing(PopularTagsObject::getTagPopularity).reversed());
