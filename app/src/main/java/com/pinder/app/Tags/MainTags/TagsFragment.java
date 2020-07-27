@@ -115,7 +115,9 @@ public class TagsFragment extends Fragment {
         maxDistanceTextView = getView().findViewById(R.id.maxDistanceTextView);
         listener = (MyInterface) new TagsManagerFragment();
         Log.d("tagsManager", "getParentFragment " + getParentFragment());
-        fillTagsAdapter();
+
+
+
         addTagButton = getView().findViewById(R.id.addButton);
         tagsEditText = getView().findViewById(R.id.tagsEditText);
         mRadioGroup = getView().findViewById(R.id.radioGroup);
@@ -127,8 +129,10 @@ public class TagsFragment extends Fragment {
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
-        adapter = new TagsAdapter(myTagsList);
+         adapter = new TagsAdapter(myTagsList);
         recyclerView.setAdapter(adapter);
+
+        fillTagsAdapter();
         ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
             @Override
             public void valueChanged(Number minValue, Number maxValue) {
@@ -210,12 +214,6 @@ public class TagsFragment extends Fragment {
     private TagsFragmentViewModel tagsFragmentViewModel;
     private void fillTagsAdapter() {
         Log.d("tagsManagerFragment", "FillingTagsAdapter");
-        DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserId).child("tags");
-        recyclerView = getView().findViewById(R.id.tagsRecyclerView);
-        LinearLayoutManager horizontalLayoutManager
-                = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(horizontalLayoutManager);
-
         ArrayList<TagsObject> arrayList = new ArrayList<>();
         tagsFragmentViewModel = new ViewModelProvider(this).get(TagsFragmentViewModel.class);
         tagsFragmentViewModel.getAllTags().observe(getActivity(), new Observer<List<TagsObject>>() {
@@ -225,7 +223,7 @@ public class TagsFragment extends Fragment {
                         arrayList.clear();
                         arrayList.addAll(tagsObjects);
                          Log.d("tagsFragment", "onChanged" + tagsObjects.toString());
-                        adapter = new TagsAdapter(arrayList);
+                         adapter = new TagsAdapter(arrayList);
                          adapter.notifyDataSetChanged();
                         recyclerView.setAdapter(adapter);
             }
