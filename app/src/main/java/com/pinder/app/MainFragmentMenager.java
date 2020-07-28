@@ -6,13 +6,9 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pinder.app.Matches.MatchesFragment;
-import com.pinder.app.Tags.MyInterface;
 import com.pinder.app.Tags.TagsManagerFragment;
-import com.pinder.app.Tags.MainTags.TagsObject;
 
-import java.util.ArrayList;
-
-public class MainFragmentMenager extends AppCompatActivity implements MyInterface {
+public class MainFragmentMenager extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,9 +37,6 @@ public class MainFragmentMenager extends AppCompatActivity implements MyInterfac
         });
     }
 
-    @Override
-    public void doSomethingWithData(ArrayList<TagsObject> myTagsList2, ArrayList<TagsObject> removedTagList2) {
-    }
 
    
 }

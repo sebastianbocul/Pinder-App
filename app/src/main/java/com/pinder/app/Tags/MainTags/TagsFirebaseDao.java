@@ -5,8 +5,9 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.List;
 
 public interface TagsFirebaseDao {
-
     MutableLiveData<List<TagsObject>> getAllTags();
-    TagsObject deleteTag(int position);
-    TagsObject addTag();
+
+    void deleteTag(TagsObject tag);
+
+    void addTag(TagsObject tag);
 }

@@ -4,6 +4,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
-public interface PopularTagsFirebaseDAO {
+public interface PopularTagsFirebaseDao {
     MutableLiveData<List<PopularTagsObject>> getAllPopularTags();
 }

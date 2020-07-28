@@ -2,7 +2,6 @@ package com.pinder.app.Tags.PopularTags;
 
 import android.app.Application;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -19,19 +18,16 @@ public class PopularTagsFragmentViewModel extends AndroidViewModel {
 
     public PopularTagsFragmentViewModel(@NonNull Application application) {
         super(application);
-        Log.d("PopularTagsMVVM", "VM PopularTagsFragmentViewModelConstructor: ");
         popularTagsRepository = new PopularTagsRepository().getInstance();
         allPopularTags = popularTagsRepository.getAllPopularTags();
     }
 
     public LiveData<List<PopularTagsObject>> getAllPopularTags() {
-        Log.d("PopularTagsMVVM", "VM getAllPopularTags: ");
-        allPopularTags = Transformations.map(allPopularTags, id -> sortCollection(id));
+        allPopularTags = Transformations.map(allPopularTags, list -> sortCollection(list));
         return allPopularTags;
     }
 
     public List<PopularTagsObject> sortCollection(List<PopularTagsObject> popularTagsList) {
-        Log.d("PopularTagsMVVM", "VM sortCollection: ");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Collections.sort(popularTagsList, Comparator.comparing(PopularTagsObject::getTagPopularity).reversed());
         } else {

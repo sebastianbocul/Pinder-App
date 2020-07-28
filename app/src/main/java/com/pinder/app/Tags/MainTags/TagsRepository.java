@@ -8,27 +8,26 @@ public class TagsRepository implements TagsFirebaseDao {
     private MutableLiveData<List<TagsObject>> tagList = new MutableLiveData<List<TagsObject>>();
     private static TagsRepository instance = null;
 
-    public static synchronized TagsRepository getInstance(){
-        if(instance==null){
-            instance=new TagsRepository();
+    public static synchronized TagsRepository getInstance() {
+        if (instance == null) {
+            instance = new TagsRepository();
         }
         return instance;
     }
 
     @Override
     public MutableLiveData<List<TagsObject>> getAllTags() {
-        tagList=TagsFirebase.getInstance().getAllTags();
+        tagList = TagsFirebase.getInstance().getAllTags();
         return tagList;
     }
 
     @Override
-    public TagsObject deleteTag(int position) {
-
-        return null;
+    public void deleteTag(TagsObject tag) {
+        TagsFirebase.getInstance().deleteTag(tag);
     }
 
     @Override
-    public TagsObject addTag() {
-        return null;
+    public void addTag(TagsObject tag) {
+        TagsFirebase.getInstance().addTag(tag);
     }
 }

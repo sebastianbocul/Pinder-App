@@ -2,7 +2,6 @@ package com.pinder.app.Tags.MainTags;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -25,16 +23,7 @@ import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.interfaces.OnSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.R;
-import com.pinder.app.Tags.MyInterface;
-import com.pinder.app.Tags.PopularTags.PopularTagsObject;
-import com.pinder.app.Tags.TagsManagerFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +41,6 @@ public class TagsFragment extends Fragment {
     private String mParam2;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private FirebaseAuth mAuth;
-    private String currentUserId;
     private TextView ageRangeTextView, maxDistanceTextView;
     private CrystalRangeSeekbar ageRangeSeeker;
     private CrystalSeekbar maxDistanceSeeker;
@@ -62,10 +49,9 @@ public class TagsFragment extends Fragment {
     private EditText tagsEditText;
     private RadioGroup mRadioGroup;
     private String ageMin, ageMax, distanceMax;
-    private ArrayList<TagsObject> myTagsList;
-    private ArrayList<TagsObject> removedTags;
     private RecyclerView recyclerView;
-    private MyInterface listener;
+    private ArrayList<TagsObject> arrayList = new ArrayList<>();
+    private TagsFragmentViewModel tagsFragmentViewModel;
 
     public TagsFragment() {
         // Required empty public constructor
@@ -107,31 +93,22 @@ public class TagsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mAuth = FirebaseAuth.getInstance();
-        currentUserId = mAuth.getCurrentUser().getUid();
         ageRangeSeeker = getView().findViewById(R.id.ageRangeSeeker);
         ageRangeTextView = getView().findViewById(R.id.ageRangeTextView);
         maxDistanceSeeker = getView().findViewById(R.id.distanceSeeker);
         maxDistanceTextView = getView().findViewById(R.id.maxDistanceTextView);
-        listener = (MyInterface) new TagsManagerFragment();
-        Log.d("tagsManager", "getParentFragment " + getParentFragment());
-
-
-
-        addTagButton = getView().findViewById(R.id.addButton);
         tagsEditText = getView().findViewById(R.id.tagsEditText);
+        addTagButton = getView().findViewById(R.id.addButton);
         mRadioGroup = getView().findViewById(R.id.radioGroup);
         maxDistanceSeeker.setMinStartValue(100);
         maxDistanceSeeker.apply();
-        myTagsList = new ArrayList<TagsObject>();
-        removedTags = new ArrayList<TagsObject>();
         recyclerView = getView().findViewById(R.id.tagsRecyclerView);
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
-         adapter = new TagsAdapter(myTagsList);
+        tagsFragmentViewModel = new ViewModelProvider(this).get(TagsFragmentViewModel.class);
+        adapter = new TagsAdapter(arrayList);
         recyclerView.setAdapter(adapter);
-
         fillTagsAdapter();
         ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
             @Override
@@ -169,11 +146,20 @@ public class TagsFragment extends Fragment {
                 removeItem(position);
             }
         });
+        adapter.setOnItemClickListener(new TagsAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+            }
+
+            @Override
+            public void onDeleteClick(int position) {
+                removeItem(position);
+            }
+        });
     }
 
     @Override
     public void onDetach() {
-        listener = null;
         super.onDetach();
     }
 
@@ -191,7 +177,7 @@ public class TagsFragment extends Fragment {
             Toast.makeText(getActivity().getApplicationContext(), "Choose gender to find", Toast.LENGTH_SHORT).show();
             return;
         }
-        for (TagsObject tmo : myTagsList) {
+        for (TagsObject tmo : arrayList) {
             if (tmo.getTagName().equals(tagsEditText.getText().toString().toLowerCase())) {
                 Toast.makeText(getActivity().getApplicationContext(), "Duplicate tag", Toast.LENGTH_SHORT).show();
                 return;
@@ -204,64 +190,24 @@ public class TagsFragment extends Fragment {
         String mAgeMax = ageMax;
         String mAgeMin = ageMin;
         String mDistance = distanceMax;
-        TagsObject obj = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
-        myTagsList.add(obj);
-        listener.doSomethingWithData(myTagsList, removedTags);
-        Toast.makeText(getActivity().getApplicationContext(), "Tag added!", Toast.LENGTH_SHORT).show();
-        adapter.notifyDataSetChanged();
-        recyclerView.setAdapter(adapter);
+        TagsObject tag = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
+        tagsFragmentViewModel.addTag(tag);
+        Toast.makeText(getContext(), "Tag added!", Toast.LENGTH_SHORT).show();
     }
-    private TagsFragmentViewModel tagsFragmentViewModel;
+
     private void fillTagsAdapter() {
-        Log.d("tagsManagerFragment", "FillingTagsAdapter");
-        ArrayList<TagsObject> arrayList = new ArrayList<>();
-        tagsFragmentViewModel = new ViewModelProvider(this).get(TagsFragmentViewModel.class);
         tagsFragmentViewModel.getAllTags().observe(getActivity(), new Observer<List<TagsObject>>() {
             @Override
             public void onChanged(List<TagsObject> tagsObjects) {
-                        Log.d("tagsFragment", "onChanged tagsObjectsz" + tagsObjects.toString());
-                        arrayList.clear();
-                        arrayList.addAll(tagsObjects);
-                         Log.d("tagsFragment", "onChanged" + tagsObjects.toString());
-                         adapter = new TagsAdapter(arrayList);
-                         adapter.notifyDataSetChanged();
-                        recyclerView.setAdapter(adapter);
+                arrayList.clear();
+                arrayList.addAll(tagsObjects);
+                adapter.notifyDataSetChanged();
             }
-        }) ;
-
-//
-//        ds.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.exists()) {
-//                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-//                        String tagName = ds.getKey();
-//                        String gender = ds.child("gender").getValue().toString();
-//                        String mAgeMax = ds.child("maxAge").getValue().toString();
-//                        String mAgeMin = ds.child("minAge").getValue().toString();
-//                        String mDistance = ds.child("maxDistance").getValue().toString();
-//                        TagsObject obj = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
-//                        myTagsList.add(obj);
-//                        listener.doSomethingWithData(myTagsList, removedTags);
-//                        adapter.notifyDataSetChanged();
-//                        recyclerView.setAdapter(adapter);
-//                    }
-//                } else {
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//            }
-//        });
+        });
     }
 
     public void removeItem(int position) {
-
-        removedTags.add(myTagsList.get(position));
-        myTagsList.remove(position);
-        Toast.makeText(getActivity().getApplicationContext(), "Tag removed!", Toast.LENGTH_SHORT).show();
-        listener.doSomethingWithData(myTagsList, removedTags);
-        adapter.notifyItemRemoved(position);
+        TagsObject tagToDel = adapter.getItem(position);
+        tagsFragmentViewModel.removeTag(tagToDel);
     }
 }

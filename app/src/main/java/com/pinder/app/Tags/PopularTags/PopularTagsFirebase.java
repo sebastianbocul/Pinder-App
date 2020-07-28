@@ -15,7 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PopularTagsFirebase implements PopularTagsFirebaseDAO {
+public class PopularTagsFirebase implements PopularTagsFirebaseDao {
     private static PopularTagsFirebase instance = null;
     private ArrayList<PopularTagsObject> popularTagsList = new ArrayList<>();
     private MutableLiveData<List<PopularTagsObject>> result = new MutableLiveData<List<PopularTagsObject>>();
@@ -66,7 +66,6 @@ public class PopularTagsFirebase implements PopularTagsFirebaseDAO {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                //Log.d("PopularTagsMVVM", "onChildChanged: ");
                 String tag_name = snapshot.getKey();
                 int tag_popularity = (int) snapshot.getChildrenCount();
                 PopularTagsObject popular_tag = new PopularTagsObject(tag_name, tag_popularity);

@@ -2,7 +2,6 @@ package com.pinder.app.Tags.PopularTags;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,27 +71,20 @@ public class PopularTagsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_popular_tags, container, false);
     }
 
-    private PopularTagsFragmentViewModel popularTagsFragmentViewModel;
-    PopularTagsAdapter tagsPopularAdapter;
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Log.d("PopularTagsMVVM", "Fragment onViewCreated: ");
-        RecyclerView popularTagsRecyclerView;
-        popularTagsRecyclerView = getView().findViewById(R.id.popularTagsRecyclerView);
-        popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
-        popularTagsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        PopularTagsFragmentViewModel popularTagsFragmentViewModel = new ViewModelProvider(this).get(PopularTagsFragmentViewModel.class);
+        RecyclerView popularTagsRecyclerView = getView().findViewById(R.id.popularTagsRecyclerView);
         ArrayList<PopularTagsObject> arrayList = new ArrayList<>();
-        tagsPopularAdapter = new PopularTagsAdapter(getContext(), arrayList);
-        popularTagsFragmentViewModel = new ViewModelProvider(this).get(PopularTagsFragmentViewModel.class);
+        popularTagsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        PopularTagsAdapter tagsPopularAdapter = new PopularTagsAdapter(getContext(), arrayList);
+        popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
         popularTagsFragmentViewModel.getAllPopularTags().observe(getActivity(), new Observer<List<PopularTagsObject>>() {
             @Override
             public void onChanged(List<PopularTagsObject> popularTagsObjects) {
-                Log.d("PopularTagsMVVM", "Fragment onChanged: ");
                 arrayList.clear();
                 arrayList.addAll(popularTagsObjects);
-                tagsPopularAdapter = new PopularTagsAdapter(getContext(), arrayList);
-                popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
+                tagsPopularAdapter.notifyDataSetChanged();
             }
         });
     }

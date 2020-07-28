@@ -49,6 +49,10 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ExampleViewHol
         return mTagsManagerObject.size();
     }
 
+    public TagsObject getItem(int position) {
+        return mTagsManagerObject.get(position);
+    }
+
     public interface OnItemClickListener {
         void onItemClick(int position);
 
