@@ -65,8 +65,8 @@ public class SettingsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private FirebaseAuth mAuth;
-    private String userId;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    String userId = mAuth.getCurrentUser().getUid();
     private Button logoutUser, deleteUser, privacyPolicyButton, termsButton, licenceButton;
     private StorageReference filePath;
     private Switch mapLocationSwitch, sortUsersByDistanceSwitch;
