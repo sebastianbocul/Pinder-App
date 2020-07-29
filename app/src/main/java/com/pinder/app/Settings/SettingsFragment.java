@@ -1,4 +1,4 @@
-package com.pinder.app;
+package com.pinder.app.Settings;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,10 +36,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
+import com.pinder.app.BugsAndImprovementsDialog;
 import com.pinder.app.LegalInfo.LicencesDialog;
 import com.pinder.app.LegalInfo.PrivacyDialog;
 import com.pinder.app.LegalInfo.TermsDialog;
+import com.pinder.app.LoginActivity;
 import com.pinder.app.MyFunctions.StringDateToAge;
+import com.pinder.app.R;
 
 import java.util.Calendar;
 
@@ -67,9 +71,7 @@ public class SettingsFragment extends Fragment {
     private StorageReference filePath;
     private Switch mapLocationSwitch, sortUsersByDistanceSwitch;
     private EditText date;
-    private boolean showMapLocation, onStartShowMapLocation, sortByDistance, onStartSortByDistance;
     private boolean dateValid = false;
-    private String dateOfBirth, onStartDateOfBirth;
     private Button restartMatches;
     private Button bugsAndImprovements;
 
@@ -111,12 +113,12 @@ public class SettingsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_settings, container, false);
     }
 
+    int i = 0;
+    SettingsViewModel settingsViewModel;
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
-        userId = mAuth.getCurrentUser().getUid();
-        DatabaseReference myDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
         sortUsersByDistanceSwitch = getView().findViewById(R.id.sortUsersByDistance);
         mapLocationSwitch = getView().findViewById(R.id.mapLocationSwitch);
         restartMatches = getView().findViewById(R.id.restartMatches);
@@ -127,42 +129,24 @@ public class SettingsFragment extends Fragment {
         termsButton = getView().findViewById(R.id.termsButton);
         licenceButton = getView().findViewById(R.id.licenceButton);
         bugsAndImprovements = getView().findViewById(R.id.bugs_improvement);
-        myDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
+        settingsViewModel.getDate().observe(getActivity(), new androidx.lifecycle.Observer<String>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    if (dataSnapshot.child("dateOfBirth").exists()) {
-                        dateOfBirth = dataSnapshot.child("dateOfBirth").getValue().toString();
-                        onStartDateOfBirth = dateOfBirth;
-                        date.setText(dateOfBirth);
-                    } else {
-                        return;
-                    }
-                    if (dataSnapshot.child("showMyLocation").getValue().toString().equals("true")) {
-                        showMapLocation = true;
-                        onStartShowMapLocation = true;
-                        mapLocationSwitch.setChecked(showMapLocation);
-                    } else {
-                        showMapLocation = false;
-                        onStartShowMapLocation = false;
-                        mapLocationSwitch.setChecked(showMapLocation);
-                    }
-                    if (dataSnapshot.child("sortByDistance").exists()) {
-                        if (dataSnapshot.child("sortByDistance").getValue().toString().equals("true")) {
-                            sortByDistance = true;
-                            onStartSortByDistance = true;
-                            sortUsersByDistanceSwitch.setChecked(sortByDistance);
-                        } else {
-                            sortByDistance = false;
-                            onStartSortByDistance = false;
-                            sortUsersByDistanceSwitch.setChecked(sortByDistance);
-                        }
-                    }
-                }
+            public void onChanged(String s) {
+                date.setText(s);
+                i++;
             }
-
+        });
+        settingsViewModel.getShowMyLocation().observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onChanged(Boolean aBoolean) {
+                mapLocationSwitch.setChecked(aBoolean);
+            }
+        });
+        settingsViewModel.getSortByDistance().observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                sortUsersByDistanceSwitch.setChecked(aBoolean);
             }
         });
         date.addTextChangedListener(new TextWatcher() {
@@ -231,6 +215,7 @@ public class SettingsFragment extends Fragment {
                         sel = sel < 0 ? 0 : sel;
                         current = clean;
                         date.setText(current);
+                        //    settingsViewModel.setDate(current);
                         date.setSelection(sel < current.length() ? sel : current.length());
                     }
                 } catch (Exception e) {
@@ -247,13 +232,13 @@ public class SettingsFragment extends Fragment {
         mapLocationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                showMapLocation = isChecked;
+                settingsViewModel.setShowMyLocation(isChecked);
             }
         });
         sortUsersByDistanceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                sortByDistance = isChecked;
+                settingsViewModel.setSortByDistance(isChecked);
             }
         });
         logoutUser.setOnClickListener(new View.OnClickListener() {
@@ -398,10 +383,8 @@ public class SettingsFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        Log.d("deleteRx", "deleteUserTagsObservable: " + ds.child(userId).toString());
                         tagsReference.child(ds.getKey()).child(userId).removeValue();
                     }
-                    Log.d("deleteRx", "deleteUserTagsObservable finished: ");
                     emitter.onSuccess("finished");
                 }
 
@@ -420,10 +403,8 @@ public class SettingsFragment extends Fragment {
                         public void onSuccess(ListResult listResult) {
                             for (StorageReference item : listResult.getItems()) {
                                 // All the items under listRef.
-                                Log.d("deleteRx", "deleteDatabseAndStorageObservable: " + filePath.toString());
                                 item.delete();
                             }
-                            Log.d("deleteRx", "deleteDatabseAndStorageObservable finished: ");
                             emitter.onSuccess("finished");
                         }
                     })
@@ -441,18 +422,12 @@ public class SettingsFragment extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         try {
-                            Log.d("deleteRx", "deleteMatchesObservable 1: ");
                             users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
-                            Log.d("deleteRx", "deleteMatchesObservable 2: ");
                             users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
-                            Log.d("deleteRx", "deleteMatchesObservable:  " + ds.child("connections").child("matches").child(userId).toString());
-                            Log.d("deleteRx", "deleteMatchesObservable:  " + ds.child("connections").child("yes").child(userId).toString());
                         } catch (Exception e) {
-                            Log.d("deleteRx", "deleteMatchesObservable:  " + e.toString());
                             Toast.makeText(getContext(), "Oooops something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     }
-                    Log.d("deleteRx", "deleteMatchesObservable finished: ");
                     emitter.onSuccess("finished");
                 }
 
@@ -470,9 +445,7 @@ public class SettingsFragment extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.child(userId).exists()) {
                         tokenRef.child(userId).removeValue();
-                        Log.d("deleteRx", "deleteTokensObservable: " + tokenRef.child(userId).toString());
                     }
-                    Log.d("deleteRx", "deleteTokensObservable finished: ");
                     emitter.onSuccess("finished");
                 }
 
@@ -508,20 +481,8 @@ public class SettingsFragment extends Fragment {
     }
 
     private void updateMyDb() {
-        DatabaseReference myDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-        if (showMapLocation != onStartShowMapLocation) {
-            myDatabaseReference.child("showMyLocation").setValue(showMapLocation);
-        }
-        if (sortByDistance != onStartSortByDistance) {
-            myDatabaseReference.child("sortByDistance").setValue(sortByDistance);
-        }
-        if (!dateValid == true) {
-            return;
-        }
-        String dateOfBirth = date.getText().toString();
-        if (!dateOfBirth.equals(onStartDateOfBirth)) {
-            myDatabaseReference.child("dateOfBirth").setValue(dateOfBirth);
-        }
+        settingsViewModel.setDate(date.getText().toString());
+        settingsViewModel.updateMyDb(dateValid);
     }
 
     private void openReportDialog() {
