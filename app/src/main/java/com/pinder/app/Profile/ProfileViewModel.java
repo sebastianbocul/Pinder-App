@@ -6,12 +6,13 @@ import android.net.Uri;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.pinder.app.Images.ImageAdapter;
+import java.util.ArrayList;
 
 public class ProfileViewModel extends ViewModel {
     ProfileRepository profileRepository;
     private LiveData<String> name;
     private LiveData<String> description;
+    private LiveData<ArrayList> images;
 
     public ProfileViewModel() {
         profileRepository = ProfileRepository.getInstance();
@@ -51,7 +52,8 @@ public class ProfileViewModel extends ViewModel {
         profileRepository.getInstance().addImage(context, resultUri);
     }
 
-    public LiveData<ImageAdapter> getAdapter() {
-        return profileRepository.getInstance().getAdapter();
+    public LiveData<ArrayList> getImages() {
+        images = ProfileFirebase.getInstance().getImages();
+        return images;
     }
 }

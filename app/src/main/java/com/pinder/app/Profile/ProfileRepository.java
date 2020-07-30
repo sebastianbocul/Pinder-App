@@ -5,12 +5,13 @@ import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
 
-import com.pinder.app.Images.ImageAdapter;
+import java.util.ArrayList;
 
 public class ProfileRepository {
     public static ProfileRepository instance = null;
     private LiveData<String> name;
     private LiveData<String> description;
+    private LiveData<ArrayList> images;
 
     public static synchronized ProfileRepository getInstance() {
         if (instance == null) {
@@ -27,6 +28,11 @@ public class ProfileRepository {
     public LiveData<String> getDescription() {
         description = ProfileFirebase.getInstance().getDescription();
         return description;
+    }
+
+    public LiveData<ArrayList> getImages() {
+        images = ProfileFirebase.getInstance().getImages();
+        return images;
     }
 
     public void saveUserInformation(String nameEdt, String descriptionEdt) {
@@ -51,9 +57,5 @@ public class ProfileRepository {
 
     public void addImage(Context context, Uri resultUri) {
         ProfileFirebase.getInstance().addImage(context, resultUri);
-    }
-
-    public LiveData<ImageAdapter> getAdapter() {
-        return ProfileFirebase.getInstance().getAdapter();
     }
 }

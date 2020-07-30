@@ -1,6 +1,7 @@
 package com.pinder.app.Profile;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -20,6 +21,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.pinder.app.Images.ImageAdapter;
 import com.pinder.app.R;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -88,10 +91,19 @@ public class ProfileFragment extends Fragment {
         setDefaultButton = getView().findViewById(R.id.setDefaultButton);
         viewPager = getView().findViewById(R.id.viewPager);
         profileViewModel = new ViewModelProvider(getActivity()).get(ProfileViewModel.class);
-        profileViewModel.getAdapter().observe(getActivity(), new Observer<ImageAdapter>() {
+        if (viewPager.getChildCount() != 0) {
+        } else {
+        }
+        profileViewModel.getImages().observe(getActivity(), new Observer<ArrayList>() {
             @Override
-            public void onChanged(ImageAdapter imageAdapter) {
-                viewPager.setAdapter(imageAdapter);
+            public void onChanged(ArrayList arrayList) {
+                if (arrayList.size() == 0) {
+                    viewPager.setBackgroundResource(R.drawable.profile_default);
+                } else {
+                    viewPager.setBackgroundColor(Color.parseColor("#fafafa"));
+                }
+                ImageAdapter adapter = new ImageAdapter(getContext(), arrayList);
+                viewPager.setAdapter(adapter);
             }
         });
         profileViewModel.loadImages(getActivity());

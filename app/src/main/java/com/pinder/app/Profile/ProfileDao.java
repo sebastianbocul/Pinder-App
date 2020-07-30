@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData;
 
 import com.pinder.app.Images.ImageAdapter;
 
+import java.util.ArrayList;
+
 public interface ProfileDao {
     void loadImages(Context context);
 
@@ -14,13 +16,13 @@ public interface ProfileDao {
 
     LiveData<String> getDescription();
 
+    LiveData<ArrayList> getImages();
+
     void setImagePosition(int position);
 
     void saveUserInformation(String nameEdt, String descriptionEdt);
 
     void deleteImage(Context context);
-
-    LiveData<ImageAdapter> getAdapter();
 
     void setDefault(Context context);
 

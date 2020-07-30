@@ -25,7 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.pinder.app.Images.ImageAdapter;
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,7 +45,6 @@ public class ProfileFirebase implements ProfileDao {
     public MutableLiveData<String> description = new MutableLiveData<>();
     public MutableLiveData<String> imageName = new MutableLiveData<>();
     public MutableLiveData<Integer> imagePosition = new MutableLiveData<>();
-    public MutableLiveData<ImageAdapter> adapter = new MutableLiveData<>();
 
     public static ProfileFirebase getInstance() {
         if (instance == null) {
@@ -74,7 +73,6 @@ public class ProfileFirebase implements ProfileDao {
                         arrayNameList.add(ds.child("name").getValue());
                     }
                     mImages.setValue(arrayList);
-                    adapter.postValue(new ImageAdapter(context, mImages.getValue()));
                     return;
                 }
 
@@ -177,10 +175,6 @@ public class ProfileFirebase implements ProfileDao {
         });
     }
 
-    @Override
-    public LiveData<ImageAdapter> getAdapter() {
-        return adapter;
-    }
 
     @Override
     public void setDefault(Context context) {
@@ -296,6 +290,11 @@ public class ProfileFirebase implements ProfileDao {
     @Override
     public LiveData<String> getDescription() {
         return description;
+    }
+
+    @Override
+    public LiveData<ArrayList> getImages() {
+        return mImages;
     }
 
     @Override
