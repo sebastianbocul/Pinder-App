@@ -24,6 +24,7 @@ public class MainFragmentMenager extends AppCompatActivity {
         int fragmentContainer = R.id.fragment_container;
         getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new MainFragment()).commit();
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_main);
         bottomNavigationView.setOnNavigationItemSelectedListener(listener);
     }
 

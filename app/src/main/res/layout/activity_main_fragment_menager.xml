@@ -13,9 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/windowBackground"
+        android:keepScreenOn="true"
         android:theme="@style/BottomNavigationTheme"
-        app:menu="@menu/navigation"
-        />
+        app:menu="@menu/navigation" />
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
