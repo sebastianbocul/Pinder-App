@@ -106,7 +106,7 @@ public class ProfileFragment extends Fragment {
                 viewPager.setAdapter(adapter);
             }
         });
-        profileViewModel.loadImages(getActivity());
+        profileViewModel.loadImages();
         profileViewModel.getName().observe(getActivity(), new Observer<String>() {
             @Override
             public void onChanged(String s) {

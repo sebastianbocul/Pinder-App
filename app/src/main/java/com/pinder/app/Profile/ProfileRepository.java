@@ -47,8 +47,8 @@ public class ProfileRepository {
         ProfileFirebase.getInstance().setImagePosition(position);
     }
 
-    public void loadImages(Context context) {
-        ProfileFirebase.getInstance().loadImages(context);
+    public void loadImages() {
+        ProfileFirebase.getInstance().loadImages();
     }
 
     public void setDefault(Context context) {

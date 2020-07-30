@@ -10,7 +10,7 @@ import com.pinder.app.Images.ImageAdapter;
 import java.util.ArrayList;
 
 public interface ProfileDao {
-    void loadImages(Context context);
+    void loadImages();
 
     LiveData<String> getName();
 

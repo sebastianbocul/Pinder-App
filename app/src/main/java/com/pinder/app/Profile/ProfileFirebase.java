@@ -58,7 +58,7 @@ public class ProfileFirebase implements ProfileDao {
 
     ArrayList arrayNameList = new ArrayList();
 
-    public void loadImages(Context context) {
+    public void loadImages() {
         try {
             arrayNameList.clear();
             ArrayList arrayList = new ArrayList();
@@ -166,7 +166,7 @@ public class ProfileFirebase implements ProfileDao {
                 mImageDatabase.updateChildren(imagesMap);
                 getUserInfo();
                 imagePosition.postValue(0);
-                loadImages(context);
+                loadImages();
             }
 
             @Override
@@ -189,7 +189,7 @@ public class ProfileFirebase implements ProfileDao {
                 mUserDatabase.child("profileImageUrl").setValue(defaultBufor.child("uri").getValue());
                 Toast.makeText(context, "Profile picture has been changed", Toast.LENGTH_SHORT).show();
                 setImagePosition(0);
-                loadImages(context);
+                loadImages();
             }
 
             @Override
@@ -267,7 +267,7 @@ public class ProfileFirebase implements ProfileDao {
                         newImage.put((size), imgInfo);
                         mImageDatabase.updateChildren(newImage);
                         Toast.makeText(context, "Upload successful", Toast.LENGTH_SHORT).show();
-                        loadImages(context);
+                        loadImages();
                         getUserInfo();
                         return;
                     }

@@ -311,7 +311,7 @@ public class MatchesFragment extends Fragment {
                     }
                 } else {
                     myTags.add("No matches");
-                    adapter = new MatchesTagsAdapter(getContext(), myTags);
+                    adapter = new MatchesTagsAdapter(getActivity(), myTags);
                     recyclerView.setAdapter(adapter);
                 }
             }

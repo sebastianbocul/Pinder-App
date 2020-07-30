@@ -40,8 +40,8 @@ public class ProfileViewModel extends ViewModel {
         profileRepository.getInstance().setImagePosition(position);
     }
 
-    public void loadImages(Context context) {
-        profileRepository.getInstance().loadImages(context);
+    public void loadImages() {
+        profileRepository.getInstance().loadImages();
     }
 
     public void setDefault(Context context) {

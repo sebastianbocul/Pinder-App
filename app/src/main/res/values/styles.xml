@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -14,11 +14,15 @@
     
     <style name="AppTheme.PopMe">
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowClipToOutline">true</item>
+        <item name="android:windowClipToOutline" tools:targetApi="lollipop">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowBackground" > @android:color/transparent</item>"
     </style>
-    
-    
+
+    <style name="BottomNavigationTheme" parent="Theme.AppCompat.Light">
+        <!--        <item name="android:textColorSecondary"</item>-->
+        <item name="colorPrimary">@android:color/holo_red_light</item>
+    </style>
+
 </resources>

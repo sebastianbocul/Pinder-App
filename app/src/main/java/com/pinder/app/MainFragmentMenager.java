@@ -1,44 +1,58 @@
 package com.pinder.app;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.pinder.app.Matches.MatchesFragment;
 import com.pinder.app.Profile.ProfileFragment;
 import com.pinder.app.Settings.SettingsFragment;
 import com.pinder.app.Tags.TagsManagerFragment;
 
 public class MainFragmentMenager extends AppCompatActivity {
+    private BottomNavigationView bottomNavigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_fragment_menager);
         int fragmentContainer = R.id.fragment_container;
         getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new MainFragment()).commit();
-        ImageView main = findViewById(R.id.main);
-        ImageView tags = findViewById(R.id.tags);
-        ImageView profile = findViewById(R.id.profile);
-        ImageView settings = findViewById(R.id.settings);
-        ImageView matches = findViewById(R.id.matches);
-        main.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new MainFragment()).commit();
-        });
-        tags.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new TagsManagerFragment()).commit();
-        });
-        profile.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new ProfileFragment()).commit();
-        });
-        settings.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new SettingsFragment()).commit();
-        });
-        matches.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new MatchesFragment()).commit();
-        });
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(listener);
     }
 
+    private BottomNavigationView.OnNavigationItemSelectedListener listener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Fragment selectedFragment = null;
+            switch (item.getItemId()) {
+                case R.id.nav_settings:
+                    selectedFragment = new SettingsFragment();
+                    break;
+                case R.id.nav_tags:
+                    selectedFragment = new TagsManagerFragment();
+                    break;
+                case R.id.nav_main:
+                    selectedFragment = new MainFragment();
+                    break;
+                case R.id.nav_matches:
+                    selectedFragment = new MatchesFragment();
+                    break;
+                case R.id.nav_profile:
+                    selectedFragment = new ProfileFragment();
+                    break;
+            }
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+            return true;
+        }
+    };
+}
 
    
-}
+
