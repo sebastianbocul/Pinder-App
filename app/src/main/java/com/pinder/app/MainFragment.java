@@ -49,6 +49,7 @@ import com.pinder.app.Notifications.Client;
 import com.pinder.app.Notifications.Data;
 import com.pinder.app.Notifications.Sender;
 import com.pinder.app.Notifications.Token;
+import com.pinder.app.Profile.ProfileFragment;
 import com.pinder.app.Tags.TagsManagerAdapter;
 import com.pinder.app.Tags.MainTags.TagsObject;
 

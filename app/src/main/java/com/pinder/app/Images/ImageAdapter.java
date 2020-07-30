@@ -22,6 +22,9 @@ public class ImageAdapter extends PagerAdapter {
         mContext = context;
         mImages = imagesUrls;
     }
+    public ImageAdapter(ArrayList imagesUrls) {
+        mImages = imagesUrls;
+    }
 
     @Override
     public int getCount() {
@@ -53,4 +56,6 @@ public class ImageAdapter extends PagerAdapter {
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         container.removeView((ImageView) object);
     }
+
+
 }

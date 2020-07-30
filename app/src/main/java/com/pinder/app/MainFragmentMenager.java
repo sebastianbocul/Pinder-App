@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pinder.app.Matches.MatchesFragment;
+import com.pinder.app.Profile.ProfileFragment;
 import com.pinder.app.Settings.SettingsFragment;
 import com.pinder.app.Tags.TagsManagerFragment;
 

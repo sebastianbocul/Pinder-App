@@ -41,16 +41,28 @@ public class SettingsFirebase implements SettingsFirebaseDao {
                         String dateOfBirth = dataSnapshot.child("dateOfBirth").getValue().toString();
                         date.postValue(dateOfBirth);
                         bufferInfo.setDate(dateOfBirth);
+                    }else {
+                        date.postValue("01/01/2000");
+                        bufferInfo.setDate("01/01/2000");
+                        myDatabaseReference.child("dateOfBirth").setValue("01/01/2000");
                     }
                     if (dataSnapshot.child("showMyLocation").exists()) {
                         Boolean showMyLocationBool = (Boolean) dataSnapshot.child("showMyLocation").getValue();
                         showMyLocation.postValue(showMyLocationBool);
                         bufferInfo.setShowMyLocation(showMyLocationBool);
+                    }else {
+                        showMyLocation.postValue(false);
+                        bufferInfo.setShowMyLocation(false);
+                        myDatabaseReference.child("sortByDistance").setValue(false);
                     }
                     if (dataSnapshot.child("sortByDistance").exists()) {
                         Boolean sortByDistanceBool = (Boolean) dataSnapshot.child("sortByDistance").getValue();
                         sortByDistance.postValue(sortByDistanceBool);
                         bufferInfo.setSortByDistance(sortByDistanceBool);
+                    }else {
+                        sortByDistance.postValue(false);
+                        bufferInfo.setSortByDistance(false);
+                        myDatabaseReference.child("showMyLocation").setValue(false);
                     }
                 }
             }
@@ -66,16 +78,19 @@ public class SettingsFirebase implements SettingsFirebaseDao {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser().getUid();
         DatabaseReference myDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-        if (showMyLocation.getValue() == null || sortByDistance.getValue() == null || date.getValue() == null)
-            return;
-        if (showMyLocation.getValue() != bufferInfo.getShowMyLocation()) {
-            myDatabaseReference.child("showMyLocation").setValue(showMyLocation.getValue());
-            bufferInfo.setShowMyLocation(showMyLocation.getValue());
+        if (showMyLocation.getValue() != null) {
+            if (showMyLocation.getValue() != bufferInfo.getShowMyLocation()) {
+                myDatabaseReference.child("showMyLocation").setValue(showMyLocation.getValue());
+                bufferInfo.setShowMyLocation(showMyLocation.getValue());
+            }
         }
-        if (sortByDistance.getValue() != bufferInfo.getSortByDistance()) {
-            myDatabaseReference.child("sortByDistance").setValue(sortByDistance.getValue());
-            bufferInfo.setSortByDistance(sortByDistance.getValue());
+        if (sortByDistance.getValue() != null) {
+            if (sortByDistance.getValue() != bufferInfo.getSortByDistance()) {
+                myDatabaseReference.child("sortByDistance").setValue(sortByDistance.getValue());
+                bufferInfo.setSortByDistance(sortByDistance.getValue());
+            }
         }
+        if (date.getValue() == null) return;
         if (dateValid == false) {
             date.setValue(bufferInfo.getDate());
             return;

@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.pinder.app.ProfileFragment"
+        android:name="com.pinder.app.Profile.ProfileFragment"
         android:label="ProfileFragment" >
         <action
             android:id="@+id/action_profileFragment_to_mainFragment3"
