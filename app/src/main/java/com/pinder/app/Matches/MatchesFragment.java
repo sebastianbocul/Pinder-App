@@ -13,6 +13,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,9 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,7 +52,6 @@ public class MatchesFragment extends Fragment {
     RecyclerView recyclerView;
     MatchesTagsAdapter adapter;
     ArrayList<String> myTags = new ArrayList<>();
-    int iterator = 0;
     private RecyclerView myRecyclerView;
     private RecyclerView.Adapter mMatchesAdapter;
     private RecyclerView.LayoutManager mMatchesLayoutManager;
@@ -62,10 +62,9 @@ public class MatchesFragment extends Fragment {
     private String sortBy;
     private TextView sortByTextView;
     private Button allMatches;
-    private ArrayList<MatchesObject> resultMatches = new ArrayList<MatchesObject>();
-    private ArrayList<MatchesObject> oryginalMatches = new ArrayList<MatchesObject>();
+
     private ArrayList<String> usersID = new ArrayList<>();
-    private String sortId;
+
 
     public MatchesFragment() {
         // Required empty public constructor
@@ -118,14 +117,48 @@ public class MatchesFragment extends Fragment {
         mMatchesLayoutManager = new LinearLayoutManager(getContext());
         myRecyclerView.setLayoutManager(mMatchesLayoutManager);
         recyclerView = getView().findViewById(R.id.tagsRecyclerViewMatches);
-        mMatchesAdapter = new MatchesAdapter(getDataSetMatches(), getContext());
+        //mMatchesAdapter = new MatchesAdapter(resultMatches, getContext());
         myRecyclerView.setAdapter(mMatchesAdapter);
-        getUserMatchId();
-        loadTagsRecyclerView();
+        LinearLayoutManager verticalLayoutManager
+                = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(verticalLayoutManager);
+
+
+
+
+
+
+
+        adapter = new MatchesTagsAdapter(getActivity(), myTags);
+        recyclerView.setAdapter(adapter);
+        MatchesViewModel matchesViewModel = new ViewModelProvider(getActivity()).get(MatchesViewModel.class);
+
+        matchesViewModel.getTags().observe(getActivity(), new Observer<ArrayList<String>>() {
+            @Override
+            public void onChanged(ArrayList<String> strings) {
+                myTags.clear();
+                myTags.addAll(strings);
+                adapter.notifyDataSetChanged();
+                adapter.setClickListener(new MatchesTagsAdapter.ItemClickListener() {
+                            @Override
+                            public void onItemClick(View view, int position) {
+                                Log.d("MatchesFragmentLog" , "myTags name : " + myTags.get(position).toString() +  "   pos: " + position);
+//                                sortBy = myTags.get(position);
+//                                sortByTextView.setText("#" + sortBy);
+//                                fillRecyclerViewByTags(sortBy);
+                            }
+                        });
+            }
+        });
+
+
+
+//        getUserMatchId();
+//        loadTagsRecyclerView();
         allMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                allMatchesFunction();
+                fillRecyclerViewByTags("AllButtonClicked",myTags);
             }
         });
         locationButton.setOnClickListener(new View.OnClickListener() {
@@ -137,7 +170,7 @@ public class MatchesFragment extends Fragment {
     }
 
     private void allMatchesFunction() {
-        fillRecyclerViewByTags("AllButtonClicked");
+      //
     }
 
     private void goToLocationActivity() {
@@ -145,215 +178,8 @@ public class MatchesFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void getUserMatchId() {
-        DatabaseReference matchDbAd = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
-        matchDbAd.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (dataSnapshot.exists()) {
-                    matchesCount = (int) dataSnapshot.getChildrenCount();
-                    getLastMessage(dataSnapshot);
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void getLastMessage(DataSnapshot match) {
-        sortId = "00";
-        String chatId = match.child("ChatId").getValue().toString();
-        DatabaseReference chatDb = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
-        DataSnapshot mMatch = match;
-        chatDb.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                boolean createdByMe = true;
-                String message = "No messages...";
-                sortId = chatId;
-                Log.d("matchesactivity", "onChildAdded ds : " + dataSnapshot.toString());
-                if (dataSnapshot.exists()) {
-                    DataSnapshot ds = dataSnapshot;
-                    message = ds.child("text").getValue().toString();
-                    createdByUser = ds.child("createdByUser").getValue().toString();
-                    sortId = ds.getKey();
-                    createdByMe = createdByUser.equals(currentUserID);
-                    fetchMatchInformation(mMatch.getKey(), chatId, createdByMe, message, sortId);
-                } else {
-                    fetchMatchInformation(mMatch.getKey(), chatId, false, "No messages...", chatId);
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-        chatDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    fetchMatchInformation(mMatch.getKey(), chatId, false, "No messages...", chatId);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void fetchMatchInformation(String key, String chatId, final boolean createdByMe, final String message, String mSortId) {
-        DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child(key);
-        userDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    if (resultMatches.size() == matchesCount) {
-                        resultMatches = sortCollection(resultMatches);
-                        mMatchesAdapter.notifyDataSetChanged();
-                    }
-                }
-                if (dataSnapshot.exists()) {
-                    String userId = dataSnapshot.getKey();
-                    String name = "";
-                    String profileImageUrl = "";
-                    String lastMessageM = message;
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String s = StringUtils.left(lastMessageM, 20);
-                    stringBuilder.append(s);
-                    ArrayList<String> mutualTags = new ArrayList<>();
-                    for (DataSnapshot ds : dataSnapshot.child("connections").child("matches").child(currentUserID).child("mutualTags").getChildren()) {
-                        mutualTags.add(ds.getKey());
-                    }
-                    if (lastMessageM.length() >= 20) stringBuilder.append("...");
-                    String mLastMessage = stringBuilder.toString();
-                    if (dataSnapshot.child("name").getValue() != null) {
-                        name = dataSnapshot.child("name").getValue().toString();
-                    }
-                    if (dataSnapshot.child("profileImageUrl").getValue() != null) {
-                        profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
-                    }
-                    MatchesObject obj = new MatchesObject(userId, name, profileImageUrl, mLastMessage, createdByMe, mSortId, mutualTags);
-                    if (!usersID.contains(obj.getUserId())) {
-                        usersID.add(obj.getUserId());
-                        resultMatches.add(obj);
-                        oryginalMatches.add(obj);
-                    } else {
-                        resultMatches = sortCollection(resultMatches);
-                        oryginalMatches = sortCollection(oryginalMatches);
-                        for (int i = 0; i < resultMatches.size(); i++) {
-                            if (resultMatches.get(i).getUserId().equals(obj.getUserId())) {
-                                oryginalMatches.get(i).setLastMessage(obj.getLastMessage());
-                                oryginalMatches.get(i).setSortId(obj.getSortId());
-                                oryginalMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
-                                resultMatches.get(i).setLastMessage(obj.getLastMessage());
-                                resultMatches.get(i).setSortId(obj.getSortId());
-                                resultMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
-                            }
-                        }
-                    }
-                    resultMatches = sortCollection(resultMatches);
-                    mMatchesAdapter.notifyDataSetChanged();
-                    if (resultMatches.size() == matchesCount) {
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private List<MatchesObject> getDataSetMatches() {
-        return resultMatches;
-    }
-
-    private void loadTagsRecyclerView() {
-        DatabaseReference matchesReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
-        LinearLayoutManager verticalLayoutManager
-                = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(verticalLayoutManager);
-        matchesReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    iterator = (int) dataSnapshot.getChildrenCount();
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        iterator--;
-                        singeMatchTags(matchesReference.child(ds.getKey()));
-                    }
-                } else {
-                    myTags.add("No matches");
-                    adapter = new MatchesTagsAdapter(getActivity(), myTags);
-                    recyclerView.setAdapter(adapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void singeMatchTags(DatabaseReference databaseReference) {
-        databaseReference.child("mutualTags").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren())
-                    myTags.add(ds.getKey());
-                Set<String> set = new HashSet<>(myTags);
-                myTags.clear();
-                myTags.addAll(set);
-                if (iterator == 0) {
-                    if (getContext() != null) {
-                        adapter = new MatchesTagsAdapter(getContext(), myTags);
-                        recyclerView.setAdapter(adapter);
-                        adapter.setClickListener(new MatchesTagsAdapter.ItemClickListener() {
-                            @Override
-                            public void onItemClick(View view, int position) {
-                                sortBy = myTags.get(position);
-                                sortByTextView.setText("#" + sortBy);
-                                fillRecyclerViewByTags(sortBy);
-                            }
-                        });
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    public void fillRecyclerViewByTags(String tag) {
+    public void fillRecyclerViewByTags(String tag, ArrayList<MatchesObject> oryginalMatches) {
+        ArrayList<MatchesObject> resultMatches = new ArrayList<MatchesObject>();
         ArrayList mutualTags = new ArrayList();
         ArrayList<MatchesObject> bufforMatches = new ArrayList<MatchesObject>();
         if (tag.equals("AllButtonClicked")) {
@@ -378,6 +204,7 @@ public class MatchesFragment extends Fragment {
         }
     }
 
+
     private ArrayList<MatchesObject> sortCollection(ArrayList<MatchesObject> matchesList) {
         Collections.sort(matchesList, new Comparator<MatchesObject>() {
             @Override
@@ -388,4 +215,5 @@ public class MatchesFragment extends Fragment {
         Collections.reverse(matchesList);
         return matchesList;
     }
+
 }
