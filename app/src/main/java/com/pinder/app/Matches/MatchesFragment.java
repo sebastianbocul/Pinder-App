@@ -14,27 +14,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.LocationActivity;
 import com.pinder.app.R;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,9 +52,10 @@ public class MatchesFragment extends Fragment {
     private String sortBy;
     private TextView sortByTextView;
     private Button allMatches;
-
+    MatchesViewModel matchesViewModel;
     private ArrayList<String> usersID = new ArrayList<>();
-
+    ArrayList<MatchesObject> oryginalMatches= new ArrayList<>();
+    ArrayList<MatchesObject> resultMatches = new ArrayList<MatchesObject>();
 
     public MatchesFragment() {
         // Required empty public constructor
@@ -117,21 +108,36 @@ public class MatchesFragment extends Fragment {
         mMatchesLayoutManager = new LinearLayoutManager(getContext());
         myRecyclerView.setLayoutManager(mMatchesLayoutManager);
         recyclerView = getView().findViewById(R.id.tagsRecyclerViewMatches);
-        //mMatchesAdapter = new MatchesAdapter(resultMatches, getContext());
+        mMatchesAdapter = new MatchesAdapter(resultMatches, getContext());
         myRecyclerView.setAdapter(mMatchesAdapter);
         LinearLayoutManager verticalLayoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(verticalLayoutManager);
-
-
-
-
-
-
-
         adapter = new MatchesTagsAdapter(getActivity(), myTags);
         recyclerView.setAdapter(adapter);
-        MatchesViewModel matchesViewModel = new ViewModelProvider(getActivity()).get(MatchesViewModel.class);
+        matchesViewModel = new ViewModelProvider(getActivity()).get(MatchesViewModel.class);
+
+        matchesViewModel.getOryginalMatches().observe(getActivity(), new Observer<ArrayList<MatchesObject>>() {
+            @Override
+            public void onChanged(ArrayList<MatchesObject> matchesObjects) {
+                oryginalMatches.clear();
+                oryginalMatches.addAll(matchesObjects);
+                mMatchesAdapter = new MatchesAdapter(oryginalMatches, getContext());
+                myRecyclerView.setAdapter(mMatchesAdapter);
+            }
+        });
+
+        matchesViewModel.getResultMatches().observe(getActivity(), new Observer<ArrayList<MatchesObject>>() {
+            @Override
+            public void onChanged(ArrayList<MatchesObject> matchesObjects) {
+                resultMatches.clear();
+                resultMatches.addAll(matchesObjects);
+              //  mMatchesAdapter.notifyDataSetChanged();
+                mMatchesAdapter = new MatchesAdapter(resultMatches, getContext());
+                myRecyclerView.setAdapter(mMatchesAdapter);
+            }
+        });
+
 
         matchesViewModel.getTags().observe(getActivity(), new Observer<ArrayList<String>>() {
             @Override
@@ -143,9 +149,9 @@ public class MatchesFragment extends Fragment {
                             @Override
                             public void onItemClick(View view, int position) {
                                 Log.d("MatchesFragmentLog" , "myTags name : " + myTags.get(position).toString() +  "   pos: " + position);
-//                                sortBy = myTags.get(position);
-//                                sortByTextView.setText("#" + sortBy);
-//                                fillRecyclerViewByTags(sortBy);
+                                sortBy = myTags.get(position);
+                                sortByTextView.setText("#" + sortBy);
+                                fillRecyclerViewByTags(sortBy);
                             }
                         });
             }
@@ -158,7 +164,7 @@ public class MatchesFragment extends Fragment {
         allMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fillRecyclerViewByTags("AllButtonClicked",myTags);
+               fillRecyclerViewByTags("AllButtonClicked");
             }
         });
         locationButton.setOnClickListener(new View.OnClickListener() {
@@ -169,19 +175,19 @@ public class MatchesFragment extends Fragment {
         });
     }
 
-    private void allMatchesFunction() {
-      //
-    }
-
     private void goToLocationActivity() {
         Intent intent = new Intent(getContext(), LocationActivity.class);
         startActivity(intent);
     }
 
-    public void fillRecyclerViewByTags(String tag, ArrayList<MatchesObject> oryginalMatches) {
-        ArrayList<MatchesObject> resultMatches = new ArrayList<MatchesObject>();
+
+    public void fillRecyclerViewByTags(String tag) {
         ArrayList mutualTags = new ArrayList();
         ArrayList<MatchesObject> bufforMatches = new ArrayList<MatchesObject>();
+        Log.d("MatchesFragmentLog", "tag: " + tag);
+        Log.d("MatchesFragmentLog", "oryginalMatches: " + oryginalMatches.size());
+        Log.d("MatchesFragmentLog", "resultMatches: " + resultMatches.size());
+        resultMatches.clear();
         if (tag.equals("AllButtonClicked")) {
             sortByTextView.setText("#" + "all");
             oryginalMatches = sortCollection(oryginalMatches);
@@ -192,6 +198,7 @@ public class MatchesFragment extends Fragment {
         for (MatchesObject mo : oryginalMatches) {
             mutualTags = mo.getMutualTags();
             if (mutualTags.contains(tag)) {
+                Log.d("MatchesFragmentLog", "mo: " + mo.toString());
                 bufforMatches.add(mo);
             }
         }
@@ -204,7 +211,6 @@ public class MatchesFragment extends Fragment {
         }
     }
 
-
     private ArrayList<MatchesObject> sortCollection(ArrayList<MatchesObject> matchesList) {
         Collections.sort(matchesList, new Comparator<MatchesObject>() {
             @Override
@@ -215,5 +221,4 @@ public class MatchesFragment extends Fragment {
         Collections.reverse(matchesList);
         return matchesList;
     }
-
 }

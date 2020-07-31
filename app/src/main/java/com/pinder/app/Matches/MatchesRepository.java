@@ -17,7 +17,12 @@ public class MatchesRepository {
     }
 
 
-
+    public LiveData<ArrayList<MatchesObject>> getOryginalMatches(){
+        return MatchesFirebase.getInstance().getOryginalMatches();
+    }
+    public LiveData<ArrayList<MatchesObject>> getResultMatches(){
+        return MatchesFirebase.getInstance().getResultMatches();
+    }
 
     public LiveData<ArrayList<String>> getTags() {
         return MatchesFirebase.getInstance().getTags();

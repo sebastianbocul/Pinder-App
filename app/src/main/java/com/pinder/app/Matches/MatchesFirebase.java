@@ -30,6 +30,8 @@ public class MatchesFirebase implements MatchesDao {
     MutableLiveData<ArrayList<MatchesObject>> matches = new MutableLiveData<ArrayList<MatchesObject>>();
     MutableLiveData<ArrayList<String>> myTagsLiveData = new MutableLiveData<ArrayList<String>>();
     ArrayList<String> myTags = new ArrayList<>();
+    MutableLiveData<ArrayList<MatchesObject>> resultMatchesLiveData  = new MutableLiveData<ArrayList<MatchesObject>>();
+    MutableLiveData<ArrayList<MatchesObject>> oryginalMatchesLiveData = new MutableLiveData<ArrayList<MatchesObject>>();
 
 
     public static MatchesFirebase getInstance() {
@@ -37,30 +39,60 @@ public class MatchesFirebase implements MatchesDao {
             instance = new MatchesFirebase();
             instance.loadMatches();
             instance.loadTags();
+
         }
         return instance;
     }
 
     public void loadMatches() {
+        getUserMatchId();
     }
 
     int iterator = 0;
 
     public void loadTags() {
         DatabaseReference matchesReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
+
+
+//        matchesReference.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//                if (snapshot.exists()) {
+//                    singeMatchTags(matchesReference.child(snapshot.getKey()));
+//                } else {
+//                    myTags.add("No matches");
+//                    myTagsLiveData.postValue(myTags);
+//                }
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//            }
+//        });
+
         matchesReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-//                    iterator = (int) dataSnapshot.getChildrenCount();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-//                        iterator--;
                         singeMatchTags(matchesReference.child(ds.getKey()));
                     }
                 } else {
                     myTags.add("No matches");
                     myTagsLiveData.postValue(myTags);
-
+                    myTags.clear();
                 }
             }
 
@@ -80,14 +112,6 @@ public class MatchesFirebase implements MatchesDao {
                 myTags.clear();
                 myTags.addAll(set);
                 myTagsLiveData.postValue(myTags);
-
-//                if (iterator == 0) {
-//                    if (getContext() != null) {
-//                        adapter = new MatchesTagsAdapter(getContext(), myTags);
-//                        recyclerView.setAdapter(adapter);
-//
-//                    }
-//                }
             }
 
             @Override
@@ -122,154 +146,187 @@ public class MatchesFirebase implements MatchesDao {
 
 
 
-//    private void getUserMatchId() {
-//        DatabaseReference matchDbAd = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
-//        matchDbAd.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                if (dataSnapshot.exists()) {
-//                    matchesCount = (int) dataSnapshot.getChildrenCount();
-//                    getLastMessage(dataSnapshot);
-//                }
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//            }
-//        });
-//    }
-//
-//    String sortId = "00";
-//    private void getLastMessage(DataSnapshot match) {
-//        String chatId = match.child("ChatId").getValue().toString();
-//        DatabaseReference chatDb = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
-//        DataSnapshot mMatch = match;
-//        chatDb.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                boolean createdByMe = true;
-//                String message = "No messages...";
-//                sortId = chatId;
-//                Log.d("matchesactivity", "onChildAdded ds : " + dataSnapshot.toString());
-//                if (dataSnapshot.exists()) {
-//                    DataSnapshot ds = dataSnapshot;
-//                    message = ds.child("text").getValue().toString();
-//                    String createdByUser = ds.child("createdByUser").getValue().toString();
-//                    sortId = ds.getKey();
-//                    createdByMe = createdByUser.equals(currentUserID);
-//                    fetchMatchInformation(mMatch.getKey(), chatId, createdByMe, message, sortId);
-//                } else {
-//                    fetchMatchInformation(mMatch.getKey(), chatId, false, "No messages...", chatId);
-//                }
-//            }
-//
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, @Nullable String s) {
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//            }
-//        });
-//        chatDb.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (!dataSnapshot.exists()) {
-//                    fetchMatchInformation(mMatch.getKey(), chatId, false, "No messages...", chatId);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//            }
-//        });
-//    }
-//
-//    private void fetchMatchInformation(String key, String chatId, final boolean createdByMe, final String message, String mSortId) {
-//        DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child(key);
-//        userDb.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (!dataSnapshot.exists()) {
-//                    if (resultMatches.size() == matchesCount) {
+    private void getUserMatchId() {
+        DatabaseReference matchDbAd = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
+        matchDbAd.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (dataSnapshot.exists()) {
+                    //matchesCount = (int) dataSnapshot.getChildrenCount();
+                    getLastMessage(dataSnapshot);
+                    loadTags();
+                    Log.d("MatchesFirebaseLog", "onChildAdded: ");
+
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d("MatchesFirebaseLog", "onChildChanged: ");
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                Log.d("MatchesFirebaseLog", "onChildRemoved: " + dataSnapshot.getKey().toString());
+                Log.d("MatchesFirebaseLog", "onChildRemovedBF: " + resultMatches);
+                ArrayList<MatchesObject> buffor = new ArrayList<>();
+                try{
+                    for(MatchesObject mo:resultMatches){
+                        Log.d("MatchesFirebaseLog", "  mo.getUserId();: " +   mo.getUserId());
+                        if(mo.getUserId().equals(dataSnapshot.getKey())){
+                            resultMatches.remove(mo);
+                        }
+                    }
+                    for(MatchesObject mo:oryginalMatches){
+                        Log.d("MatchesFirebaseLog", "  mo.getUserId();: " +   mo.getUserId());
+                        if(mo.getUserId().equals(dataSnapshot.getKey())){
+                            oryginalMatches.remove(mo);
+                        }
+                    }
+                    oryginalMatchesLiveData.postValue(oryginalMatches);
+                    Log.d("MatchesFirebaseLog", "onChildRemovedAFter: " + resultMatches);
+                    resultMatchesLiveData.postValue(resultMatches);
+                    loadTags();
+                }catch (Exception e){
+                    Log.d("MatchesFirebaseLog", "ERROR" );
+                }
+
+
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d("MatchesFirebaseLog", "onChildMoved: ");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("MatchesFirebaseLog", "onCancelled: ");
+            }
+        });
+    }
+
+    String sortId = "00";
+    private void getLastMessage(DataSnapshot match) {
+        String chatId = match.child("ChatId").getValue().toString();
+        DatabaseReference chatDb = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
+        DataSnapshot mMatch = match;
+        chatDb.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                boolean createdByMe = true;
+                String message = "No messages...";
+                sortId = chatId;
+                Log.d("matchesactivity", "onChildAdded ds : " + dataSnapshot.toString());
+                if (dataSnapshot.exists()) {
+                    DataSnapshot ds = dataSnapshot;
+                    message = ds.child("text").getValue().toString();
+                    String createdByUser = ds.child("createdByUser").getValue().toString();
+                    sortId = ds.getKey();
+                    createdByMe = createdByUser.equals(currentUserID);
+                    fetchMatchInformation(mMatch.getKey(), chatId, createdByMe, message, sortId);
+                } else {
+                    fetchMatchInformation(mMatch.getKey(), chatId, false, "No messages...", chatId);
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, @Nullable String s) {
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+        chatDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    fetchMatchInformation(mMatch.getKey(), chatId, false, "No messages...", chatId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+
+    private ArrayList<String> usersID = new ArrayList<>();
+    private ArrayList<MatchesObject> resultMatches = new ArrayList<>();
+    private ArrayList<MatchesObject> oryginalMatches= new ArrayList<>();
+    private void fetchMatchInformation(String key, String chatId, final boolean createdByMe, final String message, String mSortId) {
+        DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child(key);
+        userDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                        return;
 //                        resultMatches = sortCollection(resultMatches);
 //                        mMatchesAdapter.notifyDataSetChanged();
-//                    }
-//                }
-//                if (dataSnapshot.exists()) {
-//                    String userId = dataSnapshot.getKey();
-//                    String name = "";
-//                    String profileImageUrl = "";
-//                    String lastMessageM = message;
-//                    StringBuilder stringBuilder = new StringBuilder();
-//                    String s = StringUtils.left(lastMessageM, 20);
-//                    stringBuilder.append(s);
-//                    ArrayList<String> mutualTags = new ArrayList<>();
-//                    for (DataSnapshot ds : dataSnapshot.child("connections").child("matches").child(currentUserID).child("mutualTags").getChildren()) {
-//                        mutualTags.add(ds.getKey());
-//                    }
-//                    if (lastMessageM.length() >= 20) stringBuilder.append("...");
-//                    String mLastMessage = stringBuilder.toString();
-//                    if (dataSnapshot.child("name").getValue() != null) {
-//                        name = dataSnapshot.child("name").getValue().toString();
-//                    }
-//                    if (dataSnapshot.child("profileImageUrl").getValue() != null) {
-//                        profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
-//                    }
-//                    MatchesObject obj = new MatchesObject(userId, name, profileImageUrl, mLastMessage, createdByMe, mSortId, mutualTags);
-//                    if (!usersID.contains(obj.getUserId())) {
-//                        usersID.add(obj.getUserId());
-//                        resultMatches.add(obj);
-//                        oryginalMatches.add(obj);
-//                    } else {
-//                        resultMatches = sortCollection(resultMatches);
-//                        oryginalMatches = sortCollection(oryginalMatches);
-//                        for (int i = 0; i < resultMatches.size(); i++) {
-//                            if (resultMatches.get(i).getUserId().equals(obj.getUserId())) {
-//                                oryginalMatches.get(i).setLastMessage(obj.getLastMessage());
-//                                oryginalMatches.get(i).setSortId(obj.getSortId());
-//                                oryginalMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
-//                                resultMatches.get(i).setLastMessage(obj.getLastMessage());
-//                                resultMatches.get(i).setSortId(obj.getSortId());
-//                                resultMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
-//                            }
-//                        }
-//                    }
-//                    resultMatches = sortCollection(resultMatches);
-//                    mMatchesAdapter.notifyDataSetChanged();
-//                    if (resultMatches.size() == matchesCount) {
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//            }
-//        });
-//    }
-//
+                }
+                if (dataSnapshot.exists()) {
+                    String userId = dataSnapshot.getKey();
+                    String name = "";
+                    String profileImageUrl = "";
+                    String lastMessageM = message;
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String s = StringUtils.left(lastMessageM, 20);
+                    stringBuilder.append(s);
+                    ArrayList<String> mutualTags = new ArrayList<>();
+                    for (DataSnapshot ds : dataSnapshot.child("connections").child("matches").child(currentUserID).child("mutualTags").getChildren()) {
+                        mutualTags.add(ds.getKey());
+                    }
+                    if (lastMessageM.length() >= 20) stringBuilder.append("...");
+                    String mLastMessage = stringBuilder.toString();
+                    if (dataSnapshot.child("name").getValue() != null) {
+                        name = dataSnapshot.child("name").getValue().toString();
+                    }
+                    if (dataSnapshot.child("profileImageUrl").getValue() != null) {
+                        profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
+                    }
+                    MatchesObject obj = new MatchesObject(userId, name, profileImageUrl, mLastMessage, createdByMe, mSortId, mutualTags);
+                    if (!usersID.contains(obj.getUserId())) {
+                        usersID.add(obj.getUserId());
+                        resultMatches.add(obj);
+                        oryginalMatches.add(obj);
+                    } else {
+                        resultMatches = sortCollection(resultMatches);
+                        oryginalMatches = sortCollection(oryginalMatches);
+                        for (int i = 0; i < resultMatches.size(); i++) {
+                            if (resultMatches.get(i).getUserId().equals(obj.getUserId())) {
+                                oryginalMatches.get(i).setLastMessage(obj.getLastMessage());
+                                oryginalMatches.get(i).setSortId(obj.getSortId());
+                                oryginalMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
+                                resultMatches.get(i).setLastMessage(obj.getLastMessage());
+                                resultMatches.get(i).setSortId(obj.getSortId());
+                                resultMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
+                            }
+                        }
+                    }
 
+                    resultMatches = sortCollection(resultMatches);
+                    resultMatchesLiveData.postValue(resultMatches);
+                    oryginalMatchesLiveData.postValue(oryginalMatches);
+                //    mMatchesAdapter.notifyDataSetChanged();
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
 
     private ArrayList<MatchesObject> sortCollection(ArrayList<MatchesObject> matchesList) {
         Collections.sort(matchesList, new Comparator<MatchesObject>() {
@@ -283,8 +340,13 @@ public class MatchesFirebase implements MatchesDao {
     }
 
     @Override
-    public LiveData<ArrayList<MatchesObject>> getMatches() {
-        return null;
+    public LiveData<ArrayList<MatchesObject>> getOryginalMatches() {
+        return oryginalMatchesLiveData;
+    }
+
+    @Override
+    public LiveData<ArrayList<MatchesObject>> getResultMatches() {
+        return resultMatchesLiveData;
     }
 
     @Override
