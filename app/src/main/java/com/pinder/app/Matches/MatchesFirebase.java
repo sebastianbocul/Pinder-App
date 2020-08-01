@@ -44,6 +44,7 @@ public class MatchesFirebase implements MatchesDao {
     }
 
     public void loadTags() {
+        myTags.clear();
         DatabaseReference matchesReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
         matchesReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -116,10 +117,12 @@ public class MatchesFirebase implements MatchesDao {
                             oryginalMatchesLiveData.postValue(oryginalMatches);
                         }
                     }
-                    loadTags();
+
                 } catch (Exception e) {
                     Log.d("MatchesFirebaseLog", "ERROR" + e.toString());
                 }
+                Log.d("MatchesFirebaseLog", "  loadTags : " + myTagsLiveData.getValue().toString());
+                loadTags();
             }
 
             @Override

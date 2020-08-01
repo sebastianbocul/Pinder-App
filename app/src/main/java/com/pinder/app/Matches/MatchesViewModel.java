@@ -31,7 +31,7 @@ public class MatchesViewModel extends ViewModel {
         return matchesRepository.getInstance().getTags();
     }
 
-    public ArrayList<MatchesObject> getSortedTags() {
+    public ArrayList<MatchesObject> getSortedMatches() {
         ArrayList<MatchesObject> resultMatches = new ArrayList<>();
         ArrayList<MatchesObject> oryginalMatches = oryginalMatchesLiveData.getValue();
         ArrayList mutualTags = new ArrayList();
@@ -57,6 +57,6 @@ public class MatchesViewModel extends ViewModel {
 
     public ArrayList<MatchesObject> setTag(String tag) {
         tagLD.setValue(tag);
-        return getSortedTags();
+        return getSortedMatches();
     }
 }

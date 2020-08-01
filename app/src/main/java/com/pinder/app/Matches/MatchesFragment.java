@@ -115,7 +115,7 @@ public class MatchesFragment extends Fragment {
         matchesViewModel.getOryginalMatches().observe(getActivity(), new Observer<ArrayList<MatchesObject>>() {
             @Override
             public void onChanged(ArrayList<MatchesObject> matchesObjects) {
-                matchesObjects = matchesViewModel.getSortedTags();
+                matchesObjects = matchesViewModel.getSortedMatches();
                 oryginalMatches.clear();
                 oryginalMatches.addAll(matchesObjects);
                 mMatchesAdapter = new MatchesAdapter(oryginalMatches, getContext());
