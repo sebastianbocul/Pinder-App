@@ -18,13 +18,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.pinder.app.LocationActivity;
 import com.pinder.app.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,17 +42,12 @@ public class MatchesFragment extends Fragment {
     private RecyclerView myRecyclerView;
     private RecyclerView.Adapter mMatchesAdapter;
     private RecyclerView.LayoutManager mMatchesLayoutManager;
-    private String currentUserID;
     private ImageView locationButton;
-    private String createdByUser;
-    private int matchesCount;
     private String sortBy;
     private TextView sortByTextView;
     private Button allMatches;
     MatchesViewModel matchesViewModel;
-    private ArrayList<String> usersID = new ArrayList<>();
-    ArrayList<MatchesObject> oryginalMatches= new ArrayList<>();
-    ArrayList<MatchesObject> resultMatches = new ArrayList<MatchesObject>();
+    ArrayList<MatchesObject> oryginalMatches = new ArrayList<>();
 
     public MatchesFragment() {
         // Required empty public constructor
@@ -98,7 +90,6 @@ public class MatchesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         locationButton = getView().findViewById(R.id.locationButton);
         allMatches = getView().findViewById(R.id.allMatches);
         sortByTextView = getView().findViewById(R.id.sortByText);
@@ -108,7 +99,7 @@ public class MatchesFragment extends Fragment {
         mMatchesLayoutManager = new LinearLayoutManager(getContext());
         myRecyclerView.setLayoutManager(mMatchesLayoutManager);
         recyclerView = getView().findViewById(R.id.tagsRecyclerViewMatches);
-        mMatchesAdapter = new MatchesAdapter(resultMatches, getContext());
+        //  mMatchesAdapter = new MatchesAdapter(resultMatches, getContext());
         myRecyclerView.setAdapter(mMatchesAdapter);
         LinearLayoutManager verticalLayoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -116,29 +107,22 @@ public class MatchesFragment extends Fragment {
         adapter = new MatchesTagsAdapter(getActivity(), myTags);
         recyclerView.setAdapter(adapter);
         matchesViewModel = new ViewModelProvider(getActivity()).get(MatchesViewModel.class);
-
+        matchesViewModel.tagLD.observe(getActivity(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                sortByTextView.setText("#" + s);
+            }
+        });
         matchesViewModel.getOryginalMatches().observe(getActivity(), new Observer<ArrayList<MatchesObject>>() {
             @Override
             public void onChanged(ArrayList<MatchesObject> matchesObjects) {
+                matchesObjects = matchesViewModel.getSortedTags();
                 oryginalMatches.clear();
                 oryginalMatches.addAll(matchesObjects);
                 mMatchesAdapter = new MatchesAdapter(oryginalMatches, getContext());
                 myRecyclerView.setAdapter(mMatchesAdapter);
             }
         });
-
-        matchesViewModel.getResultMatches().observe(getActivity(), new Observer<ArrayList<MatchesObject>>() {
-            @Override
-            public void onChanged(ArrayList<MatchesObject> matchesObjects) {
-                resultMatches.clear();
-                resultMatches.addAll(matchesObjects);
-              //  mMatchesAdapter.notifyDataSetChanged();
-                mMatchesAdapter = new MatchesAdapter(resultMatches, getContext());
-                myRecyclerView.setAdapter(mMatchesAdapter);
-            }
-        });
-
-
         matchesViewModel.getTags().observe(getActivity(), new Observer<ArrayList<String>>() {
             @Override
             public void onChanged(ArrayList<String> strings) {
@@ -146,25 +130,21 @@ public class MatchesFragment extends Fragment {
                 myTags.addAll(strings);
                 adapter.notifyDataSetChanged();
                 adapter.setClickListener(new MatchesTagsAdapter.ItemClickListener() {
-                            @Override
-                            public void onItemClick(View view, int position) {
-                                Log.d("MatchesFragmentLog" , "myTags name : " + myTags.get(position).toString() +  "   pos: " + position);
-                                sortBy = myTags.get(position);
-                                sortByTextView.setText("#" + sortBy);
-                                fillRecyclerViewByTags(sortBy);
-                            }
-                        });
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Log.d("MatchesFragmentLog", "myTags name : " + myTags.get(position).toString() + "   pos: " + position);
+                        sortBy = myTags.get(position);
+                        mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag(sortBy), getContext());
+                        myRecyclerView.setAdapter(mMatchesAdapter);
+                    }
+                });
             }
         });
-
-
-
-//        getUserMatchId();
-//        loadTagsRecyclerView();
         allMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               fillRecyclerViewByTags("AllButtonClicked");
+                mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag("all"), getContext());
+                myRecyclerView.setAdapter(mMatchesAdapter);
             }
         });
         locationButton.setOnClickListener(new View.OnClickListener() {
@@ -179,46 +159,44 @@ public class MatchesFragment extends Fragment {
         Intent intent = new Intent(getContext(), LocationActivity.class);
         startActivity(intent);
     }
-
-
-    public void fillRecyclerViewByTags(String tag) {
-        ArrayList mutualTags = new ArrayList();
-        ArrayList<MatchesObject> bufforMatches = new ArrayList<MatchesObject>();
-        Log.d("MatchesFragmentLog", "tag: " + tag);
-        Log.d("MatchesFragmentLog", "oryginalMatches: " + oryginalMatches.size());
-        Log.d("MatchesFragmentLog", "resultMatches: " + resultMatches.size());
-        resultMatches.clear();
-        if (tag.equals("AllButtonClicked")) {
-            sortByTextView.setText("#" + "all");
-            oryginalMatches = sortCollection(oryginalMatches);
-            mMatchesAdapter = new MatchesAdapter(oryginalMatches, getContext());
-            myRecyclerView.setAdapter(mMatchesAdapter);
-            return;
-        }
-        for (MatchesObject mo : oryginalMatches) {
-            mutualTags = mo.getMutualTags();
-            if (mutualTags.contains(tag)) {
-                Log.d("MatchesFragmentLog", "mo: " + mo.toString());
-                bufforMatches.add(mo);
-            }
-        }
-        if (bufforMatches.size() != 0) {
-            resultMatches.clear();
-            resultMatches = bufforMatches;
-            resultMatches = sortCollection(resultMatches);
-            mMatchesAdapter = new MatchesAdapter(resultMatches, getContext());
-            myRecyclerView.setAdapter(mMatchesAdapter);
-        }
-    }
-
-    private ArrayList<MatchesObject> sortCollection(ArrayList<MatchesObject> matchesList) {
-        Collections.sort(matchesList, new Comparator<MatchesObject>() {
-            @Override
-            public int compare(MatchesObject o1, MatchesObject o2) {
-                return o1.getSortId().compareTo(o2.getSortId());
-            }
-        });
-        Collections.reverse(matchesList);
-        return matchesList;
-    }
+//    public void fillRecyclerViewByTags(String tag) {
+//        ArrayList mutualTags = new ArrayList();
+//        ArrayList<MatchesObject> bufforMatches = new ArrayList<MatchesObject>();
+//        Log.d("MatchesFragmentLog", "tag: " + tag);
+//        Log.d("MatchesFragmentLog", "oryginalMatches: " + oryginalMatches.size());
+//        Log.d("MatchesFragmentLog", "resultMatches: " + resultMatches.size());
+//        resultMatches.clear();
+//        if (tag.equals("AllButtonClicked")) {
+//            sortByTextView.setText("#" + "all");
+//            oryginalMatches = sortCollection(oryginalMatches);
+//            mMatchesAdapter = new MatchesAdapter(oryginalMatches, getContext());
+//            myRecyclerView.setAdapter(mMatchesAdapter);
+//            return;
+//        }
+//        for (MatchesObject mo : oryginalMatches) {
+//            mutualTags = mo.getMutualTags();
+//            if (mutualTags.contains(tag)) {
+//                Log.d("MatchesFragmentLog", "mo: " + mo.toString());
+//                bufforMatches.add(mo);
+//            }
+//        }
+//        if (bufforMatches.size() != 0) {
+//            resultMatches.clear();
+//            resultMatches = bufforMatches;
+//            resultMatches = sortCollection(resultMatches);
+//            mMatchesAdapter = new MatchesAdapter(resultMatches, getContext());
+//            myRecyclerView.setAdapter(mMatchesAdapter);
+//        }
+//    }
+//
+//    private ArrayList<MatchesObject> sortCollection(ArrayList<MatchesObject> matchesList) {
+//        Collections.sort(matchesList, new Comparator<MatchesObject>() {
+//            @Override
+//            public int compare(MatchesObject o1, MatchesObject o2) {
+//                return o1.getSortId().compareTo(o2.getSortId());
+//            }
+//        });
+//        Collections.reverse(matchesList);
+//        return matchesList;
+//    }
 }

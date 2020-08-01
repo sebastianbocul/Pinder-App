@@ -7,20 +7,18 @@ import java.util.ArrayList;
 public class MatchesRepository {
     public MatchesRepository instance = null;
 
-    MatchesRepository getInstance(){
-
-        if(instance==null){
-            instance=new MatchesRepository();
+    MatchesRepository getInstance() {
+        if (instance == null) {
+            instance = new MatchesRepository();
         }
-
         return instance;
     }
 
-
-    public LiveData<ArrayList<MatchesObject>> getOryginalMatches(){
+    public LiveData<ArrayList<MatchesObject>> getOryginalMatches() {
         return MatchesFirebase.getInstance().getOryginalMatches();
     }
-    public LiveData<ArrayList<MatchesObject>> getResultMatches(){
+
+    public LiveData<ArrayList<MatchesObject>> getResultMatches() {
         return MatchesFirebase.getInstance().getResultMatches();
     }
 
