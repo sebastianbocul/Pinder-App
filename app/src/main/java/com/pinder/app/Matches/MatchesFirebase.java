@@ -26,10 +26,8 @@ import java.util.Set;
 public class MatchesFirebase implements MatchesDao {
     public static MatchesFirebase instance = null;
     String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-    MutableLiveData<ArrayList<MatchesObject>> matches = new MutableLiveData<ArrayList<MatchesObject>>();
     MutableLiveData<ArrayList<String>> myTagsLiveData = new MutableLiveData<ArrayList<String>>();
     ArrayList<String> myTags = new ArrayList<>();
-    MutableLiveData<ArrayList<MatchesObject>> resultMatchesLiveData = new MutableLiveData<ArrayList<MatchesObject>>();
     MutableLiveData<ArrayList<MatchesObject>> oryginalMatchesLiveData = new MutableLiveData<ArrayList<MatchesObject>>();
 
     public static MatchesFirebase getInstance() {
@@ -45,37 +43,8 @@ public class MatchesFirebase implements MatchesDao {
         getUserMatchId();
     }
 
-    int iterator = 0;
-
     public void loadTags() {
         DatabaseReference matchesReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
-//        matchesReference.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//                if (snapshot.exists()) {
-//                    singeMatchTags(matchesReference.child(snapshot.getKey()));
-//                } else {
-//                    myTags.add("No matches");
-//                    myTagsLiveData.postValue(myTags);
-//                }
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
         matchesReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -100,10 +69,10 @@ public class MatchesFirebase implements MatchesDao {
         databaseReference.child("mutualTags").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                myTags.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren())
                     myTags.add(ds.getKey());
                 Set<String> set = new HashSet<>(myTags);
+                myTags.clear();
                 myTags.addAll(set);
                 myTagsLiveData.postValue(myTags);
             }
@@ -120,7 +89,6 @@ public class MatchesFirebase implements MatchesDao {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if (dataSnapshot.exists()) {
-                    //matchesCount = (int) dataSnapshot.getChildrenCount();
                     getLastMessage(dataSnapshot);
                     loadTags();
                     Log.d("MatchesFirebaseLog", "onChildAdded: ");
@@ -135,27 +103,20 @@ public class MatchesFirebase implements MatchesDao {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 Log.d("MatchesFirebaseLog", "onChildRemoved: " + dataSnapshot.getKey().toString());
-                //  Log.d("MatchesFirebaseLog", "onChildRemovedBF: " + resultMatches);
-                //  oryginalMatches=oryginalMatchesLiveData.getValue();
                 ArrayList<MatchesObject> buffor = new ArrayList<>();
                 try {
-//                    for(MatchesObject mo:resultMatches){
-//                        Log.d("MatchesFirebaseLog", "  mo.getUserId();: " +   mo.getUserId());
-//                        if(mo.getUserId().equals(dataSnapshot.getKey())){
-//                            resultMatches.remove(mo);
-//                        }
-//                    }
+                    if (usersID.contains(dataSnapshot.getKey())) {
+                        usersID.remove(dataSnapshot.getKey());
+                    }
                     for (MatchesObject mo : oryginalMatches) {
                         Log.d("MatchesFirebaseLog", "  mo.getUserId();: " + mo.getUserId());
                         if (mo.getUserId().equals(dataSnapshot.getKey())) {
                             Log.d("MatchesFirebaseLog", "  oryginalMatches;: " + oryginalMatches.toString());
                             oryginalMatches.remove(mo);
                             oryginalMatchesLiveData.postValue(oryginalMatches);
-                            loadTags();
                         }
                     }
-                    //   Log.d("MatchesFirebaseLog", "onChildRemovedAFter: " + resultMatches);
-//                    resultMatchesLiveData.postValue(resultMatches);
+                    loadTags();
                 } catch (Exception e) {
                     Log.d("MatchesFirebaseLog", "ERROR" + e.toString());
                 }
@@ -229,7 +190,6 @@ public class MatchesFirebase implements MatchesDao {
     }
 
     private ArrayList<String> usersID = new ArrayList<>();
-    //  private ArrayList<MatchesObject> resultMatches = new ArrayList<>();
     private ArrayList<MatchesObject> oryginalMatches = new ArrayList<>();
 
     private void fetchMatchInformation(String key, String chatId, final boolean createdByMe, final String message, String mSortId) {
@@ -239,8 +199,6 @@ public class MatchesFirebase implements MatchesDao {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
                     return;
-//                        resultMatches = sortCollection(resultMatches);
-//                        mMatchesAdapter.notifyDataSetChanged();
                 }
                 if (dataSnapshot.exists()) {
                     String userId = dataSnapshot.getKey();
@@ -263,21 +221,18 @@ public class MatchesFirebase implements MatchesDao {
                         profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
                     }
                     MatchesObject obj = new MatchesObject(userId, name, profileImageUrl, mLastMessage, createdByMe, mSortId, mutualTags);
+                    Log.d("MatchesFirebaseLog", "usersID:  " + usersID.toString());
                     if (!usersID.contains(obj.getUserId())) {
                         usersID.add(obj.getUserId());
-//                        resultMatches.add(obj);
                         oryginalMatches.add(obj);
                     } else {
-//                        resultMatches = sortCollection(resultMatches);
                         oryginalMatches = sortCollection(oryginalMatches);
+                        Log.d("MatchesFirebaseLog", "else:  " + usersID.toString());
                         for (int i = 0; i < oryginalMatches.size(); i++) {
                             if (oryginalMatches.get(i).getUserId().equals(obj.getUserId())) {
                                 oryginalMatches.get(i).setLastMessage(obj.getLastMessage());
                                 oryginalMatches.get(i).setSortId(obj.getSortId());
                                 oryginalMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
-//                                resultMatches.get(i).setLastMessage(obj.getLastMessage());
-//                                resultMatches.get(i).setSortId(obj.getSortId());
-//                                resultMatches.get(i).setCreatedByMe(obj.isCreatedByMe());
                             }
                         }
                     }
@@ -285,15 +240,12 @@ public class MatchesFirebase implements MatchesDao {
                     for (MatchesObject mo : oryginalMatches) {
                         Log.d("MatchesFirebaseLog", "oryginalMatches:  " + mo.getName());
                     }
-//                    resultMatches = sortCollection(resultMatches);
-//                    resultMatchesLiveData.postValue(resultMatches);
                     oryginalMatches = sortCollection(oryginalMatches);
                     Log.d("MatchesFirebaseLog", "after sort ");
                     for (MatchesObject mo : oryginalMatches) {
                         Log.d("MatchesFirebaseLog", "oryginalMatches:  " + mo.getName());
                     }
                     oryginalMatchesLiveData.postValue(oryginalMatches);
-                    //    mMatchesAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -317,11 +269,6 @@ public class MatchesFirebase implements MatchesDao {
     @Override
     public LiveData<ArrayList<MatchesObject>> getOryginalMatches() {
         return oryginalMatchesLiveData;
-    }
-
-    @Override
-    public LiveData<ArrayList<MatchesObject>> getResultMatches() {
-        return resultMatchesLiveData;
     }
 
     @Override

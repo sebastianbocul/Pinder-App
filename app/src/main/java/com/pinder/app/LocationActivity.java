@@ -194,7 +194,8 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             try {
-                                Log.d("LocationActivity", dataSnapshot.toString());
+                                Log.d("LocationActivity","User id:   " + dataSnapshot.getKey() + "       name: " + dataSnapshot.child("name").getValue().toString() + "       showmyloc: " + dataSnapshot.child("showMyLocation").getValue().toString());
+
                                 if (dataSnapshot.child("showMyLocation").getValue().toString().equals("false")) {
                                     return;
                                 }
