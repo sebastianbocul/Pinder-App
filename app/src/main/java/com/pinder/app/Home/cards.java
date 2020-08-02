@@ -1,4 +1,4 @@
-package com.pinder.app.Cards;
+package com.pinder.app.Home;
 
 import java.util.Map;
 

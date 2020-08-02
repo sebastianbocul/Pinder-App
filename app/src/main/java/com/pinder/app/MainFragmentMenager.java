@@ -2,13 +2,13 @@ package com.pinder.app;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.pinder.app.Home.MainFragment;
 import com.pinder.app.Matches.MatchesFragment;
 import com.pinder.app.Profile.ProfileFragment;
 import com.pinder.app.Settings.SettingsFragment;

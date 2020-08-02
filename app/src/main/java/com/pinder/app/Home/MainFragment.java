@@ -1,4 +1,4 @@
-package com.pinder.app;
+package com.pinder.app.Home;
 
 import android.Manifest;
 import android.content.Intent;
@@ -40,8 +40,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
-import com.pinder.app.Cards.arrayAdapter;
-import com.pinder.app.Cards.cards;
 import com.pinder.app.MyFunctions.CalculateDistance;
 import com.pinder.app.MyFunctions.StringDateToAge;
 import com.pinder.app.Notifications.APIService;
@@ -49,9 +47,12 @@ import com.pinder.app.Notifications.Client;
 import com.pinder.app.Notifications.Data;
 import com.pinder.app.Notifications.Sender;
 import com.pinder.app.Notifications.Token;
+import com.pinder.app.PopActivity;
 import com.pinder.app.Profile.ProfileFragment;
-import com.pinder.app.Tags.TagsManagerAdapter;
+import com.pinder.app.R;
 import com.pinder.app.Tags.MainTags.TagsObject;
+import com.pinder.app.Tags.TagsManagerAdapter;
+import com.pinder.app.UsersProfilesActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -97,7 +98,7 @@ public class MainFragment extends Fragment {
     String mUID;
     APIService apiService;
     boolean notify = false;
-    private com.pinder.app.Cards.arrayAdapter arrayAdapter;
+    private com.pinder.app.Home.arrayAdapter arrayAdapter;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private FirebaseAuth mAuth;
     private DatabaseReference usersDb;
