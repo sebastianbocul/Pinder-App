@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,8 +42,16 @@ import com.pinder.app.LegalInfo.LicencesDialog;
 import com.pinder.app.LegalInfo.PrivacyDialog;
 import com.pinder.app.LegalInfo.TermsDialog;
 import com.pinder.app.LoginActivity;
+import com.pinder.app.Matches.MatchesFirebase;
+import com.pinder.app.Matches.MatchesRepository;
 import com.pinder.app.MyFunctions.StringDateToAge;
+import com.pinder.app.Profile.ProfileFirebase;
+import com.pinder.app.Profile.ProfileRepository;
 import com.pinder.app.R;
+import com.pinder.app.Tags.MainTags.TagsFirebase;
+import com.pinder.app.Tags.MainTags.TagsRepository;
+import com.pinder.app.Tags.PopularTags.PopularTagsFirebase;
+import com.pinder.app.Tags.PopularTags.PopularTagsRepository;
 
 import java.util.Calendar;
 
@@ -115,6 +124,7 @@ public class SettingsFragment extends Fragment {
 
     int i = 0;
     SettingsViewModel settingsViewModel;
+    int logoutFlag = 0;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -129,7 +139,8 @@ public class SettingsFragment extends Fragment {
         termsButton = getView().findViewById(R.id.termsButton);
         licenceButton = getView().findViewById(R.id.licenceButton);
         bugsAndImprovements = getView().findViewById(R.id.bugs_improvement);
-        settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
+        settingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        logoutFlag = 0;
         settingsViewModel.getDate().observe(getActivity(), new androidx.lifecycle.Observer<String>() {
             @Override
             public void onChanged(String s) {
@@ -245,6 +256,16 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 updateMyDb();
+                SettingsFirebase.instance = null;
+                SettingsRepository.instance = null;
+                TagsFirebase.instance = null;
+                TagsRepository.instance = null;
+                PopularTagsFirebase.instance = null;
+                PopularTagsRepository.instance = null;
+                MatchesRepository.instance = null;
+                MatchesFirebase.instance = null;
+                ProfileFirebase.instance = null;
+                ProfileRepository.instance = null;
                 logoutUser();
             }
         });
@@ -279,7 +300,8 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        updateMyDb();
+        if (logoutFlag != 1)
+            updateMyDb();
         super.onDetach();
     }
 
@@ -328,6 +350,8 @@ public class SettingsFragment extends Fragment {
         mAuth.signOut();
         LoginManager.getInstance().logOut();
         Intent intent = new Intent(getContext(), LoginActivity.class);
+        logoutFlag = 1;
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         return;
     }

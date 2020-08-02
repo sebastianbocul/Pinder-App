@@ -6,7 +6,7 @@ import java.util.List;
 
 public class PopularTagsRepository {
     private static LiveData<List<PopularTagsObject>> allPopularTags;
-    private static PopularTagsRepository instance = null;
+    public static PopularTagsRepository instance = null;
 
     public static synchronized PopularTagsRepository getInstance() {
         if (instance == null) {

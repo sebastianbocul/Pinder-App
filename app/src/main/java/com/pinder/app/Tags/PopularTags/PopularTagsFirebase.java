@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PopularTagsFirebase implements PopularTagsFirebaseDao {
-    private static PopularTagsFirebase instance = null;
+    public static PopularTagsFirebase instance = null;
     private ArrayList<PopularTagsObject> popularTagsList = new ArrayList<>();
     private MutableLiveData<List<PopularTagsObject>> result = new MutableLiveData<List<PopularTagsObject>>();
 

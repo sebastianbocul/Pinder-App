@@ -288,7 +288,7 @@ public class MainFragment extends Fragment {
                     }
                 }
             }
-        }, 300);
+        }, 500);
     }
 
     private void isConnectionMatch(final String userId, cards obj) {

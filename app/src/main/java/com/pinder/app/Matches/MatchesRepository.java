@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData;
 import java.util.ArrayList;
 
 public class MatchesRepository {
-    public MatchesRepository instance = null;
+    public static MatchesRepository instance = null;
 
     MatchesRepository getInstance() {
         if (instance == null) {

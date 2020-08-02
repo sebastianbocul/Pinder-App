@@ -6,7 +6,7 @@ import java.util.List;
 
 public class TagsRepository implements TagsFirebaseDao {
     private MutableLiveData<List<TagsObject>> tagList = new MutableLiveData<List<TagsObject>>();
-    private static TagsRepository instance = null;
+    public static TagsRepository instance = null;
 
     public static synchronized TagsRepository getInstance() {
         if (instance == null) {

@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProfileFirebase implements ProfileDao {
-    private static ProfileFirebase instance = null;
+    public static ProfileFirebase instance = null;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String userId = mAuth.getCurrentUser().getUid();
     private DatabaseReference mImageDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("images");

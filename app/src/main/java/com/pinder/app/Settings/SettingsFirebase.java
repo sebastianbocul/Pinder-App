@@ -18,7 +18,7 @@ public class SettingsFirebase implements SettingsFirebaseDao {
     private MutableLiveData<String> date = new MutableLiveData<>();
     private MutableLiveData<Boolean> showMyLocation = new MutableLiveData<>();
     private MutableLiveData<Boolean> sortByDistance = new MutableLiveData<>();
-    private static SettingsFirebase instance = null;
+    public static SettingsFirebase instance = null;
 
     public static SettingsFirebase getInstance() {
         if (instance == null) {
