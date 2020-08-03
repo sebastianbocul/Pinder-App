@@ -1,6 +1,7 @@
 package com.pinder.app.Home;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -23,6 +24,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,6 +53,8 @@ import com.pinder.app.Notifications.Token;
 import com.pinder.app.PopActivity;
 import com.pinder.app.Profile.ProfileFragment;
 import com.pinder.app.R;
+import com.pinder.app.Settings.SettingsViewModel;
+import com.pinder.app.Tags.MainTags.TagsFragmentViewModel;
 import com.pinder.app.Tags.MainTags.TagsObject;
 import com.pinder.app.Tags.TagsManagerAdapter;
 import com.pinder.app.UsersProfilesActivity;
@@ -64,7 +69,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Cancellable;
@@ -93,21 +97,20 @@ public class MainFragment extends Fragment {
     private String currentUID;
     private TextView noMoreEditText;
     private SwipeFlingAdapterView flingContainer;
-    List<cards> rowItems;
-    List<cards> rowItemsRxJava;
+
     String mUID;
     APIService apiService;
     boolean notify = false;
     private com.pinder.app.Home.arrayAdapter arrayAdapter;
-    private FusedLocationProviderClient fusedLocationProviderClient;
+ //   private FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
     private FirebaseAuth mAuth;
-    private DatabaseReference usersDb;
+  //  private DatabaseReference usersDb;
     private TagsManagerAdapter adapter;
-    private ArrayList<TagsObject> myTagsList = new ArrayList<>();
+ //   private ArrayList<TagsObject> myTagsList = new ArrayList<>();
     private double myLatitude, myLongitude;
-    private Map<String, String> myInfo = new HashMap<>();
+    MainViewModel mainViewModel;
     private String sortByDistance = "true";
-    private ArrayList<String> first;
+    List<cards> rowItems;
 
     public MainFragment() {
         // Required empty public constructor
@@ -155,24 +158,55 @@ public class MainFragment extends Fragment {
             currentUID = mAuth.getCurrentUser().getUid();
         } catch (Exception e) {
         }
-        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         noMoreEditText = getView().findViewById(R.id.noMore);
-        rowItems = new ArrayList<cards>();
-        rowItemsRxJava = new ArrayList<cards>();
-        arrayAdapter = new arrayAdapter(getContext(), R.layout.item, rowItems);
+
+        List<cards>  rowItemsRxJava = new ArrayList<cards>();
+
+
         likeButton = getView().findViewById(R.id.likeButton);
         dislikeButton = getView().findViewById(R.id.dislikeButton);
+
+
         flingContainer = getView().findViewById(R.id.frame);
-        Log.d("mainfragmentfunctions", "onViewCreated: " + rowItems.size());
-        ProfileFragment profileFragment = new ProfileFragment();
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+        rowItems = new ArrayList<cards>();
+        arrayAdapter = new arrayAdapter(getActivity(), R.layout.item, rowItems);
+        flingContainer.setAdapter(arrayAdapter);
+        Context ctx= getActivity();
+        SettingsViewModel settingViewModel  = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        TagsFragmentViewModel tagsFragmentViewModel  = new ViewModelProvider(getActivity()).get(TagsFragmentViewModel.class);
+        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+        mainViewModel.getRowItemsLD().observe(getActivity(), new Observer<ArrayList<cards>>() {
+            @Override
+            public void onChanged(ArrayList<cards> cards) {
+                rowItems.clear();
+                rowItems.addAll(cards);
+               // arrayAdapter =;
+                Log.d("MainFragmentLog", "cards: " + cards.size() +"   row: " +  rowItems.size());
+//                flingContainer.setAdapter( new arrayAdapter(ctx, R.layout.item, rowItems));
+             //   for()
+                arrayAdapter.notifyDataSetChanged();
+                if(cards!=null && cards.size()!=0 && getContext()!=null){
+
+
+                }
+
+//                rowItems=cards;
+//                arrayAdapter.notifyDataSetChanged();
+            }
+        });
+
+
+
+
         //check location permission
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // updateLocation();
+
         } else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
-        flingContainer.setAdapter(arrayAdapter);
+
+
+       // flingContainer.setAdapter(arrayAdapter);
         //create APISERVICE
         Client client = new Client();
         apiService = client.getClient("https://fcm.googleapis.com/").create(APIService.class);
@@ -209,6 +243,7 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onLeftCardExit(Object dataObject) {
+                DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
                 //Do something on the left!
                 //You also have access to the original object.
                 //If you want to use it just cast it (String) dataObject
@@ -220,6 +255,7 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onRightCardExit(Object dataObject) {
+                DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
                 cards obj = (cards) dataObject;
                 String userId = obj.getUserId();
                 usersDb.child(userId).child("connections").child("yes").child(currentUID).setValue(true);
@@ -293,6 +329,9 @@ public class MainFragment extends Fragment {
     }
 
     private void isConnectionMatch(final String userId, cards obj) {
+
+        String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         DatabaseReference currentUserConnectionsDb = usersDb.child(currentUID).child("connections").child("yes").child(userId);
         currentUserConnectionsDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -334,311 +373,22 @@ public class MainFragment extends Fragment {
         });
     }
 
-    public void updateLocation() {
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                Location location = task.getResult();
-                if (location != null) {
-                    try {
-                        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        myLongitude = addresses.get(0).getLongitude();
-                        myLatitude = addresses.get(0).getLatitude();
-                        DatabaseReference myRef = usersDb.child(currentUID).child("location");
-                        myRef.child("longitude").setValue(addresses.get(0).getLongitude());
-                        myRef.child("latitude").setValue(addresses.get(0).getLatitude());
-                        if (addresses.get(0).getCountryName() != null) {
-                            myRef.child("countryName").setValue(addresses.get(0).getCountryName());
-                        } else {
-                            myRef.child("countryName").setValue("Not found");
-                        }
-                        if (addresses.get(0).getLocality() != null) {
-                            myRef.child("locality").setValue(addresses.get(0).getLocality());
-                        } else {
-                            myRef.child("locality").setValue("Not found");
-                        }
-                        if (addresses.get(0).getAddressLine(0) != null) {
-                            myRef.child("address").setValue(addresses.get(0).getAddressLine(0));
-                        } else {
-                            myRef.child("address").setValue("Not found");
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }
 
-    private void fillTagsAdapter() {
-        //  super.onCreate(savedInstanceState);
-        // setContentView(R.layout.activity_main);
-        // data to populate the RecyclerView with
-        DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID).child("tags");
-        ArrayList<String> myTags = new ArrayList<>();
-        RecyclerView recyclerView = getView().findViewById(R.id.tagsRecyclerView);
-        LinearLayoutManager horizontalLayoutManager
-                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(horizontalLayoutManager);
-        Log.d("mainfragmentfunctions", "fillTagsAdapter");
-        ds.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        myTags.add("#" + ds.getKey());
-                        String tagName = ds.getKey().toLowerCase();
-                        String gender = ds.child("gender").getValue().toString();
-                        String mAgeMax = ds.child("maxAge").getValue().toString();
-                        String mAgeMin = ds.child("minAge").getValue().toString();
-                        String mDistance = ds.child("maxDistance").getValue().toString();
-                        TagsObject obj = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
-                        myTagsList.add(obj);
-                    }
-                    if (getContext() != null) {
-                        adapter = new TagsManagerAdapter(getContext(), myTags);
-                    }
-                    recyclerView.setAdapter(adapter);
-                } else {
-                    myTags.add("Add tags in options first!");
-                    if (getContext() != null) {
-                        adapter = new TagsManagerAdapter(getContext(), myTags);
-                    }
-                    recyclerView.setAdapter(adapter);
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
 
-    private void getUsersFromDb() {
-        first = new ArrayList<>();
-        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
-        mAuth = FirebaseAuth.getInstance();
-        DatabaseReference newUserDb = FirebaseDatabase.getInstance().getReference().child("Users");
-        String newCurrentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Single<List<cards>> sinlgeObs1 = Single.create(emitter -> {
-            // register onChange callback to database
-            // callback will be called, when a value is available
-            // the Single will stay open, until emitter#onSuccess is called with a collected list.
-            newUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
-                @RequiresApi(api = Build.VERSION_CODES.N)
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.d("maingetTag", "datasnapshot " + dataSnapshot);
-                    if (dataSnapshot.child(currentUID).child("sex").exists()) {
-                        Log.d("maingetTag", "myInfo.put sex ");
-                        myInfo.put("sex", dataSnapshot.child(currentUID).child("sex").getValue().toString());
-                    }
-                    if (dataSnapshot.child(currentUID).child("dateOfBirth").exists()) {
-                        int myAge = new StringDateToAge().stringDateToAge(dataSnapshot.child(currentUID).child("dateOfBirth").getValue().toString());
-                        Log.d("maingetTag", "myInfo.put myage ");
-                        myInfo.put("age", String.valueOf(myAge));
-                    }
-                    if (dataSnapshot.child(currentUID).child("connections").child("yes").exists()) {
-                        for (DataSnapshot ds : dataSnapshot.child(currentUID).child("connections").child("yes").getChildren()) {
-                            Log.d("rxJavaEmitter", "myUsers: ");
-                            if (!dataSnapshot.child(currentUID).child("connections").child("matches").hasChild(ds.getKey()) && !dataSnapshot.child(ds.getKey()).child("connections").child("nope").hasChild(currentUID)) {
-                                Log.d("rxJava", "onDataChangeFirst: " + ds.getKey() + "  myID " + currentUID);
-                                Log.d("MaindataSnapshot", "dataSnapshot: " + dataSnapshot.child(ds.getKey()).child("connections").child("nope") + "  myID " + currentUID);
-                                first.add(ds.getKey());
-                                getTagsPreferencesUsers(dataSnapshot.child(ds.getKey()), true);
-                            }
-                        }
-                    }
-                    Log.d("rxMergeJavaSingle", "sinlgeObs1: " + rowItemsRxJava.toString());
-                    List<cards> likedMeList = rowItemsRxJava;
-                    emitter.onSuccess(likedMeList); //return collected data from database here...
-                    rowItemsRxJava.clear();
-                    Log.d("rowItemsRxJava", "rowItemsRxJava DELETE OBS1: " + rowItemsRxJava.toString());
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-            // do some stuff
-            emitter.setCancellable(new Cancellable() {
-                @Override
-                public void cancel() throws Exception {
-                    //clean memory
-                }
-            });
-        });
-        Single<List<cards>> sinlgeObs2 = Single.create(emitter -> {
-            // register onChange callback to database
-            // callback will be called, when a value is available
-            // the Single will stay open, until emitter#onSuccess is called with a collected list.
-            newUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        Log.d("rxJavaEmitter", "allUsers: ");
-                        if (ds.child("sex").getValue() != null) {
-                            if (ds.exists() && !first.contains(ds.getKey()) && !ds.child("connections").child("nope").hasChild(currentUID) && !ds.child("connections").child("yes").hasChild(currentUID) && !ds.getKey().equals(newCurrentUID)) {
-                                ds.getKey().equals(currentUID);
-                                Log.d("first", "OnChillAdded: " + ds.getKey());
-                                Log.d("rxJava", "onDataChangeSecound2222: " + ds.getKey());
-                                getTagsPreferencesUsers(ds, false);
-                            }
-                        }
-                    }
-                    Log.d("rxMergeJavaSingle", "sinlgeObs2: " + rowItemsRxJava.toString());
-                    noMoreEditText.setText("There is no more users");
-                    List<cards> notLikedMeList = rowItemsRxJava;
-                    emitter.onSuccess(notLikedMeList);
-                    rowItemsRxJava.clear();
-                    Log.d("rowItemsRxJava", "rowItemsRxJava DELETE OBS2: " + rowItemsRxJava.toString());
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-            // do some stuff
-            emitter.setCancellable(new Cancellable() {
-                @Override
-                public void cancel() throws Exception {
-                    //clean memory
-                }
-            });
-        });
-        Observable.merge(sinlgeObs1.toObservable(), sinlgeObs2.toObservable())
-                .subscribeOn(Schedulers.computation())
-                .subscribe(new Observer<List<cards>>() {
-                    @Override
-                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                        Log.d("rxMergeJava", "onSubscribe: ");
-                    }
-
-                    @Override
-                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull List<cards> o) {
-                        if (sortByDistance.equals("true")) {
-                            o = sortCollection(o);
-                            rowItems.addAll(o);
-                        } else {
-                            rowItems.addAll(o);
-                        }
-                        Log.d("rxMergeJava", "onNext: " + o.toString());
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                        Log.d("rxMergeJava", "onError: ");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d("rxMergeJava", "onComplete: ");
-                        for (cards cs : rowItems) {
-                            Log.d("rxMergeJava: ", cs.getName() + "   dist: " + cs.getDistance());
-                        }
-                        if (getActivity() != null) {
-                            arrayAdapter = new arrayAdapter(getActivity(), R.layout.item, rowItems);
-                            flingContainer.setAdapter(arrayAdapter);
-                            arrayAdapter.notifyDataSetChanged();
-                        }
-                    }
-                });
-    }
-
-    private void getTagsPreferencesUsers(DataSnapshot ds, Boolean likesMe) {
-        ArrayList<String> mutalTagsList = new ArrayList<>();
-        StringBuilder mutalTagsSB = new StringBuilder();
-        Map<Object, Object> tagsMap = new HashMap<>();
-        try {
-            Log.d("maingetTag", "User Name " + ds.child("name").getValue().toString());
-            int age = new StringDateToAge().stringDateToAge(ds.child("dateOfBirth").getValue().toString());
-            Log.d("maingetTag", "try 2");
-            int myAge = Integer.parseInt(myInfo.get("age"));
-            double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
-            double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
-            double distanceDouble = new CalculateDistance().distance(myLatitude, myLongitude, latitude, longitude);
-            for (DataSnapshot dataTag : ds.child("tags").getChildren()) {
-                Log.d("maingetTag", "forFirst ");
-                for (TagsObject tag : myTagsList) {
-                    ///VALIDATING MY PREFERENCES
-                    //comparing tags
-                    Log.d("maingetTag", "1st if: " + dataTag.getKey() + " == " + tag.getTagName());
-                    if (dataTag.getKey().equals(tag.getTagName())) {
-                        //validating my gender preferences
-                        Log.d("maingetTag", "2nd if: " + tag.getGender() + " == " + ds.child("sex").getValue().toString() + "  ||  " + tag.getGender() + " == Any");
-                        if (tag.getGender().equals(ds.child("sex").getValue().toString()) || tag.getGender().equals("Any")) {
-                            Log.d("maingetTag", "3rd if: " + dataTag.child("gender").getValue().toString() + " == " + myInfo.get("sex") + "  ||  " + dataTag.child("gender").getValue().toString() + " == Any");
-                            //validating user gender preferences
-                            if (dataTag.child("gender").getValue().toString().equals(myInfo.get("sex")) || dataTag.child("gender").getValue().toString().equals("Any")) {
-                                Log.d("maingetTag", "4th if: " + tag.getmAgeMin() + " <= " + age + "  &&  " + tag.getmAgeMax() + " >= " + age);
-                                //validating myTag age preferences with minAge and maxAge
-                                if (Integer.parseInt(tag.getmAgeMin()) <= age && Integer.parseInt(tag.getmAgeMax()) >= age) {
-                                    Log.d("maingetTag", "5th if: " + dataTag.child("minAge").getValue().toString() + " <= " + myAge + "  &&  " + dataTag.child("maxAge").getValue().toString() + " >= " + myAge);
-                                    //validating userTag age preferences with minAge and maxAge
-                                    if (Integer.parseInt(dataTag.child("minAge").getValue().toString()) <= myAge && Integer.parseInt(dataTag.child("maxAge").getValue().toString()) >= myAge) {
-                                        Log.d("maingetTag", "6th if: " + tag.getmDistance() + " >= " + distanceDouble);
-                                        //validating myTag distance preference
-                                        if (Double.parseDouble(tag.getmDistance()) >= distanceDouble) {
-                                            //validate userTag distance preference
-                                            Log.d("maingetTag", "7th if: " + dataTag.child("maxDistance").getValue().toString() + " >= " + distanceDouble);
-                                            if (Double.parseDouble(dataTag.child("maxDistance").getValue().toString()) >= distanceDouble) {
-                                                ///CAN VALIDATE OTHER USER PREFERENCES
-                                                mutalTagsList.add(tag.getTagName());
-                                                tagsMap.put(tag.getTagName(), true);
-                                                mutalTagsSB.append("#" + tag.getTagName() + " ");
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (mutalTagsList.size() != 0) {
-                String profileImageUrl = "default";
-                if (ds.child("profileImageUrl").exists()) {
-                    if (!ds.child("profileImageUrl").getValue().toString().equals("default")) {
-                        profileImageUrl = ds.child("profileImageUrl").getValue().toString();
-                    }
-                } else profileImageUrl = "default";
-                cards item = new cards(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap, distanceDouble, likesMe);
-                rowItemsRxJava.add(item);
-                Log.d("rowItemsRxJava", "rowItemsRxJava: " + rowItemsRxJava.toString());
-                Log.d("rxMergeJavaLoop: ", item.getName().toString() + " likesMe " + likesMe);
-            } else {
-            }
-        } catch (Exception e) {
-            Log.d("maingetTag", "tryError " + e.toString());
-        }
-    }
-
-    private List<cards> sortCollection(List<cards> list) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Collections.sort(list, Comparator.comparing(cards::getDistance));
-        } else {
-            Collections.sort(list, new Comparator<cards>() {
-                public int compare(cards o1, cards o2) {
-                    if (o1.getDistance() == o2.getDistance())
-                        return 0;
-                    return o1.getDistance() < o2.getDistance() ? -1 : 1;
-                }
-            });
-        }
-        return list;
-    }
 
     @Override
     public void onStart() {
         super.onStart();
         updateMyInfo();
-        fillTagsAdapter();
+        //fillTagsAdapter();
         Log.d("mainActivity", "rowItems on Start: " + rowItems.size());
         Log.d("mainfragmentfunctions", "onStart: " + rowItems.size());
-        if (rowItems.size() == 0) {
-            getUsersFromDb();
-        }
+         mainViewModel.getUsersFromDb();
+
+//        if (mainViewModel.getRowItemsLD().getValue().size() == 0) {
+//
+//        }
     }
 
     private void updateMyInfo() {

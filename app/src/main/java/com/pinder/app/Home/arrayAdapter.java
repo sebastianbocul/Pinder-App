@@ -14,8 +14,10 @@ import com.pinder.app.R;
 import java.util.List;
 
 public class arrayAdapter extends ArrayAdapter<cards> {
+    Context context;
     public arrayAdapter(Context context, int resourceId, List<cards> items) {
         super(context, resourceId, items);
+        this.context=context;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
