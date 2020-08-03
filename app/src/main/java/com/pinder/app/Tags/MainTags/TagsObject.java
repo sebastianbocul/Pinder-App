@@ -1,5 +1,7 @@
 package com.pinder.app.Tags.MainTags;
 
+import androidx.annotation.Nullable;
+
 public class TagsObject {
     private String tagName;
     private String gender;
@@ -53,5 +55,18 @@ public class TagsObject {
 
     public void setmDistance(String mDistance) {
         this.mDistance = mDistance;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        TagsObject object = (TagsObject) obj;
+        boolean res = (this.tagName.equals(object.getTagName()) &&
+                this.gender.equals(object.getGender()) &&
+                this.mAgeMin.equals(object.getmAgeMin()) &&
+                this.mAgeMax.equals(object.getmAgeMax()) &&
+                this.mDistance.equals(object.getmDistance()));
+        return res;
     }
 }

@@ -6,6 +6,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -40,6 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Vector;
+import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
@@ -81,21 +84,11 @@ public class MainFirebase {
     private String sortByDistance = "false";
     String sortByDistanceTemp = "false";
     public void updateMyTagsAndSortBydDist() {
-        //  super.onCreate(savedInstanceState);
-        // setContentView(R.layout.activity_main);
-        // data to populate the RecyclerView with
-
-
-
         Single<List<TagsObject>> sinlgeObs1 = Single.create(emitter -> {
             String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
             ArrayList<String> myTags = new ArrayList<>();
             myTagsListTemp.clear();
-//        RecyclerView recyclerView = getView().findViewById(R.id.tagsRecyclerView);
-//        LinearLayoutManager horizontalLayoutManager
-//                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-//        recyclerView.setLayoutManager(horizontalLayoutManager);
             Log.d("mainfragmentfunctions", "fillTagsAdapter");
             ds.child("tags").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -112,21 +105,15 @@ public class MainFirebase {
                             Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsListBeforeAdd..." + myTagsList.toString());
                             Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsListTempBeforeAdd..." + myTagsListTemp.toString());
                             myTagsListTemp.add(obj);
-                            Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsListAfterAdd..." + myTagsList.toString());
                             Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsListTempAfterAdd..." + myTagsListTemp.toString());
-                            Log.d("MainFirebase", "updatingTags..." + obj.getTagName());
                         }
                         emitter.onSuccess(myTagsListTemp);
-//                    if (getContext() != null) {
-//                        adapter = new TagsManagerAdapter(getContext(), myTags);
-//                    }
-//                    recyclerView.setAdapter(adapter);
                     } else {
-//                    myTags.add("Add tags in options first!");
-//                    if (getContext() != null) {
-//                        adapter = new TagsManagerAdapter(getContext(), myTags);
-//                    }
-//                    recyclerView.setAdapter(adapter);
+                        if(myTagsListTemp.size()==0){
+                            rowItems.clear();
+                            rowItemsLD.postValue(rowItems);
+                            Toast.makeText(context,"Add tags first!",Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
 
@@ -179,6 +166,7 @@ public class MainFirebase {
 
                     @Override
                     public void onNext(@io.reactivex.rxjava3.annotations.NonNull Object o) {
+
                         Log.d("MainFirebase", "updateMyTagsAndSortBydDist...onNext..." + o.toString() );
                     }
 
@@ -188,46 +176,13 @@ public class MainFirebase {
 
                     @Override
                     public void onComplete() {
-
                         Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistance..." + sortByDistance );
                         Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistanceTemp..." +sortByDistanceTemp );
                        // Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistanceTrue/false..." + (sortByDistance.equals(sortByDistanceTemp)));
                         Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsList..." + myTagsList.toString());
                         Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsListTemp..." + myTagsListTemp.toString());
                         Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsTrue/false..." + (myTagsList.equals(myTagsListTemp)));
-//                        myTagsList.equals(myTagsListTemp)
-
-
-                        String sort = sortByDistance;
-                        String sor2 = sortByDistanceTemp;
-                        boolean sortt = sortByDistance.equals(sortByDistanceTemp);
-
-
-                        myTagsList.clear();
-                        myTagsList.addAll(myTagsListTemp);
-                        // comparing arr1 and arr2
-                        boolean retval = Arrays.equals(new ArrayList[]{myTagsList}, new ArrayList[]{myTagsListTemp});
-                        System.out.println("arr1 and arr2 equal: " + retval);
-                        // comparing arr1 and arr2
                         boolean retval2 = Arrays.equals(myTagsList.toArray(), myTagsListTemp.toArray());
-                        // comparing arr1 and arr2
-                        boolean retval3 = Arrays.deepEquals(new ArrayList[]{myTagsList}, new ArrayList[]{myTagsListTemp});
-                        boolean retval4 = myTagsList==myTagsListTemp;
-
-
-                        System.out.println("arr1 and arr2 equal: " + retval2);
-                        ArrayList<TagsObject> m1= myTagsList;
-                        ArrayList<TagsObject> m2= myTagsListTemp;
-                        ArrayList<cards> m3 = rowItems;
-                        boolean areArraysTheSame=true;
-                        if(myTagsList.size()==myTagsListTemp.size()) {
-                            for (TagsObject myTag : myTagsListTemp) {
-                                if(!myTagsList.contains(myTag)) {
-                                    areArraysTheSame=false;
-                                    break;
-                                }
-                            }
-                        }else areArraysTheSame=false;
                         if(!sortByDistance.equals(sortByDistanceTemp) || !retval2){
                             Log.d("MainFirebase", "IF DOING ");
                             sortByDistance=sortByDistanceTemp;
@@ -235,7 +190,7 @@ public class MainFirebase {
                             for (TagsObject myTag : myTagsListTemp) {
                                 myTagsList.add(myTag);
                             }
-                          //  myTagsList=myTagsListTemp;
+                            myTagsListTemp.clear();
                             getUsersFromDb();
                         }
 
