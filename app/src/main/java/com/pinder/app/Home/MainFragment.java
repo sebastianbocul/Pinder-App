@@ -92,8 +92,6 @@ public class MainFragment extends Fragment {
         dislikeButton = getView().findViewById(R.id.dislikeButton);
         flingContainer = getView().findViewById(R.id.frame);
         List<cards> rowItems = new ArrayList<cards>();
-
-
         arrayAdapter = new arrayAdapter(getContext(), R.layout.item, rowItems);
         flingContainer.setAdapter(arrayAdapter);
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
@@ -108,9 +106,6 @@ public class MainFragment extends Fragment {
                 }
             }
         });
-
-
-
         ArrayList<String> myTags = new ArrayList<>();
         TagsManagerAdapter adapter = new TagsManagerAdapter(getContext(), myTags);
         RecyclerView recyclerView = getView().findViewById(R.id.tagsRecyclerView);
@@ -128,7 +123,6 @@ public class MainFragment extends Fragment {
         });
         mainViewModel.checkUserStatus(getActivity());
         mainViewModel.updateToken();
-
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
