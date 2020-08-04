@@ -168,7 +168,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendMessage() {
-        String sendMessageText = mSendEditText.getText().toString();
+        String sendMessageText = mSendEditText.getText().toString().trim();
         if (!sendMessageText.isEmpty()) {
             DatabaseReference newMessageDb = mDatabaseChat.push();
             Map newMessage = new HashMap<>();

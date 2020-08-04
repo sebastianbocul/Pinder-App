@@ -36,8 +36,6 @@ public class MatchesViewModel extends ViewModel {
         ArrayList<MatchesObject> oryginalMatches = oryginalMatchesLiveData.getValue();
         ArrayList mutualTags = new ArrayList();
         ArrayList<MatchesObject> bufforMatches = new ArrayList<MatchesObject>();
-        Log.d("MatchesViewModelLog", "tag: " + tagLD.getValue());
-        Log.d("MatchesViewModelLog", "oryginalMatches: " + oryginalMatches.size());
         if (tagLD.getValue().equals("all")) {
             return oryginalMatches;
         }

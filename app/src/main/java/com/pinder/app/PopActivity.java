@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,11 +19,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 public class PopActivity extends AppCompatActivity {
     private ImageView profileImage;
     private DatabaseReference db;
     private LinearLayout linearLayout;
-
+    private TextView nameTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +34,7 @@ public class PopActivity extends AppCompatActivity {
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         profileImage = findViewById(R.id.profileImage);
+        nameTextView=findViewById(R.id.nameTextView);
         int width = dm.widthPixels;
         int height = dm.heightPixels;
         linearLayout = findViewById(R.id.layoutId);
@@ -51,6 +55,11 @@ public class PopActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String matchPictureUrl;
+                if(dataSnapshot.child("name").exists()){
+                    String name = dataSnapshot.child("name").getValue().toString();
+                    nameTextView.setText(name);
+                }
+
                 if (!dataSnapshot.child("profileImageUrl").exists()) {
                     matchPictureUrl = "default";
                 }

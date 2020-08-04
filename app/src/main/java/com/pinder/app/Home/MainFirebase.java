@@ -1,6 +1,8 @@
 package com.pinder.app.Home;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -11,26 +13,30 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.MutableLiveData;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.pinder.app.MyFunctions.CalculateDistance;
 import com.pinder.app.MyFunctions.StringDateToAge;
+import com.pinder.app.Notifications.APIService;
+import com.pinder.app.Notifications.Client;
+import com.pinder.app.Notifications.Data;
+import com.pinder.app.Notifications.Sender;
+import com.pinder.app.Notifications.Token;
+import com.pinder.app.PopActivity;
 import com.pinder.app.R;
-import com.pinder.app.Settings.SettingsFirebase;
-import com.pinder.app.Tags.MainTags.TagsFirebase;
 import com.pinder.app.Tags.MainTags.TagsObject;
-import com.pinder.app.Tags.TagsManagerAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,8 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
-import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
@@ -50,52 +54,52 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Cancellable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class MainFirebase {
     public static MainFirebase instance = null;
     Context context;
     MutableLiveData<Double> myLongitude = new MutableLiveData<>();
     MutableLiveData<Double> myLatitude = new MutableLiveData<>();
-
-
-
-    MutableLiveData<ArrayList<cards>> rowItemsLD = new MutableLiveData<>();
-    public static MainFirebase getInstance(Context context2){
-        if(instance==null){
-            instance= new MainFirebase();
-            instance.context=context2;
-            instance.updateLocation(context2);
-            //instance.updateMyTagsAndSortBydDist();
-
-        }
-
-        return instance;
-    }
-
-//    public static MainFirebase getInstance(Context context){
-//        if(instance==null){
-//            instance= new MainFirebase();
-//            instance.updateLocation(context);
-//        }
-//        return instance;
-//    }
+    ArrayList<cards> rowItems = new ArrayList<cards>();
+    ArrayList<cards> rowItemsRxJava = new ArrayList<cards>();
+    private Map<String, String> myInfo = new HashMap<>();
     ArrayList<TagsObject> myTagsListTemp = new ArrayList<>();
     ArrayList<TagsObject> myTagsList = new ArrayList<>();
     private String sortByDistance = "false";
     String sortByDistanceTemp = "false";
+    //change later// temp solution
+    MutableLiveData<ArrayList<cards>> rowItemsLD = new MutableLiveData<>();
+
+    public static MainFirebase getInstance(Context context2) {
+        if (instance == null) {
+            instance = new MainFirebase();
+            instance.context = context2;
+            instance.updateLocation(context2);
+        }
+        return instance;
+    }
+    ArrayList<String> myTagsAdapter = new ArrayList<>();
+
+
+    MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
     public void updateMyTagsAndSortBydDist() {
         Single<List<TagsObject>> sinlgeObs1 = Single.create(emitter -> {
             String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
-            ArrayList<String> myTags = new ArrayList<>();
+            myTagsAdapter.clear();
             myTagsListTemp.clear();
-            Log.d("mainfragmentfunctions", "fillTagsAdapter");
             ds.child("tags").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            myTags.add("#" + ds.getKey());
+                            myTagsAdapter.add("#" + ds.getKey());
                             String tagName = ds.getKey().toLowerCase();
                             String gender = ds.child("gender").getValue().toString();
                             String mAgeMax = ds.child("maxAge").getValue().toString();
@@ -109,10 +113,10 @@ public class MainFirebase {
                         }
                         emitter.onSuccess(myTagsListTemp);
                     } else {
-                        if(myTagsListTemp.size()==0){
+                        if (myTagsListTemp.size() == 0) {
                             rowItems.clear();
                             rowItemsLD.postValue(rowItems);
-                            Toast.makeText(context,"Add tags first!",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Add tags first!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -128,14 +132,12 @@ public class MainFirebase {
                 }
             });
         });
-
         Single<String> sinlgeObs2 = Single.create(emitter -> {
-        String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
+            String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
             ds.child("sortByDistance").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                     if (snapshot.exists()) sortByDistanceTemp = snapshot.getValue().toString();
                     Log.d("MainFirebase", "updatedSortByDist..." + sortByDistance.toString());
                     emitter.onSuccess(sortByDistanceTemp);
@@ -145,18 +147,13 @@ public class MainFirebase {
                 public void onCancelled(@NonNull DatabaseError error) {
                 }
             });
-
-
-
-
-        emitter.setCancellable(new Cancellable() {
-            @Override
-            public void cancel() throws Exception {
-                //clean memory
-            }
+            emitter.setCancellable(new Cancellable() {
+                @Override
+                public void cancel() throws Exception {
+                    //clean memory
+                }
+            });
         });
-    });
-
         Observable.merge(sinlgeObs1.toObservable(), sinlgeObs2.toObservable())
                 .subscribeOn(Schedulers.computation())
                 .subscribe(new Observer<Object>() {
@@ -166,8 +163,7 @@ public class MainFirebase {
 
                     @Override
                     public void onNext(@io.reactivex.rxjava3.annotations.NonNull Object o) {
-
-                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...onNext..." + o.toString() );
+                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...onNext..." + o.toString());
                     }
 
                     @Override
@@ -176,16 +172,20 @@ public class MainFirebase {
 
                     @Override
                     public void onComplete() {
-                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistance..." + sortByDistance );
-                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistanceTemp..." +sortByDistanceTemp );
-                       // Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistanceTrue/false..." + (sortByDistance.equals(sortByDistanceTemp)));
+                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistance..." + sortByDistance);
+                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistanceTemp..." + sortByDistanceTemp);
+                        // Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistanceTrue/false..." + (sortByDistance.equals(sortByDistanceTemp)));
                         Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsList..." + myTagsList.toString());
                         Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsListTemp..." + myTagsListTemp.toString());
                         Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsTrue/false..." + (myTagsList.equals(myTagsListTemp)));
                         boolean retval2 = Arrays.equals(myTagsList.toArray(), myTagsListTemp.toArray());
-                        if(!sortByDistance.equals(sortByDistanceTemp) || !retval2){
+                        if(!retval2){
+                            myTagsAdapterLD.postValue(myTagsAdapter);
+                        }
+                        if (!sortByDistance.equals(sortByDistanceTemp) || !retval2) {
                             Log.d("MainFirebase", "IF DOING ");
-                            sortByDistance=sortByDistanceTemp;
+
+                            sortByDistance = sortByDistanceTemp;
                             myTagsList.clear();
                             for (TagsObject myTag : myTagsListTemp) {
                                 myTagsList.add(myTag);
@@ -193,18 +193,15 @@ public class MainFirebase {
                             myTagsListTemp.clear();
                             getUsersFromDb();
                         }
-
-
                     }
                 });
     }
 
-
     public void updateLocation(Context context) {
-        Log.d("MainFirebase", "updateLocation..." );
-        FirebaseAuth mAuth= FirebaseAuth.getInstance();
+        Log.d("MainFirebase", "updateLocation...");
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         DatabaseReference usersDb;
-        String  currentUID = mAuth.getCurrentUser().getUid();
+        String currentUID = mAuth.getCurrentUser().getUid();
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
@@ -215,7 +212,7 @@ public class MainFirebase {
                     try {
                         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
                         List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        Log.d("MainFirebase", "updateLocation...onComplete..." );
+                        Log.d("MainFirebase", "updateLocation...onComplete...");
                         myLongitude.postValue(addresses.get(0).getLongitude());
                         myLatitude.postValue(addresses.get(0).getLatitude());
                         DatabaseReference myRef = usersDb.child(currentUID).child("location");
@@ -236,8 +233,6 @@ public class MainFirebase {
                         } else {
                             myRef.child("address").setValue("Not found");
                         }
-
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -246,20 +241,8 @@ public class MainFirebase {
         });
     }
 
-
-    ArrayList<cards> rowItems = new ArrayList<cards>();
-    ArrayList<cards> rowItemsRxJava = new ArrayList<cards>();
-    private Map<String, String> myInfo = new HashMap<>();
-
-    //change later// temp solution
-
-
     protected void getUsersFromDb() {
-        //updateMyTagsAndSortBydDist();
-        Log.d("MainFirebase", "getUsersFromDb..." );
-
-//        myTagsList.add(new TagsObject("default","Female","18","99","999"));
-//        myTagsList.add(new TagsObject("date","Female","18","99","999"));
+        Log.d("MainFirebase", "getUsersFromDb...");
         rowItems.clear();
         rowItemsLD.postValue(rowItems);
         rowItemsRxJava.clear();
@@ -335,7 +318,6 @@ public class MainFirebase {
                     }
                     Log.d("rxMergeJavaSingle", "sinlgeObs2: " + rowItemsRxJava.toString());
                     List<cards> notLikedMeList = rowItemsRxJava;
-
                     emitter.onSuccess(notLikedMeList);
                     rowItemsRxJava.clear();
                     Log.d("rowItemsRxJava", "rowItemsRxJava DELETE OBS2: " + rowItemsRxJava.toString());
@@ -381,7 +363,6 @@ public class MainFirebase {
                     public void onComplete() {
                         Log.d("rxMergeJava", "onComplete: ");
                         Log.d("MainFirebase", "getUsersFromDb...onComplete...");
-
                         for (cards cs : rowItems) {
                             Log.d("MainFirebase: ", cs.getName() + "   dist: " + cs.getDistance());
                         }
@@ -459,7 +440,6 @@ public class MainFirebase {
         }
     }
 
-
     private List<cards> sortCollection(List<cards> list) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Collections.sort(list, Comparator.comparing(cards::getDistance));
@@ -475,9 +455,116 @@ public class MainFirebase {
         return list;
     }
 
+    boolean notify = false;
 
+    public void isConnectionMatch(cards obj, Context con) {
+        //  this.context=context;
+        String userId = obj.getUserId();
+        String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+        usersDb.child(userId).child("connections").child("yes").child(currentUID).setValue(true);
+        DatabaseReference currentUserConnectionsDb = usersDb.child(currentUID).child("connections").child("yes").child(userId);
+        currentUserConnectionsDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Toast.makeText(con, "New connection!", Toast.LENGTH_LONG).show();
+                    String key = FirebaseDatabase.getInstance().getReference().child("Chat").push().getKey();
+                    usersDb.child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUID).child("ChatId").setValue(key);
+                    usersDb.child(currentUID).child("connections").child("matches").child(dataSnapshot.getKey()).child("ChatId").setValue(key);
+                    usersDb.child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUID).child("mutualTags").updateChildren(obj.getMutualTagsMap());
+                    usersDb.child(currentUID).child("connections").child("matches").child(dataSnapshot.getKey()).child("mutualTags").updateChildren(obj.getMutualTagsMap());
+                    String matchId = dataSnapshot.getKey();
+                    DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
+                    database.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String myName = currentUID;
+                            if (notify) {
+                                sendNotification(matchId, myName, " ");
+                            }
+                            notify = false;
+                        }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+                    notify = true;
+                    //popactivity when matched
+                    Intent i = new Intent(con, PopActivity.class);
+                    i.putExtra("matchId", matchId);
+                    con.startActivity(i);
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void sendNotification(String matchId, String myName, String sendMessageText) {
+        Client client = new Client();
+        APIService apiService = client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+        ;
+        String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference allTokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        Query query = allTokens.orderByKey().equalTo(matchId);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Token token = ds.getValue(Token.class);
+                    Data data = new Data(currentUID, R.drawable.login_photo, "Check out now!", "New match!", matchId);
+                    Sender sender = new Sender(data, token.getToken());
+                    apiService.sendNotification(sender).enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private String mUID;
+
+    protected void updateToken() {
+        String token = FirebaseInstanceId.getInstance().getToken();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Tokens");
+        Token mToken = new Token(token);
+        ref.child(mUID).setValue(mToken);
+    }
+
+    protected void checkUserStatus(Context context) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            mUID = user.getUid();
+            //save UID of current signin user in shared preferences
+            SharedPreferences sp = context.getSharedPreferences("SP_USER", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("Current_USERID", mUID);
+            editor.apply();
+        }
+    }
+
+    public void onLeftCardExit(cards dataObject) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        String currentUID = mAuth.getCurrentUser().getUid();
+        DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+        String userId = dataObject.getUserId();
+        usersDb.child(userId).child("connections").child("nope").child(currentUID).setValue(true);
+    }
 
 
     public MutableLiveData<Double> getMyLatitude() {
@@ -491,4 +578,9 @@ public class MainFirebase {
     public MutableLiveData<ArrayList<cards>> getRowItemsLD() {
         return rowItemsLD;
     }
+
+    public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
+        return myTagsAdapterLD;
+    }
+
 }
