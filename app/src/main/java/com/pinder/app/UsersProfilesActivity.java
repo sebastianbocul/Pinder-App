@@ -1,6 +1,7 @@
 package com.pinder.app;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -273,7 +274,8 @@ public class UsersProfilesActivity extends AppCompatActivity {
                         descriptionTextView.setText(description);
                     } else descriptionTextView.setText("");
                     if (map.get("images") == null) {
-                        viewPager.setBackground(getDrawable(R.drawable.picture_default));
+                        viewPager.setBackgroundColor(Color.TRANSPARENT);
+//                        viewPager.setBackground(getDrawable(R.drawable.ic_profile_hq));
                     }
                 }
             }

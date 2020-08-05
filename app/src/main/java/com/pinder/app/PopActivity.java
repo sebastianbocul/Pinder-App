@@ -66,7 +66,7 @@ public class PopActivity extends AppCompatActivity {
                 matchPictureUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
                 switch (matchPictureUrl) {
                     case "default":
-                        Glide.with(getApplication()).load(R.drawable.profile_default).into(profileImage);
+                        Glide.with(getApplication()).load(R.drawable.ic_profile_hq).into(profileImage);
                         break;
                     default:
                         Glide.with(profileImage).clear(profileImage);

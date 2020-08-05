@@ -37,6 +37,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.pinder.app.BugsAndImprovementsDialog;
+import com.pinder.app.Home.MainFirebase;
+import com.pinder.app.Home.MainRepository;
 import com.pinder.app.LegalInfo.LicencesDialog;
 import com.pinder.app.LegalInfo.PrivacyDialog;
 import com.pinder.app.LegalInfo.TermsDialog;
@@ -265,6 +267,8 @@ public class SettingsFragment extends Fragment {
                 MatchesFirebase.instance = null;
                 ProfileFirebase.instance = null;
                 ProfileRepository.instance = null;
+                MainFirebase.instance=null;
+                MainRepository.instance=null;
                 logoutUser();
             }
         });
@@ -277,6 +281,18 @@ public class SettingsFragment extends Fragment {
         restartMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SettingsFirebase.instance = null;
+                SettingsRepository.instance = null;
+                TagsFirebase.instance = null;
+                TagsRepository.instance = null;
+                PopularTagsFirebase.instance = null;
+                PopularTagsRepository.instance = null;
+                MatchesRepository.instance = null;
+                MatchesFirebase.instance = null;
+                ProfileFirebase.instance = null;
+                ProfileRepository.instance = null;
+                MainFirebase.instance=null;
+                MainRepository.instance=null;
                 restartMatchesFun();
             }
         });

@@ -44,7 +44,7 @@ public class ImageAdapter extends PagerAdapter {
         Integer i = position;
         String imageUrl = mImages.get(i).toString();
         if (mImages.get(i).equals("default")) {
-            Glide.with(mContext).load(R.drawable.picture_default).into(imageView);
+            Glide.with(mContext).load(R.drawable.ic_profile_hq).into(imageView);
         } else {
             Glide.with(mContext).load(imageUrl).into(imageView);
         }

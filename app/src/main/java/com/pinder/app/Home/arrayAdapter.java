@@ -32,7 +32,7 @@ public class arrayAdapter extends ArrayAdapter<cards> {
         tags.setText(card_item.getTags());
         switch (card_item.getProfileImageUrl()) {
             case "default":
-                Glide.with(convertView.getContext()).load(R.drawable.picture_default).into(image);
+                Glide.with(convertView.getContext()).load(R.drawable.ic_profile_hq).into(image);
                 break;
             default:
                 Glide.with(image).clear(image);

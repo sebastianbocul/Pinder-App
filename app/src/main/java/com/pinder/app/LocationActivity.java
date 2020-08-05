@@ -151,7 +151,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                             name.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("name").getValue().toString());
                             String profileImageUrl = dataSnapshot.child("Users").child(marker.getTag().toString()).child("profileImageUrl").getValue().toString();
                             if (profileImageUrl.equals("default")) {
-                                Glide.with(LocationActivity.this).load(R.drawable.picture_default).into(profileImage);
+                                Glide.with(LocationActivity.this).load(R.drawable.ic_profile_hq).into(profileImage);
                             } else {
                                 Glide.with(LocationActivity.this).load(dataSnapshot.child("Users").child(marker.getTag().toString()).child("profileImageUrl").getValue().toString()).into(profileImage);
                             }
@@ -208,7 +208,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                                 double distance = new CalculateDistance().distance(myLatitude, myLongitude, latitude, longitude);
                                 LatLng latLngFB = new LatLng(latitude, longitude);
                                 if (dataSnapshot.child("profileImageUrl").getValue().toString().equals("default")) {
-                                    BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.map_default);
+                                    BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_profile_hq);
                                     bitmap = bitmapdraw.getBitmap();
                                     Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
                                     Bitmap circleMarker = getCroppedBitmap(smallMarker);

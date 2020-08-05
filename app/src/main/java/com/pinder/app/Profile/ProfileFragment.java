@@ -98,7 +98,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onChanged(ArrayList arrayList) {
                 if (arrayList.size() == 0) {
-                    viewPager.setBackgroundResource(R.drawable.profile_default);
+                    viewPager.setBackgroundColor(Color.TRANSPARENT);
                 } else {
                     viewPager.setBackgroundColor(Color.parseColor("#fafafa"));
                 }

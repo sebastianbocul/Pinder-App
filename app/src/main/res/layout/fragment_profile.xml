@@ -13,16 +13,23 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="500sp"
             android:layout_gravity="top"
             android:layout_weight="20"
             android:orientation="horizontal"
             android:paddingBottom="5sp">
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_profile_hq"
+                android:scaleType="centerCrop"/>
+
+
             <androidx.viewpager.widget.ViewPager
                 android:id="@+id/viewPager"
                 android:layout_width="match_parent"
-                android:layout_height="500sp"
+                android:layout_height="match_parent"
                 />
 
             <LinearLayout

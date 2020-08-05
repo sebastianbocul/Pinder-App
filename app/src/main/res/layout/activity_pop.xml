@@ -24,7 +24,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:padding="10sp"
-        android:src="@drawable/profile_default" />
+        android:src="@drawable/ic_profile_hq" />
 
     <TextView
         android:id="@+id/nameTextView"

@@ -66,7 +66,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
                 holder.mChatImage.getLayoutParams().width = 125;
             }
             if (chatList.get(position).getProfileImageUrl().equals("default")) {
-                Glide.with(context).load(R.drawable.picture_default).into(holder.mChatImage);
+                Glide.with(context).load(R.drawable.ic_profile_hq).into(holder.mChatImage);
             } else {
                 Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
             }
@@ -92,7 +92,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
                 holder.mChatImage.getLayoutParams().width = 125;
             }
             if (chatList.get(position).getProfileImageUrl().equals("default")) {
-                Glide.with(context).load(R.drawable.picture_default).into(holder.mChatImage);
+                Glide.with(context).load(R.drawable.ic_profile_hq).into(holder.mChatImage);
             } else {
                 Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
             }
