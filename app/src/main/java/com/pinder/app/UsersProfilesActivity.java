@@ -73,7 +73,6 @@ public class UsersProfilesActivity extends AppCompatActivity {
         myDatabaseReference = FirebaseDatabase.getInstance().getReference();
         viewPager = findViewById(R.id.viewPager);
         mImageDatabase = mUserDatabase.child(userId).child("images");
-        Log.d("userProfilesActivityLog", "myId: " + intent.getStringExtra("userId").equals(myId));
         if (getIntent().hasExtra("userId")) {
             if (intent.getStringExtra("userId").equals(myId)) {
                 unmatchButton.setVisibility(View.INVISIBLE);

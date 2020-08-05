@@ -50,7 +50,6 @@ public class BugsAndImprovementsDialog extends AppCompatDialogFragment {
                             message = editText.getText().toString().trim();
                         }
                         Toast.makeText(getContext(), "Message sent!", Toast.LENGTH_SHORT).show();
-                        Log.d("reportUser", "message: " + message);
                         long millis = System.currentTimeMillis();
                         java.sql.Date date = new java.sql.Date(millis);
                         reference.child("reportedBy").setValue(myId);

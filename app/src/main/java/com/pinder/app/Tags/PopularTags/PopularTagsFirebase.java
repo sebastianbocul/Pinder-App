@@ -22,7 +22,6 @@ public class PopularTagsFirebase implements PopularTagsFirebaseDao {
 
     public static synchronized PopularTagsFirebase getInstance() {
         if (instance == null) {
-            Log.d("PopularTagsMVVM", "FB Firebase getInstance: ");
             instance = new PopularTagsFirebase();
             instance.loadDataFromDb();
         }
@@ -30,7 +29,6 @@ public class PopularTagsFirebase implements PopularTagsFirebaseDao {
     }
 
     private void loadDataFromDb() {
-        Log.d("PopularTagsMVVM", "FB getAllPopularTags: ");
         DatabaseReference tagsDatabase = FirebaseDatabase.getInstance().getReference().child("Tags");
         ///downloads data once
 //        tagsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -45,7 +43,6 @@ public class PopularTagsFirebase implements PopularTagsFirebaseDao {
 //                        popularTagsList.add(popular_tag);
 //                    }
 //                }
-//                Log.d("PopularTagsFragment", "onDataChange: ");
 //                result.postValue(popularTagsList);
 //            }
 //
@@ -80,12 +77,10 @@ public class PopularTagsFirebase implements PopularTagsFirebaseDao {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                Log.d("PopularTagsMVVM", "FB onChildRemoved: ");
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Log.d("PopularTagsMVVM", "FB onChildMoved: ");
             }
 
             @Override

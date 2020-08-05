@@ -18,7 +18,6 @@ public class MyFirebaseService extends FirebaseMessagingService {
         if (firebaseUser != null) {
             updateToken(refreshToken);
         }
-        Log.d("NEW_TOKEN", s);
     }
 
     private void updateToken(String refreshToken) {

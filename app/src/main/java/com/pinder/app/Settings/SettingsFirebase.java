@@ -35,7 +35,6 @@ public class SettingsFirebase implements SettingsFirebaseDao {
         myDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("SettingsFirebase", "onDataChange");
                 if (dataSnapshot.exists()) {
                     if (dataSnapshot.child("dateOfBirth").exists()) {
                         String dateOfBirth = dataSnapshot.child("dateOfBirth").getValue().toString();

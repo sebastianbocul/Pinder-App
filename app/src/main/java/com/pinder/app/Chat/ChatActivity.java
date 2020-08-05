@@ -241,11 +241,9 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getChatMessages() {
-        Log.d("chatActivity", "created By user: " + currentUserID);
         mDatabaseChat.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d("chatActivity", "datasnapshot " + dataSnapshot.child("createdByUser").getValue().toString() + " myProfileImageUrl " + myProfileImageUrl);
                 if (dataSnapshot.exists()) {
                     String message = null;
                     String createdByUser = null;
@@ -265,7 +263,6 @@ public class ChatActivity extends AppCompatActivity {
                         ChatObject newMessage = new ChatObject(message, currentUserBoolean, imageUrl);
                         resultChat.add(newMessage);
                         for (ChatObject card : resultChat) {
-                            Log.d("chatActivity", "CurrentUser: " + card.getCurrentUser() + " mess: " + card.getMessage() + "  image: " + card.getProfileImageUrl());
                         }
                         mChatAdapter.notifyDataSetChanged();
                     }

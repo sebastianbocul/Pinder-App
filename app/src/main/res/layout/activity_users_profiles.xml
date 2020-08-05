@@ -53,7 +53,7 @@
                     android:layout_gravity="end|center_vertical"
                     android:layout_marginRight="5sp"
                     android:layout_weight="0"
-                    android:src="@drawable/report_user_icon" />
+                    android:src="@drawable/ic_report" />
 
             </LinearLayout>
 
@@ -173,7 +173,7 @@
                     android:layout_height="75sp"
                     android:layout_weight="1"
                     android:paddingLeft="50sp"
-                    android:src="@drawable/dislike"
+                    android:src="@drawable/ic_dislike"
                     android:text="DISLIKE"
                     android:visibility="invisible" />
 
@@ -183,7 +183,7 @@
                     android:layout_height="75sp"
                     android:layout_weight="1"
                     android:paddingRight="50sp"
-                    android:src="@drawable/like"
+                    android:src="@drawable/ic_like"
                     android:text="LIKE"
                     android:visibility="invisible" />
 

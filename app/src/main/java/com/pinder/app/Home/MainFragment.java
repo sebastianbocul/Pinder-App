@@ -100,7 +100,6 @@ public class MainFragment extends Fragment {
             public void onChanged(ArrayList<cards> cards) {
                 rowItems.clear();
                 rowItems.addAll(cards);
-                Log.d("MainFragmentLog", "cards: " + cards.size() + "   row: " + rowItems.size());
                 arrayAdapter.notifyDataSetChanged();
                 if (cards != null && cards.size() != 0 && getContext() != null) {
                 }
@@ -167,7 +166,6 @@ public class MainFragment extends Fragment {
                 // Ask for more data here
                 /*al.add("XML ".concat(String.valueOf(i)));
                 arrayAdapter.notifyDataSetChanged();
-                Log.d("LIST", "notified");
                 i++;*/
             }
 

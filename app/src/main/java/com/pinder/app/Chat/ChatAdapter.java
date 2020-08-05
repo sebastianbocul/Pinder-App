@@ -44,7 +44,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolders holder, int position) {
         holder.mMessaage.setText(chatList.get(position).getMessage());
-        Log.d("chatLog", " position : " + position + " message : " + chatList.get(position).getMessage());
         if (chatList.get(position).getCurrentUser() == true) {
             paramsContainer2.setMargins(100, 0, 20, 0);
             paramsText.setMargins(0, 0, 10, 0);

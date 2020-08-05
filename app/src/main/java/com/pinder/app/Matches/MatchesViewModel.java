@@ -49,7 +49,6 @@ public class MatchesViewModel extends ViewModel {
             resultMatches.clear();
             resultMatches = bufforMatches;
         }
-        Log.d("MatchesViewModelLog", "resultMatches: " + resultMatches.size());
         return resultMatches;
     }
 

@@ -106,10 +106,7 @@ public class MainFirebase {
                             String mAgeMin = ds.child("minAge").getValue().toString();
                             String mDistance = ds.child("maxDistance").getValue().toString();
                             TagsObject obj = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
-                            Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsListBeforeAdd..." + myTagsList.toString());
-                            Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsListTempBeforeAdd..." + myTagsListTemp.toString());
                             myTagsListTemp.add(obj);
-                            Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsListTempAfterAdd..." + myTagsListTemp.toString());
                         }
                         emitter.onSuccess(myTagsListTemp);
                     } else {
@@ -139,7 +136,6 @@ public class MainFirebase {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) sortByDistanceTemp = snapshot.getValue().toString();
-                    Log.d("MainFirebase", "updatedSortByDist..." + sortByDistance.toString());
                     emitter.onSuccess(sortByDistanceTemp);
                 }
 
@@ -163,7 +159,6 @@ public class MainFirebase {
 
                     @Override
                     public void onNext(@io.reactivex.rxjava3.annotations.NonNull Object o) {
-                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...onNext..." + o.toString());
                     }
 
                     @Override
@@ -172,18 +167,11 @@ public class MainFirebase {
 
                     @Override
                     public void onComplete() {
-                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistance..." + sortByDistance);
-                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistanceTemp..." + sortByDistanceTemp);
-                        // Log.d("MainFirebase", "updateMyTagsAndSortBydDist...sortByDistanceTrue/false..." + (sortByDistance.equals(sortByDistanceTemp)));
-                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsList..." + myTagsList.toString());
-                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsListTemp..." + myTagsListTemp.toString());
-                        Log.d("MainFirebase", "updateMyTagsAndSortBydDist...myTagsTrue/false..." + (myTagsList.equals(myTagsListTemp)));
                         boolean retval2 = Arrays.equals(myTagsList.toArray(), myTagsListTemp.toArray());
                         if(!retval2){
                             myTagsAdapterLD.postValue(myTagsAdapter);
                         }
                         if (!sortByDistance.equals(sortByDistanceTemp) || !retval2) {
-                            Log.d("MainFirebase", "IF DOING ");
 
                             sortByDistance = sortByDistanceTemp;
                             myTagsList.clear();
@@ -198,7 +186,6 @@ public class MainFirebase {
     }
 
     public void updateLocation(Context context) {
-        Log.d("MainFirebase", "updateLocation...");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         DatabaseReference usersDb;
         String currentUID = mAuth.getCurrentUser().getUid();
@@ -212,7 +199,6 @@ public class MainFirebase {
                     try {
                         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
                         List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        Log.d("MainFirebase", "updateLocation...onComplete...");
                         myLongitude.postValue(addresses.get(0).getLongitude());
                         myLatitude.postValue(addresses.get(0).getLatitude());
                         DatabaseReference myRef = usersDb.child(currentUID).child("location");
@@ -242,7 +228,6 @@ public class MainFirebase {
     }
 
     protected void getUsersFromDb() {
-        Log.d("MainFirebase", "getUsersFromDb...");
         rowItems.clear();
         rowItemsLD.postValue(rowItems);
         rowItemsRxJava.clear();
@@ -258,32 +243,24 @@ public class MainFirebase {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.d("MainFirebase", "onDataChange.... getFirst dataaaaaaaaaaa " + dataSnapshot.child(currentUID).child("name").getValue());
                     if (dataSnapshot.child(currentUID).child("sex").exists()) {
-                        Log.d("maingetTag", "myInfo.put sex ");
                         myInfo.put("sex", dataSnapshot.child(currentUID).child("sex").getValue().toString());
                     }
                     if (dataSnapshot.child(currentUID).child("dateOfBirth").exists()) {
                         int myAge = new StringDateToAge().stringDateToAge(dataSnapshot.child(currentUID).child("dateOfBirth").getValue().toString());
-                        Log.d("maingetTag", "myInfo.put myage ");
                         myInfo.put("age", String.valueOf(myAge));
                     }
                     if (dataSnapshot.child(currentUID).child("connections").child("yes").exists()) {
                         for (DataSnapshot ds : dataSnapshot.child(currentUID).child("connections").child("yes").getChildren()) {
-                            Log.d("rxJavaEmitter", "myUsers: ");
                             if (!dataSnapshot.child(currentUID).child("connections").child("matches").hasChild(ds.getKey()) && !dataSnapshot.child(ds.getKey()).child("connections").child("nope").hasChild(currentUID)) {
-                                Log.d("rxJava", "onDataChangeFirst: " + ds.getKey() + "  myID " + currentUID);
-                                Log.d("MaindataSnapshot", "dataSnapshot: " + dataSnapshot.child(ds.getKey()).child("connections").child("nope") + "  myID " + currentUID);
                                 first.add(ds.getKey());
                                 getTagsPreferencesUsers(dataSnapshot.child(ds.getKey()), true);
                             }
                         }
                     }
-                    Log.d("rxMergeJavaSingle", "sinlgeObs1: " + rowItemsRxJava.toString());
                     List<cards> likedMeList = rowItemsRxJava;
                     emitter.onSuccess(likedMeList); //return collected data from database here...
                     rowItemsRxJava.clear();
-                    Log.d("rowItemsRxJava", "rowItemsRxJava DELETE OBS1: " + rowItemsRxJava.toString());
                 }
 
                 @Override
@@ -306,21 +283,16 @@ public class MainFirebase {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        Log.d("rxJavaEmitter", "allUsers: ");
                         if (ds.child("sex").getValue() != null) {
                             if (ds.exists() && !first.contains(ds.getKey()) && !ds.child("connections").child("nope").hasChild(currentUID) && !ds.child("connections").child("yes").hasChild(currentUID) && !ds.getKey().equals(currentUID)) {
                                 ds.getKey().equals(currentUID);
-                                Log.d("first", "OnChillAdded: " + ds.getKey());
-                                Log.d("rxJava", "onDataChangeSecound2222: " + ds.getKey());
                                 getTagsPreferencesUsers(ds, false);
                             }
                         }
                     }
-                    Log.d("rxMergeJavaSingle", "sinlgeObs2: " + rowItemsRxJava.toString());
                     List<cards> notLikedMeList = rowItemsRxJava;
                     emitter.onSuccess(notLikedMeList);
                     rowItemsRxJava.clear();
-                    Log.d("rowItemsRxJava", "rowItemsRxJava DELETE OBS2: " + rowItemsRxJava.toString());
                 }
 
                 @Override
@@ -340,7 +312,6 @@ public class MainFirebase {
                 .subscribe(new Observer<List<cards>>() {
                     @Override
                     public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                        Log.d("rxMergeJava", "onSubscribe: ");
                     }
 
                     @Override
@@ -351,22 +322,14 @@ public class MainFirebase {
                         } else {
                             rowItems.addAll(o);
                         }
-                        Log.d("rxMergeJava", "onNext: " + o.toString());
                     }
 
                     @Override
                     public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                        Log.d("rxMergeJava", "onError: ");
                     }
 
                     @Override
                     public void onComplete() {
-                        Log.d("rxMergeJava", "onComplete: ");
-                        Log.d("MainFirebase", "getUsersFromDb...onComplete...");
-                        for (cards cs : rowItems) {
-                            Log.d("MainFirebase: ", cs.getName() + "   dist: " + cs.getDistance());
-                        }
-                        Log.d("MainFirebase", "getUsersFromDb...onComplete..." + rowItems.size());
                         rowItemsLD.postValue(rowItems);
                     }
                 });

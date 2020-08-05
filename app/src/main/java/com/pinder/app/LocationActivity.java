@@ -166,7 +166,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                             } else {
                                 goToChat.setVisibility(View.VISIBLE);
                                 goToChat.setEnabled(true);
-                                Glide.with(LocationActivity.this).load(R.drawable.matches).into(goToChat);
+                                Glide.with(LocationActivity.this).load(R.drawable.ic_chat).into(goToChat);
                             }
                             profileImage.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -194,7 +194,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             try {
-                                Log.d("LocationActivity","User id:   " + dataSnapshot.getKey() + "       name: " + dataSnapshot.child("name").getValue().toString() + "       showmyloc: " + dataSnapshot.child("showMyLocation").getValue().toString());
 
                                 if (dataSnapshot.child("showMyLocation").getValue().toString().equals("false")) {
                                     return;
@@ -209,7 +208,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                                 double distance = new CalculateDistance().distance(myLatitude, myLongitude, latitude, longitude);
                                 LatLng latLngFB = new LatLng(latitude, longitude);
                                 if (dataSnapshot.child("profileImageUrl").getValue().toString().equals("default")) {
-                                    Log.d("locTag", "onDataChange datasnap1: " + dataSnapshot.child("profileImageUrl").getValue().toString());
                                     BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.map_default);
                                     bitmap = bitmapdraw.getBitmap();
                                     Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
@@ -249,7 +247,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                                             });
                                 }
                             } catch (Exception e) {
-                                Log.d("Error", e.toString());
                             }
                         }
 

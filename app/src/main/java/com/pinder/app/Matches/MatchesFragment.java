@@ -131,7 +131,6 @@ public class MatchesFragment extends Fragment {
                 adapter.setClickListener(new MatchesTagsAdapter.ItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        Log.d("MatchesFragmentLog", "myTags name : " + myTags.get(position).toString() + "   pos: " + position);
                         sortBy = myTags.get(position);
                         mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag(sortBy), getContext());
                         myRecyclerView.setAdapter(mMatchesAdapter);

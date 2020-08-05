@@ -1,7 +1,5 @@
 package com.pinder.app.Tags.MainTags;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
@@ -39,7 +37,6 @@ public class TagsFirebase implements TagsFirebaseDao {
         ds.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Log.d(TAG, "onChildAdded: ");
                 String tagName = snapshot.getKey();
                 String gender = snapshot.child("gender").getValue().toString();
                 String mAgeMax = snapshot.child("maxAge").getValue().toString();
@@ -52,7 +49,6 @@ public class TagsFirebase implements TagsFirebaseDao {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Log.d(TAG, "onChildChanged: ");
             }
 
             @Override
@@ -61,12 +57,10 @@ public class TagsFirebase implements TagsFirebaseDao {
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Log.d(TAG, "onChildMoved: ");
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.d(TAG, "onCancelled: ");
             }
         });
     }

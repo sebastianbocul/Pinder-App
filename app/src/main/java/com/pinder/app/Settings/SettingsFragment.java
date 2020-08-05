@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -318,7 +317,6 @@ public class SettingsFragment extends Fragment {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                    Log.d("maingetTagT", ds.getKey());
                                     if (ds.child("connections").child("matches").child(userId).exists()) {
                                         users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
                                     }
@@ -483,22 +481,18 @@ public class SettingsFragment extends Fragment {
                 .subscribe(new Observer<Object>() {
                     @Override
                     public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                        Log.d("deleteRObs: ", "onSubscribe: ");
                     }
 
                     @Override
                     public void onNext(@io.reactivex.rxjava3.annotations.NonNull Object o) {
-                        Log.d("deleteRObs: ", "onNext: " + o);
                     }
 
                     @Override
                     public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                        Log.d("deleteRObs: ", "onError: ");
                     }
 
                     @Override
                     public void onComplete() {
-                        Log.d("deleteRObs: ", "onComplete: ");
                         logoutUser();
                     }
                 });

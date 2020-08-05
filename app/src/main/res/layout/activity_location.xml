@@ -47,7 +47,7 @@
             android:layout_gravity="center|end"
             android:layout_marginRight="20sp"
             android:layout_weight="0"
-            android:src="@drawable/matches" />
+            android:src="@drawable/ic_chat" />
 
     </LinearLayout>
 </RelativeLayout>

@@ -217,7 +217,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(RegistrationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
             }
         } catch (Exception e) {
-            Log.d("myError", e.toString());
             Toast.makeText(RegistrationActivity.this, "Fill all fields!", Toast.LENGTH_SHORT).show();
         }
     }
