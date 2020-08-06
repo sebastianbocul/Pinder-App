@@ -5,8 +5,6 @@ import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
 
-import com.pinder.app.Images.ImageAdapter;
-
 import java.util.ArrayList;
 
 public interface ProfileDao {

@@ -1,68 +1,39 @@
 package com.pinder.app.MyFunctions;
 
-import org.junit.Test;
+
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.Assert.*;
 
 public class StringDateToAgeTest {
-    @Test
-    public void stringDateToAgeOld() {
-        String input = "05/04/1995";
-        int output;
-        int expected = 25;
+    @ParameterizedTest
+    @ValueSource(ints = {0,1,2,3,4,5})
+    public void isStringDateToAgeOld(int iterator) throws Exception {
+        //Arrange
+        String[] inputString = {"05/04/1990", "05/04/2000","05/04/1995","05/04/2000","05/04/1990","05/04/1995"};
+        int[] expectedOutput={30,20,25,20,30,25};
+        //Act
+        //Assert
         StringDateToAge test = new StringDateToAge();
-        output = test.stringDateToAgeOld(input);
-        assertEquals(expected,output);
+        int calculatedOutput= test.stringDateToAgeOld(inputString[iterator]);
+        assertEquals(calculatedOutput,expectedOutput[iterator]);
+        System.out.println("Calculated: " + calculatedOutput + " : " + expectedOutput[iterator] + " expected" );
     }
 
-    @Test
-    public void stringDateToAgeOld2() {
-        String input = "05/04/1990";
-        int output;
-        int expected = 30;
+    @ParameterizedTest
+    @ValueSource(ints = {0,1,2,3,4,5})
+    public void isStringDateToAgeOreo(int iterator) throws Exception {
+        //Arrange
+        String[] inputString = {"05/04/1990", "05/04/2000","05/04/1995","05/04/2000","05/04/1990","05/04/1995"};
+        int[] expectedOutput={30,20,25,20,30,25};
+        //Act
+        //Assert
         StringDateToAge test = new StringDateToAge();
-        output = test.stringDateToAgeOld(input);
-        assertEquals(expected,output);
-    }
-
-    @Test
-    public void stringDateToAgeOld3() {
-        String input = "05/04/2000";
-        int output;
-        int expected = 20;
-        StringDateToAge test = new StringDateToAge();
-        output = test.stringDateToAgeOld(input);
-        assertEquals(expected,output);
-    }
-
-
-    @Test
-    public void stringDateToAgeOreo() {
-        String input = "05/04/1995";
-        int output;
-        int expected = 25;
-        StringDateToAge test = new StringDateToAge();
-        output = test.stringDateToAgeOreo(input);
-        assertEquals(expected,output);
-    }
-
-    @Test
-    public void stringDateToAgeOreo2() {
-        String input = "05/04/1990";
-        int output;
-        int expected = 30;
-        StringDateToAge test = new StringDateToAge();
-        output = test.stringDateToAgeOreo(input);
-        assertEquals(expected,output);
-    }
-
-    @Test
-    public void stringDateToAgeOreo3() {
-        String input = "05/04/2000";
-        int output;
-        int expected = 20;
-        StringDateToAge test = new StringDateToAge();
-        output = test.stringDateToAgeOreo(input);
-        assertEquals(expected,output);
+        int calculatedOutput= test.stringDateToAgeOreo(inputString[iterator]);
+        assertEquals(calculatedOutput,expectedOutput[iterator]);
+        System.out.println("Calculated: " + calculatedOutput + " : " + expectedOutput[iterator] + " expected" );
     }
 }
