@@ -2,6 +2,7 @@ package com.pinder.app.Tags.PopularTags;
 
 import android.app.Application;
 import android.os.Build;
+import android.os.StatFs;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -27,7 +28,7 @@ public class PopularTagsFragmentViewModel extends AndroidViewModel {
         return allPopularTags;
     }
 
-    public List<PopularTagsObject> sortCollection(List<PopularTagsObject> popularTagsList) {
+    public static List<PopularTagsObject> sortCollection(List<PopularTagsObject> popularTagsList) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Collections.sort(popularTagsList, Comparator.comparing(PopularTagsObject::getTagPopularity).reversed());
         } else {
