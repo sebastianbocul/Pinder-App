@@ -40,8 +40,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pinder.app.Chat.ChatActivity;
-import com.pinder.app.MyFunctions.CalculateDistance;
+import com.pinder.app.chat.ChatActivity;
+import com.pinder.app.functions.CalculateDistance;
 
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback {
     public String currentUID;

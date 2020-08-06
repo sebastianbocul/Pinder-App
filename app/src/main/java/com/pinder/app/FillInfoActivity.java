@@ -30,7 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pinder.app.MyFunctions.StringDateToAge;
+import com.pinder.app.functions.StringDateToAge;
 
 import java.io.IOException;
 import java.util.Calendar;

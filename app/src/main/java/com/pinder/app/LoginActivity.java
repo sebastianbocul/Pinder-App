@@ -52,8 +52,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pinder.app.LegalInfo.PrivacyDialog;
-import com.pinder.app.LegalInfo.TermsDialog;
+import com.pinder.app.legalInfo.PrivacyDialog;
+import com.pinder.app.legalInfo.TermsDialog;
 
 import java.util.Arrays;
 

@@ -27,7 +27,7 @@
             android:value="@string/map_key" />
 
         <activity android:name="com.pinder.app.LocationActivity" />
-        <activity android:name="com.pinder.app.Chat.ChatActivity" />
+        <activity android:name="com.pinder.app.chat.ChatActivity" />
         <activity android:name="com.pinder.app.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,7 +59,7 @@
         </activity>
 
         <service
-            android:name="com.pinder.app.Notifications.MyFirebaseService"
+            android:name="com.pinder.app.notifications.MyFirebaseService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -67,7 +67,7 @@
             </intent-filter>
         </service>
         <service
-            android:name="com.pinder.app.Notifications.FirebaseMessaging"
+            android:name="com.pinder.app.notifications.FirebaseMessaging"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
