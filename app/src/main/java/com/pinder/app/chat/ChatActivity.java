@@ -202,7 +202,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Token token = ds.getValue(Token.class);
-                    Data data = new Data(currentUserID, R.drawable.login_photo, sendMessageText, myName, matchId);
+                    Data data = new Data(currentUserID, R.drawable.ic_logovector, sendMessageText, myName, matchId);
                     Sender sender = new Sender(data, token.getToken());
                     apiService.sendNotification(sender).enqueue(new Callback<ResponseBody>() {
                         @Override

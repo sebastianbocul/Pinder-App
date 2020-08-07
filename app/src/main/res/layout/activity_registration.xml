@@ -131,5 +131,5 @@
         android:layout_gravity="bottom|center"
         android:layout_weight="0"
         android:paddingTop="20sp"
-        android:src="@drawable/login_photo" />
+        android:src="@drawable/ic_logovector" />
 </LinearLayout>

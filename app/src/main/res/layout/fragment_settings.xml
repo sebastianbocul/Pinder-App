@@ -128,7 +128,7 @@
                 android:layout_height="100sp"
                 android:scaleX="1"
                 android:scaleY="1"
-                android:src="@drawable/login_photo"
+                android:src="@drawable/ic_logovector"
                 android:text="Tags" />
 
             <TextView

@@ -121,7 +121,7 @@
                     android:layout_gravity="bottom|center"
                     android:layout_weight="0"
                     android:paddingTop="20sp"
-                    android:src="@drawable/login_photo" />
+                    android:src="@drawable/ic_logovector" />
             </LinearLayout>
         </LinearLayout>
 
@@ -137,7 +137,7 @@
                 android:layout_height="500sp"
                 android:layout_weight="1"
                 android:padding="10sp"
-                android:src="@drawable/logo1024" />
+                android:src="@drawable/ic_logovector" />
 
         </LinearLayout>
     </RelativeLayout>

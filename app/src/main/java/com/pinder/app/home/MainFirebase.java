@@ -479,7 +479,7 @@ public class MainFirebase {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Token token = ds.getValue(Token.class);
-                    Data data = new Data(currentUID, R.drawable.login_photo, "Check out now!", "New match!", matchId);
+                    Data data = new Data(currentUID, R.drawable.ic_logovector, "Check out now!", "New match!", matchId);
                     Sender sender = new Sender(data, token.getToken());
                     apiService.sendNotification(sender).enqueue(new Callback<ResponseBody>() {
                         @Override
