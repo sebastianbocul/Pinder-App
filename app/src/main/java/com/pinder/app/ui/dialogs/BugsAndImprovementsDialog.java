@@ -1,9 +1,8 @@
-package com.pinder.app.dialogs;
+package com.pinder.app.ui.dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -18,28 +17,26 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.R;
 
-public class ReportUserDialog extends AppCompatDialogFragment {
+public class BugsAndImprovementsDialog extends AppCompatDialogFragment {
     private String myId;
-    private String reporetedUserId;
     private EditText editText;
 
-    public ReportUserDialog(String myId, String reporetedUserId) {
+    public BugsAndImprovementsDialog(String myId) {
         this.myId = myId;
-        this.reporetedUserId = reporetedUserId;
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Reports").child(reporetedUserId);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("BugsAndImprovements").push();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_report, null);
+        View view = inflater.inflate(R.layout.dialog_bugs_improvements, null);
         editText = view.findViewById(R.id.report_text);
         builder.setView(view)
-                .setMessage("Please write report message")
+                .setMessage("Please write a message")
                 .setCancelable(false)
-                .setTitle("Report user")
+                .setTitle("Bugs and improvements")
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -52,7 +49,7 @@ public class ReportUserDialog extends AppCompatDialogFragment {
                         if (editText != null) {
                             message = editText.getText().toString().trim();
                         }
-                        Toast.makeText(getContext(), "User reported :(", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Message sent!", Toast.LENGTH_SHORT).show();
                         long millis = System.currentTimeMillis();
                         java.sql.Date date = new java.sql.Date(millis);
                         reference.child("reportedBy").setValue(myId);

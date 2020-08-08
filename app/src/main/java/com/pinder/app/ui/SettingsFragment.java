@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.facebook.login.LoginManager;
@@ -35,12 +37,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
-import com.pinder.app.dialogs.BugsAndImprovementsDialog;
+import com.pinder.app.ui.dialogs.BugsAndImprovementsDialog;
 import com.pinder.app.persistance.MainFirebase;
 import com.pinder.app.repository.MainRepository;
-import com.pinder.app.dialogs.LicencesDialog;
-import com.pinder.app.dialogs.PrivacyDialog;
-import com.pinder.app.dialogs.TermsDialog;
+import com.pinder.app.ui.dialogs.LicencesDialog;
+import com.pinder.app.ui.dialogs.PrivacyDialog;
+import com.pinder.app.ui.dialogs.TermsDialog;
 import com.pinder.app.LoginActivity;
 import com.pinder.app.persistance.MatchesFirebase;
 import com.pinder.app.repository.MatchesRepository;
@@ -60,7 +62,6 @@ import java.util.Calendar;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 
@@ -80,7 +81,6 @@ public class SettingsFragment extends Fragment {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     String userId = mAuth.getCurrentUser().getUid();
     private Button logoutUser, deleteUser, privacyPolicyButton, termsButton, licenceButton;
-    private StorageReference filePath;
     private Switch mapLocationSwitch, sortUsersByDistanceSwitch;
     private EditText date;
     private boolean dateValid = false;
@@ -259,18 +259,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 updateMyDb();
-                SettingsFirebase.instance = null;
-                SettingsRepository.instance = null;
-                TagsFirebase.instance = null;
-                TagsRepository.instance = null;
-                PopularTagsFirebase.instance = null;
-                PopularTagsRepository.instance = null;
-                MatchesRepository.instance = null;
-                MatchesFirebase.instance = null;
-                ProfileFirebase.instance = null;
-                ProfileRepository.instance = null;
-                MainFirebase.instance=null;
-                MainRepository.instance=null;
+
                 logoutUser();
             }
         });
@@ -283,18 +272,7 @@ public class SettingsFragment extends Fragment {
         restartMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SettingsFirebase.instance = null;
-                SettingsRepository.instance = null;
-                TagsFirebase.instance = null;
-                TagsRepository.instance = null;
-                PopularTagsFirebase.instance = null;
-                PopularTagsRepository.instance = null;
-                MatchesRepository.instance = null;
-                MatchesFirebase.instance = null;
-                ProfileFirebase.instance = null;
-                ProfileRepository.instance = null;
-                MainFirebase.instance=null;
-                MainRepository.instance=null;
+                settingsViewModel.clearInstances();
                 restartMatchesFun();
             }
         });
@@ -328,29 +306,7 @@ public class SettingsFragment extends Fragment {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
-                        DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-                        users.child(userId).child("connections").child("matches").removeValue();
-                        users.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                    if (ds.child("connections").child("matches").child(userId).exists()) {
-                                        users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
-                                    }
-                                    if (ds.child("connections").child("yes").child(userId).exists()) {
-                                        users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
-                                    }
-                                    if (ds.child("connections").child("nope").child(userId).exists()) {
-                                        users.child(ds.getKey()).child("connections").child("nope").child(userId).removeValue();
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                            }
-                        });
+                        settingsViewModel.restartMatches();
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -363,14 +319,19 @@ public class SettingsFragment extends Fragment {
     }
 
     public void logoutUser() {
-        mAuth.signOut();
         LoginManager.getInstance().logOut();
+        settingsViewModel.clearInstances();
+
+        mAuth.signOut();
         Intent intent = new Intent(getContext(), LoginActivity.class);
         logoutFlag = 1;
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+
         return;
     }
+
+
 
     public void deleteAccount() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -392,13 +353,15 @@ public class SettingsFragment extends Fragment {
 
     private void deleteUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = user.getUid();
         user.delete()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(getContext(), "User account deleted.", Toast.LENGTH_LONG).show();
-                            deleteWithRxJava();
+                            settingsViewModel.deleteWithRxJava(userId);
+                            logoutUser();
                         } else {
                             AlertDialog.Builder error = new AlertDialog.Builder(getContext());
                             error.setMessage("Due to safety reasons please re-login and try again").setCancelable(false)
@@ -415,106 +378,7 @@ public class SettingsFragment extends Fragment {
                 });
     }
 
-    private void deleteWithRxJava() {
-        Observable<Object> deleteUserTagsObservable = Single.create(emitter -> {
-            DatabaseReference usersTagReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("tags");
-            DatabaseReference tagsReference = FirebaseDatabase.getInstance().getReference().child("Tags");
-            usersTagReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        tagsReference.child(ds.getKey()).child(userId).removeValue();
-                    }
-                    emitter.onSuccess("finished");
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-        }).toObservable();
-        Observable<Object> deleteDatabseAndStorageObservable = Single.create(emitter -> {
-            filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId);
-            StorageReference storageRef = filePath;
-            // Delete the userStorage
-            storageRef.listAll()
-                    .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                        @Override
-                        public void onSuccess(ListResult listResult) {
-                            for (StorageReference item : listResult.getItems()) {
-                                // All the items under listRef.
-                                item.delete();
-                            }
-                            emitter.onSuccess("finished");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // Uh-oh, an error occurred!
-                        }
-                    });
-        }).toObservable();
-        Observable<Object> deleteMatchesObservable = Single.create(emitter -> {
-            DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
-            users.child(userId).child("connections").child("matches").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        try {
-                            users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
-                            users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
-                        } catch (Exception e) {
-                            Toast.makeText(getContext(), "Oooops something went wrong", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    emitter.onSuccess("finished");
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-        }).toObservable();
-        Observable<Object> deleteTokensAndUserObservable = Single.create(emitter -> {
-            DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("Tokens");
-            DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-            mUserDatabase.removeValue();
-            tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.child(userId).exists()) {
-                        tokenRef.child(userId).removeValue();
-                    }
-                    emitter.onSuccess("finished");
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-        }).toObservable();
-        Observable.concat(deleteUserTagsObservable, deleteDatabseAndStorageObservable, deleteMatchesObservable, deleteTokensAndUserObservable)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Object>() {
-                    @Override
-                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull Object o) {
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        logoutUser();
-                    }
-                });
-    }
 
     private void updateMyDb() {
         settingsViewModel.setDate(date.getText().toString());

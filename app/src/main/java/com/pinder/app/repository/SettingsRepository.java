@@ -2,6 +2,7 @@ package com.pinder.app.repository;
 
 import androidx.lifecycle.LiveData;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.pinder.app.persistance.SettingsFirebase;
 import com.pinder.app.persistance.SettingsFirebaseDao;
 
@@ -10,7 +11,6 @@ public class SettingsRepository implements SettingsFirebaseDao {
     private LiveData<String> date;
     private LiveData<Boolean> showMyLocation;
     private LiveData<Boolean> sortByDistance;
-
     public static synchronized SettingsRepository getInstance() {
         if (instance == null) {
             instance = new SettingsRepository();
@@ -54,5 +54,13 @@ public class SettingsRepository implements SettingsFirebaseDao {
     @Override
     public void setShowMyLocation(Boolean bool) {
         SettingsFirebase.getInstance().setShowMyLocation(bool);
+    }
+
+    public void deleteWithRxJava(String userId){
+        SettingsFirebase.getInstance().deleteWithRxJava(userId);
+    }
+
+    public void restartMatches(){
+        SettingsFirebase.getInstance().restartMatches();
     }
 }

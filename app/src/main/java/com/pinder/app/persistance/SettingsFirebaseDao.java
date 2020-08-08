@@ -16,4 +16,6 @@ public interface SettingsFirebaseDao {
     void setSortByDistance(Boolean bool);
 
     void setShowMyLocation(Boolean bool);
+
+    public void restartMatches();
 }

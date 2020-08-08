@@ -6,8 +6,20 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.google.firebase.auth.FirebaseUser;
+import com.pinder.app.persistance.MainFirebase;
+import com.pinder.app.persistance.MatchesFirebase;
+import com.pinder.app.persistance.PopularTagsFirebase;
+import com.pinder.app.persistance.ProfileFirebase;
+import com.pinder.app.persistance.SettingsFirebase;
 import com.pinder.app.persistance.SettingsFirebaseDao;
+import com.pinder.app.persistance.TagsFirebase;
+import com.pinder.app.repository.MainRepository;
+import com.pinder.app.repository.MatchesRepository;
+import com.pinder.app.repository.PopularTagsRepository;
+import com.pinder.app.repository.ProfileRepository;
 import com.pinder.app.repository.SettingsRepository;
+import com.pinder.app.repository.TagsRepository;
 
 public class SettingsViewModel extends AndroidViewModel implements SettingsFirebaseDao {
     private LiveData<String> date;
@@ -56,5 +68,28 @@ public class SettingsViewModel extends AndroidViewModel implements SettingsFireb
     @Override
     public void setShowMyLocation(Boolean bool) {
         settingsRepository.setShowMyLocation(bool);
+    }
+
+    public void deleteWithRxJava(String userId){
+        settingsRepository.deleteWithRxJava(userId);
+    }
+
+    public void clearInstances() {
+        SettingsFirebase.instance = null;
+        SettingsRepository.instance = null;
+        TagsFirebase.instance = null;
+        TagsRepository.instance = null;
+        PopularTagsFirebase.instance = null;
+        PopularTagsRepository.instance = null;
+        MatchesRepository.instance = null;
+        MatchesFirebase.instance = null;
+        ProfileFirebase.instance = null;
+        ProfileRepository.instance = null;
+        MainFirebase.instance=null;
+        MainRepository.instance=null;
+    }
+
+    public void restartMatches(){
+        settingsRepository.restartMatches();
     }
 }
