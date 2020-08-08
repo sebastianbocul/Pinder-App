@@ -27,6 +27,7 @@ public class MatchesFirebase implements MatchesDao {
     String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
     MutableLiveData<ArrayList<String>> myTagsLiveData = new MutableLiveData<ArrayList<String>>();
     ArrayList<String> myTags = new ArrayList<>();
+    private String myImageUrl = new String();
     MutableLiveData<ArrayList<MatchesObject>> oryginalMatchesLiveData = new MutableLiveData<ArrayList<MatchesObject>>();
 
     public static MatchesFirebase getInstance() {
@@ -34,8 +35,43 @@ public class MatchesFirebase implements MatchesDao {
             instance = new MatchesFirebase();
             instance.loadMatches();
             instance.loadTags();
+            instance.fetchMyImageUrl();
         }
         return instance;
+    }
+
+    private void fetchMyImageUrl() {
+        myImageUrl = "default";
+        DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID);
+        currentUserDb.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if(snapshot.exists()){
+                    if(snapshot.getKey().equals("profileImageUrl"))
+                    myImageUrl=snapshot.getValue().toString();
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if(snapshot.exists()){
+                    if(snapshot.getKey().equals("profileImageUrl"))
+                        myImageUrl=snapshot.getValue().toString();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     }
 
     public void loadMatches() {
@@ -258,4 +294,9 @@ public class MatchesFirebase implements MatchesDao {
     public LiveData<ArrayList<String>> getTags() {
         return myTagsLiveData;
     }
+
+    public String getMyImageUrl() {
+        return myImageUrl;
+    }
+
 }

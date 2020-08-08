@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.pinder.app.persistance.MatchesFirebase;
 import com.pinder.app.repository.MatchesRepository;
 import com.pinder.app.models.MatchesObject;
 
@@ -60,4 +61,9 @@ public class MatchesViewModel extends ViewModel {
         tagLD.setValue(tag);
         return getSortedMatches();
     }
+
+    public String getMyImageUrl() {
+        return matchesRepository.getMyImageUrl();
+    }
+
 }

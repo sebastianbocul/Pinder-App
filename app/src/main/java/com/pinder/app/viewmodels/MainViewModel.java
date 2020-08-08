@@ -1,4 +1,4 @@
-package com.pinder.app.adapters;
+package com.pinder.app.viewmodels;
 
 import android.app.Application;
 import android.content.Context;
@@ -12,15 +12,15 @@ import com.pinder.app.repository.MainRepository;
 
 import java.util.ArrayList;
 
-public class CardsViewModel extends AndroidViewModel {
+public class MainViewModel extends AndroidViewModel {
     MainRepository mainRepository;
     MutableLiveData<ArrayList<Card>> rowItemsLD = new MutableLiveData<>();
     MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
-    public CardsViewModel(@NonNull Application application) {
+    public MainViewModel(@NonNull Application application) {
         super(application);
         mainRepository = MainRepository.getInstance(application);
     }
-//    public CardsViewModel() {
+//    public MainViewModel() {
 //        mainRepository = MainRepository.getInstance(context);
 //    }
 

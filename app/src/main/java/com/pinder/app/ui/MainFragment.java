@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.pinder.app.R;
 import com.pinder.app.adapters.CardsAdapter;
-import com.pinder.app.adapters.CardsViewModel;
+import com.pinder.app.viewmodels.MainViewModel;
 import com.pinder.app.models.Card;
 import com.pinder.app.adapters.TagsManagerAdapter;
 import com.pinder.app.UsersProfilesActivity;
@@ -46,7 +46,7 @@ public class MainFragment extends Fragment {
     private TextView noMoreEditText;
     private SwipeFlingAdapterView flingContainer;
     private CardsAdapter arrayAdapter;
-    CardsViewModel mainViewModel;
+    MainViewModel mainViewModel;
 
     public MainFragment() {
         // Required empty public constructor
@@ -83,7 +83,7 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_activity, container, false);
+        return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class MainFragment extends Fragment {
         List<Card> rowItems = new ArrayList<Card>();
         arrayAdapter = new CardsAdapter(getContext(), R.layout.item, rowItems);
         flingContainer.setAdapter(arrayAdapter);
-        mainViewModel = new ViewModelProvider(getActivity()).get(CardsViewModel.class);
+        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         mainViewModel.getRowItemsLD().observe(getActivity(), new Observer<ArrayList<Card>>() {
             @Override
             public void onChanged(ArrayList<Card> cards) {

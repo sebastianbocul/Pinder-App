@@ -37,12 +37,13 @@
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.075"
+                android:layout_weight="0"
                 android:gravity="center_vertical|left"
-                android:paddingLeft="20sp"
                 android:textColor="@android:color/black"
                 android:textSize="30sp"
-                tools:text="name" />
+                tools:text="name"
+                android:paddingLeft="20sp"
+                android:paddingStart="20sp" />
 
             <TextView
                 android:id="@+id/tags"

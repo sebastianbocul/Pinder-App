@@ -24,4 +24,8 @@ public class MatchesRepository {
     public LiveData<ArrayList<String>> getTags() {
         return MatchesFirebase.getInstance().getTags();
     }
+
+    public String getMyImageUrl() {
+        return MatchesFirebase.getInstance().getMyImageUrl();
+    }
 }

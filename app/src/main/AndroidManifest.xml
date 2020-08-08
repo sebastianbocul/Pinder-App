@@ -18,7 +18,7 @@
         <activity android:name="com.pinder.app.MainFragmentMenager"></activity>
         <activity android:name="com.pinder.app.FillInfoActivity" />
         <activity
-            android:name="com.pinder.app.PopActivity"
+            android:name="com.pinder.app.MainPopUpActivity"
             android:theme="@style/AppTheme.PopMe" />
         <activity android:name="com.pinder.app.UsersProfilesActivity" />
 

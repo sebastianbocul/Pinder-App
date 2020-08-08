@@ -19,9 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
-public class PopActivity extends AppCompatActivity {
+public class MainPopUpActivity extends AppCompatActivity {
     private ImageView profileImage;
     private DatabaseReference db;
     private LinearLayout linearLayout;
@@ -29,7 +27,7 @@ public class PopActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pop);
+        setContentView(R.layout.activity_main_pop_up);
         String matchId = getIntent().getExtras().getString("matchId");
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);

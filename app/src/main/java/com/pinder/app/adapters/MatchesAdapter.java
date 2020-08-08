@@ -20,7 +20,7 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesViewHolders> {
     private List<MatchesObject> matchesList;
     private Context context;
 
-    public MatchesAdapter(List<MatchesObject> matchesList, Context context) {
+    public MatchesAdapter(List<MatchesObject> matchesList ,Context context) {
         this.matchesList = matchesList;
         this.context = context;
     }
@@ -37,7 +37,9 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesViewHolders> {
 
     @Override
     public void onBindViewHolder(@NonNull MatchesViewHolders holder, int position) {
-        holder.mMatchUserId = matchesList.get(position).getUserId();
+        holder.bundleMatchUserId = matchesList.get(position).getUserId();
+        holder.bundleMatchName = matchesList.get(position).getName();
+        holder.bundleMatchImageUrl = matchesList.get(position).getProfileImageUrl();
         if (matchesList.get(position).isCreatedByMe() == true) {
             holder.mLastMessage.setTypeface(null, Typeface.NORMAL);
             holder.mMatchName.setTypeface(null, Typeface.NORMAL);

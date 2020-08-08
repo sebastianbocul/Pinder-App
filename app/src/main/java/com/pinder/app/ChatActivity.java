@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +34,7 @@ import com.pinder.app.notifications.Client;
 import com.pinder.app.notifications.Data;
 import com.pinder.app.notifications.Sender;
 import com.pinder.app.notifications.Token;
+import com.pinder.app.viewmodels.MatchesViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -128,41 +130,70 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void fillImagesAndName() {
-        mDatabaseUser.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    String name = dataSnapshot.child(matchId).child("name").getValue().toString();
-                    if (!dataSnapshot.child(matchId).child("profileImageUrl").exists()) {
-                        profileImageUrl = "default";
-                    } else
-                        profileImageUrl = dataSnapshot.child(matchId).child("profileImageUrl").getValue().toString().trim();
-                    myProfileImageUrl = dataSnapshot.child(currentUserID).child("profileImageUrl").getValue().toString().trim();
-                    if (!name.isEmpty()) {
-                        userNameTextView.setText(name);
-                    }
-                    userNameTextView.setText(name);
-                    switch (profileImageUrl) {
+        String matchName="";
+        String matchImageUrl="default";
+        MatchesViewModel matchesViewModel = new ViewModelProvider(ChatActivity.this).get(MatchesViewModel.class);
+        myProfileImageUrl = matchesViewModel.getMyImageUrl();
+        if(getIntent().getExtras()!=null){
+             matchName = getIntent().getExtras().getString("matchName");
+             matchImageUrl = getIntent().getExtras().getString("matchImageUrl");
+
+        }else  myProfileImageUrl = "default";
+
+        profileImageUrl = matchImageUrl;
+
+
+
+        userNameTextView.setText(matchName);
+        switch (matchImageUrl) {
                         case "default":
                             Glide.with(getApplication()).load(R.drawable.ic_profile_hq).into(profileImage);
                             break;
                         default:
                             Glide.with(profileImage).clear(profileImage);
-                            Glide.with(getApplication()).load(profileImageUrl).into(profileImage);
+                            Glide.with(getApplication()).load(matchImageUrl).into(profileImage);
                             break;
                     }
-                    getChatId();
-                } catch (Exception e) {
-                    Toast.makeText(ChatActivity.this, "Oooops something went wrong ", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(ChatActivity.this, MainFragmentMenager.class);
-                    startActivity(intent);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+        getChatId();
+//
+//        mDatabaseUser.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                try {
+//                    String name = dataSnapshot.child(matchId).child("name").getValue().toString();
+//                    if (!dataSnapshot.child(matchId).child("profileImageUrl").exists()) {
+//                        profileImageUrl = "default";
+//                    } else
+//                        profileImageUrl = dataSnapshot.child(matchId).child("profileImageUrl").getValue().toString().trim();
+//                    myProfileImageUrl = dataSnapshot.child(currentUserID).child("profileImageUrl").getValue().toString().trim();
+//                    if (!name.isEmpty()) {
+//                        userNameTextView.setText(name);
+//                    }else {
+//                        userNameTextView.setText("");
+//                    }
+//
+//                    switch (profileImageUrl) {
+//                        case "default":
+//                            Glide.with(getApplication()).load(R.drawable.ic_profile_hq).into(profileImage);
+//                            break;
+//                        default:
+//                            Glide.with(profileImage).clear(profileImage);
+//                            Glide.with(getApplication()).load(profileImageUrl).into(profileImage);
+//                            break;
+//                    }
+//                    getChatId();
+//
+//                } catch (Exception e) {
+//                    Toast.makeText(ChatActivity.this, "Oooops something went wrong ", Toast.LENGTH_SHORT).show();
+//                    Intent intent = new Intent(ChatActivity.this, MainFragmentMenager.class);
+//                    startActivity(intent);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//            }
+//        });
     }
 
     private void sendMessage() {
@@ -260,8 +291,6 @@ public class ChatActivity extends AppCompatActivity {
                         }
                         ChatObject newMessage = new ChatObject(message, currentUserBoolean, imageUrl);
                         resultChat.add(newMessage);
-                        for (ChatObject card : resultChat) {
-                        }
                         mChatAdapter.notifyDataSetChanged();
                     }
                 }

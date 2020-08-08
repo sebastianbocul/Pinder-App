@@ -35,7 +35,7 @@ import com.pinder.app.notifications.Client;
 import com.pinder.app.notifications.Data;
 import com.pinder.app.notifications.Sender;
 import com.pinder.app.notifications.Token;
-import com.pinder.app.PopActivity;
+import com.pinder.app.MainPopUpActivity;
 import com.pinder.app.R;
 import com.pinder.app.models.TagsObject;
 
@@ -456,7 +456,7 @@ public class MainFirebase {
                     });
                     notify = true;
                     //popactivity when matched
-                    Intent i = new Intent(con, PopActivity.class);
+                    Intent i = new Intent(con, MainPopUpActivity.class);
                     i.putExtra("matchId", matchId);
                     con.startActivity(i);
                 }

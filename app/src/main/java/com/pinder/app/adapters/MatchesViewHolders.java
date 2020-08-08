@@ -16,7 +16,10 @@ import com.pinder.app.R;
 public class MatchesViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
     public TextView mMatchName, mLastMessage;
     public CircularImageView mMatchImage;
-    public String mMatchUserId;
+    public String bundleMatchUserId;
+    public String bundleMatchName;
+    public String bundleMatchImageUrl;
+
 
     public MatchesViewHolders(@NonNull View itemView) {
         super(itemView);
@@ -31,7 +34,9 @@ public class MatchesViewHolders extends RecyclerView.ViewHolder implements View.
         try {
             Intent intent = new Intent(view.getContext(), ChatActivity.class);
             Bundle b = new Bundle();
-            b.putString("matchId", mMatchUserId);
+            b.putString("matchId", bundleMatchUserId);
+            b.putString("matchName", bundleMatchName);
+            b.putString("matchImageUrl", bundleMatchImageUrl);
             intent.putExtras(b);
             view.getContext().startActivity(intent);
         } catch (Exception e) {
