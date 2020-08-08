@@ -32,7 +32,9 @@ public class ProfileViewModel extends ViewModel {
     }
 
     public void saveUserInformation(String nameEdt, String descriptionEdt) {
-        profileRepository.saveUserInformation(nameEdt, descriptionEdt);
+        if (nameEdt.length() != 0 || descriptionEdt.length()!=0) {
+            profileRepository.saveUserInformation(nameEdt, descriptionEdt);
+        }
     }
 
     public void deleteImage(Context context) {
