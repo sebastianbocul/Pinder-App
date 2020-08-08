@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.pinder.app.home.MainFragment"
+        android:name="com.pinder.app.ui.MainFragment"
         android:label="fragment_main_activity"
         tools:layout="@layout/fragment_main_activity" >
         <action
@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.pinder.app.profile.ProfileFragment"
+        android:name="com.pinder.app.ui.ProfileFragment"
         android:label="ProfileFragment" >
         <action
             android:id="@+id/action_profileFragment_to_mainFragment3"
@@ -30,7 +30,7 @@
     </fragment>
     <fragment
         android:id="@+id/tagsManagerFragment"
-        android:name="com.pinder.app.tags.TagsManagerFragment"
+        android:name="com.pinder.app.ui.TagsManagerFragment"
         android:label="fragment_tags_manager"
         tools:layout="@layout/fragment_tags_manager" >
         <action

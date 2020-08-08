@@ -27,7 +27,7 @@
             android:value="@string/map_key" />
 
         <activity android:name="com.pinder.app.LocationActivity" />
-        <activity android:name="com.pinder.app.chat.ChatActivity" />
+        <activity android:name="com.pinder.app.ChatActivity" />
         <activity android:name="com.pinder.app.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

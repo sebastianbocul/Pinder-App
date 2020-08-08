@@ -8,11 +8,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.pinder.app.home.MainFragment;
-import com.pinder.app.matches.MatchesFragment;
-import com.pinder.app.profile.ProfileFragment;
-import com.pinder.app.settings.SettingsFragment;
-import com.pinder.app.tags.TagsManagerFragment;
+import com.pinder.app.ui.MainFragment;
+import com.pinder.app.ui.MatchesFragment;
+import com.pinder.app.ui.ProfileFragment;
+import com.pinder.app.ui.SettingsFragment;
+import com.pinder.app.ui.TagsManagerFragment;
 
 public class MainFragmentMenager extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;

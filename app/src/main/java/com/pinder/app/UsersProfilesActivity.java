@@ -22,9 +22,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pinder.app.images.ImageAdapter;
-import com.pinder.app.functions.CalculateDistance;
-import com.pinder.app.functions.StringDateToAge;
+import com.pinder.app.adapters.ImageAdapter;
+import com.pinder.app.dialogs.ReportUserDialog;
+import com.pinder.app.util.CalculateDistance;
+import com.pinder.app.util.StringDateToAge;
 
 import java.util.ArrayList;
 import java.util.Map;

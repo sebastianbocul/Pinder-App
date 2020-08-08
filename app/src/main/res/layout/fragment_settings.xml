@@ -7,7 +7,7 @@
     android:paddingLeft="20sp"
     android:paddingRight="20sp"
     android:scrollbars="none"
-    tools:context="com.pinder.app.settings.SettingsFragment">
+    tools:context="com.pinder.app.ui.SettingsFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
