@@ -1,6 +1,12 @@
 package com.pinder.app.models;
 
+import android.os.Build;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
 import java.util.Map;
+import java.util.Objects;
 
 public class Card {
     private String userId;
@@ -76,4 +82,19 @@ public class Card {
     public void setLikesMe(boolean likesMe) {
         this.likesMe = likesMe;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return Double.compare(card.distance, distance) == 0 &&
+                likesMe == card.likesMe &&
+                userId.equals(card.userId) &&
+                name.equals(card.name) &&
+                profileImageUrl.equals(card.profileImageUrl) &&
+                tags.equals(card.tags) &&
+                mutualTagsMap.equals(card.mutualTagsMap);
+    }
+
 }

@@ -6,23 +6,22 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.pinder.app.models.Card;
 import com.pinder.app.repository.MainRepository;
 
 import java.util.ArrayList;
 
-public class MainViewModel extends AndroidViewModel {
+public class MainViewModel extends ViewModel {
     MainRepository mainRepository;
+
     MutableLiveData<ArrayList<Card>> rowItemsLD = new MutableLiveData<>();
     MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
     public MainViewModel(@NonNull Application application) {
-        super(application);
         mainRepository = MainRepository.getInstance(application);
     }
-//    public MainViewModel() {
-//        mainRepository = MainRepository.getInstance(context);
-//    }
+    public MainViewModel(){}
 
     public MutableLiveData<Double> getMyLatitude() {
         return mainRepository.getMyLatitude();
@@ -37,11 +36,12 @@ public class MainViewModel extends AndroidViewModel {
         return myTagsAdapterLD;
     }
 
-
     public MutableLiveData<ArrayList<Card>> getRowItemsLD() {
         rowItemsLD = mainRepository.getRowItemsLD();
         return rowItemsLD;
     }
+
+
 
     public void getUsersFromDb() {
         mainRepository.getUsersFromDb();
@@ -52,10 +52,10 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void removeFirstObjectInAdapter() {
-        ArrayList<Card> rowItems = rowItemsLD.getValue();
+        ArrayList<Card> rowItems = this.rowItemsLD.getValue();
         if (rowItems.size() != 0) {
             rowItems.remove(0);
-            rowItemsLD.postValue(rowItems);
+            this.rowItemsLD.postValue(rowItems);
         }
     }
 

@@ -86,6 +86,10 @@ dependencies {
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junit_jupiter_version"
 
 
+    // -------- MOCKITO
+    def mockito_version = "2.19.0"
+    testImplementation "org.mockito:mockito-core:$mockito_version"
+
 //
 //    //kotlin
 //    def junitVersion ="5.0.0"

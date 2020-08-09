@@ -7,6 +7,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TagsObjectTest {
+
+
+    //checkint Equals method in TagsObject
     @Test
     public void isTagsObjectEqual_identicalProperties_returnTrue() throws Exception {
         //Arrange
