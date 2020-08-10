@@ -36,7 +36,7 @@ public class MatchesViewModel extends ViewModel {
     public ArrayList<MatchesObject> getSortedMatches() {
         ArrayList<MatchesObject> resultMatches = new ArrayList<>();
         ArrayList<MatchesObject> oryginalMatches= new ArrayList<>();
-        if( oryginalMatchesLiveData.getValue()!=null){
+        if(oryginalMatchesLiveData.getValue()!=null){
             oryginalMatches = oryginalMatchesLiveData.getValue();
         }
         ArrayList mutualTags = new ArrayList();

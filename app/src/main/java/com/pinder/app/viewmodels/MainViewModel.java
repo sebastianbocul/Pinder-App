@@ -13,15 +13,18 @@ import com.pinder.app.repository.MainRepository;
 
 import java.util.ArrayList;
 
-public class MainViewModel extends ViewModel {
+public class MainViewModel extends AndroidViewModel {
     MainRepository mainRepository;
 
     MutableLiveData<ArrayList<Card>> rowItemsLD = new MutableLiveData<>();
     MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
     public MainViewModel(@NonNull Application application) {
+        super(application);
         mainRepository = MainRepository.getInstance(application);
     }
-    public MainViewModel(){}
+
+//    ToTestConstructor
+//    public MainViewModel(){}
 
     public MutableLiveData<Double> getMyLatitude() {
         return mainRepository.getMyLatitude();
@@ -40,8 +43,6 @@ public class MainViewModel extends ViewModel {
         rowItemsLD = mainRepository.getRowItemsLD();
         return rowItemsLD;
     }
-
-
 
     public void getUsersFromDb() {
         mainRepository.getUsersFromDb();

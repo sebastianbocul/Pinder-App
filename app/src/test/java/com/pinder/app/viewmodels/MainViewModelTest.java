@@ -1,5 +1,6 @@
 package com.pinder.app.viewmodels;
 
+import android.app.Application;
 import android.content.Context;
 
 import androidx.lifecycle.MutableLiveData;
@@ -36,7 +37,8 @@ public class MainViewModelTest {
     @BeforeEach
     public void init() {
         MockitoAnnotations.initMocks(this);
-        mainViewModel=new MainViewModel();
+        Application application = new Application();
+        mainViewModel=new MainViewModel(application);
     }
 
 

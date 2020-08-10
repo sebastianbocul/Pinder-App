@@ -3,6 +3,7 @@ package com.pinder.app.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ public class MainFragment extends Fragment {
     private SwipeFlingAdapterView flingContainer;
     private CardsAdapter arrayAdapter;
     MainViewModel mainViewModel;
+    private static final String TAG = "MainFragment";
 
     public MainFragment() {
         // Required empty public constructor
@@ -103,7 +105,8 @@ public class MainFragment extends Fragment {
                 rowItems.clear();
                 rowItems.addAll(cards);
                 arrayAdapter.notifyDataSetChanged();
-                if (cards != null && cards.size() != 0 && getContext() != null) {
+                for(Card ccc:rowItems){
+                    Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
                 }
             }
         });
