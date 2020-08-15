@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -19,10 +21,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.interfaces.OnSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.pinder.app.R;
 import com.pinder.app.adapters.TagsAdapter;
 import com.pinder.app.models.TagsObject;
@@ -55,6 +59,8 @@ public class TagsFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArrayList<TagsObject> arrayList = new ArrayList<>();
     private TagsFragmentViewModel tagsFragmentViewModel;
+    private ImageView bottomSheetArrow;
+    private BottomSheetBehavior bottomSheetBehavior;
 
     public TagsFragment() {
         // Required empty public constructor
@@ -103,6 +109,9 @@ public class TagsFragment extends Fragment {
         tagsEditText = getView().findViewById(R.id.tagsEditText);
         addTagButton = getView().findViewById(R.id.addButton);
         mRadioGroup = getView().findViewById(R.id.radioGroup);
+        bottomSheetArrow = getView().findViewById(R.id.bottom_sheet_arrow);
+        View bottomSheet= getView().findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         maxDistanceSeeker.setMinStartValue(100);
         maxDistanceSeeker.apply();
         recyclerView = getView().findViewById(R.id.tagsRecyclerView);
@@ -113,6 +122,7 @@ public class TagsFragment extends Fragment {
         adapter = new TagsAdapter(arrayList);
         recyclerView.setAdapter(adapter);
         fillTagsAdapter();
+        bottomSheetListener();
         ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
             @Override
             public void valueChanged(Number minValue, Number maxValue) {
@@ -160,6 +170,7 @@ public class TagsFragment extends Fragment {
             }
         });
     }
+
 
     @Override
     public void onDetach() {
@@ -213,4 +224,46 @@ public class TagsFragment extends Fragment {
         TagsObject tagToDel = adapter.getItem(position);
         tagsFragmentViewModel.removeTag(tagToDel);
     }
+
+    private void bottomSheetListener() {
+
+        bottomSheetArrow = getView().findViewById(R.id.bottom_sheet_arrow);
+        View bottomSheet= getView().findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }else {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+                }
+
+            }
+        });
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState){
+                    case BottomSheetBehavior.STATE_EXPANDED:{
+                        Glide.with(getActivity()).load(R.drawable.ic_keyboard_arrow_down_24dp).into(bottomSheetArrow);
+                        break;
+                    }
+                    case BottomSheetBehavior.STATE_COLLAPSED:{
+                        Glide.with(getActivity()).load(R.drawable.ic_keyboard_arrow_up_24dp).into(bottomSheetArrow);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+
+
+
+    }
+
 }
