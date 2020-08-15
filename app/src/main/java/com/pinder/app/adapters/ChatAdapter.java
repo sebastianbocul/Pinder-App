@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +18,9 @@ import com.pinder.app.models.ChatObject;
 
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
+import de.hdodenhof.circleimageview.CircleImageView;
+
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolders> {
     private List<ChatObject> chatList;
     private Context context;
     private LinearLayout.LayoutParams paramsText;
@@ -103,4 +106,23 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolders> {
     public int getItemCount() {
         return this.chatList.size();
     }
+
+    public class ChatViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public TextView mMessaage;
+        public LinearLayout mContainer;
+        public CircleImageView mChatImage;
+
+        public ChatViewHolders(@NonNull View itemView) {
+            super(itemView);
+            itemView.setOnClickListener(this);
+            mChatImage = itemView.findViewById(R.id.chatImage);
+            mMessaage = itemView.findViewById(R.id.message);
+            mContainer = itemView.findViewById(R.id.container);
+        }
+
+        @Override
+        public void onClick(View view) {
+        }
+    }
 }
+

@@ -65,124 +65,148 @@
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#EEEAEAEA" />
 
-        <LinearLayout
+    </LinearLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/bottom_sheet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_weight="0"
-            android:gravity="bottom"
-            android:orientation="vertical"
-            android:paddingTop="10sp"
-            android:paddingBottom="10sp">
+            app:behavior_peekHeight="50sp"
+            app:layout_behavior="@string/bottom_sheet_behavior">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_gravity="bottom"
+                android:layout_weight="0"
+                android:gravity="bottom"
+                android:orientation="vertical"
+                android:paddingBottom="10sp"
+                android:paddingLeft="10sp"
+                android:paddingRight="10sp">
 
-                <EditText
-                    android:id="@+id/tagsEditText"
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#EEEAEAEA" />
+
+                <ImageView
+                    android:layout_width="50sp"
+                    android:layout_height="50sp"
+                    android:src="@drawable/ic_logovector" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/tagsEditText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5"
+                        android:hint="Tag name:"
+                        android:maxLength="15"
+                        android:maxLines="1"
+                        android:singleLine="true" />
+
+                    <Button
+                        android:id="@+id/addButton"
+                        android:layout_width="60sp"
+                        android:layout_height="30sp"
+                        android:layout_weight="1"
+                        android:background="@drawable/rounded_button"
+                        android:text="ADD" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Looking for: "
+                    android:textSize="20sp" />
+
+                <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="10sp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Male" />
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Female" />
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Any" />
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/ageRangeTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="5"
-                    android:hint="Tag name:"
-                    android:maxLength="15"
-                    android:maxLines="1"
-                    android:singleLine="true" />
+                    android:paddingBottom="10sp"
+                    android:text="Age range: "
+                    android:textSize="20sp" />
 
-                <Button
-                    android:id="@+id/addButton"
-                    android:layout_width="60sp"
-                    android:layout_height="30sp"
-                    android:layout_weight="1"
-                    android:background="@drawable/rounded_button"
-                    android:text="ADD" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Looking for: "
-                android:textSize="20sp" />
-
-            <RadioGroup
-                android:id="@+id/radioGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10sp"
-                android:layout_marginBottom="10sp"
-                android:orientation="horizontal">
-
-                <RadioButton
+                <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
+                    android:id="@+id/ageRangeSeeker"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Male" />
+                    app:bar_color="#D3D3D3"
+                    app:bar_highlight_color="#808080"
+                    app:corner_radius="10"
+                    app:data_type="_integer"
+                    app:gap="1"
+                    app:left_thumb_color="#4E4E4E"
+                    app:left_thumb_color_pressed="#272727"
+                    app:max_value="99"
+                    app:min_value="18"
+                    app:right_thumb_color="#4E4E4E"
+                    app:right_thumb_color_pressed="#272727" />
 
-                <RadioButton
+                <TextView
+                    android:id="@+id/maxDistanceTextView"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="Female" />
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10sp"
+                    android:paddingBottom="10sp"
+                    android:text="Max distance:"
+                    android:textSize="20sp" />
 
-                <RadioButton
+                <com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar
+                    android:id="@+id/distanceSeeker"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="Any" />
-            </RadioGroup>
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10sp"
+                    app:bar_color="#D3D3D3"
+                    app:bar_highlight_color="#808080"
+                    app:data_type="_integer"
+                    app:left_thumb_color="#4E4E4E"
+                    app:left_thumb_color_pressed="#272727"
+                    app:max_value="1000"
+                    app:min_value="1"
+                    app:corner_radius="10"
+                    app:position="left" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-            <TextView
-                android:id="@+id/ageRangeTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10sp"
-                android:text="Age range: "
-                android:textSize="20sp" />
-
-            <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
-                android:id="@+id/ageRangeSeeker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:bar_color="#D3D3D3"
-                app:bar_highlight_color="#808080"
-                app:corner_radius="10"
-                app:data_type="_integer"
-                app:gap="1"
-                app:left_thumb_color="#4E4E4E"
-                app:left_thumb_color_pressed="#272727"
-                app:max_value="99"
-                app:min_value="18"
-                app:right_thumb_color="#4E4E4E"
-                app:right_thumb_color_pressed="#272727" />
-
-            <TextView
-                android:id="@+id/maxDistanceTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="10sp"
-                android:paddingBottom="10sp"
-                android:text="Max distance:"
-                android:textSize="20sp" />
-
-            <com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar
-                android:id="@+id/distanceSeeker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="10sp"
-                app:bar_color="#D3D3D3"
-                app:bar_highlight_color="#808080"
-                app:data_type="_integer"
-                app:left_thumb_color="#4E4E4E"
-                app:left_thumb_color_pressed="#272727"
-                app:max_value="1000"
-                app:min_value="1"
-                app:position="left" />
-        </LinearLayout>
-    </LinearLayout>
 </FrameLayout>

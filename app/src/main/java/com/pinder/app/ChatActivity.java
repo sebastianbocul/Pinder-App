@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -130,70 +129,26 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void fillImagesAndName() {
-        String matchName="";
-        String matchImageUrl="default";
+        String matchName = "";
+        String matchImageUrl = "default";
         MatchesViewModel matchesViewModel = new ViewModelProvider(ChatActivity.this).get(MatchesViewModel.class);
         myProfileImageUrl = matchesViewModel.getMyImageUrl();
-        if(getIntent().getExtras()!=null){
-             matchName = getIntent().getExtras().getString("matchName");
-             matchImageUrl = getIntent().getExtras().getString("matchImageUrl");
-
-        }else  myProfileImageUrl = "default";
-
+        if (getIntent().getExtras() != null) {
+            matchName = getIntent().getExtras().getString("matchName");
+            matchImageUrl = getIntent().getExtras().getString("matchImageUrl");
+        } else myProfileImageUrl = "default";
         profileImageUrl = matchImageUrl;
-
-
-
         userNameTextView.setText(matchName);
         switch (matchImageUrl) {
-                        case "default":
-                            Glide.with(getApplication()).load(R.drawable.ic_profile_hq).into(profileImage);
-                            break;
-                        default:
-                            Glide.with(profileImage).clear(profileImage);
-                            Glide.with(getApplication()).load(matchImageUrl).into(profileImage);
-                            break;
-                    }
+            case "default":
+                Glide.with(getApplication()).load(R.drawable.ic_profile_hq).into(profileImage);
+                break;
+            default:
+                Glide.with(profileImage).clear(profileImage);
+                Glide.with(getApplication()).load(matchImageUrl).into(profileImage);
+                break;
+        }
         getChatId();
-//
-//        mDatabaseUser.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                try {
-//                    String name = dataSnapshot.child(matchId).child("name").getValue().toString();
-//                    if (!dataSnapshot.child(matchId).child("profileImageUrl").exists()) {
-//                        profileImageUrl = "default";
-//                    } else
-//                        profileImageUrl = dataSnapshot.child(matchId).child("profileImageUrl").getValue().toString().trim();
-//                    myProfileImageUrl = dataSnapshot.child(currentUserID).child("profileImageUrl").getValue().toString().trim();
-//                    if (!name.isEmpty()) {
-//                        userNameTextView.setText(name);
-//                    }else {
-//                        userNameTextView.setText("");
-//                    }
-//
-//                    switch (profileImageUrl) {
-//                        case "default":
-//                            Glide.with(getApplication()).load(R.drawable.ic_profile_hq).into(profileImage);
-//                            break;
-//                        default:
-//                            Glide.with(profileImage).clear(profileImage);
-//                            Glide.with(getApplication()).load(profileImageUrl).into(profileImage);
-//                            break;
-//                    }
-//                    getChatId();
-//
-//                } catch (Exception e) {
-//                    Toast.makeText(ChatActivity.this, "Oooops something went wrong ", Toast.LENGTH_SHORT).show();
-//                    Intent intent = new Intent(ChatActivity.this, MainFragmentMenager.class);
-//                    startActivity(intent);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//            }
-//        });
     }
 
     private void sendMessage() {
