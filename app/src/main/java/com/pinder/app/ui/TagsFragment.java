@@ -27,6 +27,7 @@ import com.crystal.crystalrangeseekbar.interfaces.OnSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pinder.app.R;
 import com.pinder.app.adapters.TagsAdapter;
 import com.pinder.app.models.TagsObject;
@@ -61,6 +62,7 @@ public class TagsFragment extends Fragment {
     private TagsFragmentViewModel tagsFragmentViewModel;
     private ImageView bottomSheetArrow;
     private BottomSheetBehavior bottomSheetBehavior;
+    private FloatingActionButton floatingActionButton;
 
     public TagsFragment() {
         // Required empty public constructor
@@ -109,6 +111,7 @@ public class TagsFragment extends Fragment {
         tagsEditText = getView().findViewById(R.id.tagsEditText);
         addTagButton = getView().findViewById(R.id.addButton);
         mRadioGroup = getView().findViewById(R.id.radioGroup);
+//        floatingActionButton = getView().findViewById(R.id.floating_bottom_sheet);
         bottomSheetArrow = getView().findViewById(R.id.bottom_sheet_arrow);
         View bottomSheet= getView().findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -227,9 +230,6 @@ public class TagsFragment extends Fragment {
 
     private void bottomSheetListener() {
 
-        bottomSheetArrow = getView().findViewById(R.id.bottom_sheet_arrow);
-        View bottomSheet= getView().findViewById(R.id.bottom_sheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -247,11 +247,11 @@ public class TagsFragment extends Fragment {
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState){
                     case BottomSheetBehavior.STATE_EXPANDED:{
-                        Glide.with(getActivity()).load(R.drawable.ic_keyboard_arrow_down_24dp).into(bottomSheetArrow);
+                        Glide.with(getActivity()).load(R.drawable.ic_arrow_down_48dp).into(bottomSheetArrow);
                         break;
                     }
                     case BottomSheetBehavior.STATE_COLLAPSED:{
-                        Glide.with(getActivity()).load(R.drawable.ic_keyboard_arrow_up_24dp).into(bottomSheetArrow);
+                        Glide.with(getActivity()).load(R.drawable.ic_add_cyan_48dp).into(bottomSheetArrow);
                         break;
                     }
                 }

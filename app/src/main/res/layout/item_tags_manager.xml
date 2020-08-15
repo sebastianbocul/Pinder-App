@@ -1,49 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="5dp">
+    android:layout_marginLeft="2dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginRight="2dp">
 
-    <TextView
-        android:id="@+id/tag"
-        android:layout_width="80sp"
-        android:layout_height="30sp"
-        android:layout_weight="5"
-        android:text="Item1"
-        android:textSize="15sp" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/tag_gender"
-        android:layout_width="40sp"
-        android:layout_height="30sp"
-        android:layout_marginRight="10sp"
-        android:layout_weight="1"
-        android:text="Item1"
-        android:textSize="15sp" />
+        <TextView
+            android:id="@+id/tag"
+            android:layout_width="190sp"
+            android:layout_height="wrap_content"
+            android:text="#default"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:maxLines="1"
+            android:layout_alignParentLeft="true"
+            android:ellipsize="end"/>
 
-    <TextView
-        android:id="@+id/tag_age"
-        android:layout_width="30sp"
-        android:layout_height="30sp"
-        android:layout_marginRight="10sp"
-        android:layout_weight="1"
-        android:text="Item1"
-        android:textSize="15sp" />
+        <TextView
+            android:layout_alignParentTop="@id/tag"
+            android:id="@+id/gender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Gender:"
+            android:layout_toEndOf="@id/tag"
+            android:paddingTop="10sp"
+            android:textSize="15sp"
+            android:layout_toRightOf="@id/tag" />
 
-    <TextView
-        android:id="@+id/tag_distance"
-        android:layout_width="30sp"
-        android:layout_height="30sp"
-        android:layout_marginRight="10sp"
-        android:layout_weight="1"
-        android:text="Item1"
-        android:textSize="15sp" />
+        <TextView
+            android:layout_alignParentTop="@id/tag"
+            android:id="@+id/tag_gender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Female"
+            android:paddingTop="10sp"
+            android:textSize="15sp"
+            android:layout_toRightOf="@id/gender" />
+        <TextView
+            android:id="@+id/age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Age:"
+            android:layout_below="@id/tag"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/tag_age"
+            android:layout_width="160sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="18-99"
+            android:layout_below="@id/tag"
+            android:layout_toRightOf="@id/age"
+            android:textSize="15sp" />
 
-    <ImageView
-        android:id="@+id/tag_delete"
-        android:layout_width="22sp"
-        android:layout_height="22sp"
-        android:layout_marginRight="5sp"
-        android:src="@drawable/ic_close_black_24dp" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Distance:"
+            android:layout_below="@id/tag"
+            android:layout_toRightOf="@id/tag_age"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/tag_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="100km"
+            android:layout_below="@id/tag"
+            android:layout_toRightOf="@id/distance"
+            android:textSize="15sp" />
+
+
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center|right">
+        <ImageView
+            android:id="@+id/tag_delete"
+            android:layout_width="34sp"
+            android:layout_height="34sp"
+            android:layout_marginRight="5sp"
+            android:src="@drawable/ic_close_black_24dp"
+            />
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
