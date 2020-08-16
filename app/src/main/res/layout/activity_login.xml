@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="50sp"
-    tools:context="com.pinder.app.RegistrationActivity">
+    tools:context="com.pinder.app.RegistrationActivity"
+    android:id="@+id/loginActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,6 +29,7 @@
                 android:textSize="12sp" />
 
             <TextView
+                android:id="@+id/emailTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Email:"
@@ -42,6 +44,7 @@
                 android:paddingTop="2sp" />
 
             <TextView
+                android:id="@+id/passwordTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5sp"
@@ -116,10 +119,10 @@
                 android:layout_weight="1">
 
                 <ImageView
+                    android:id="@+id/smallLogo"
                     android:layout_width="match_parent"
                     android:layout_height="200sp"
                     android:layout_gravity="bottom|center"
-                    android:layout_weight="0"
                     android:paddingTop="20sp"
                     android:src="@drawable/ic_logovector" />
             </LinearLayout>
