@@ -122,7 +122,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
         dislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(UsersProfilesActivity.this, MainFragmentMenager.class);
+                Intent i = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
                 i.putExtra("fromUsersProfilesActivity", "dislikeButtonClicked");
                 startActivity(i);
             }
@@ -130,7 +130,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(UsersProfilesActivity.this, MainFragmentMenager.class);
+                Intent i = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
                 i.putExtra("fromUsersProfilesActivity", "likeButtonClicked");
                 startActivity(i);
             }
@@ -167,7 +167,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentMenager.class);
+                                    Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
                                     myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(myIntent);
                                 }

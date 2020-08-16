@@ -1,33 +1,21 @@
 package com.pinder.app.viewmodels;
 
 import android.app.Application;
-import android.content.Context;
-
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.pinder.app.InstantExecutorExtension;
 import com.pinder.app.LiveDataTestUtil;
-import com.pinder.app.MainFragmentMenager;
 import com.pinder.app.models.Card;
-import com.pinder.app.models.TagsObject;
-import com.pinder.app.repository.MainRepository;
-import com.pinder.app.ui.MainFragment;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(InstantExecutorExtension.class)
 public class MainViewModelTest {

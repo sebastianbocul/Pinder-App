@@ -130,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
                                 if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                    Intent intent = new Intent(LoginActivity.this, MainFragmentMenager.class);
+                                    Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
                                     startActivity(intent);
                                     finish();
                                     return;
@@ -325,7 +325,7 @@ public class LoginActivity extends AppCompatActivity {
         switch (requestCode) {
             case 44:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent intent = new Intent(LoginActivity.this, MainFragmentMenager.class);
+                    Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
                     startActivity(intent);
                     finish();
                 } else {

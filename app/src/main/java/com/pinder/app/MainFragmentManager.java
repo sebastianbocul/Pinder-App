@@ -14,7 +14,7 @@ import com.pinder.app.ui.ProfileFragment;
 import com.pinder.app.ui.SettingsFragment;
 import com.pinder.app.ui.TagsManagerFragment;
 
-public class MainFragmentMenager extends AppCompatActivity {
+public class MainFragmentManager extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
 
     @Override
