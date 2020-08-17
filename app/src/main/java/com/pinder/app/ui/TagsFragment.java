@@ -63,7 +63,7 @@ public class TagsFragment extends Fragment {
     private ImageView bottomSheetArrow;
     private BottomSheetBehavior bottomSheetBehavior;
     private FloatingActionButton floatingActionButton;
-
+    private ImageView bottomSheetChart;
     public TagsFragment() {
         // Required empty public constructor
     }
@@ -111,6 +111,7 @@ public class TagsFragment extends Fragment {
         tagsEditText = getView().findViewById(R.id.tagsEditText);
         addTagButton = getView().findViewById(R.id.addButton);
         mRadioGroup = getView().findViewById(R.id.radioGroup);
+        bottomSheetChart = getView().findViewById(R.id.bottom_sheet_chart);
 //        floatingActionButton = getView().findViewById(R.id.floating_bottom_sheet);
         bottomSheetArrow = getView().findViewById(R.id.bottom_sheet_arrow);
         View bottomSheet= getView().findViewById(R.id.bottom_sheet);
@@ -170,6 +171,13 @@ public class TagsFragment extends Fragment {
             @Override
             public void onDeleteClick(int position) {
                 removeItem(position);
+            }
+        });
+        bottomSheetChart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int fragmentContainer = R.id.fragment_container;
+                getActivity().getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new PopularTagsFragment()).commit();
             }
         });
     }

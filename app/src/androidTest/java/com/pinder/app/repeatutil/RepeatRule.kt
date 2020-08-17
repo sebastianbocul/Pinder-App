@@ -1,4 +1,4 @@
-package com.pinder.app
+package com.pinder.app.repeatutil
 
 import org.junit.rules.TestRule
 import org.junit.runner.Description

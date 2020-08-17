@@ -28,6 +28,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public class SettingsFirebase implements SettingsFirebaseDao {
+    private static final String TAG = "SettingsFirebase";
     private SettingInfoObject bufferInfo = new SettingInfoObject();
     private MutableLiveData<String> date = new MutableLiveData<>();
     private MutableLiveData<Boolean> showMyLocation = new MutableLiveData<>();
@@ -43,7 +44,10 @@ public class SettingsFirebase implements SettingsFirebaseDao {
     }
 
     private void loadDataFromDb() {
+        Log.d(TAG, "loadDataFromDb:  ");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        Log.d(TAG, "mAuth: " + mAuth);
+        Log.d(TAG, "mAuth.getCurrentUser(): " + mAuth.getCurrentUser());
         String userId = mAuth.getCurrentUser().getUid();
         DatabaseReference myDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
         myDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
