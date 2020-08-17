@@ -27,17 +27,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.pinder.app.MainPopUpActivity;
+import com.pinder.app.R;
 import com.pinder.app.models.Card;
-import com.pinder.app.util.CalculateDistance;
-import com.pinder.app.util.StringDateToAge;
+import com.pinder.app.models.TagsObject;
 import com.pinder.app.notifications.APIService;
 import com.pinder.app.notifications.Client;
 import com.pinder.app.notifications.Data;
 import com.pinder.app.notifications.Sender;
 import com.pinder.app.notifications.Token;
-import com.pinder.app.MainPopUpActivity;
-import com.pinder.app.R;
-import com.pinder.app.models.TagsObject;
+import com.pinder.app.util.CalculateDistance;
+import com.pinder.app.util.StringDateToAge;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -85,10 +85,10 @@ public class MainFirebase {
         }
         return instance;
     }
+
     ArrayList<String> myTagsAdapter = new ArrayList<>();
-
-
     MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
+
     public void updateMyTagsAndSortBydDist() {
         Single<List<TagsObject>> sinlgeObs1 = Single.create(emitter -> {
             String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -169,11 +169,10 @@ public class MainFirebase {
                     @Override
                     public void onComplete() {
                         boolean retval2 = Arrays.equals(myTagsList.toArray(), myTagsListTemp.toArray());
-                        if(!retval2){
+                        if (!retval2) {
                             myTagsAdapterLD.postValue(myTagsAdapter);
                         }
                         if (!sortByDistance.equals(sortByDistanceTemp) || !retval2) {
-
                             sortByDistance = sortByDistanceTemp;
                             myTagsList.clear();
                             for (TagsObject myTag : myTagsListTemp) {
@@ -187,24 +186,29 @@ public class MainFirebase {
     }
 
     public void updateLocation(Context context) {
+        Log.d("updateLocation", "Works1!");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         DatabaseReference usersDb;
         String currentUID = mAuth.getCurrentUser().getUid();
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+        DatabaseReference myRef = usersDb.child(currentUID).child("location");
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
+        Log.d("updateLocation", "Works2!");
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
                 Location location = task.getResult();
+                Log.d("updateLocation", "location: " + location);
                 if (location != null) {
                     try {
                         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
                         List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        myLongitude.postValue(addresses.get(0).getLongitude());
-                        myLatitude.postValue(addresses.get(0).getLatitude());
-                        DatabaseReference myRef = usersDb.child(currentUID).child("location");
+                        myLongitude.setValue(addresses.get(0).getLongitude());
+                        myLatitude.setValue(addresses.get(0).getLatitude());
                         myRef.child("longitude").setValue(addresses.get(0).getLongitude());
                         myRef.child("latitude").setValue(addresses.get(0).getLatitude());
+                        Log.d("updateLocation", "myLatitude updateLocation: " + myLatitude.getValue());
+                        Log.d("updateLocation", "myLongitude updateLocation: " + myLongitude.getValue());
                         if (addresses.get(0).getCountryName() != null) {
                             myRef.child("countryName").setValue(addresses.get(0).getCountryName());
                         } else {
@@ -223,6 +227,22 @@ public class MainFirebase {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                } else {
+                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                Log.d("updateLocation", "onDataChange: " + snapshot);
+                                Log.d("updateLocation", "onDataChange: " + snapshot.getKey());
+                                myLongitude.setValue(Double.parseDouble(snapshot.child("latitude").getValue().toString()));
+                                myLatitude.setValue(Double.parseDouble(snapshot.child("longitude").getValue().toString()));
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                        }
+                    });
                 }
             }
         });
@@ -341,13 +361,12 @@ public class MainFirebase {
         StringBuilder mutalTagsSB = new StringBuilder();
         Map<Object, Object> tagsMap = new HashMap<>();
         try {
-            Log.d("maingetTag", "User Name " + ds.child("name").getValue().toString());
+            Log.d("getTagsPreferencesUsers", "User Name " + ds.child("name").getValue().toString());
             int age = new StringDateToAge().stringDateToAge(ds.child("dateOfBirth").getValue().toString());
-            Log.d("maingetTag", "try 2");
             int myAge = Integer.parseInt(myInfo.get("age"));
             double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
             double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
-            double distanceDouble = new CalculateDistance().distance(myLatitude.getValue(), myLongitude.getValue(), latitude, longitude);
+            double distanceDouble = CalculateDistance.distance(myLatitude.getValue(), myLongitude.getValue(), latitude, longitude);
             for (DataSnapshot dataTag : ds.child("tags").getChildren()) {
                 Log.d("maingetTag", "forFirst ");
                 for (TagsObject tag : myTagsList) {
@@ -471,7 +490,6 @@ public class MainFirebase {
     private void sendNotification(String matchId, String myName, String sendMessageText) {
         Client client = new Client();
         APIService apiService = client.getClient("https://fcm.googleapis.com/").create(APIService.class);
-        ;
         String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference allTokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = allTokens.orderByKey().equalTo(matchId);
@@ -530,7 +548,6 @@ public class MainFirebase {
         usersDb.child(userId).child("connections").child("nope").child(currentUID).setValue(true);
     }
 
-
     public MutableLiveData<Double> getMyLatitude() {
         return myLatitude;
     }
@@ -546,5 +563,4 @@ public class MainFirebase {
     public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
         return myTagsAdapterLD;
     }
-
 }

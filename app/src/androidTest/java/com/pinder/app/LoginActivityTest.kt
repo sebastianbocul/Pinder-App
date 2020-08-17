@@ -15,13 +15,12 @@ class LoginActivityTest {
     @Test
     fun test_isActivityInView() {
         val activityScenario = ActivityScenario.launch(LoginActivity::class.java)
-
         onView(withId(R.id.loginActivity)).check(matches(isDisplayed()))
-
+        onView(withId(R.id.loginActivity)).check(matches(isDisplayed()))
     }
 
     @Test
-    fun test_visibility_elements() {
+    fun test_elements_visibility() {
         val activityScenario = ActivityScenario.launch(LoginActivity::class.java)
         onView(withId(R.id.regulationsTextView)).check(matches(isDisplayed()))
         onView(withId(R.id.emailTextView)).check(matches(isDisplayed()))
