@@ -31,6 +31,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pinder.app.R;
 import com.pinder.app.adapters.TagsAdapter;
 import com.pinder.app.models.TagsObject;
+import com.pinder.app.ui.dialogs.AddEditTagDialog;
 import com.pinder.app.viewmodels.TagsFragmentViewModel;
 
 import java.util.ArrayList;
@@ -49,21 +50,13 @@ public class TagsFragment extends Fragment {
     private String mParam2;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private TextView ageRangeTextView, maxDistanceTextView;
-    private CrystalRangeSeekbar ageRangeSeeker;
-    private CrystalSeekbar maxDistanceSeeker;
+
     private TagsAdapter adapter;
-    private Button addTagButton;
-    private EditText tagsEditText;
-    private RadioGroup mRadioGroup;
-    private String ageMin, ageMax, distanceMax;
+
     private RecyclerView recyclerView;
     private ArrayList<TagsObject> arrayList = new ArrayList<>();
     private TagsFragmentViewModel tagsFragmentViewModel;
-    private ImageView bottomSheetArrow;
-    private BottomSheetBehavior bottomSheetBehavior;
-    private FloatingActionButton floatingActionButton;
-    private ImageView bottomSheetChart;
+    private FloatingActionButton addTagButton;
     public TagsFragment() {
         // Required empty public constructor
     }
@@ -104,21 +97,10 @@ public class TagsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        ageRangeSeeker = getView().findViewById(R.id.ageRangeSeeker);
-        ageRangeTextView = getView().findViewById(R.id.ageRangeTextView);
-        maxDistanceSeeker = getView().findViewById(R.id.distanceSeeker);
-        maxDistanceTextView = getView().findViewById(R.id.maxDistanceTextView);
-        tagsEditText = getView().findViewById(R.id.tagsEditText);
-        addTagButton = getView().findViewById(R.id.addButton);
-        mRadioGroup = getView().findViewById(R.id.radioGroup);
-        bottomSheetChart = getView().findViewById(R.id.bottom_sheet_chart);
-//        floatingActionButton = getView().findViewById(R.id.floating_bottom_sheet);
-        bottomSheetArrow = getView().findViewById(R.id.bottom_sheet_arrow);
-        View bottomSheet= getView().findViewById(R.id.bottom_sheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        maxDistanceSeeker.setMinStartValue(100);
-        maxDistanceSeeker.apply();
+
         recyclerView = getView().findViewById(R.id.tagsRecyclerView);
+        addTagButton = getView().findViewById(R.id.button_add_tag);
+
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
@@ -126,58 +108,33 @@ public class TagsFragment extends Fragment {
         adapter = new TagsAdapter(arrayList);
         recyclerView.setAdapter(adapter);
         fillTagsAdapter();
-        bottomSheetListener();
-        ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
+
+        adapter.setOnItemClickListener(new TagsAdapter.OnItemClickListener() {
             @Override
-            public void valueChanged(Number minValue, Number maxValue) {
-                ageRangeTextView.setText("Age range: " + minValue.toString() + " - " + maxValue.toString());
-                ageMin = minValue.toString();
-                ageMax = maxValue.toString();
+            public void onItemClick(int position) {
+            }
+
+            @Override
+            public void onDeleteClick(int position) {
+                removeItem(position);
             }
         });
-        maxDistanceSeeker.setOnSeekbarChangeListener(new OnSeekbarChangeListener() {
+        adapter.setOnItemClickListener(new TagsAdapter.OnItemClickListener() {
             @Override
-            public void valueChanged(Number minValue) {
-                if (minValue.intValue() == 1000) {
-                    minValue = 100000;
-                    maxDistanceTextView.setText("Max distance: " + "∞");
-                } else {
-                    maxDistanceTextView.setText("Max distance: " + minValue + " km");
-                }
-                distanceMax = minValue.toString();
+            public void onItemClick(int position) {
+            }
+
+            @Override
+            public void onDeleteClick(int position) {
+                removeItem(position);
             }
         });
+
         addTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addTagButtonFunction();
-            }
-        });
-        adapter.setOnItemClickListener(new TagsAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-            }
-
-            @Override
-            public void onDeleteClick(int position) {
-                removeItem(position);
-            }
-        });
-        adapter.setOnItemClickListener(new TagsAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-            }
-
-            @Override
-            public void onDeleteClick(int position) {
-                removeItem(position);
-            }
-        });
-        bottomSheetChart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                int fragmentContainer = R.id.fragment_container;
-//                getActivity().getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new PopularTagsFragment()).commit();
+                AddEditTagDialog addEditTagDialog = new AddEditTagDialog();
+                addEditTagDialog.show(getActivity().getSupportFragmentManager(), "Add tag");
             }
         });
     }
@@ -193,32 +150,7 @@ public class TagsFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    private void addTagButtonFunction() {
-        if (tagsEditText.getText().toString().length() == 0) {
-            Toast.makeText(getActivity().getApplicationContext(), "Fill tag name", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (mRadioGroup.getCheckedRadioButtonId() == -1) {
-            Toast.makeText(getActivity().getApplicationContext(), "Choose gender to find", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        for (TagsObject tmo : arrayList) {
-            if (tmo.getTagName().equals(tagsEditText.getText().toString().toLowerCase())) {
-                Toast.makeText(getActivity().getApplicationContext(), "Duplicate tag", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-        int selectedId = mRadioGroup.getCheckedRadioButtonId();
-        RadioButton radioButton = getView().findViewById(selectedId);
-        String tagName = tagsEditText.getText().toString().toLowerCase();
-        String gender = radioButton.getText().toString();
-        String mAgeMax = ageMax;
-        String mAgeMin = ageMin;
-        String mDistance = distanceMax;
-        TagsObject tag = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
-        tagsFragmentViewModel.addTag(tag);
-        Toast.makeText(getContext(), "Tag added!", Toast.LENGTH_SHORT).show();
-    }
+
 
     private void fillTagsAdapter() {
         tagsFragmentViewModel.getAllTags().observe(getActivity(), new Observer<List<TagsObject>>() {
@@ -235,43 +167,4 @@ public class TagsFragment extends Fragment {
         TagsObject tagToDel = adapter.getItem(position);
         tagsFragmentViewModel.removeTag(tagToDel);
     }
-
-    private void bottomSheetListener() {
-
-        bottomSheetArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                }else {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-                }
-
-            }
-        });
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState){
-                    case BottomSheetBehavior.STATE_EXPANDED:{
-                        Glide.with(getActivity()).load(R.drawable.ic_arrow_down_48dp).into(bottomSheetArrow);
-                        break;
-                    }
-                    case BottomSheetBehavior.STATE_COLLAPSED:{
-                        Glide.with(getActivity()).load(R.drawable.ic_add_cyan_48dp).into(bottomSheetArrow);
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            }
-        });
-
-
-
-    }
-
 }
