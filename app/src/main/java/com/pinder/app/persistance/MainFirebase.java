@@ -361,12 +361,17 @@ public class MainFirebase {
         StringBuilder mutalTagsSB = new StringBuilder();
         Map<Object, Object> tagsMap = new HashMap<>();
         try {
-            Log.d("getTagsPreferencesUsers", "User Name " + ds.child("name").getValue().toString());
+            Log.d("getTagsPreferencesUsers", "User Name " + ds.child("name").getValue().toString() + " uid: " + ds.getKey());
             int age = new StringDateToAge().stringDateToAge(ds.child("dateOfBirth").getValue().toString());
+            Log.d("getTagsPreferencesUsers", "age: " + age);
             int myAge = Integer.parseInt(myInfo.get("age"));
+            Log.d("getTagsPreferencesUsers", "myAge: " + myAge);
             double latitude = Double.parseDouble(ds.child("location").child("latitude").getValue().toString());
+            Log.d("getTagsPreferencesUsers", "latitude: " + latitude);
             double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
+            Log.d("getTagsPreferencesUsers", "longitude: " + longitude);
             double distanceDouble = CalculateDistance.distance(myLatitude.getValue(), myLongitude.getValue(), latitude, longitude);
+            Log.d("getTagsPreferencesUsers", "distanceDouble" + distanceDouble);
             for (DataSnapshot dataTag : ds.child("tags").getChildren()) {
                 Log.d("maingetTag", "forFirst ");
                 for (TagsObject tag : myTagsList) {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -74,14 +75,17 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
         tabLayout.addTab(tabLayout.newTab().setText("My tags"));
         tabLayout.addTab(tabLayout.newTab().setText("Popular tags"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        final ViewPager viewPager = getActivity().findViewById(R.id.pager);
-        final TagsManagerPagerAdapter adapter = new TagsManagerPagerAdapter(getActivity().getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
-        viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        int fragmentContainer = R.id.pager;
+        getActivity().getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new TagsFragment()).commit();
+//        final FrameLayout frameLayout = getActivity().findViewById(R.id.pager);
+//        final TagsManagerPagerAdapter adapter = new TagsManagerPagerAdapter(getActivity().getSupportFragmentManager(), tabLayout.getTabCount());
+//        frameLayout.setAdapter(adapter);
+
+//        viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
+                getActivity().getSupportFragmentManager().beginTransaction().replace(fragmentContainer, getFragment(tab.getPosition())).commit();
             }
 
             @Override
@@ -96,5 +100,19 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+    }
+
+
+    public Fragment getFragment(int position) {
+        switch (position) {
+            case 0:
+                TagsFragment tagsManagerFragment = new TagsFragment();
+                return tagsManagerFragment;
+            case 1:
+                PopularTagsFragment popularTagsFragment = new PopularTagsFragment();
+                return popularTagsFragment;
+            default:
+                return null;
+        }
     }
 }
