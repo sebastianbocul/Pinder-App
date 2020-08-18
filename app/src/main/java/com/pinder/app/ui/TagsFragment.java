@@ -176,8 +176,8 @@ public class TagsFragment extends Fragment {
         bottomSheetChart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int fragmentContainer = R.id.fragment_container;
-                getActivity().getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new PopularTagsFragment()).commit();
+//                int fragmentContainer = R.id.fragment_container;
+//                getActivity().getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new PopularTagsFragment()).commit();
             }
         });
     }

@@ -5,16 +5,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.pinder.app.R;
-import com.pinder.app.adapters.TagsManagerPagerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -75,13 +72,8 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
         tabLayout.addTab(tabLayout.newTab().setText("My tags"));
         tabLayout.addTab(tabLayout.newTab().setText("Popular tags"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        int fragmentContainer = R.id.pager;
+        int fragmentContainer = R.id.fragment_container;
         getActivity().getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new TagsFragment()).commit();
-//        final FrameLayout frameLayout = getActivity().findViewById(R.id.pager);
-//        final TagsManagerPagerAdapter adapter = new TagsManagerPagerAdapter(getActivity().getSupportFragmentManager(), tabLayout.getTabCount());
-//        frameLayout.setAdapter(adapter);
-
-//        viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -101,7 +93,6 @@ public class TagsManagerFragment extends Fragment implements TagsFragment.OnFrag
     @Override
     public void onFragmentInteraction(Uri uri) {
     }
-
 
     public Fragment getFragment(int position) {
         switch (position) {

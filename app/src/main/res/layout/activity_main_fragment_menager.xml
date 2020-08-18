@@ -17,9 +17,16 @@
         android:keepScreenOn="true"
         android:theme="@style/BottomNavigationTheme"
         app:menu="@menu/navigation" />
-    <FrameLayout
-        android:id="@+id/fragment_container"
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </FrameLayout>
+        android:layout_height="fill_parent"
+        />
+
+<!--    <FrameLayout-->
+<!--        android:id="@+id/fragment_container"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+<!--    </FrameLayout>-->
 </LinearLayout>

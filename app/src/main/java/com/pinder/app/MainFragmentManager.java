@@ -1,58 +1,85 @@
 package com.pinder.app;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.pinder.app.ui.MainFragment;
-import com.pinder.app.ui.MatchesFragment;
-import com.pinder.app.ui.ProfileFragment;
-import com.pinder.app.ui.SettingsFragment;
-import com.pinder.app.ui.TagsManagerFragment;
+import com.pinder.app.adapters.MainFragmentManagerPagerAdapter;
 
 public class MainFragmentManager extends AppCompatActivity {
+    private static final String TAG = "MainFragmentManager";
     private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_fragment_menager);
-        int fragmentContainer = R.id.fragment_container;
-        getSupportFragmentManager().beginTransaction().replace(fragmentContainer, new MainFragment()).commit();
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_main);
-        bottomNavigationView.setOnNavigationItemSelectedListener(listener);
-    }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener listener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment selectedFragment = null;
-            switch (item.getItemId()) {
-                case R.id.nav_settings:
-                    selectedFragment = new SettingsFragment();
-                    break;
-                case R.id.nav_tags:
-                    selectedFragment = new TagsManagerFragment();
-                    break;
-                case R.id.nav_main:
-                    selectedFragment = new MainFragment();
-                    break;
-                case R.id.nav_matches:
-                    selectedFragment = new MatchesFragment();
-                    break;
-                case R.id.nav_profile:
-                    selectedFragment = new ProfileFragment();
-                    break;
+        final ViewPager viewPager = findViewById(R.id.pager);
+        Log.d(TAG, "  bottomNavigationView.getMaxItemCount(): " +   bottomNavigationView.getMaxItemCount());
+        MainFragmentManagerPagerAdapter adapter = new MainFragmentManagerPagerAdapter(getSupportFragmentManager(), bottomNavigationView.getMaxItemCount());
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(2);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
-            return true;
-        }
-    };
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        bottomNavigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
+                        break;
+                    case 1:
+                        bottomNavigationView.getMenu().findItem(R.id.nav_tags).setChecked(true);
+                        break;
+                    case 2:
+                        bottomNavigationView.getMenu().findItem(R.id.nav_main).setChecked(true);
+                        break;
+                    case 3:
+                        bottomNavigationView.getMenu().findItem(R.id.nav_matches).setChecked(true);
+                        break;
+                    case 4:
+                        bottomNavigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_settings:
+                        viewPager.setCurrentItem(0);
+                        break;
+                    case R.id.nav_tags:
+                        viewPager.setCurrentItem(1);
+                        break;
+                    case R.id.nav_main:
+                        viewPager.setCurrentItem(2);
+                        break;
+                    case R.id.nav_matches:
+                        viewPager.setCurrentItem(3);
+                        break;
+                    case R.id.nav_profile:
+                        viewPager.setCurrentItem(4);
+                        break;
+                }
+                return true;
+            }
+        });
+    }
 }
 
    

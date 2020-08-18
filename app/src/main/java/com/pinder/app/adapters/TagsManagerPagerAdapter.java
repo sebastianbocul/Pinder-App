@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-import com.pinder.app.ui.TagsFragment;
 import com.pinder.app.ui.PopularTagsFragment;
+import com.pinder.app.ui.TagsFragment;
 
 public class TagsManagerPagerAdapter extends FragmentStatePagerAdapter {
     int mNoOfTabs;
