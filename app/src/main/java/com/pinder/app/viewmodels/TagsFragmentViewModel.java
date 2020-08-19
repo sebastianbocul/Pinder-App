@@ -11,6 +11,8 @@ import java.util.List;
 public class TagsFragmentViewModel extends ViewModel {
     private MutableLiveData<List<TagsObject>> tagList = new MutableLiveData<List<TagsObject>>();
     private TagsRepository tagsRepository;
+    public int REQUEST_MODE = 1;
+    public int position;
 
     public TagsFragmentViewModel() {
         tagsRepository = new TagsRepository().getInstance();

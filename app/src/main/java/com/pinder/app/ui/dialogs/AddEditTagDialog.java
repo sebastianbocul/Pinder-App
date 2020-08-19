@@ -22,7 +22,6 @@ import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.interfaces.OnSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar;
-import com.facebook.appevents.suggestedevents.ViewOnClickListener;
 import com.pinder.app.R;
 import com.pinder.app.models.TagsObject;
 import com.pinder.app.viewmodels.TagsFragmentViewModel;
@@ -39,25 +38,54 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
     private TagsFragmentViewModel tagsFragmentViewModel;
     private ArrayList<TagsObject> arrayList = new ArrayList<>();
     private View view;
+    private TagsObject tag = null;
+
+    public AddEditTagDialog(ArrayList<TagsObject> arrayList) {
+        this.arrayList = arrayList;
+    }
+
+    public AddEditTagDialog(TagsObject tag) {
+        this.tag = tag;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         view = inflater.inflate(R.layout.dialog_add_tag, null);
-
         ageRangeSeeker = view.findViewById(R.id.ageRangeSeeker);
         ageRangeTextView = view.findViewById(R.id.ageRangeTextView);
         maxDistanceSeeker = view.findViewById(R.id.distanceSeeker);
-        maxDistanceTextView  =view.findViewById(R.id.maxDistanceTextView);
+        maxDistanceTextView = view.findViewById(R.id.maxDistanceTextView);
         tagsEditText = view.findViewById(R.id.tagsEditText);
         mRadioGroup = view.findViewById(R.id.radioGroup);
         maxDistanceSeeker.setMinStartValue(100);
         maxDistanceSeeker.apply();
-
-
+        //set data from tag
+        if (tag != null) {
+            switch (tag.getGender()) {
+                case "Male":
+                    RadioButton male = view.findViewById(R.id.radioButtonMale);
+                    male.setChecked(true);
+                    break;
+                case "Female":
+                    RadioButton female = view.findViewById(R.id.radioButtonFemale);
+                    female.setChecked(true);
+                    break;
+                case "Any":
+                    RadioButton any = view.findViewById(R.id.radioButtonAny);
+                    any.setChecked(true);
+                    break;
+            }
+            tagsEditText.setText(tag.getTagName());
+            ageRangeSeeker.setMaxStartValue(Float.parseFloat(tag.getmAgeMax()));
+            ageRangeSeeker.setMinStartValue(Float.parseFloat(tag.getmAgeMin()));
+            ageRangeSeeker.apply();
+            maxDistanceSeeker.setMinStartValue(Float.parseFloat(tag.getmDistance()));
+            maxDistanceSeeker.apply();
+        }
         tagsFragmentViewModel = new ViewModelProvider(this).get(TagsFragmentViewModel.class);
-
         ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
             @Override
             public void valueChanged(Number minValue, Number maxValue) {
@@ -78,9 +106,8 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
                 distanceMax = minValue.toString();
             }
         });
-
         String dialogTitle = "Add search tag";
-        //get tag from bundle/ if clicked add button or item selected - get string from bundle
+        String possitiveButtonText = "save";
         builder.setView(view)
                 .setCancelable(false)
                 .setTitle(dialogTitle)
@@ -89,9 +116,7 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 })
-                .setPositiveButton("add", null);
-//        Button positiveButton = builder.setPositiveButton()
-
+                .setPositiveButton(possitiveButtonText, null);
         return builder.create();
     }
 
@@ -104,14 +129,12 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
             Toast.makeText(getActivity().getApplicationContext(), "Choose gender to find", Toast.LENGTH_SHORT).show();
             return;
         }
-
         for (TagsObject tmo : arrayList) {
             if (tmo.getTagName().equals(tagsEditText.getText().toString().toLowerCase())) {
                 Toast.makeText(getActivity().getApplicationContext(), "Duplicate tag", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
-
         int selectedId = mRadioGroup.getCheckedRadioButtonId();
         RadioButton radioButton = view.findViewById(selectedId);
         String tagName = tagsEditText.getText().toString().toLowerCase();
@@ -120,6 +143,7 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
         String mAgeMin = ageMin;
         String mDistance = distanceMax;
         TagsObject tag = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
+        tagsFragmentViewModel.REQUEST_MODE = 1;
         tagsFragmentViewModel.addTag(tag);
         Toast.makeText(getContext(), "Tag added!", Toast.LENGTH_SHORT).show();
         dialog.dismiss();
@@ -135,12 +159,8 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
             @Override
             public void onClick(View v) {
                 addTagButtonFunction(dialog);
-
             }
         });
-        
-        
-   //    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
     }
 }
 

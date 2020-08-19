@@ -35,7 +35,7 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ExampleViewHol
     @Override
     public void onBindViewHolder(ExampleViewHolder holder, int position) {
         TagsObject currentItem = mTagsManagerObject.get(position);
-        holder.tagName.setText("#" + currentItem.getTagName());
+        holder.tagName.setText("#" + currentItem.getTagName() + " " + position);
         holder.gender.setText(currentItem.getGender());
         if (currentItem.getmDistance().equals("100000")) {
             holder.distance.setText("∞");

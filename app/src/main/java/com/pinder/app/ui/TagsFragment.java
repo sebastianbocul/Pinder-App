@@ -5,15 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -21,12 +14,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
-import com.crystal.crystalrangeseekbar.interfaces.OnSeekbarChangeListener;
-import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
-import com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pinder.app.R;
 import com.pinder.app.adapters.TagsAdapter;
@@ -50,13 +37,15 @@ public class TagsFragment extends Fragment {
     private String mParam2;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
     private TagsAdapter adapter;
-
     private RecyclerView recyclerView;
     private ArrayList<TagsObject> arrayList = new ArrayList<>();
     private TagsFragmentViewModel tagsFragmentViewModel;
     private FloatingActionButton addTagButton;
+    //public static final int LOAD = 1;
+    public static final int ADD = 1;
+    public static final int REMOVE = -1;
+
     public TagsFragment() {
         // Required empty public constructor
     }
@@ -97,10 +86,8 @@ public class TagsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-
         recyclerView = getView().findViewById(R.id.tagsRecyclerView);
         addTagButton = getView().findViewById(R.id.button_add_tag);
-
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
@@ -108,11 +95,11 @@ public class TagsFragment extends Fragment {
         adapter = new TagsAdapter(arrayList);
         recyclerView.setAdapter(adapter);
         fillTagsAdapter();
-
         adapter.setOnItemClickListener(new TagsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Toast.makeText(getContext(), "Clicked position: " + position, Toast.LENGTH_SHORT).show();
+                AddEditTagDialog addEditTagDialog = new AddEditTagDialog(arrayList.get(position));
+                addEditTagDialog.show(getActivity().getSupportFragmentManager(), "Edit tag");
             }
 
             @Override
@@ -120,17 +107,14 @@ public class TagsFragment extends Fragment {
                 removeItem(position);
             }
         });
-
-
         addTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddEditTagDialog addEditTagDialog = new AddEditTagDialog();
+                AddEditTagDialog addEditTagDialog = new AddEditTagDialog(arrayList);
                 addEditTagDialog.show(getActivity().getSupportFragmentManager(), "Add tag");
             }
         });
     }
-
 
     @Override
     public void onDetach() {
@@ -142,22 +126,39 @@ public class TagsFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-
-
     private void fillTagsAdapter() {
         tagsFragmentViewModel.getAllTags().observe(getActivity(), new Observer<List<TagsObject>>() {
             @Override
             public void onChanged(List<TagsObject> tagsObjects) {
-                arrayList.clear();
-                arrayList.addAll(tagsObjects);
-                adapter.notifyDataSetChanged();
+                int request = tagsObjects.size() - arrayList.size();
+                switch (request) {
+                    case ADD: {
+                        arrayList.clear();
+                        arrayList.addAll(tagsObjects);
+                        adapter.notifyDataSetChanged();
+                        break;
+                    }
+                    case REMOVE: {
+                        arrayList.clear();
+                        arrayList.addAll(tagsObjects);
+                        adapter.notifyItemRemoved(tagsFragmentViewModel.position);
+                        break;
+                    }
+                    default: {
+                        arrayList.clear();
+                        arrayList.addAll(tagsObjects);
+                        adapter.notifyDataSetChanged();
+                        break;
+                    }
+                }
             }
         });
     }
 
     public void removeItem(int position) {
         TagsObject tagToDel = adapter.getItem(position);
-        adapter.notifyItemRemoved(position);
         tagsFragmentViewModel.removeTag(tagToDel);
+        tagsFragmentViewModel.position = position;
+//        tagsFragmentViewModel.REQUEST_MODE=REMOVE;
     }
 }

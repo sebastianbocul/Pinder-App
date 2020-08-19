@@ -1,5 +1,7 @@
 package com.pinder.app.persistance;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
@@ -50,6 +52,34 @@ public class TagsFirebase implements TagsFirebaseDao {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                for(int i=0;i<tagsList.size();i++){
+                    if(tagsList.get(i).getTagName().equals(snapshot.getKey())){
+                        String gender = snapshot.child("gender").getValue().toString();
+                        tagsList.get(i).setGender(gender);
+                        String mAgeMax = snapshot.child("maxAge").getValue().toString();
+                        tagsList.get(i).setmAgeMax(mAgeMax);
+                        String mAgeMin = snapshot.child("minAge").getValue().toString();
+                        tagsList.get(i).setmAgeMin(mAgeMin);
+                        String mDistance = snapshot.child("maxDistance").getValue().toString();
+                        tagsList.get(i).setmDistance(mDistance);
+                        result.postValue(tagsList);
+                    }
+                }
+//                for(TagsObject tag : tagsList){
+//                    if(snapshot.getKey().equals(tag.getTagName())){
+//                        String gender = snapshot.child("gender").getValue().toString();
+//                        tag.setGender(gender);
+//                        String mAgeMax = snapshot.child("maxAge").getValue().toString();
+//                        tag.setGender(mAgeMax);
+//                        String mAgeMin = snapshot.child("minAge").getValue().toString();
+//                        tag.setGender(mAgeMin);
+//                        String mDistance = snapshot.child("maxDistance").getValue().toString();
+//                        tag.setGender(mDistance);
+//
+//                    }
+//                }
+//                Log.d(TAG, "onChildChanged snapshot:  " + snapshot);
+//                Log.d(TAG, "onChildChanged previousChildName:  " + previousChildName);
             }
 
             @Override
