@@ -49,10 +49,7 @@ class TagsFragmentTest {
         //go to Tags fragment
         onView(withId(R.id.nav_tags)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_tags)).perform(click())
-
         //perform clicking navigationBars
-        is_BotttomSheetButtonsVisible()
-
         logout()
     }
 
@@ -73,21 +70,5 @@ class TagsFragmentTest {
 
 
 
-    fun is_BotttomSheetButtonsVisible() {
-        Thread.sleep(2000);
-        //check if tagsFragment visible
-        onView(withId(R.id.tagsFragment)).check(matches(isDisplayed()))
 
-        //check if new bottom buttons visible
-        onView(withId(R.id.bottom_sheet_delete)).check(matches(isDisplayed()))
-        onView(withId(R.id.bottom_sheet_arrow)).check(matches(isDisplayed()))
-        onView(withId(R.id.bottom_sheet_chart)).check(matches(isDisplayed()))
-        Thread.sleep(1000);
-
-        onView(withId(R.id.distanceSeeker)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.bottom_sheet_arrow)).perform(click())
-        Thread.sleep(2000);
-        onView(withId(R.id.distanceSeeker)).check(matches(isDisplayed()))
-
-    }
 }
