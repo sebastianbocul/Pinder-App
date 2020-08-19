@@ -22,6 +22,7 @@ import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.interfaces.OnSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar;
+import com.facebook.appevents.suggestedevents.ViewOnClickListener;
 import com.pinder.app.R;
 import com.pinder.app.models.TagsObject;
 import com.pinder.app.viewmodels.TagsFragmentViewModel;
@@ -37,13 +38,13 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
     private String ageMin, ageMax, distanceMax;
     private TagsFragmentViewModel tagsFragmentViewModel;
     private ArrayList<TagsObject> arrayList = new ArrayList<>();
-
+    private View view;
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_add_tag, null);
+        view = inflater.inflate(R.layout.dialog_add_tag, null);
 
         ageRangeSeeker = view.findViewById(R.id.ageRangeSeeker);
         ageRangeTextView = view.findViewById(R.id.ageRangeTextView);
@@ -88,16 +89,13 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 })
-                .setPositiveButton("add", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        addTagButtonFunction(view);
-                    }
-                });
+                .setPositiveButton("add", null);
+//        Button positiveButton = builder.setPositiveButton()
+
         return builder.create();
     }
 
-    private void addTagButtonFunction(View view) {
+    private void addTagButtonFunction(AlertDialog dialog) {
         if (tagsEditText.getText().toString().length() == 0) {
             Toast.makeText(getActivity().getApplicationContext(), "Fill tag name", Toast.LENGTH_SHORT).show();
             return;
@@ -106,12 +104,14 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
             Toast.makeText(getActivity().getApplicationContext(), "Choose gender to find", Toast.LENGTH_SHORT).show();
             return;
         }
+
         for (TagsObject tmo : arrayList) {
             if (tmo.getTagName().equals(tagsEditText.getText().toString().toLowerCase())) {
                 Toast.makeText(getActivity().getApplicationContext(), "Duplicate tag", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
+
         int selectedId = mRadioGroup.getCheckedRadioButtonId();
         RadioButton radioButton = view.findViewById(selectedId);
         String tagName = tagsEditText.getText().toString().toLowerCase();
@@ -122,5 +122,25 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
         TagsObject tag = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
         tagsFragmentViewModel.addTag(tag);
         Toast.makeText(getContext(), "Tag added!", Toast.LENGTH_SHORT).show();
+        dialog.dismiss();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // disable positive button by default
+        AlertDialog dialog = (AlertDialog) getDialog();
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTagButtonFunction(dialog);
+
+            }
+        });
+        
+        
+   //    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
     }
 }
+

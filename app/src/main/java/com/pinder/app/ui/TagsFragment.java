@@ -112,6 +112,7 @@ public class TagsFragment extends Fragment {
         adapter.setOnItemClickListener(new TagsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
+                Toast.makeText(getContext(), "Clicked position: " + position, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -119,16 +120,7 @@ public class TagsFragment extends Fragment {
                 removeItem(position);
             }
         });
-        adapter.setOnItemClickListener(new TagsAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-            }
 
-            @Override
-            public void onDeleteClick(int position) {
-                removeItem(position);
-            }
-        });
 
         addTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,6 +157,7 @@ public class TagsFragment extends Fragment {
 
     public void removeItem(int position) {
         TagsObject tagToDel = adapter.getItem(position);
+        adapter.notifyItemRemoved(position);
         tagsFragmentViewModel.removeTag(tagToDel);
     }
 }
