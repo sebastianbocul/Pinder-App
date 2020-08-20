@@ -1,28 +1,26 @@
 package com.pinder.app.ui
 
-import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import com.google.firebase.database.core.view.View
+import android.view.View
 import com.pinder.app.LoginActivity
 import com.pinder.app.R
-import com.pinder.app.adapters.CardsAdapter
 import com.pinder.app.adapters.TagsAdapter
-import com.pinder.app.util.login
-import com.pinder.app.util.logout
 import com.pinder.app.util.RepeatRule
 import com.pinder.app.util.RepeatTest
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers
+import org.hamcrest.TypeSafeMatcher
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.Description
 import org.junit.runner.RunWith
 
 
@@ -66,6 +64,17 @@ class TagsFragmentTest {
         onView(withId(R.id.nav_tags)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_tags)).perform(click())
 
+        val appCompatImageView = onView(
+                Matchers.allOf(withId(R.id.tag_delete),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(Matchers.`is`("androidx.cardview.widget.CardView")),
+                                        1),
+                                0),
+                        isDisplayed()))
+        appCompatImageView.perform(click())
+
+
         onView(withId(R.id.button_add_tag)).check(matches(isDisplayed()))
         onView(withId(R.id.button_add_tag)).perform(click())
 
@@ -81,6 +90,9 @@ class TagsFragmentTest {
         onView(withId(R.id.ageRangeSeeker)).check(matches(isDisplayed()))
         onView(withId(R.id.maxDistanceTextView)).check(matches(isDisplayed()))
         onView(withId(R.id.distanceSeeker)).check(matches(isDisplayed()))
+
+
+
 
         //set tagname and gender
         onView(withId(R.id.tagsEditText)).perform(click())
@@ -126,4 +138,21 @@ class TagsFragmentTest {
 //
 //        override fun perform(uiController: UiController, view: View) = click().perform(uiController, view.findViewById<View>(viewId))
 //    }
+
+    private fun childAtPosition(
+            parentMatcher: Matcher<View>, position: Int): Matcher<View> {
+
+        return object : TypeSafeMatcher<View>() {
+            public override fun matchesSafely(view: View): Boolean {
+                val parent = view.parent
+                return parent is ViewGroup && parentMatcher.matches(parent)
+                        && view == parent.getChildAt(position)
+            }
+
+            override fun describeTo(description: org.hamcrest.Description?) {
+                description?.appendText("Child at position $position in parent ")
+                parentMatcher.describeTo(description)
+            }
+        }
+    }
 }
