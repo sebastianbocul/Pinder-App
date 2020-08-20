@@ -87,6 +87,8 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
         // Inflate the layout for this fragment
+        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+        mainViewModel.updateMyTagsAndSortBydDist();
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
@@ -108,6 +110,7 @@ public class MainFragment extends Fragment {
                 rowItems.clear();
                 rowItems.addAll(cards);
                 arrayAdapter.notifyDataSetChanged();
+                Log.d(TAG, "onChanged: BREAAAAAK");
                 for(Card ccc:rowItems){
                     Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
                 }
@@ -237,7 +240,7 @@ public class MainFragment extends Fragment {
         super.onStart();
         Log.d(TAG, "onStart: ");
         //fillTagsAdapter();
-        mainViewModel.getUsersFromDb();
+//        mainViewModel.updateMyTagsAndSortBydDist();
     }
 
     @Override

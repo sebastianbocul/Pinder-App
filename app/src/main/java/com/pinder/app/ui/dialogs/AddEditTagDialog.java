@@ -60,7 +60,7 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
         maxDistanceTextView = view.findViewById(R.id.maxDistanceTextView);
         tagsEditText = view.findViewById(R.id.tagsEditText);
         mRadioGroup = view.findViewById(R.id.radioGroup);
-        maxDistanceSeeker.setMinStartValue(100);
+        maxDistanceSeeker.setMinStartValue(1000);
         maxDistanceSeeker.apply();
         //set data from tag
         if (tag != null) {

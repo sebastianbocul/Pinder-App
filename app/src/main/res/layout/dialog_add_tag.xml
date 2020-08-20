@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/dialog_add_tag">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,6 +41,7 @@
                 android:singleLine="true" />
 
         <TextView
+            android:id="@+id/lookingForTextView"
             android:paddingTop="3sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

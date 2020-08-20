@@ -13,7 +13,7 @@ import com.pinder.app.models.TagsObject;
 
 import java.util.ArrayList;
 
-public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ExampleViewHolder> {
+public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.TagsViewHolder> {
     private ArrayList<TagsObject> mTagsManagerObject;
     private OnItemClickListener mListener;
 
@@ -26,14 +26,14 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ExampleViewHol
     }
 
     @Override
-    public ExampleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TagsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tags_manager, parent, false);
-        ExampleViewHolder evh = new ExampleViewHolder(v, mListener);
+        TagsViewHolder evh = new TagsViewHolder(v, mListener);
         return evh;
     }
 
     @Override
-    public void onBindViewHolder(ExampleViewHolder holder, int position) {
+    public void onBindViewHolder(TagsViewHolder holder, int position) {
         TagsObject currentItem = mTagsManagerObject.get(position);
         holder.tagName.setText("#" + currentItem.getTagName() + " " + position);
         holder.gender.setText(currentItem.getGender());
@@ -60,11 +60,11 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ExampleViewHol
         void onDeleteClick(int position);
     }
 
-    public static class ExampleViewHolder extends RecyclerView.ViewHolder {
+    public static class TagsViewHolder extends RecyclerView.ViewHolder {
         private TextView tagName, gender, tagAge, distance;
         private ImageView mDeleteImage;
 
-        public ExampleViewHolder(View itemView, final OnItemClickListener listener) {
+        public TagsViewHolder(View itemView, final OnItemClickListener listener) {
             super(itemView);
             tagName = itemView.findViewById(R.id.tag);
             gender = itemView.findViewById(R.id.tag_gender);

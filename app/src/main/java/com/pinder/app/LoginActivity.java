@@ -52,6 +52,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pinder.app.persistance.MainFirebase;
+import com.pinder.app.persistance.MatchesFirebase;
+import com.pinder.app.persistance.PopularTagsFirebase;
+import com.pinder.app.persistance.ProfileFirebase;
+import com.pinder.app.persistance.SettingsFirebase;
+import com.pinder.app.persistance.TagsFirebase;
+import com.pinder.app.repository.MainRepository;
+import com.pinder.app.repository.MatchesRepository;
+import com.pinder.app.repository.PopularTagsRepository;
+import com.pinder.app.repository.ProfileRepository;
+import com.pinder.app.repository.SettingsRepository;
+import com.pinder.app.repository.TagsRepository;
 import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
 
@@ -86,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
         mLogin = findViewById(R.id.login);
         mEmail = findViewById(R.id.email);
         mPassword = findViewById(R.id.password);
+        clearInstances();
         NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
         // Configure sign-in to request the user's ID, email address, and basic
@@ -344,4 +357,20 @@ public class LoginActivity extends AppCompatActivity {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
+    public void clearInstances() {
+        SettingsFirebase.instance = null;
+        SettingsRepository.instance = null;
+        TagsFirebase.instance = null;
+        TagsRepository.instance = null;
+        PopularTagsFirebase.instance = null;
+        PopularTagsRepository.instance = null;
+        MatchesRepository.instance = null;
+        MatchesFirebase.instance = null;
+        ProfileFirebase.instance = null;
+        ProfileRepository.instance = null;
+        MainFirebase.instance=null;
+        MainRepository.instance=null;
+    }
+
 }

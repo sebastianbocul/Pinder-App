@@ -44,8 +44,8 @@ public class MainViewModel extends AndroidViewModel {
         return rowItemsLD;
     }
 
-    public void getUsersFromDb() {
-        mainRepository.getUsersFromDb();
+    public void updateMyTagsAndSortBydDist() {
+        mainRepository.updateMyTagsAndSortBydDist();
     }
 
     public void isConnectionMatch(Card obj, Context con) {

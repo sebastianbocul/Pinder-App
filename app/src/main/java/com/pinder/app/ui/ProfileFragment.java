@@ -19,8 +19,9 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
-import com.pinder.app.adapters.ImageAdapter;
 import com.pinder.app.R;
+import com.pinder.app.adapters.ImageAdapter;
+import com.pinder.app.persistance.ProfileFirebase;
 import com.pinder.app.viewmodels.ProfileViewModel;
 
 import java.util.ArrayList;
@@ -207,7 +208,11 @@ public class ProfileFragment extends Fragment {
     public void onDetach() {
         String nameEdt = mNameField.getText().toString();
         String descriptionEdt = descriptionEditText.getText().toString().trim();
-        profileViewModel.saveUserInformation(nameEdt, descriptionEdt);
+        if (ProfileFirebase.instance != null) {
+            profileViewModel.saveUserInformation(nameEdt, descriptionEdt);
+        }
         super.onDetach();
     }
+
+
 }

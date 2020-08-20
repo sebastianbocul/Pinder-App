@@ -74,20 +74,6 @@ public class SettingsViewModel extends AndroidViewModel implements SettingsFireb
         settingsRepository.deleteWithRxJava(userId);
     }
 
-    public void clearInstances() {
-        SettingsFirebase.instance = null;
-        SettingsRepository.instance = null;
-        TagsFirebase.instance = null;
-        TagsRepository.instance = null;
-        PopularTagsFirebase.instance = null;
-        PopularTagsRepository.instance = null;
-        MatchesRepository.instance = null;
-        MatchesFirebase.instance = null;
-        ProfileFirebase.instance = null;
-        ProfileRepository.instance = null;
-        MainFirebase.instance=null;
-        MainRepository.instance=null;
-    }
 
     public void restartMatches(){
         settingsRepository.restartMatches();

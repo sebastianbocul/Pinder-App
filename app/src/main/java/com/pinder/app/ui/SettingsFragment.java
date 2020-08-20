@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -272,7 +273,7 @@ public class SettingsFragment extends Fragment {
         restartMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsViewModel.clearInstances();
+               // settingsViewModel.clearInstances();
                 restartMatchesFun();
             }
         });
@@ -320,7 +321,7 @@ public class SettingsFragment extends Fragment {
 
     public void logoutUser() {
         LoginManager.getInstance().logOut();
-        settingsViewModel.clearInstances();
+        //settingsViewModel.clearInstances();
 
         mAuth.signOut();
         Intent intent = new Intent(getContext(), LoginActivity.class);

@@ -1,4 +1,4 @@
-package com.pinder.app.repeatutil
+package com.pinder.app.util
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.ANNOTATION_CLASS)

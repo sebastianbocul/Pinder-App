@@ -37,7 +37,7 @@ public class MainRepository {
         return mainFirebase.getRowItemsLD();
     }
 
-    public void getUsersFromDb() {
+    public void updateMyTagsAndSortBydDist() {
         mainFirebase.updateMyTagsAndSortBydDist();
     }
 
