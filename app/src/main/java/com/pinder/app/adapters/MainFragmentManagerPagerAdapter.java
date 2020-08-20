@@ -26,13 +26,13 @@ public class MainFragmentManagerPagerAdapter extends FragmentStatePagerAdapter {
             case 0:
                 return new SettingsFragment();
             case 1:
-                return new TagsManagerFragment();
+                return new ProfileFragment();
             case 2:
                 return new MainFragment();
             case 3:
                 return new MatchesFragment();
             case 4:
-                return new ProfileFragment();
+                return new TagsManagerFragment();
             default:
                 return null;
         }

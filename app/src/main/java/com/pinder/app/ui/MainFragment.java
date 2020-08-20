@@ -75,6 +75,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -84,6 +85,7 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: ");
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
@@ -91,6 +93,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d(TAG, "onViewCreated: ");
         noMoreEditText = getView().findViewById(R.id.noMore);
         likeButton = getView().findViewById(R.id.likeButton);
         dislikeButton = getView().findViewById(R.id.dislikeButton);
@@ -232,13 +235,16 @@ public class MainFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart: ");
         //fillTagsAdapter();
         mainViewModel.getUsersFromDb();
     }
 
     @Override
     public void onResume() {
+        Log.d(TAG, "onResume: ");
         mainViewModel.checkUserStatus(getActivity());
         super.onResume();
     }
+    
 }
