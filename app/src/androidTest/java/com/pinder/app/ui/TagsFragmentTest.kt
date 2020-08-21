@@ -1,31 +1,29 @@
 package com.pinder.app.ui
 
-import android.view.ViewGroup
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import android.view.View
 import com.pinder.app.LoginActivity
 import com.pinder.app.R
-import com.pinder.app.adapters.TagsAdapter
+import com.pinder.app.ui.TagsFragmentTest.ViewMatchers.onRecyclerItemView
 import com.pinder.app.util.RepeatRule
 import com.pinder.app.util.RepeatTest
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers
-import org.hamcrest.TypeSafeMatcher
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.Description
 import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4ClassRunner::class)
-
 class TagsFragmentTest {
     @Rule
     @JvmField
@@ -45,34 +43,26 @@ class TagsFragmentTest {
     }
 
     @Test
-    fun isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty_logout(){
-//        login()
+    fun isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty_logout() {
         val activityScenario = ActivityScenario.launch(LoginActivity::class.java)
         Thread.sleep(5000);
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
         isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty()
-//        logout()
     }
+
     fun isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty() {
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
         //check cards not exists
         onView(withId(R.id.noMore)).check(matches(isDisplayed()))
 
-
         //go tags
         onView(withId(R.id.nav_tags)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_tags)).perform(click())
 
-        val appCompatImageView = onView(
-                Matchers.allOf(withId(R.id.tag_delete),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(Matchers.`is`("androidx.cardview.widget.CardView")),
-                                        1),
-                                0),
-                        isDisplayed()))
-        appCompatImageView.perform(click())
+        clickOnImageViewAtRow(1)
+        Thread.sleep(1000)
+        clickOnImageViewAtRow(0)
 
 
         onView(withId(R.id.button_add_tag)).check(matches(isDisplayed()))
@@ -92,8 +82,6 @@ class TagsFragmentTest {
         onView(withId(R.id.distanceSeeker)).check(matches(isDisplayed()))
 
 
-
-
         //set tagname and gender
         onView(withId(R.id.tagsEditText)).perform(click())
         val tagName = "default"
@@ -102,57 +90,37 @@ class TagsFragmentTest {
 
         onView(withText("SAVE")).perform(click());
 
-
-        onView(withId(R.id.tagsRecyclerView))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<TagsAdapter.TagsViewHolder>(0, click()))
-        Thread.sleep(1000)
+        onView(withId(R.id.button_add_tag)).check(matches(isDisplayed()))
+        onView(withId(R.id.button_add_tag)).perform(click())
+        //set tagname and gender
+        onView(withId(R.id.tagsEditText)).perform(click())
+        val tagName2 = "date"
+        onView(withId(R.id.tagsEditText)).perform(typeText(tagName2))
+        onView(withId(R.id.radioButtonAny)).perform(click())
         onView(withText("SAVE")).perform(click());
-        Thread.sleep(1000)
-
-//        onView(withId(R.id.tagsRecyclerView)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, clickOnViewChild(R.id.tag_delete)))
-////        onView(withId(R.id.tagsRecyclerView)
-////                .check(matches(RecyclerViewActions.atPosition(0, withText("Test Text"))));
-//        onView(withId(R.id.tagsRecyclerView)).perform(TestUtils.actionOnItemViewAtPosition(1,
-//                R.id.tag_delete,
-//                click()));
-////
-////                .atPositionOnView(1, R.id.tag_delete))
-////                .check(matches(withText("Test text")));
 
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
         Thread.sleep(5000)
 
-        //check cards exists
-//        onView(withId(R.id.item_card)).check(matches(isDisplayed()))
-//        onView(withId(R.id.item_card)).check(matches(isDisplayed()))
-
-//        onView(withId(R.id.frame)).perform(actionOnItemAtPosition<>(0, click()))
-
     }
 
-//    fun clickOnViewChild(viewId: Int) = object : ViewAction {
-//        override fun getConstraints() = null
-//
-//        override fun getDescription() = "Click on a child view with specified id."
-//
-//        override fun perform(uiController: UiController, view: View) = click().perform(uiController, view.findViewById<View>(viewId))
-//    }
+    fun clickOnImageViewAtRow(position: Int) {
+        onView(withId(R.id.tagsRecyclerView)).perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(position, ClickOnImageView()))
+    }
 
-    private fun childAtPosition(
-            parentMatcher: Matcher<View>, position: Int): Matcher<View> {
+    class ClickOnImageView : ViewAction {
+        var click = click()
+        override fun getConstraints(): Matcher<View> {
+            return click.constraints
+        }
 
-        return object : TypeSafeMatcher<View>() {
-            public override fun matchesSafely(view: View): Boolean {
-                val parent = view.parent
-                return parent is ViewGroup && parentMatcher.matches(parent)
-                        && view == parent.getChildAt(position)
-            }
+        override fun getDescription(): String {
+            return " click on custom image view"
+        }
 
-            override fun describeTo(description: org.hamcrest.Description?) {
-                description?.appendText("Child at position $position in parent ")
-                parentMatcher.describeTo(description)
-            }
+        override fun perform(uiController: UiController?, view: View) {
+            click.perform(uiController, view.findViewById(R.id.tag_delete))
         }
     }
 }
