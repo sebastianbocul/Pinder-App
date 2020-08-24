@@ -7,6 +7,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -63,6 +64,7 @@ import retrofit2.Response;
 import static android.content.Context.MODE_PRIVATE;
 
 public class MainFirebase {
+    private static final String TAG = "MainFirebase";
     public static MainFirebase instance = null;
     Context context;
     MutableLiveData<Double> myLongitude = new MutableLiveData<>();
@@ -85,7 +87,6 @@ public class MainFirebase {
         }
         return instance;
     }
-
 
     MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
 
@@ -136,19 +137,28 @@ public class MainFirebase {
             });
         });
         Single<String> sinlgeObs2 = Single.create(emitter -> {
-            String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
-            ds.child("sortByDistance").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) sortByDistanceTemp = snapshot.getValue().toString();
-                    emitter.onSuccess(sortByDistanceTemp);
-                }
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            sortByDistanceTemp = prefs.getString("sortByDistance", "notFound");
+            Log.d(TAG, "no prefs found: " + sortByDistanceTemp);
+            if (sortByDistanceTemp.equals("true") || sortByDistanceTemp.equals("false")) {
+                Log.d(TAG, "sortByDistanceTemp: " + sortByDistanceTemp.toString());
+                emitter.onSuccess(sortByDistanceTemp);
+            } else {
+                String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
+                ds.child("sortByDistance").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Log.d(TAG, "no prefs found: downloading");
+                        if (snapshot.exists()) sortByDistanceTemp = snapshot.getValue().toString();
+                        emitter.onSuccess(sortByDistanceTemp);
+                    }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+            }
             emitter.setCancellable(new Cancellable() {
                 @Override
                 public void cancel() throws Exception {
@@ -178,11 +188,10 @@ public class MainFirebase {
                             Log.d("RxOnComplete", "onComplete: if1 " + retval2);
                             myTagsAdapterLD.postValue(myTagsAdapter);
                         }
-                        Log.d("RxOnComplete", "onComplete !sortByDistance.equals(sortByDistanceTemp) : " + !sortByDistance.equals(sortByDistanceTemp) );
+                        Log.d("RxOnComplete", "onComplete !sortByDistance.equals(sortByDistanceTemp) : " + !sortByDistance.equals(sortByDistanceTemp));
                         Log.d("RxOnComplete", "onComplete retval2: " + retval2);
-
-                        Log.d("RxOnComplete", "onComplete : " + myTagsList.toString());
-                        Log.d("RxOnComplete", "onComplete : " + myTagsListTemp.toString());
+//                        Log.d("RxOnComplete", "onComplete : " + myTagsList.toString());
+//                        Log.d("RxOnComplete", "onComplete : " + myTagsListTemp.toString());
                         if (!sortByDistance.equals(sortByDistanceTemp) || !retval2) {
                             Log.d("RxOnComplete", "onComplete if2: " + true);
                             sortByDistance = sortByDistanceTemp;

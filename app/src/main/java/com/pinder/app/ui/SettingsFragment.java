@@ -1,11 +1,13 @@
 package com.pinder.app.ui;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,52 +21,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
-import com.google.firebase.storage.StorageReference;
+import com.pinder.app.LoginActivity;
+import com.pinder.app.R;
 import com.pinder.app.ui.dialogs.BugsAndImprovementsDialog;
-import com.pinder.app.persistance.MainFirebase;
-import com.pinder.app.repository.MainRepository;
 import com.pinder.app.ui.dialogs.LicencesDialog;
 import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
-import com.pinder.app.LoginActivity;
-import com.pinder.app.persistance.MatchesFirebase;
-import com.pinder.app.repository.MatchesRepository;
-import com.pinder.app.persistance.SettingsFirebase;
-import com.pinder.app.repository.SettingsRepository;
 import com.pinder.app.util.StringDateToAge;
-import com.pinder.app.persistance.ProfileFirebase;
-import com.pinder.app.repository.ProfileRepository;
-import com.pinder.app.R;
-import com.pinder.app.persistance.TagsFirebase;
-import com.pinder.app.repository.TagsRepository;
-import com.pinder.app.persistance.PopularTagsFirebase;
-import com.pinder.app.repository.PopularTagsRepository;
 import com.pinder.app.viewmodels.SettingsViewModel;
 
 import java.util.Calendar;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -87,6 +60,7 @@ public class SettingsFragment extends Fragment {
     private boolean dateValid = false;
     private Button restartMatches;
     private Button bugsAndImprovements;
+    SharedPreferences prefs;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -129,6 +103,12 @@ public class SettingsFragment extends Fragment {
     int i = 0;
     SettingsViewModel settingsViewModel;
     int logoutFlag = 0;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        super.onAttach(context);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -253,14 +233,16 @@ public class SettingsFragment extends Fragment {
         sortUsersByDistanceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                settingsViewModel.setSortByDistance(isChecked);
+                prefs.edit().putBoolean("sortByDistance", isChecked).apply();
+                settingsViewModel.setSortByDistance(isChecked, prefs);
+//                Boolean sortByDistanceTemp = prefs.getBoolean("sortByDistance", false);
+//                settingsViewModel.setSortByDistance(isChecked);
             }
         });
         logoutUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 updateMyDb();
-
                 logoutUser();
             }
         });
@@ -273,7 +255,7 @@ public class SettingsFragment extends Fragment {
         restartMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // settingsViewModel.clearInstances();
+                // settingsViewModel.clearInstances();
                 restartMatchesFun();
             }
         });
@@ -322,17 +304,13 @@ public class SettingsFragment extends Fragment {
     public void logoutUser() {
         LoginManager.getInstance().logOut();
         //settingsViewModel.clearInstances();
-
         mAuth.signOut();
         Intent intent = new Intent(getContext(), LoginActivity.class);
         logoutFlag = 1;
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-
         return;
     }
-
-
 
     public void deleteAccount() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -378,8 +356,6 @@ public class SettingsFragment extends Fragment {
                     }
                 });
     }
-
-
 
     private void updateMyDb() {
         settingsViewModel.setDate(date.getText().toString());

@@ -70,7 +70,7 @@ public class SettingsFirebase implements SettingsFirebaseDao {
                     }else {
                         showMyLocation.postValue(false);
                         bufferInfo.setShowMyLocation(false);
-                        myDatabaseReference.child("sortByDistance").setValue(false);
+                        myDatabaseReference.child("showMyLocation").setValue(false);
                     }
                     if (dataSnapshot.child("sortByDistance").exists()) {
                         Boolean sortByDistanceBool = (Boolean) dataSnapshot.child("sortByDistance").getValue();
@@ -79,7 +79,7 @@ public class SettingsFirebase implements SettingsFirebaseDao {
                     }else {
                         sortByDistance.postValue(false);
                         bufferInfo.setSortByDistance(false);
-                        myDatabaseReference.child("showMyLocation").setValue(false);
+                        myDatabaseReference.child("sortByDistance").setValue(false);
                     }
                 }
             }

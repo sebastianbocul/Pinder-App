@@ -21,11 +21,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.pinder.app.R;
-import com.pinder.app.adapters.CardsAdapter;
-import com.pinder.app.viewmodels.MainViewModel;
-import com.pinder.app.models.Card;
-import com.pinder.app.adapters.TagsManagerAdapter;
 import com.pinder.app.UsersProfilesActivity;
+import com.pinder.app.adapters.CardsAdapter;
+import com.pinder.app.adapters.TagsManagerAdapter;
+import com.pinder.app.models.Card;
+import com.pinder.app.viewmodels.MainViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,8 +110,8 @@ public class MainFragment extends Fragment {
                 rowItems.addAll(cards);
                 arrayAdapter.notifyDataSetChanged();
                 Log.d(TAG, "onChanged: BREAAAAAK");
-                for(Card ccc:rowItems){
-                //    Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
+                for (Card ccc : rowItems) {
+                    Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
                 }
             }
         });
@@ -126,7 +126,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onChanged(ArrayList<String> strings) {
                 Log.d(TAG, "onChanged: LoadTags" + strings);
-                ArrayList<String> strings2=mainViewModel.getMyTagsAdapterLD().getValue();
+                ArrayList<String> strings2 = mainViewModel.getMyTagsAdapterLD().getValue();
                 Log.d(TAG, "onChanged: LoadTags" + strings2);
                 myTags.clear();
                 myTags.addAll(strings);
@@ -251,5 +251,4 @@ public class MainFragment extends Fragment {
         mainViewModel.checkUserStatus(getActivity());
         super.onResume();
     }
-    
 }

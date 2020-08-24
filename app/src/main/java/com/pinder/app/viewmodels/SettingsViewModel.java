@@ -1,6 +1,7 @@
 package com.pinder.app.viewmodels;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -21,7 +22,7 @@ import com.pinder.app.repository.ProfileRepository;
 import com.pinder.app.repository.SettingsRepository;
 import com.pinder.app.repository.TagsRepository;
 
-public class SettingsViewModel extends AndroidViewModel implements SettingsFirebaseDao {
+public class SettingsViewModel extends AndroidViewModel {
     private LiveData<String> date;
     private LiveData<Boolean> showMyLocation;
     private LiveData<Boolean> sortByDistance;
@@ -32,40 +33,34 @@ public class SettingsViewModel extends AndroidViewModel implements SettingsFireb
         settingsRepository = SettingsRepository.getInstance();
     }
 
-    @Override
     public void updateMyDb(Boolean dateValid) {
         settingsRepository.updateMyDb(dateValid);
     }
 
-    @Override
     public LiveData<String> getDate() {
         date = settingsRepository.getDate();
         return date;
     }
 
-    @Override
     public LiveData<Boolean> getSortByDistance() {
         sortByDistance = settingsRepository.getSortByDistance();
         return sortByDistance;
     }
 
-    @Override
     public LiveData<Boolean> getShowMyLocation() {
         showMyLocation = settingsRepository.getShowMyLocation();
         return showMyLocation;
     }
 
-    @Override
     public void setDate(String date) {
         settingsRepository.setDate(date);
     }
 
-    @Override
-    public void setSortByDistance(Boolean bool) {
+    public void setSortByDistance(Boolean bool, SharedPreferences prefs) {
+        prefs.edit().putString("sortByDistance", bool.toString()).apply();
         settingsRepository.setSortByDistance(bool);
     }
 
-    @Override
     public void setShowMyLocation(Boolean bool) {
         settingsRepository.setShowMyLocation(bool);
     }

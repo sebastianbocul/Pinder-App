@@ -65,21 +65,6 @@ public class TagsFirebase implements TagsFirebaseDao {
                         result.postValue(tagsList);
                     }
                 }
-//                for(TagsObject tag : tagsList){
-//                    if(snapshot.getKey().equals(tag.getTagName())){
-//                        String gender = snapshot.child("gender").getValue().toString();
-//                        tag.setGender(gender);
-//                        String mAgeMax = snapshot.child("maxAge").getValue().toString();
-//                        tag.setGender(mAgeMax);
-//                        String mAgeMin = snapshot.child("minAge").getValue().toString();
-//                        tag.setGender(mAgeMin);
-//                        String mDistance = snapshot.child("maxDistance").getValue().toString();
-//                        tag.setGender(mDistance);
-//
-//                    }
-//                }
-//                Log.d(TAG, "onChildChanged snapshot:  " + snapshot);
-//                Log.d(TAG, "onChildChanged previousChildName:  " + previousChildName);
             }
 
             @Override
