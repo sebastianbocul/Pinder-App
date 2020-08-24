@@ -87,8 +87,6 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
         // Inflate the layout for this fragment
-        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
-        mainViewModel.updateMyTagsAndSortBydDist();
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
@@ -104,6 +102,7 @@ public class MainFragment extends Fragment {
         arrayAdapter = new CardsAdapter(getContext(), R.layout.item, rowItems);
         flingContainer.setAdapter(arrayAdapter);
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+        mainViewModel.updateMyTagsAndSortBydDist();
         mainViewModel.getRowItemsLD().observe(getActivity(), new Observer<ArrayList<Card>>() {
             @Override
             public void onChanged(ArrayList<Card> cards) {
@@ -112,7 +111,7 @@ public class MainFragment extends Fragment {
                 arrayAdapter.notifyDataSetChanged();
                 Log.d(TAG, "onChanged: BREAAAAAK");
                 for(Card ccc:rowItems){
-                    Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
+                //    Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
                 }
             }
         });
@@ -126,6 +125,9 @@ public class MainFragment extends Fragment {
         mainViewModel.getMyTagsAdapterLD().observe(getActivity(), new Observer<ArrayList<String>>() {
             @Override
             public void onChanged(ArrayList<String> strings) {
+                Log.d(TAG, "onChanged: LoadTags" + strings);
+                ArrayList<String> strings2=mainViewModel.getMyTagsAdapterLD().getValue();
+                Log.d(TAG, "onChanged: LoadTags" + strings2);
                 myTags.clear();
                 myTags.addAll(strings);
                 adapter.notifyDataSetChanged();
@@ -240,7 +242,7 @@ public class MainFragment extends Fragment {
         super.onStart();
         Log.d(TAG, "onStart: ");
         //fillTagsAdapter();
-//        mainViewModel.updateMyTagsAndSortBydDist();
+        //mainViewModel.updateMyTagsAndSortBydDist();
     }
 
     @Override

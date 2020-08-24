@@ -2,20 +2,19 @@ package com.pinder.app.ui
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.pinder.app.LoginActivity
-import com.pinder.app.MainFragmentManager
 import com.pinder.app.R
 import com.pinder.app.adapters.TagsManagerAdapter
 import com.pinder.app.util.RepeatRule
@@ -64,7 +63,6 @@ class TagsFragmentTest {
 
         for (x in 0 until 10) {
             isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty()
-
         }
     }
 
@@ -75,8 +73,10 @@ class TagsFragmentTest {
         onView(withId(R.id.noMore)).check(matches(isDisplayed()))
         Thread.sleep(1000)
         //checking if frame is empty - if not it will perform error next click
-        onView(withId(R.id.frame)).perform(click())
+      //  onView(withId(R.id.frame)).perform(click())
+        onView(withId(R.id.item_card)).check(doesNotExist());
         Thread.sleep(1000)
+        onView(withId(R.id.item_tags)).check(doesNotExist());
 //        onView(withId(R.id.tagsRecyclerView))
 
         //go tags
@@ -100,11 +100,15 @@ class TagsFragmentTest {
         onView(withId(R.id.maxDistanceTextView)).check(matches(isDisplayed()))
         onView(withId(R.id.distanceSeeker)).check(matches(isDisplayed()))
 
-        //set tagname and gender
-        onView(withId(R.id.tagsEditText)).perform(click())
-        val tagName = "default"
-        onView(withId(R.id.tagsEditText)).perform(typeText(tagName))
+
         onView(withId(R.id.radioButtonAny)).perform(click())
+        //set tagname and gender
+        Thread.sleep(1000)
+        onView(withId(R.id.tagsEditText)).perform(click())
+        Thread.sleep(1000)
+        val tagName = "default"
+         onView(withId(R.id.tagsEditText)).perform(typeText(tagName))
+        Thread.sleep(1000)
         onView(withText("SAVE")).perform(click());
 
         onView(withId(R.id.button_add_tag)).check(matches(isDisplayed()))
@@ -120,7 +124,7 @@ class TagsFragmentTest {
 
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
-        Thread.sleep(3000)
+        Thread.sleep(5000)
 
         //this is recyclerView in main fragment
         onView(withId(R.id.tagsRecyclerView)).perform(actionOnItemAtPosition<TagsManagerAdapter.ViewHolder>(0, click()))
@@ -141,11 +145,12 @@ class TagsFragmentTest {
         Thread.sleep(500)
         clickOnImageViewAtRow(0)
 
+        //go mainfragment
         Thread.sleep(1000)
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
-        Thread.sleep(1000)
+        Thread.sleep(3000)
 
 
     }

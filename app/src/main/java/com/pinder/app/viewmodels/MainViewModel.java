@@ -2,6 +2,7 @@ package com.pinder.app.viewmodels;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -35,7 +36,9 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
+
         myTagsAdapterLD = mainRepository.getMyTagsAdapterLD();
+        Log.d("MainFragment", "getTags viewModel " + myTagsAdapterLD.getValue());
         return myTagsAdapterLD;
     }
 

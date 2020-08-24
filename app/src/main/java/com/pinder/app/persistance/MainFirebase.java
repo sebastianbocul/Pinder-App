@@ -86,10 +86,12 @@ public class MainFirebase {
         return instance;
     }
 
-    ArrayList<String> myTagsAdapter = new ArrayList<>();
+
     MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
 
     public void updateMyTagsAndSortBydDist() {
+        ArrayList<String> myTagsAdapter = new ArrayList<>();
+        Log.d("MainFragment", "mainFirebase tags: " + myTagsAdapterLD.getValue());
         Single<List<TagsObject>> sinlgeObs1 = Single.create(emitter -> {
             String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
@@ -112,6 +114,8 @@ public class MainFirebase {
                         emitter.onSuccess(myTagsListTemp);
                     } else {
                         if (myTagsListTemp.size() == 0) {
+                            myTagsAdapter.clear();
+                            myTagsAdapterLD.postValue(myTagsAdapter);
                             rowItems.clear();
                             rowItemsLD.postValue(rowItems);
                             Toast.makeText(context, "Add tags first!", Toast.LENGTH_SHORT).show();
@@ -170,9 +174,11 @@ public class MainFirebase {
                     public void onComplete() {
                         boolean retval2 = Arrays.equals(myTagsList.toArray(), myTagsListTemp.toArray());
                         if (!retval2) {
+                            Log.d("RxOnComplete", "onComplete: if1 " + retval2);
                             myTagsAdapterLD.postValue(myTagsAdapter);
                         }
                         if (!sortByDistance.equals(sortByDistanceTemp) || !retval2) {
+                            Log.d("RxOnComplete", "onComplete if2: " + true);
                             sortByDistance = sortByDistanceTemp;
                             myTagsList.clear();
                             for (TagsObject myTag : myTagsListTemp) {
@@ -566,6 +572,7 @@ public class MainFirebase {
     }
 
     public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
+        Log.d("MainFragment", "getTags firebase " + myTagsAdapterLD.getValue());
         return myTagsAdapterLD;
     }
 }
