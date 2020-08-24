@@ -190,8 +190,6 @@ public class MainFirebase {
                         }
                         Log.d("RxOnComplete", "onComplete !sortByDistance.equals(sortByDistanceTemp) : " + !sortByDistance.equals(sortByDistanceTemp));
                         Log.d("RxOnComplete", "onComplete retval2: " + retval2);
-//                        Log.d("RxOnComplete", "onComplete : " + myTagsList.toString());
-//                        Log.d("RxOnComplete", "onComplete : " + myTagsListTemp.toString());
                         if (!sortByDistance.equals(sortByDistanceTemp) || !retval2) {
                             Log.d("RxOnComplete", "onComplete if2: " + true);
                             sortByDistance = sortByDistanceTemp;

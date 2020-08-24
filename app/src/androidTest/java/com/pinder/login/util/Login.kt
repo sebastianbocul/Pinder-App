@@ -1,4 +1,4 @@
-package com.pinder.app.util
+package com.pinder.login.util
 
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso

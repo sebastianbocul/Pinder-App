@@ -1,14 +1,16 @@
-package com.pinder.app
+package com.pinder.login
 
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import com.pinder.app.LoginActivity
+import com.pinder.app.R
 import com.pinder.app.util.RepeatRule
 import com.pinder.app.util.RepeatTest
-import com.pinder.app.util.login
-import com.pinder.app.util.logout
+import com.pinder.login.util.login
+import com.pinder.login.util.logout
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -44,7 +46,7 @@ class LoginActivityTest {
     }
 
     @Test
-    @RepeatTest(2)
+    @RepeatTest(5)
     fun test_login_goSettings_logout() {
         login()
         logout()

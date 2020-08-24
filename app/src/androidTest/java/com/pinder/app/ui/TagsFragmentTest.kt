@@ -60,7 +60,7 @@ class TagsFragmentTest {
     fun isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty_logout() {
         Thread.sleep(5000);
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
-        for (x in 0 until 50) {
+        for (x in 0 until 10) {
             isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty()
         }
     }

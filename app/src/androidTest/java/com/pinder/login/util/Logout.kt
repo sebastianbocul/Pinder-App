@@ -1,4 +1,4 @@
-package com.pinder.app.util
+package com.pinder.login.util
 
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
