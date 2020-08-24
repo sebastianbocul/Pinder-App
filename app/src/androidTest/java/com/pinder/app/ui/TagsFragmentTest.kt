@@ -60,24 +60,21 @@ class TagsFragmentTest {
     fun isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty_logout() {
         Thread.sleep(5000);
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
-
-        for (x in 0 until 10) {
+        for (x in 0 until 50) {
             isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty()
         }
     }
-
     fun isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty() {
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
         //check cards not exists
         onView(withId(R.id.noMore)).check(matches(isDisplayed()))
         Thread.sleep(1000)
-        //checking if frame is empty - if not it will perform error next click
-      //  onView(withId(R.id.frame)).perform(click())
+        //checking if frame is empty
         onView(withId(R.id.item_card)).check(doesNotExist());
         Thread.sleep(1000)
+        //checking if tags are empty
         onView(withId(R.id.item_tags)).check(doesNotExist());
-//        onView(withId(R.id.tagsRecyclerView))
 
         //go tags
         onView(withId(R.id.nav_tags)).check(matches(isDisplayed()))
@@ -100,14 +97,13 @@ class TagsFragmentTest {
         onView(withId(R.id.maxDistanceTextView)).check(matches(isDisplayed()))
         onView(withId(R.id.distanceSeeker)).check(matches(isDisplayed()))
 
-
-        onView(withId(R.id.radioButtonAny)).perform(click())
-        //set tagname and gender
-        Thread.sleep(1000)
         onView(withId(R.id.tagsEditText)).perform(click())
         Thread.sleep(1000)
         val tagName = "default"
-         onView(withId(R.id.tagsEditText)).perform(typeText(tagName))
+        onView(withId(R.id.tagsEditText)).perform(typeText(tagName))
+        Thread.sleep(1000)
+        onView(withId(R.id.radioButtonAny)).perform(click())
+        //set tagname and gender
         Thread.sleep(1000)
         onView(withText("SAVE")).perform(click());
 
@@ -133,9 +129,11 @@ class TagsFragmentTest {
         Thread.sleep(1000)
         onView(withId(R.id.userProfileActivity)).check(matches(isDisplayed()))
 
-
         pressBack()
         Thread.sleep(1000)
+        //check if tags are added
+        onView(withId(R.id.tagsRecyclerView)).perform(actionOnItemAtPosition<TagsManagerAdapter.ViewHolder>(0, click()))
+        onView(withId(R.id.tagsRecyclerView)).perform(actionOnItemAtPosition<TagsManagerAdapter.ViewHolder>(1, click()))
 
         //go tags
         onView(withId(R.id.nav_tags)).check(matches(isDisplayed()))
@@ -151,10 +149,7 @@ class TagsFragmentTest {
         onView(withId(R.id.nav_main)).perform(click())
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
         Thread.sleep(3000)
-
-
     }
-
 
     fun clickOnImageViewAtRow(position: Int) {
         onView(withId(R.id.tagsRecyclerView)).perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(position, ClickOnImageView()))

@@ -116,6 +116,7 @@ public class MainFirebase {
                         if (myTagsListTemp.size() == 0) {
                             myTagsAdapter.clear();
                             myTagsAdapterLD.postValue(myTagsAdapter);
+                            myTagsList.clear();
                             rowItems.clear();
                             rowItemsLD.postValue(rowItems);
                             Toast.makeText(context, "Add tags first!", Toast.LENGTH_SHORT).show();
@@ -177,6 +178,11 @@ public class MainFirebase {
                             Log.d("RxOnComplete", "onComplete: if1 " + retval2);
                             myTagsAdapterLD.postValue(myTagsAdapter);
                         }
+                        Log.d("RxOnComplete", "onComplete !sortByDistance.equals(sortByDistanceTemp) : " + !sortByDistance.equals(sortByDistanceTemp) );
+                        Log.d("RxOnComplete", "onComplete retval2: " + retval2);
+
+                        Log.d("RxOnComplete", "onComplete : " + myTagsList.toString());
+                        Log.d("RxOnComplete", "onComplete : " + myTagsListTemp.toString());
                         if (!sortByDistance.equals(sortByDistanceTemp) || !retval2) {
                             Log.d("RxOnComplete", "onComplete if2: " + true);
                             sortByDistance = sortByDistanceTemp;
