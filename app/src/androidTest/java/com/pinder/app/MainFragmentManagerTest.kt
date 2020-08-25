@@ -19,12 +19,12 @@ class MainFragmentManagerTest {
     var repeatRule: RepeatRule = RepeatRule()
 
     @Test
-    @RepeatTest(2)
+    @RepeatTest(1)
     fun click_randomNavigationButtons() {
         val activityScenario = ActivityScenario.launch(LoginActivity::class.java)
         Thread.sleep(5000);
         val array = intArrayOf(R.id.nav_settings,R.id.nav_tags,R.id.nav_main,R.id.nav_matches,R.id.nav_profile)
-        for (x in 0 until 100){
+        for (x in 0 until 50){
             val random = Random.nextInt(0, 5)
             onView(withId(array[random])).perform(click())
         }
