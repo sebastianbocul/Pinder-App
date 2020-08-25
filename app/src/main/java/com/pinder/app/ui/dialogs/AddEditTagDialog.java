@@ -62,6 +62,8 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
         mRadioGroup = view.findViewById(R.id.radioGroup);
         maxDistanceSeeker.setMinStartValue(1000);
         maxDistanceSeeker.apply();
+        String dialogTitle = "Add search tag";
+        String possitiveButtonText = "add";
         //set data from tag
         if (tag != null) {
             switch (tag.getGender()) {
@@ -84,6 +86,8 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
             ageRangeSeeker.apply();
             maxDistanceSeeker.setMinStartValue(Float.parseFloat(tag.getmDistance()));
             maxDistanceSeeker.apply();
+            dialogTitle = "Edit search tag";
+            possitiveButtonText = "edit";
         }
         tagsFragmentViewModel = new ViewModelProvider(this).get(TagsFragmentViewModel.class);
         ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
@@ -106,8 +110,6 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
                 distanceMax = minValue.toString();
             }
         });
-        String dialogTitle = "Add search tag";
-        String possitiveButtonText = "save";
         builder.setView(view)
                 .setCancelable(false)
                 .setTitle(dialogTitle)
@@ -144,8 +146,18 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
         String mDistance = distanceMax;
         TagsObject tag = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
         tagsFragmentViewModel.REQUEST_MODE = 1;
-        tagsFragmentViewModel.addTag(tag);
-        Toast.makeText(getContext(), "Tag added!", Toast.LENGTH_SHORT).show();
+        if (this.tag != null) {
+            if(!this.tag.equals(tag)){
+                tagsFragmentViewModel.removeTag(this.tag);
+                tagsFragmentViewModel.addTag(tag);
+                Toast.makeText(getContext(), "Tag edited!", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(getContext(), "Nothing changed!", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            tagsFragmentViewModel.addTag(tag);
+            Toast.makeText(getContext(), "Tag added!", Toast.LENGTH_SHORT).show();
+        }
         dialog.dismiss();
     }
 

@@ -151,6 +151,22 @@ class TagsFragmentTest {
         Thread.sleep(3000)
     }
 
+    @Test
+    fun test_edit_tag_save() {
+        Thread.sleep(5000);
+        onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
+        for(x in 1 until  5){
+         goToTags_
+        }
+    }
+
+
+
+
+
+
+
+
     fun clickOnImageViewAtRow(position: Int) {
         onView(withId(R.id.tagsRecyclerView)).perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(position, ClickOnImageView()))
     }
