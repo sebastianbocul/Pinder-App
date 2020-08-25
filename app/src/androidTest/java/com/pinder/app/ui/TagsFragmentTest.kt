@@ -6,8 +6,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
@@ -36,21 +35,81 @@ class TagsFragmentTest {
 
     @Test
     @RepeatTest(1)
-    fun login_clickNaviagtionButtons_logout() {
-        //check main activity
+    fun hasTagDataChanged() {
         Thread.sleep(5000);
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
-        //go to Tags fragment
+        for (x in 0 until 10) {
+            addTag_changeTagNameGender_checkIfDataChanged_delTag()
+        }
+    }
+
+    private fun addTag_changeTagNameGender_checkIfDataChanged_delTag() {
+        onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
+        onView(withId(R.id.nav_main)).perform(click())
+
+        //go tags
         onView(withId(R.id.nav_tags)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_tags)).perform(click())
-        //perform clicking navigationBars
+        Thread.sleep(500)
+
+        //add default tag
+        onView(withId(R.id.button_add_tag)).check(matches(isDisplayed()))
+        onView(withId(R.id.button_add_tag)).perform(click())
+
+        onView(withId(R.id.tagsEditText)).perform(click())
+        Thread.sleep(1000)
+        val tagName = "default"
+        onView(withId(R.id.tagsEditText)).perform(typeText(tagName))
+        Thread.sleep(1000)
+        onView(withId(R.id.radioButtonAny)).perform(click())
+        //set tagname and gender
+        Thread.sleep(1000)
+        onView(withText("ADD")).perform(click());
+
+        onView(withText("#default")).check(matches(isDisplayed()))
+        onView(withText("Any")).check(matches(isDisplayed()))
+
+        //edittag
+        Thread.sleep(1000)
+        onView(withText("#default")).perform(click());
+        onView(withId(R.id.tagsEditText)).perform(click())
+        onView(withId(R.id.tagsEditText)).perform(clearText())
+        onView(withId(R.id.tagsEditText)).perform(typeText("date"))
+        onView(withId(R.id.radioButtonFemale)).perform(click())
+        onView(withText("edit")).perform(click());
+
+        //check if exist
+        onView(withText("#date")).check(matches(isDisplayed()))
+        onView(withText("Female")).check(matches(isDisplayed()))
+        onView(withText("#default")).check(doesNotExist())
+
+        //edittag
+        Thread.sleep(1000)
+        onView(withText("#date")).perform(click());
+        onView(withId(R.id.tagsEditText)).perform(click())
+        onView(withId(R.id.tagsEditText)).perform(clearText())
+        onView(withId(R.id.tagsEditText)).perform(typeText("chat"))
+        onView(withId(R.id.radioButtonMale)).perform(click())
+        onView(withText("edit")).perform(click());
+        Thread.sleep(1000)
+        //check if exist
+        onView(withText("#chat")).check(matches(isDisplayed()))
+        onView(withText("Male")).check(matches(isDisplayed()))
+        onView(withText("#default")).check(doesNotExist())
+        onView(withText("#date")).check(doesNotExist())
+
+        Thread.sleep(500)
+        clickOnImageViewAtRow(0)
+        Thread.sleep(500)
+        onView(withText("#chat")).check(doesNotExist())
+        Thread.sleep(500)
     }
 
     //starts logged in/ empty tags list
-    //TODO check tags recyclerview on top(shoudnt exist)
+    //check tags recyclerview on top(shoudnt exist)
     //check if card exist by clicking on it(shoudnt exist)
     //go tags, add tag
-    //TODO check tags recyclerview on top(should exist)
+    //check tags recyclerview on top(should exist)
     //go mainfragment check if cards exists(should exist)
     //open card, go back
     //go tags and delete tags
@@ -155,7 +214,7 @@ class TagsFragmentTest {
     @Test
     //similar to isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty_logout
     //but also checks edit tags
-    fun test_edit_tag_save() {
+    fun test_edit3Tags_save() {
         Thread.sleep(5000);
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
         for (x in 0 until 3) {
@@ -252,9 +311,6 @@ class TagsFragmentTest {
         onView(withText("#default")).check(doesNotExist())
         onView(withText("#date")).check(doesNotExist())
         onView(withText("#chat")).check(doesNotExist())
-
-
-
 
         Thread.sleep(3000)
 
