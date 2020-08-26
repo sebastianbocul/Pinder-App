@@ -10,14 +10,17 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.pinder.app.LoginActivity
 import com.pinder.app.R
 import com.pinder.app.adapters.TagsManagerAdapter
+import com.pinder.app.util.RecyclerViewSizeMatcher
 import com.pinder.app.util.RepeatRule
 import com.pinder.app.util.RepeatTest
+import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.junit.Rule
 import org.junit.Test
@@ -52,6 +55,8 @@ class TagsFragmentTest {
         onView(withId(R.id.nav_tags)).perform(click())
         Thread.sleep(500)
 
+        //check if empty
+        onView(withId(R.id.tagsRecyclerView)).check(matches(RecyclerViewSizeMatcher.recyclerViewSizeMatcher(0)))
         //add default tag
         onView(withId(R.id.button_add_tag)).check(matches(isDisplayed()))
         onView(withId(R.id.button_add_tag)).perform(click())
@@ -373,4 +378,6 @@ class TagsFragmentTest {
             click.perform(uiController, view.findViewById(R.id.tag_delete))
         }
     }
+
+
 }
