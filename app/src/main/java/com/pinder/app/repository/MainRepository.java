@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.pinder.app.models.Card;
 import com.pinder.app.persistance.MainFirebase;
+import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;
 
@@ -33,7 +34,7 @@ public class MainRepository {
         return mainFirebase.getMyTagsAdapterLD();
     }
 
-    public MutableLiveData<ArrayList<Card>> getRowItemsLD() {
+    public MutableLiveData<Resource<ArrayList<Card>>> getRowItemsLD() {
         return mainFirebase.getRowItemsLD();
     }
 

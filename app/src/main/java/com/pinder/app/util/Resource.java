@@ -3,7 +3,7 @@ package com.pinder.app.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-class Resource<T> {
+public class Resource<T> {
     @NonNull
     public final Status status;
     @Nullable

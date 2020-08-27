@@ -38,6 +38,7 @@ import com.pinder.app.notifications.Data;
 import com.pinder.app.notifications.Sender;
 import com.pinder.app.notifications.Token;
 import com.pinder.app.util.CalculateDistance;
+import com.pinder.app.util.Resource;
 import com.pinder.app.util.StringDateToAge;
 
 import java.io.IOException;
@@ -77,7 +78,7 @@ public class MainFirebase {
     private String sortByDistance = "false";
     String sortByDistanceTemp = "false";
     //change later// temp solution
-    MutableLiveData<ArrayList<Card>> rowItemsLD = new MutableLiveData<>();
+    MutableLiveData<Resource<ArrayList<Card>>> rowItemsLD = new MutableLiveData<>();
 
     public static MainFirebase getInstance(Context context2) {
         if (instance == null) {
@@ -119,7 +120,7 @@ public class MainFirebase {
                             myTagsAdapterLD.postValue(myTagsAdapter);
                             myTagsList.clear();
                             rowItems.clear();
-                            rowItemsLD.postValue(rowItems);
+                            rowItemsLD.postValue(Resource.authenticated(rowItems));
                             Toast.makeText(context, "Add tags first!", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -204,72 +205,9 @@ public class MainFirebase {
                 });
     }
 
-    public void updateLocation(Context context) {
-        Log.d("updateLocation", "Works1!");
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        DatabaseReference usersDb;
-        String currentUID = mAuth.getCurrentUser().getUid();
-        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
-        DatabaseReference myRef = usersDb.child(currentUID).child("location");
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        Log.d("updateLocation", "Works2!");
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                Location location = task.getResult();
-                Log.d("updateLocation", "location: " + location);
-                if (location != null) {
-                    try {
-                        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        myLongitude.setValue(addresses.get(0).getLongitude());
-                        myLatitude.setValue(addresses.get(0).getLatitude());
-                        myRef.child("longitude").setValue(addresses.get(0).getLongitude());
-                        myRef.child("latitude").setValue(addresses.get(0).getLatitude());
-                        Log.d("updateLocation", "myLatitude updateLocation: " + myLatitude.getValue());
-                        Log.d("updateLocation", "myLongitude updateLocation: " + myLongitude.getValue());
-                        if (addresses.get(0).getCountryName() != null) {
-                            myRef.child("countryName").setValue(addresses.get(0).getCountryName());
-                        } else {
-                            myRef.child("countryName").setValue("Not found");
-                        }
-                        if (addresses.get(0).getLocality() != null) {
-                            myRef.child("locality").setValue(addresses.get(0).getLocality());
-                        } else {
-                            myRef.child("locality").setValue("Not found");
-                        }
-                        if (addresses.get(0).getAddressLine(0) != null) {
-                            myRef.child("address").setValue(addresses.get(0).getAddressLine(0));
-                        } else {
-                            myRef.child("address").setValue("Not found");
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                Log.d("updateLocation", "onDataChange: " + snapshot);
-                                Log.d("updateLocation", "onDataChange: " + snapshot.getKey());
-                                myLongitude.setValue(Double.parseDouble(snapshot.child("latitude").getValue().toString()));
-                                myLatitude.setValue(Double.parseDouble(snapshot.child("longitude").getValue().toString()));
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                        }
-                    });
-                }
-            }
-        });
-    }
-
     protected void getUsersFromDb() {
         rowItems.clear();
-        rowItemsLD.postValue(rowItems);
+        rowItemsLD.postValue(Resource.loading(rowItems));
         rowItemsRxJava.clear();
         ArrayList<String> first = new ArrayList<>();
         String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -370,9 +308,72 @@ public class MainFirebase {
 
                     @Override
                     public void onComplete() {
-                        rowItemsLD.postValue(rowItems);
+                        rowItemsLD.postValue(Resource.authenticated(rowItems));
                     }
                 });
+    }
+
+    public void updateLocation(Context context) {
+        Log.d("updateLocation", "Works1!");
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        DatabaseReference usersDb;
+        String currentUID = mAuth.getCurrentUser().getUid();
+        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+        DatabaseReference myRef = usersDb.child(currentUID).child("location");
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
+        Log.d("updateLocation", "Works2!");
+        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                Location location = task.getResult();
+                Log.d("updateLocation", "location: " + location);
+                if (location != null) {
+                    try {
+                        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        myLongitude.setValue(addresses.get(0).getLongitude());
+                        myLatitude.setValue(addresses.get(0).getLatitude());
+                        myRef.child("longitude").setValue(addresses.get(0).getLongitude());
+                        myRef.child("latitude").setValue(addresses.get(0).getLatitude());
+                        Log.d("updateLocation", "myLatitude updateLocation: " + myLatitude.getValue());
+                        Log.d("updateLocation", "myLongitude updateLocation: " + myLongitude.getValue());
+                        if (addresses.get(0).getCountryName() != null) {
+                            myRef.child("countryName").setValue(addresses.get(0).getCountryName());
+                        } else {
+                            myRef.child("countryName").setValue("Not found");
+                        }
+                        if (addresses.get(0).getLocality() != null) {
+                            myRef.child("locality").setValue(addresses.get(0).getLocality());
+                        } else {
+                            myRef.child("locality").setValue("Not found");
+                        }
+                        if (addresses.get(0).getAddressLine(0) != null) {
+                            myRef.child("address").setValue(addresses.get(0).getAddressLine(0));
+                        } else {
+                            myRef.child("address").setValue("Not found");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                Log.d("updateLocation", "onDataChange: " + snapshot);
+                                Log.d("updateLocation", "onDataChange: " + snapshot.getKey());
+                                myLongitude.setValue(Double.parseDouble(snapshot.child("latitude").getValue().toString()));
+                                myLatitude.setValue(Double.parseDouble(snapshot.child("longitude").getValue().toString()));
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private void getTagsPreferencesUsers(DataSnapshot ds, Boolean likesMe) {
@@ -580,7 +581,7 @@ public class MainFirebase {
         return myLongitude;
     }
 
-    public MutableLiveData<ArrayList<Card>> getRowItemsLD() {
+    public MutableLiveData<Resource<ArrayList<Card>>> getRowItemsLD() {
         return rowItemsLD;
     }
 

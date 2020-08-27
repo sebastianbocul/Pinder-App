@@ -36,6 +36,16 @@
             android:text="Loading users"
             android:textSize="25sp" />
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:scaleX="0.4"
+            android:scaleY="0.4"
+            android:visibility="gone" />
+
         <com.lorentzos.flingswipe.SwipeFlingAdapterView
             android:id="@+id/frame"
             android:layout_width="match_parent"

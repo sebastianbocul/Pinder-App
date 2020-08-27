@@ -1,6 +1,7 @@
 package com.pinder.app.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -8,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -25,6 +28,7 @@ import com.pinder.app.UsersProfilesActivity;
 import com.pinder.app.adapters.CardsAdapter;
 import com.pinder.app.adapters.TagsManagerAdapter;
 import com.pinder.app.models.Card;
+import com.pinder.app.util.Resource;
 import com.pinder.app.viewmodels.MainViewModel;
 
 import java.util.ArrayList;
@@ -49,6 +53,7 @@ public class MainFragment extends Fragment {
     private CardsAdapter arrayAdapter;
     MainViewModel mainViewModel;
     private static final String TAG = "MainFragment";
+    private ProgressBar progressBar;
 
     public MainFragment() {
         // Required empty public constructor
@@ -98,20 +103,43 @@ public class MainFragment extends Fragment {
         likeButton = getView().findViewById(R.id.likeButton);
         dislikeButton = getView().findViewById(R.id.dislikeButton);
         flingContainer = getView().findViewById(R.id.frame);
+        progressBar=getView().findViewById(R.id.progress_bar);
         List<Card> rowItems = new ArrayList<Card>();
         arrayAdapter = new CardsAdapter(getContext(), R.layout.item, rowItems);
         flingContainer.setAdapter(arrayAdapter);
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         mainViewModel.updateMyTagsAndSortBydDist();
-        mainViewModel.getRowItemsLD().observe(getActivity(), new Observer<ArrayList<Card>>() {
+        mainViewModel.getRowItemsLD().observe(getActivity(), new Observer<Resource<ArrayList<Card>>>() {
             @Override
-            public void onChanged(ArrayList<Card> cards) {
-                rowItems.clear();
-                rowItems.addAll(cards);
-                arrayAdapter.notifyDataSetChanged();
-                Log.d(TAG, "onChanged: BREAAAAAK");
-                for (Card ccc : rowItems) {
-                    Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
+            public void onChanged(Resource<ArrayList<Card>> cards) {
+                if (cards != null) {
+                    switch (cards.status) {
+                        case LOADING: {
+                            showProgressBar(true);
+                            break;
+                        }
+                        case AUTHENTICATED: {
+                            showProgressBar(false);
+                            break;
+                        }
+                        case NOT_AUTHENTICATED: {
+                            Toast.makeText(getActivity(), "Errror loading", Toast.LENGTH_SHORT).show();
+                            showProgressBar(false);
+                            break;
+                        }
+                        case ERROR: {
+                            Toast.makeText(getActivity(), "Errror loading users", Toast.LENGTH_SHORT).show();
+                            showProgressBar(false);
+                            break;
+                        }
+                    }
+                    rowItems.clear();
+                    rowItems.addAll(cards.data);
+                    arrayAdapter.notifyDataSetChanged();
+                    Log.d(TAG, "onChanged: BREAAAAAK");
+                    for (Card ccc : rowItems) {
+                        Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
+                    }
                 }
             }
         });
@@ -201,6 +229,12 @@ public class MainFragment extends Fragment {
             }
         });
         swipeIfButtonClickedInUserProfile();
+    }
+
+    private void showProgressBar(boolean isVisible) {
+        if (isVisible) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else progressBar.setVisibility(View.GONE);
     }
 
     private void swipeIfButtonClickedInUserProfile() {
