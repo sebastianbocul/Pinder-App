@@ -10,6 +10,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.pinder.app.adapters.MainFragmentManagerPagerAdapter;
+import com.pinder.app.util.HideSoftKeyboard;
 
 public class MainFragmentManager extends AppCompatActivity {
     private static final String TAG = "MainFragmentManager";
@@ -33,6 +34,7 @@ public class MainFragmentManager extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+                HideSoftKeyboard.hideKeyboard(MainFragmentManager.this);
                 switch (position) {
                     case 0:
                         bottomNavigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
