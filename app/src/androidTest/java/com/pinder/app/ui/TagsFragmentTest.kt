@@ -38,7 +38,7 @@ class TagsFragmentTest {
 
     @Test
     @RepeatTest(1)
-    fun hasTagDataChanged() {
+    fun isTagEmpty_addTag_changeTagNameGender_checkIfDataChanged_delTag() {
         Thread.sleep(5000);
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
         for (x in 0 until 10) {
@@ -121,15 +121,15 @@ class TagsFragmentTest {
     //go back mainfragment
     //repeat
     @Test
-    fun isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty_logout() {
+    fun isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty() {
         Thread.sleep(5000);
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
         for (x in 0 until 3) {
-            isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty()
+            isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmptyy()
         }
     }
 
-    fun isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty() {
+    fun isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmptyy() {
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
         //check cards not exists
@@ -140,7 +140,7 @@ class TagsFragmentTest {
         Thread.sleep(1000)
         //checking if tags are empty
         onView(withId(R.id.item_tags)).check(doesNotExist());
-
+        onView(withText(R.string.emptyTags)).check(matches(isDisplayed()))
         //go tags
         onView(withId(R.id.nav_tags)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_tags)).perform(click())
@@ -185,8 +185,8 @@ class TagsFragmentTest {
 
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
+        onView(withText(R.string.loadingUsers)).check(matches(isDisplayed()))
         Thread.sleep(5000)
-
         //this is recyclerView in main fragment
         onView(withId(R.id.tagsRecyclerView)).perform(actionOnItemAtPosition<TagsManagerAdapter.ViewHolder>(0, click()))
         //click frame and if
@@ -212,14 +212,16 @@ class TagsFragmentTest {
         Thread.sleep(1000)
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
+        onView(withText(R.string.emptyTags)).check(matches(isDisplayed()))
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
         Thread.sleep(3000)
     }
 
-    @Test
+
     //similar to isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty_logout
     //but also checks edit tags
-    fun test_edit3Tags_save() {
+    @Test
+    fun  is_tagsEmpty_editTag_checkIfMatch_goMainCheckIfChanged_delTags_checkIfDeleted() {
         Thread.sleep(5000);
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
         for (x in 0 until 3) {
@@ -238,7 +240,7 @@ class TagsFragmentTest {
         Thread.sleep(1000)
         //checking if tags are empty
         onView(withId(R.id.item_tags)).check(doesNotExist());
-
+        onView(withText(R.string.emptyTags)).check(matches(isDisplayed()))
         //go tags
         onView(withId(R.id.nav_tags)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_tags)).perform(click())
@@ -322,7 +324,7 @@ class TagsFragmentTest {
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
         Thread.sleep(5000)
-        onView(withText("Loading users")).check(matches(isDisplayed()))
+        onView(withText(R.string.noMoreUsers)).check(matches(isDisplayed()))
         onView(withText("#default2222312")).check(matches(isDisplayed()))
         onView(withText("#date222132")).check(matches(isDisplayed()))
         onView(withText("#chat121332")).check(matches(isDisplayed()))

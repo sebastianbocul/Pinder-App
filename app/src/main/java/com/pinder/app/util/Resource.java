@@ -17,8 +17,8 @@ public class Resource<T> {
         this.message = message;
     }
 
-    public static <T> Resource<T> authenticated(@Nullable T data) {
-        return new Resource<>(Status.AUTHENTICATED, data, null);
+    public static <T> Resource<T> success(@Nullable T data) {
+        return new Resource<>(Status.SUCCESS, data, null);
     }
 
     public static <T> Resource<T> error(@NonNull String msg, @Nullable T data) {
@@ -29,9 +29,9 @@ public class Resource<T> {
         return new Resource<>(Status.LOADING, data, null);
     }
 
-    public static <T> Resource<T> logout() {
-        return new Resource<>(Status.NOT_AUTHENTICATED, null, null);
+    public static <T> Resource<T> emptydata(@Nullable T data) {
+        return new Resource<>(Status.EMPTY, data, null);
     }
 
-    public enum Status {AUTHENTICATED, ERROR, LOADING, NOT_AUTHENTICATED}
+    public enum Status {SUCCESS, ERROR, LOADING, EMPTY}
 }

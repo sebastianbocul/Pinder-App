@@ -1,7 +1,6 @@
 package com.pinder.app.ui;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -13,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -103,7 +101,7 @@ public class MainFragment extends Fragment {
         likeButton = getView().findViewById(R.id.likeButton);
         dislikeButton = getView().findViewById(R.id.dislikeButton);
         flingContainer = getView().findViewById(R.id.frame);
-        progressBar=getView().findViewById(R.id.progress_bar);
+        progressBar = getView().findViewById(R.id.progress_bar);
         List<Card> rowItems = new ArrayList<Card>();
         arrayAdapter = new CardsAdapter(getContext(), R.layout.item, rowItems);
         flingContainer.setAdapter(arrayAdapter);
@@ -115,20 +113,28 @@ public class MainFragment extends Fragment {
                 if (cards != null) {
                     switch (cards.status) {
                         case LOADING: {
+                            Log.d("ResourceMainFragment", "LOADING: ");
+                            noMoreEditText.setText(R.string.loadingUsers);
                             showProgressBar(true);
                             break;
                         }
-                        case AUTHENTICATED: {
+                        case SUCCESS: {
+                            Log.d("ResourceMainFragment", "SUCCESS: ");
+                            if(cards.data.size()==0){
+                                noMoreEditText.setText(R.string.noMoreUsers);
+                            }
                             showProgressBar(false);
                             break;
                         }
-                        case NOT_AUTHENTICATED: {
-                            Toast.makeText(getActivity(), "Errror loading", Toast.LENGTH_SHORT).show();
+                        case EMPTY: {
+                            Log.d("ResourceMainFragment", "EMPTY: ");
+                            noMoreEditText.setText(R.string.emptyTags);
                             showProgressBar(false);
                             break;
                         }
                         case ERROR: {
-                            Toast.makeText(getActivity(), "Errror loading users", Toast.LENGTH_SHORT).show();
+                            Log.d("ResourceMainFragment", "ERROR: ");
+                            Toast.makeText(getActivity(), "Error loading users", Toast.LENGTH_SHORT).show();
                             showProgressBar(false);
                             break;
                         }
@@ -136,7 +142,6 @@ public class MainFragment extends Fragment {
                     rowItems.clear();
                     rowItems.addAll(cards.data);
                     arrayAdapter.notifyDataSetChanged();
-                    Log.d(TAG, "onChanged: BREAAAAAK");
                     for (Card ccc : rowItems) {
                         Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
                     }
@@ -231,11 +236,6 @@ public class MainFragment extends Fragment {
         swipeIfButtonClickedInUserProfile();
     }
 
-    private void showProgressBar(boolean isVisible) {
-        if (isVisible) {
-            progressBar.setVisibility(View.VISIBLE);
-        } else progressBar.setVisibility(View.GONE);
-    }
 
     private void swipeIfButtonClickedInUserProfile() {
         //created delay so flingContainer is loaded
@@ -269,6 +269,11 @@ public class MainFragment extends Fragment {
                 }
             }
         }, 500);
+    }
+    private void showProgressBar(boolean isVisible) {
+        if (isVisible) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else progressBar.setVisibility(View.GONE);
     }
 
     @Override

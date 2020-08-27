@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--    mainfragment tags-->
+    <string name="loadingUsers">Loading users</string>
+    <string name="emptyTags">Add tags</string>
+    <string name="noMoreUsers">Could not find users with those tags :(</string>
+
+</resources>

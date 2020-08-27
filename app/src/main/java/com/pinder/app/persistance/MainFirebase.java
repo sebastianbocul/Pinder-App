@@ -120,7 +120,7 @@ public class MainFirebase {
                             myTagsAdapterLD.postValue(myTagsAdapter);
                             myTagsList.clear();
                             rowItems.clear();
-                            rowItemsLD.postValue(Resource.authenticated(rowItems));
+                            rowItemsLD.postValue(Resource.emptydata(rowItems));
                             Toast.makeText(context, "Add tags first!", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -308,7 +308,7 @@ public class MainFirebase {
 
                     @Override
                     public void onComplete() {
-                        rowItemsLD.postValue(Resource.authenticated(rowItems));
+                        rowItemsLD.postValue(Resource.success(rowItems));
                     }
                 });
     }
