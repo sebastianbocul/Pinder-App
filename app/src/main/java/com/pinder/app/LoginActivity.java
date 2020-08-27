@@ -13,8 +13,11 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -82,6 +85,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView regulationsTextView, registerTextView;
     private SignInButton googleSignIn;
     private LinearLayout myLayout, logoLayout;
+    ImageView image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
         mLogin = findViewById(R.id.login);
         mEmail = findViewById(R.id.email);
         mPassword = findViewById(R.id.password);
+        image = findViewById(R.id.bigLogo);
         clearInstances();
         NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
@@ -130,6 +135,9 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             logoLayout.setVisibility(View.VISIBLE);
             myLayout.setVisibility(View.INVISIBLE);
+            Animation anim = AnimationUtils.loadAnimation(this, R.anim.rotate);
+            anim.setRepeatCount(Animation.INFINITE);
+            image.startAnimation(anim);
         }
         firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
             DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
@@ -141,21 +149,34 @@ public class LoginActivity extends AppCompatActivity {
                     dr.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
-                                if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                    Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
-                                    startActivity(intent);
-                                    finish();
-                                    return;
-                                } else {
-                                    ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-                                }
-                            } else {
-                                Intent intent = new Intent(LoginActivity.this, FillInfoActivity.class);
-                                startActivity(intent);
-                                finish();
-                                return;
+                            if(logoLayout.getVisibility()==View.VISIBLE){
+                                Animation animscale = AnimationUtils.loadAnimation(getApplication(), R.anim.scale);
+                                logoLayout.startAnimation(animscale);
                             }
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    logoLayout.setVisibility(View.GONE);
+                                    logoLayout.clearAnimation();
+                                    image.clearAnimation();
+                                    if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
+                                        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                            Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
+                                            startActivity(intent);
+                                            finish();
+                                            return;
+                                        } else {
+                                            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+                                        }
+                                    } else {
+                                        Intent intent = new Intent(LoginActivity.this, FillInfoActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                        return;
+                                    }
+                                }
+                            }, 300);
                         }
 
                         @Override
@@ -369,8 +390,7 @@ public class LoginActivity extends AppCompatActivity {
         MatchesFirebase.instance = null;
         ProfileFirebase.instance = null;
         ProfileRepository.instance = null;
-        MainFirebase.instance=null;
-        MainRepository.instance=null;
+        MainFirebase.instance = null;
+        MainRepository.instance = null;
     }
-
 }
