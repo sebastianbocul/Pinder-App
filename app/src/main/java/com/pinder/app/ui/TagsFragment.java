@@ -7,10 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -86,13 +88,14 @@ public class TagsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        recyclerView = getView().findViewById(R.id.tagsRecyclerView);
+        recyclerView = view.findViewById(R.id.tagsRecyclerView);
         addTagButton = getView().findViewById(R.id.button_add_tag);
         LinearLayoutManager horizontalLayoutManager
-                = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+                = new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
         tagsFragmentViewModel = new ViewModelProvider(this).get(TagsFragmentViewModel.class);
         adapter = new TagsAdapter(arrayList);
+        new ItemTouchHelper(itemTouchHelperCallBack).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
         fillTagsAdapter();
         adapter.setOnItemClickListener(new TagsAdapter.OnItemClickListener() {
@@ -115,6 +118,19 @@ public class TagsFragment extends Fragment {
             }
         });
     }
+
+    private ItemTouchHelper.SimpleCallback itemTouchHelperCallBack = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            removeItem(viewHolder.getAdapterPosition());
+        }
+    };
+
 
     @Override
     public void onDetach() {

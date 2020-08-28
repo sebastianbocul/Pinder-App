@@ -150,7 +150,7 @@ public class MainFragment extends Fragment {
         });
         ArrayList<String> myTags = new ArrayList<>();
         TagsManagerAdapter adapter = new TagsManagerAdapter(getContext(), myTags);
-        RecyclerView recyclerView = getView().findViewById(R.id.tagsRecyclerView);
+        RecyclerView recyclerView = getView().findViewById(R.id.mainTagsRecyclerView);
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
