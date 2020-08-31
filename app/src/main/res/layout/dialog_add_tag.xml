@@ -18,14 +18,6 @@
         android:paddingLeft="20sp"
         android:paddingRight="20sp">
 
-        <!--                <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-        <!--                    android:id="@+id/floating_bottom_sheet"-->
-        <!--                    android:layout_width="wrap_content"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:src="@drawable/ic_add_24dp"-->
-        <!--                    android:layout_gravity="end" />-->
-
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp" />

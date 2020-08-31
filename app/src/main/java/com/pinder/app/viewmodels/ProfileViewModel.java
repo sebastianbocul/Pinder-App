@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.pinder.app.persistance.ProfileFirebase;
@@ -58,7 +59,12 @@ public class ProfileViewModel extends ViewModel {
     }
 
     public LiveData<ArrayList> getImages() {
-        images = ProfileFirebase.getInstance().getImages();
+        images = profileRepository.getInstance().getImages();
         return images;
     }
+
+    public MutableLiveData<Boolean> getShowProgressBar() {
+        return profileRepository.getInstance().getShowProgressBar();
+    }
+
 }

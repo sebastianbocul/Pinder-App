@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.pinder.app.persistance.ProfileFirebase;
 
@@ -60,4 +61,9 @@ public class ProfileRepository {
     public void addImage(Context context, Uri resultUri) {
         ProfileFirebase.getInstance().addImage(context, resultUri);
     }
+
+    public MutableLiveData<Boolean> getShowProgressBar() {
+        return ProfileFirebase.getInstance().getShowProgressBar();
+    }
+
 }

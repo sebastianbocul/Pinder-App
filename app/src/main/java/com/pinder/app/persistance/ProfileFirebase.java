@@ -41,11 +41,11 @@ public class ProfileFirebase implements ProfileDao {
     private DatabaseReference mImageDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("images");
     private DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
     private MutableLiveData<ArrayList> mImages = new MutableLiveData<>();
-    public MutableLiveData<String> name = new MutableLiveData<>();
-    public MutableLiveData<String> description = new MutableLiveData<>();
-    public MutableLiveData<String> imageName = new MutableLiveData<>();
-    public MutableLiveData<Integer> imagePosition = new MutableLiveData<>();
-
+    private MutableLiveData<String> name = new MutableLiveData<>();
+    private MutableLiveData<String> description = new MutableLiveData<>();
+    private MutableLiveData<String> imageName = new MutableLiveData<>();
+    private MutableLiveData<Integer> imagePosition = new MutableLiveData<>();
+    private MutableLiveData<Boolean> showProgressBar = new MutableLiveData<>(false);
     public static ProfileFirebase getInstance() {
         if (instance == null) {
             instance = new ProfileFirebase();
@@ -140,7 +140,7 @@ public class ProfileFirebase implements ProfileDao {
         desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(context, "File from Storage deleted successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "File deleted successfully", Toast.LENGTH_SHORT).show();
                 // File deleted successfully
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -204,6 +204,7 @@ public class ProfileFirebase implements ProfileDao {
         StorageReference filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId).child(imageStorageKey);
         Bitmap bitmap = null;
         Bitmap rotatedBitmap = null;
+        showProgressBar.setValue(true);
         try {
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), resultUri);
             ExifInterface exifInterface;
@@ -251,6 +252,7 @@ public class ProfileFirebase implements ProfileDao {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                showProgressBar.setValue(false);
             }
         });
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -269,12 +271,14 @@ public class ProfileFirebase implements ProfileDao {
                         Toast.makeText(context, "Upload successful", Toast.LENGTH_SHORT).show();
                         loadImages();
                         getUserInfo();
+                        showProgressBar.setValue(false);
                         return;
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         Toast.makeText(context, "Upload unsuccessful", Toast.LENGTH_SHORT).show();
+                        showProgressBar.setValue(false);
                         return;
                     }
                 });
@@ -343,4 +347,9 @@ public class ProfileFirebase implements ProfileDao {
             }
         });
     }
+
+    public MutableLiveData<Boolean> getShowProgressBar() {
+        return showProgressBar;
+    }
+
 }

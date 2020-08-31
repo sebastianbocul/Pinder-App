@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pinder.app.R;
 import com.pinder.app.adapters.ImageAdapter;
 import com.pinder.app.persistance.ProfileFirebase;
@@ -34,10 +36,11 @@ import java.util.ArrayList;
 public class ProfileFragment extends Fragment {
     private static int RESULT_LOAD_IMAGE = 1;
     ViewPager viewPager;
-    private ImageView mAddImage, mDeleteImage, setDefaultButton;
+    private FloatingActionButton mAddImage, mDeleteImage, setDefaultButton;
     private EditText mNameField;
     private EditText descriptionEditText;
     private ProfileViewModel profileViewModel;
+    private ProgressBar progressBar;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -92,10 +95,23 @@ public class ProfileFragment extends Fragment {
         mDeleteImage = getView().findViewById(R.id.delImage);
         setDefaultButton = getView().findViewById(R.id.setDefaultButton);
         viewPager = getView().findViewById(R.id.viewPager);
+        progressBar = getView().findViewById(R.id.profile_progress_bar);
         profileViewModel = new ViewModelProvider(getActivity()).get(ProfileViewModel.class);
         if (viewPager.getChildCount() != 0) {
         } else {
         }
+
+        profileViewModel.getShowProgressBar().observe(getActivity(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+
+                if(aBoolean==true){
+                    progressBar.setVisibility(View.VISIBLE);
+                }else {
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
         profileViewModel.getImages().observe(getActivity(), new Observer<ArrayList>() {
             @Override
             public void onChanged(ArrayList arrayList) {
