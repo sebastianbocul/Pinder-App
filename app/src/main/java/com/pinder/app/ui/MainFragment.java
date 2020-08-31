@@ -223,13 +223,10 @@ public class MainFragment extends Fragment {
         flingContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
             @Override
             public void onItemClicked(int itemPosition, Object dataObject) {
-                Card objec = (Card) dataObject;
-                String userId = objec.getUserId();
+                Card user = (Card) dataObject;
                 Intent intent = new Intent(getContext(), UsersProfilesActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra("userId", userId);
-                ArrayList<String> stringList = new ArrayList(objec.getMutualTagsMap().keySet());
-                intent.putStringArrayListExtra("mutualTags", stringList);
+                intent.putExtra("user",user);
                 startActivity(intent);
             }
         });

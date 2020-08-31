@@ -31,7 +31,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.pinder.app.LoginActivity;
 import com.pinder.app.MainPopUpActivity;
 import com.pinder.app.R;
 import com.pinder.app.models.Card;
@@ -46,7 +45,6 @@ import com.pinder.app.util.Resource;
 import com.pinder.app.util.StringDateToAge;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -452,23 +450,26 @@ public class MainFirebase {
                     }
                 } else profileImageUrl = "default";
                 String gender = "";
-                if(ds.child("sex").exists()){
-                    gender=ds.child("sex").getValue().toString();
+                if (ds.child("sex").exists()) {
+                    gender = ds.child("sex").getValue().toString();
                 }
                 String dateOfBirth = "";
-                if(ds.child("dateOfBirth").exists()){
-                    gender=ds.child("dateOfBirth").getValue().toString();
+                if (ds.child("dateOfBirth").exists()) {
+                    dateOfBirth = ds.child("dateOfBirth").getValue().toString();
                 }
-
                 ArrayList images = new ArrayList();
                 for (DataSnapshot dataSnapshot : ds.child("images").getChildren()) {
                     images.add(dataSnapshot.child("uri").getValue());
                 }
                 String location = "";
-                if(ds.child("location").child("locality").exists()){
-                    location=ds.child("location").child("locality").getValue().toString();
+                if (ds.child("location").child("locality").exists()) {
+                    location = ds.child("location").child("locality").getValue().toString();
                 }
-                Card item = new Card(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl,images,gender,dateOfBirth, mutalTagsSB.toString(), tagsMap, distanceDouble,location, likesMe);
+                String description = "";
+                if (ds.child("description").exists()) {
+                    description = ds.child("description").getValue().toString();
+                }
+                Card item = new Card(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, images, gender, dateOfBirth, mutalTagsSB.toString(), tagsMap, distanceDouble, location, likesMe,description);
                 rowItemsRxJava.add(item);
                 Log.d("rowItemsRxJava", "rowItemsRxJava: " + rowItemsRxJava.toString());
                 Log.d("rxMergeJavaLoop: ", item.getName().toString() + " likesMe " + likesMe);
@@ -532,7 +533,7 @@ public class MainFirebase {
                     notify = true;
                     //popactivity when matched
                     Intent i = new Intent(con, MainPopUpActivity.class);
-                    i.putExtra("matchId", matchId);
+                    i.putExtra("matchUser", obj);
                     con.startActivity(i);
                 }
             }

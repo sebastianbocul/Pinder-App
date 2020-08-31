@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.adapters.ImageAdapter;
+import com.pinder.app.models.Card;
 import com.pinder.app.ui.dialogs.ReportUserDialog;
 import com.pinder.app.util.CalculateDistance;
 import com.pinder.app.util.StringDateToAge;
@@ -32,7 +33,7 @@ import java.util.Map;
 
 public class UsersProfilesActivity extends AppCompatActivity {
     public String name, tags, gender, distance, location, description, profileImageUrl;
-    public String userId, myId, fromActivity = "empty";
+    public String userId, myId;
     ViewPager viewPager;
     DatabaseReference mImageDatabase;
     private TextView nameTextView, tagsTextView, genderTextView, distanceTextView, locationTextView, descriptionTextView;
@@ -44,18 +45,19 @@ public class UsersProfilesActivity extends AppCompatActivity {
     private ArrayList mImages;
     private ArrayList<String> mutualTagsExtras = null;
     private ArrayList<String> myTags = new ArrayList<>();
+    private Card user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users_profiles);
         final Intent intent = getIntent();
-        userId = intent.getStringExtra("userId");
-        if (intent.getStringExtra("fromActivity") != null) {
-            fromActivity = intent.getStringExtra("fromActivity");
+        if (intent.getParcelableExtra("user") != null) {
+            user = intent.getParcelableExtra("user");
+            userId = user.getUserId();
         }
-        if (intent.getStringArrayListExtra("mutualTags") != null) {
-            mutualTagsExtras = intent.getStringArrayListExtra("mutualTags");
+        if (intent.getStringExtra("userId") != null) {
+            userId = intent.getStringExtra("userId");
         }
         nameTextView = findViewById(R.id.nameTextView);
         tagsTextView = findViewById(R.id.tagsTextView);
@@ -80,21 +82,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
                 dislikeButton.setVisibility(View.INVISIBLE);
                 likeButton.setVisibility(View.INVISIBLE);
                 reportUserButton.setEnabled(false);
-                mUserDatabase.child(myId).child("tags").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            if (ds.exists()) {
-                                myTags.add(ds.getKey());
-                            }
-                        }
-                        mutualTagsExtras = myTags;
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                    }
-                });
+                loadTagsFirebase();
             } else {
                 reportUserButton.setEnabled(true);
                 mUserProfileDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -168,7 +156,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
-                                    myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(myIntent);
                                 }
                             }, 500);
@@ -183,8 +171,43 @@ public class UsersProfilesActivity extends AppCompatActivity {
                 });
             }
         });
-        fillUserProfile();
-        loadImages();
+        if (intent.getParcelableExtra("user") == null) {
+            fillUserProfileFireBase();
+            loadImagesFireBase();
+        } else {
+            fillUserProfileBundle();
+            loadImagesBundle();
+        }
+    }
+
+    private void loadImagesBundle() {
+        if (getIntent().getParcelableExtra("user") != null) {
+            if(user.getImages()==null) {
+                viewPager.setBackgroundColor(Color.TRANSPARENT);
+                return;
+            }
+            mImages = (ArrayList) user.getImages();
+            ImageAdapter adapter = new ImageAdapter(UsersProfilesActivity.this, mImages);
+            viewPager.setAdapter(adapter);
+        }
+    }
+
+    private void fillUserProfileBundle() {
+        if (getIntent().getParcelableExtra("user") != null) {
+            distanceTextView.setText(", " + Math.round(user.getDistance()) + " km away");
+
+            tagsTextView.setText(user.getTags().toString());
+            int age = new StringDateToAge().stringDateToAge(user.getDateOfBirth());
+            userAge = String.valueOf(age);
+            name = user.getName();
+            nameTextView.setText(name + "  " + userAge);
+            gender = user.getGender();
+            genderTextView.setText(gender);
+            location = user.getLocation();
+            locationTextView.setText(location);
+            description = user.getDescription();
+            descriptionTextView.setText(description);
+        }
     }
 
     private void openReportDialog() {
@@ -192,7 +215,25 @@ public class UsersProfilesActivity extends AppCompatActivity {
         reportUserDialog.show(getSupportFragmentManager(), "Report User Dialog");
     }
 
-    private void loadImages() {
+    private void loadTagsFirebase() {
+        mUserDatabase.child(myId).child("tags").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (ds.exists()) {
+                        myTags.add(ds.getKey());
+                    }
+                }
+                mutualTagsExtras = myTags;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    private void loadImagesFireBase() {
         mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -212,7 +253,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
         });
     }
 
-    public void fillUserProfile() {
+    public void fillUserProfileFireBase() {
         mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
