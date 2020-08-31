@@ -63,6 +63,7 @@ public class ChatActivity extends AppCompatActivity {
     private String myName;
     private String fromActivity = "";
     private ArrayList<ChatObject> resultChat = new ArrayList<ChatObject>();
+    private ImageView backArrow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         profileImage = findViewById(R.id.profileImage);
         userNameTextView = findViewById(R.id.userName);
+        backArrow=findViewById(R.id.back_arrow);
         matchId = getIntent().getExtras().getString("matchId");
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mDatabaseUserChat = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId).child("ChatId");
@@ -117,6 +119,12 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 sendMessage();
                 notify = true;
+            }
+        });
+        backArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
     }
