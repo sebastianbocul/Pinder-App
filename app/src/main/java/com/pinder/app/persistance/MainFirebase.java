@@ -46,6 +46,7 @@ import com.pinder.app.util.Resource;
 import com.pinder.app.util.StringDateToAge;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -450,7 +451,24 @@ public class MainFirebase {
                         profileImageUrl = ds.child("profileImageUrl").getValue().toString();
                     }
                 } else profileImageUrl = "default";
-                Card item = new Card(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, mutalTagsSB.toString(), tagsMap, distanceDouble, likesMe);
+                String gender = "";
+                if(ds.child("sex").exists()){
+                    gender=ds.child("sex").getValue().toString();
+                }
+                String dateOfBirth = "";
+                if(ds.child("dateOfBirth").exists()){
+                    gender=ds.child("dateOfBirth").getValue().toString();
+                }
+
+                ArrayList images = new ArrayList();
+                for (DataSnapshot dataSnapshot : ds.child("images").getChildren()) {
+                    images.add(dataSnapshot.child("uri").getValue());
+                }
+                String location = "";
+                if(ds.child("location").child("locality").exists()){
+                    location=ds.child("location").child("locality").getValue().toString();
+                }
+                Card item = new Card(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl,images,gender,dateOfBirth, mutalTagsSB.toString(), tagsMap, distanceDouble,location, likesMe);
                 rowItemsRxJava.add(item);
                 Log.d("rowItemsRxJava", "rowItemsRxJava: " + rowItemsRxJava.toString());
                 Log.d("rxMergeJavaLoop: ", item.getName().toString() + " likesMe " + likesMe);
