@@ -5,6 +5,7 @@ import android.app.Application;
 import com.pinder.app.InstantExecutorExtension;
 import com.pinder.app.LiveDataTestUtil;
 import com.pinder.app.models.Card;
+import com.pinder.app.util.Resource;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @ExtendWith(InstantExecutorExtension.class)
@@ -27,18 +29,23 @@ public class MainViewModelTest {
         MockitoAnnotations.initMocks(this);
         Application application = new Application();
         mainViewModel=new MainViewModel(application);
+        System.out.println("DUpa");
     }
 
+    HashMap<Object, Object> tagsMap = new HashMap<Object, Object>(){
+        {
+            put("default", true);
+            put("date", true);
+        }
+    };
+    ArrayList<String> urls = new ArrayList<>(Arrays.asList("url:saddaasd","url2:sdajdajs"));
+    Card card1 = new Card("userId1","Ola","url:dsdsadsdsa",urls,"Female","02/04-2000","#default #date",tagsMap,100,"location",true,"mydescription");
+    Card card2 = new Card("userId2","Ala","url:dsdsadsdsa",urls,"Female","02/04-2000","#default #date",tagsMap,100,"location",true,"mydescription");
+    Card card3 = new Card("userId3","Mola","url:dsdsadsdsa",urls,"Female","02/04-2000","#default #date",tagsMap,100,"location",true,"mydescription");
 
     @Test
     void removeFirstObjectInAdapter_returnTrue() throws Exception {
         //Arrange
-        Map<Object, Object> tagsMap = new HashMap<>();
-        tagsMap.put("default", true);
-        tagsMap.put("date", true);
-        Card card1 = new Card("userId1","Ola","url:dsdsadsdsa","#default #date",tagsMap,100,true);
-        Card card2 = new Card("userId2","Ala","url:dsdsadsdsa","#default #date",tagsMap,100,true);
-        Card card3 = new Card("userId3","Mola","url:dsdsadsdsa","#default #date",tagsMap,100,true);
         LiveDataTestUtil<ArrayList<Card>> liveDataTestUtil = new LiveDataTestUtil<>();
         ArrayList<Card> rowItems = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
@@ -46,9 +53,9 @@ public class MainViewModelTest {
         cards.addAll(rowItems);
         cards.remove(0);
         //Act
-        mainViewModel.rowItemsLD.setValue(rowItems);
+        mainViewModel.rowItemsLD.setValue(Resource.success(rowItems));
         mainViewModel.removeFirstObjectInAdapter();
-        rowItems=mainViewModel.rowItemsLD.getValue();
+        rowItems=mainViewModel.rowItemsLD.getValue().data;
         //Assert
         Assertions.assertTrue(cards.equals(rowItems));
         System.out.println("Row items:" +rowItems.toString());
@@ -57,12 +64,6 @@ public class MainViewModelTest {
     @Test
     void removeTwoFirstObjectsInAdapter_returnTrue() throws Exception {
         //Arrange
-        Map<Object, Object> tagsMap = new HashMap<>();
-        tagsMap.put("default", true);
-        tagsMap.put("date", true);
-        Card card1 = new Card("userId1","Ola","url:dsdsadsdsa","#default #date",tagsMap,100,true);
-        Card card2 = new Card("userId2","Ala","url:dsdsadsdsa","#default #date",tagsMap,100,true);
-        Card card3 = new Card("userId3","Mola","url:dsdsadsdsa","#default #date",tagsMap,100,true);
         LiveDataTestUtil<ArrayList<Card>> liveDataTestUtil = new LiveDataTestUtil<>();
         ArrayList<Card> rowItems = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
@@ -71,10 +72,10 @@ public class MainViewModelTest {
         cards.remove(0);
         cards.remove(0);
         //Act
-        mainViewModel.rowItemsLD.setValue(rowItems);
+        mainViewModel.rowItemsLD.setValue(Resource.success(rowItems));
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
-        rowItems=mainViewModel.rowItemsLD.getValue();
+        rowItems=mainViewModel.rowItemsLD.getValue().data;
         //Assert
         Assertions.assertTrue(cards.equals(rowItems));
         System.out.println("Row items:" +rowItems.toString());
@@ -83,12 +84,6 @@ public class MainViewModelTest {
     @Test
     void removeThreeFirstObjectsInAdapter_returnTrue() throws Exception {
         //Arrange
-        Map<Object, Object> tagsMap = new HashMap<>();
-        tagsMap.put("default", true);
-        tagsMap.put("date", true);
-        Card card1 = new Card("userId1","Ola","url:dsdsadsdsa","#default #date",tagsMap,100,true);
-        Card card2 = new Card("userId2","Ala","url:dsdsadsdsa","#default #date",tagsMap,100,true);
-        Card card3 = new Card("userId3","Mola","url:dsdsadsdsa","#default #date",tagsMap,100,true);
         LiveDataTestUtil<ArrayList<Card>> liveDataTestUtil = new LiveDataTestUtil<>();
         ArrayList<Card> rowItems = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
@@ -98,11 +93,11 @@ public class MainViewModelTest {
         cards.remove(0);
         cards.remove(0);
         //Act
-        mainViewModel.rowItemsLD.setValue(rowItems);
+        mainViewModel.rowItemsLD.setValue(Resource.success(rowItems));
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
-        rowItems=mainViewModel.rowItemsLD.getValue();
+        rowItems=mainViewModel.rowItemsLD.getValue().data;
         //Assert
         Assertions.assertTrue(cards.equals(rowItems));
         System.out.println("Row items:" +rowItems.toString());
@@ -111,12 +106,6 @@ public class MainViewModelTest {
     @Test
     void tryToRemoveEmptyListOfCards_returnTrue() throws Exception {
         //Arrange
-        Map<Object, Object> tagsMap = new HashMap<>();
-        tagsMap.put("default", true);
-        tagsMap.put("date", true);
-        Card card1 = new Card("userId1","Ola","url:dsdsadsdsa","#default #date",tagsMap,100,true);
-        Card card2 = new Card("userId2","Ala","url:dsdsadsdsa","#default #date",tagsMap,100,true);
-        Card card3 = new Card("userId3","Mola","url:dsdsadsdsa","#default #date",tagsMap,100,true);
         LiveDataTestUtil<ArrayList<Card>> liveDataTestUtil = new LiveDataTestUtil<>();
         ArrayList<Card> rowItems = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
@@ -126,7 +115,7 @@ public class MainViewModelTest {
         cards.remove(0);
         cards.remove(0);
         //Act
-        mainViewModel.rowItemsLD.setValue(rowItems);
+        mainViewModel.rowItemsLD.setValue(Resource.success(rowItems));
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
@@ -134,7 +123,7 @@ public class MainViewModelTest {
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
-        rowItems=mainViewModel.rowItemsLD.getValue();
+        rowItems=mainViewModel.rowItemsLD.getValue().data;
         //Assert
         Assertions.assertTrue(cards.equals(rowItems));
         System.out.println("Row items:" +rowItems.toString());

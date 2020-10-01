@@ -89,7 +89,7 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
             dialogTitle = "Edit search tag";
             possitiveButtonText = "edit";
         }
-        tagsFragmentViewModel = new ViewModelProvider(this).get(TagsFragmentViewModel.class);
+        tagsFragmentViewModel =  new ViewModelProvider(this).get(TagsFragmentViewModel.class);
         ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
             @Override
             public void valueChanged(Number minValue, Number maxValue) {

@@ -356,27 +356,32 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case 44:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Toast.makeText(LoginActivity.this, "You need to accept permission!", Toast.LENGTH_SHORT).show();
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            checkLocationPermission();
-                        }
-                    }, 2000);
-                    return;
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        try {
+            switch (requestCode) {
+                case 44:
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "You need to accept permission!", Toast.LENGTH_SHORT).show();
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                checkLocationPermission();
+                            }
+                        }, 2000);
+                        return;
+                    }
+                    break;
+                default:
+                    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            } 
+        }catch (Exception e){
+            Toast.makeText(this, "Opps something went wrong!", Toast.LENGTH_SHORT).show();
         }
+        
     }
 
     public void clearInstances() {

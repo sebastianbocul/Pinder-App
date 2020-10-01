@@ -316,14 +316,12 @@ public class MainFirebase {
     }
 
     public void updateLocation(Context context) {
-        Log.d("updateLocation", "Works1!");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         DatabaseReference usersDb;
         String currentUID = mAuth.getCurrentUser().getUid();
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         DatabaseReference myRef = usersDb.child(currentUID).child("location");
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        Log.d("updateLocation", "Works2!");
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions

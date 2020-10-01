@@ -36,7 +36,6 @@ public class MainViewModel extends AndroidViewModel {
 
     public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
         myTagsAdapterLD = mainRepository.getMyTagsAdapterLD();
-        Log.d("MainFragment", "getTags viewModel " + myTagsAdapterLD.getValue());
         return myTagsAdapterLD;
     }
 
@@ -55,7 +54,6 @@ public class MainViewModel extends AndroidViewModel {
 
     public void removeFirstObjectInAdapter() {
         Resource<ArrayList<Card>> rowItems = this.rowItemsLD.getValue();
-        Log.d("ResourceMainFragment", "removeFirstObjectInAdapter: ");
         if (rowItems.data.size() != 0) {
             rowItems.data.remove(0);
             if (rowItems.data.size() == 0) {
