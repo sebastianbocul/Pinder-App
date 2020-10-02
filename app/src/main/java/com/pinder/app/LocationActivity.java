@@ -55,7 +55,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     private DatabaseReference usersDb;
     private DatabaseReference myRef;
     private ImageView profileImage, goToChat;
-    private String matchId, myId;
+    private String matchId, myId,userProfileImg,userName;
     private boolean mapRdy = false;
 
     public static Bitmap drawableToBitmap(Drawable drawable) {
@@ -147,12 +147,15 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                     public boolean onMarkerClick(Marker marker) {
                         try {
                             linearLayout.setVisibility(View.VISIBLE);
-                            name.setText(dataSnapshot.child("Users").child(marker.getTag().toString()).child("name").getValue().toString());
+                            userName=dataSnapshot.child("Users").child(marker.getTag().toString()).child("name").getValue().toString();
+                            name.setText(userName);
                             String profileImageUrl = dataSnapshot.child("Users").child(marker.getTag().toString()).child("profileImageUrl").getValue().toString();
                             if (profileImageUrl.equals("default")) {
+                                userProfileImg="default";
                                 Glide.with(LocationActivity.this).load(R.drawable.ic_profile_hq).into(profileImage);
                             } else {
-                                Glide.with(LocationActivity.this).load(dataSnapshot.child("Users").child(marker.getTag().toString()).child("profileImageUrl").getValue().toString()).into(profileImage);
+                                userProfileImg=dataSnapshot.child("Users").child(marker.getTag().toString()).child("profileImageUrl").getValue().toString();
+                                Glide.with(LocationActivity.this).load(userProfileImg).into(profileImage);
                             }
                             matchId = marker.getTag().toString();
                             if (myId.equals(matchId)) {
@@ -299,6 +302,8 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     private void goToUserChat() {
         Intent intent = new Intent(LocationActivity.this, ChatActivity.class);
         intent.putExtra("matchId", matchId);
+        intent.putExtra("matchName", userName);
+        intent.putExtra("matchImageUrl", userProfileImg);
         intent.putExtra("fromActivity", "LocationActivity");
         startActivity(intent);
     }

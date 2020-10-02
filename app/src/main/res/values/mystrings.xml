@@ -4,6 +4,6 @@
     <!--    mainfragment tags-->
     <string name="loadingUsers"></string>
     <string name="emptyTags">No tags found :(\n Click here to add tags</string>
-    <string name="noMoreUsers">No users found :(\nClick here add more tags\n </string>
+    <string name="noMoreUsers">No users found :(\nClick here to add tags\n </string>
 
 </resources>

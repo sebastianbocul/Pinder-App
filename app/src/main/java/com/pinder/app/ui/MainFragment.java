@@ -111,6 +111,7 @@ public class MainFragment extends Fragment {
         mainViewModel.getRowItemsLD().observe(getActivity(), new Observer<Resource<ArrayList<Card>>>() {
             @Override
             public void onChanged(Resource<ArrayList<Card>> cards) {
+                noMoreEditText.setText("");
                 if (cards != null) {
                     noMoreEditText.setOnClickListener(null);
                     switch (cards.status) {
@@ -122,7 +123,6 @@ public class MainFragment extends Fragment {
                         }
                         case SUCCESS: {
                             Log.d("ResourceMainFragment", "SUCCESS: ");
-                            noMoreEditText.setText("");
                             if (cards.data.size() == 0) {
                                 noMoreEditText.setText(R.string.noMoreUsers);
                                 setChangeFragmentTextListener();
@@ -132,7 +132,7 @@ public class MainFragment extends Fragment {
                         }
                         case EMPTY: {
                             Log.d("ResourceMainFragment", "EMPTY: ");
-                            noMoreEditText.setText(R.string.emptyTags);
+                            noMoreEditText.setText(R.string.noMoreUsers);
                             showProgressBar(false);
                             setChangeFragmentTextListener();
                             break;
