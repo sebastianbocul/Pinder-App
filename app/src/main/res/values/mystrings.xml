@@ -2,8 +2,8 @@
 <resources>
 
     <!--    mainfragment tags-->
-    <string name="loadingUsers">Loading users</string>
-    <string name="emptyTags">Add tags</string>
-    <string name="noMoreUsers">Could not find users with those tags :(</string>
+    <string name="loadingUsers"></string>
+    <string name="emptyTags">No tags found :(\n Click here to add tags</string>
+    <string name="noMoreUsers">No users found :(\nClick here add more tags\n </string>
 
 </resources>

@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
+import com.pinder.app.MainFragmentManager;
 import com.pinder.app.R;
 import com.pinder.app.UsersProfilesActivity;
 import com.pinder.app.adapters.CardsAdapter;
@@ -111,6 +112,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onChanged(Resource<ArrayList<Card>> cards) {
                 if (cards != null) {
+                    noMoreEditText.setOnClickListener(null);
                     switch (cards.status) {
                         case LOADING: {
                             Log.d("ResourceMainFragment", "LOADING: ");
@@ -120,8 +122,10 @@ public class MainFragment extends Fragment {
                         }
                         case SUCCESS: {
                             Log.d("ResourceMainFragment", "SUCCESS: ");
-                            if(cards.data.size()==0){
+                            noMoreEditText.setText("");
+                            if (cards.data.size() == 0) {
                                 noMoreEditText.setText(R.string.noMoreUsers);
+                                setChangeFragmentTextListener();
                             }
                             showProgressBar(false);
                             break;
@@ -130,6 +134,7 @@ public class MainFragment extends Fragment {
                             Log.d("ResourceMainFragment", "EMPTY: ");
                             noMoreEditText.setText(R.string.emptyTags);
                             showProgressBar(false);
+                            setChangeFragmentTextListener();
                             break;
                         }
                         case ERROR: {
@@ -226,13 +231,12 @@ public class MainFragment extends Fragment {
                 Card user = (Card) dataObject;
                 Intent intent = new Intent(getContext(), UsersProfilesActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra("user",user);
+                intent.putExtra("user", user);
                 startActivity(intent);
             }
         });
         swipeIfButtonClickedInUserProfile();
     }
-
 
     private void swipeIfButtonClickedInUserProfile() {
         //created delay so flingContainer is loaded
@@ -267,10 +271,20 @@ public class MainFragment extends Fragment {
             }
         }, 500);
     }
+
     private void showProgressBar(boolean isVisible) {
         if (isVisible) {
             progressBar.setVisibility(View.VISIBLE);
         } else progressBar.setVisibility(View.GONE);
+    }
+
+    private void setChangeFragmentTextListener() {
+        noMoreEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainFragmentManager) getActivity()).replaceTabPage(R.id.nav_tags);
+            }
+        });
     }
 
     @Override

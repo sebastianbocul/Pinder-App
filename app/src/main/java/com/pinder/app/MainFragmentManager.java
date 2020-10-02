@@ -84,6 +84,9 @@ public class MainFragmentManager extends AppCompatActivity {
             }
         });
     }
+    public void replaceTabPage(int tabPage) {
+        bottomNavigationView.setSelectedItemId(tabPage);
+    }
 }
 
    
