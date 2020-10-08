@@ -272,7 +272,6 @@ class TagsFragmentTest {
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
         //check cards not exists
-        onView(withId(R.id.noMore)).check(matches(isDisplayed()))
         Thread.sleep(1000)
         //checking if frame is empty
         onView(withId(R.id.item_card)).check(doesNotExist());
@@ -324,7 +323,6 @@ class TagsFragmentTest {
 
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
-        onView(withText(R.string.loadingUsers)).check(matches(isDisplayed()))
         Thread.sleep(5000)
         //this is recyclerView in main fragment
         onView(withId(R.id.mainTagsRecyclerView)).perform(actionOnItemAtPosition<TagsManagerAdapter.ViewHolder>(0, click()))
@@ -372,7 +370,6 @@ class TagsFragmentTest {
         onView(withId(R.id.nav_main)).check(matches(isDisplayed()))
         onView(withId(R.id.nav_main)).perform(click())
         //check cards not exists
-        onView(withId(R.id.noMore)).check(matches(isDisplayed()))
         Thread.sleep(1000)
         //checking if frame is empty
         onView(withId(R.id.item_card)).check(doesNotExist());
