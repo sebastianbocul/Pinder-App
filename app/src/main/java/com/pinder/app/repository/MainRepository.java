@@ -1,5 +1,6 @@
 package com.pinder.app.repository;
 
+import android.app.Application;
 import android.content.Context;
 
 import androidx.lifecycle.MutableLiveData;
@@ -14,7 +15,7 @@ public class MainRepository {
     public static MainRepository instance = null;
     public static MainFirebase mainFirebase;
 
-    public static MainRepository getInstance(Context context) {
+    public static MainRepository getInstance(Application context) {
         if (instance == null) {
             instance = new MainRepository();
             mainFirebase = MainFirebase.getInstance(context);

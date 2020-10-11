@@ -1,15 +1,9 @@
 package com.pinder.app.persistance;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -17,16 +11,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.MutableLiveData;
 
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -50,14 +36,12 @@ import com.pinder.app.util.Resource;
 import com.pinder.app.util.StringDateToAge;
 import com.pinder.app.util.UpdateLocation;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -77,7 +61,7 @@ public class MainFirebase {
     private static final String TAG = "MainFirebase";
     public static MainFirebase instance = null;
     Context context;
-//    MutableLiveData<Double> myLongitude = new MutableLiveData<>();
+    //    MutableLiveData<Double> myLongitude = new MutableLiveData<>();
 //    MutableLiveData<Double> myLatitude = new MutableLiveData<>();
     ArrayList<Card> rowItems = new ArrayList<Card>();
     ArrayList<Card> rowItemsRxJava = new ArrayList<Card>();
@@ -89,7 +73,7 @@ public class MainFirebase {
     //change later// temp solution
     MutableLiveData<Resource<ArrayList<Card>>> rowItemsLD = new MutableLiveData<>();
 
-    public static MainFirebase getInstance(Context context2) {
+    public static MainFirebase getInstance(Application context2) {
         if (instance == null) {
             instance = new MainFirebase();
             instance.context = context2;
@@ -214,6 +198,7 @@ public class MainFirebase {
                 });
     }
 
+    int myCounterInt = 0;
     protected void getUsersFromDb() {
         rowItems.clear();
         rowItemsLD.postValue(Resource.loading(rowItems));
@@ -223,31 +208,74 @@ public class MainFirebase {
         DatabaseReference newUserDb = FirebaseDatabase.getInstance().getReference().child("Users");
         //   String newCurrentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Single<List<Card>> sinlgeObs1 = Single.create(emitter -> {
-            // register onChange callback to database
-            // callback will be called, when a value is available
-            // the Single will stay open, until emitter#onSuccess is called with a collected list.
-            newUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            //updates my sex and age, then takes users that liked me
+            newUserDb.child(currentUID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.child(currentUID).child("sex").exists()) {
-                        myInfo.put("sex", dataSnapshot.child(currentUID).child("sex").getValue().toString());
+                    myCounterInt = 0;
+                    Log.d(TAG, "onDataChange:  " + dataSnapshot.getKey() + " :" + dataSnapshot);
+                    if (dataSnapshot.child("sex").exists()) {
+                        myInfo.put("sex", dataSnapshot.child("sex").getValue().toString());
                     }
-                    if (dataSnapshot.child(currentUID).child("dateOfBirth").exists()) {
-                        int myAge = new StringDateToAge().stringDateToAge(dataSnapshot.child(currentUID).child("dateOfBirth").getValue().toString());
+                    if (dataSnapshot.child("dateOfBirth").exists()) {
+                        int myAge = new StringDateToAge().stringDateToAge(dataSnapshot.child("dateOfBirth").getValue().toString());
                         myInfo.put("age", String.valueOf(myAge));
                     }
-                    if (dataSnapshot.child(currentUID).child("connections").child("yes").exists()) {
-                        for (DataSnapshot ds : dataSnapshot.child(currentUID).child("connections").child("yes").getChildren()) {
-                            if (!dataSnapshot.child(currentUID).child("connections").child("matches").hasChild(ds.getKey()) && !dataSnapshot.child(ds.getKey()).child("connections").child("nope").hasChild(currentUID)) {
-                                first.add(ds.getKey());
-                                getTagsPreferencesUsers(dataSnapshot.child(ds.getKey()), true);
+                    myCounterInt = (int) dataSnapshot.child("connections").child("yes").getChildrenCount();
+                    Log.d(TAG, "getUsersFromDb: " + myCounterInt);
+                    if (dataSnapshot.child("connections").child("yes").exists()) {
+                        for (DataSnapshot ds : dataSnapshot.child("connections").child("yes").getChildren()) {
+                            if (!dataSnapshot.child("connections").child("matches").hasChild(ds.getKey())) {
+                                newUserDb.child(ds.getKey()).child("connections").child("nope").child(currentUID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (snapshot.getValue() == null) {
+                                            newUserDb.child(ds.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    myCounterInt--;
+                                                    first.add(snapshot.getKey());
+                                                    getTagsPreferencesUsers(snapshot, true);
+                                                    Log.d(TAG, "getUsersFromDb getUsers: " + myCounterInt);
+                                                    if (myCounterInt == 0) {
+                                                        Log.d(TAG, "getUsersFromDb finish: " + myCounterInt);
+                                                        List<Card> likedMeList = rowItemsRxJava;
+                                                        emitter.onSuccess(likedMeList); //return collected data from database here...
+                                                        rowItemsRxJava.clear();
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                }
+                                            });
+                                        } else {
+                                            myCounterInt--;
+                                            if (myCounterInt == 0) {
+                                                Log.d(TAG, "getUsersFromDb finish: " + myCounterInt);
+                                                List<Card> likedMeList = rowItemsRxJava;
+                                                emitter.onSuccess(likedMeList); //return collected data from database here...
+                                                rowItemsRxJava.clear();
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                    }
+                                });
+                            } else {
+                                myCounterInt--;
+                                if (myCounterInt == 0) {
+                                    Log.d(TAG, "getUsersFromDb finish: " + myCounterInt);
+                                    List<Card> likedMeList = rowItemsRxJava;
+                                    emitter.onSuccess(likedMeList); //return collected data from database here...
+                                    rowItemsRxJava.clear();
+                                }
                             }
-                        }
+                        }//
                     }
-                    List<Card> likedMeList = rowItemsRxJava;
-                    emitter.onSuccess(likedMeList); //return collected data from database here...
-                    rowItemsRxJava.clear();
                 }
 
                 @Override
@@ -277,6 +305,7 @@ public class MainFirebase {
                             }
                         }
                     }
+                    Log.d(TAG, "getUsersFromDb: 2nd observer finish: ");
                     List<Card> notLikedMeList = rowItemsRxJava;
                     emitter.onSuccess(notLikedMeList);
                     rowItemsRxJava.clear();
@@ -303,12 +332,7 @@ public class MainFirebase {
 
                     @Override
                     public void onNext(@io.reactivex.rxjava3.annotations.NonNull List<Card> o) {
-                        if (sortByDistance.equals("true")) {
-                            o = sortCollection(o);
-                            rowItems.addAll(o);
-                        } else {
-                            rowItems.addAll(o);
-                        }
+                        rowItems.addAll(o);
                     }
 
                     @Override
@@ -317,12 +341,19 @@ public class MainFirebase {
 
                     @Override
                     public void onComplete() {
+                        if (sortByDistance.equals("true")) {
+                            rowItems = sortCollectionByLikesMeThenDistance(rowItems);
+
+                        }else {
+                            rowItems =sortCollectionByLikesMe(rowItems);
+                        }
+                        for (Card c : rowItems) {
+                            Log.d(TAG, "cards sorted:  likesme : " + c.isLikesMe() + " dist: " + c.getDistance());
+                        }
                         rowItemsLD.postValue(Resource.success(rowItems));
                     }
                 });
     }
-
-
 
     private void getTagsPreferencesUsers(DataSnapshot ds, Boolean likesMe) {
         ArrayList<String> mutalTagsList = new ArrayList<>();
@@ -405,7 +436,7 @@ public class MainFirebase {
                 if (ds.child("description").exists()) {
                     description = ds.child("description").getValue().toString();
                 }
-                Card item = new Card(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, images, gender, dateOfBirth, mutalTagsSB.toString(), tagsMap, distanceDouble, location, likesMe,description);
+                Card item = new Card(ds.getKey(), ds.child("name").getValue().toString(), profileImageUrl, images, gender, dateOfBirth, mutalTagsSB.toString(), tagsMap, distanceDouble, location, likesMe, description);
                 rowItemsRxJava.add(item);
                 Log.d("rowItemsRxJava", "rowItemsRxJava: " + rowItemsRxJava.toString());
                 Log.d("rxMergeJavaLoop: ", item.getName().toString() + " likesMe " + likesMe);
@@ -424,6 +455,41 @@ public class MainFirebase {
                 public int compare(Card o1, Card o2) {
                     if (o1.getDistance() == o2.getDistance())
                         return 0;
+                    return o1.getDistance() < o2.getDistance() ? -1 : 1;
+                }
+            });
+        }
+        return list;
+    }
+
+    private ArrayList<Card> sortCollectionByLikesMe(ArrayList<Card> list) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Collections.sort(list, Comparator.comparing(Card::isLikesMe).reversed());
+        } else {
+            Collections.sort(list, new Comparator<Card>() {
+                public int compare(Card o1, Card o2) {
+                    Boolean x1 = ((Card) o1).isLikesMe();
+                    Boolean x2 = ((Card) o2).isLikesMe();
+                    int sComp = x2.compareTo(x1);
+                    return sComp;
+                }
+            });
+        }
+        return list;
+    }
+
+    private ArrayList<Card> sortCollectionByLikesMeThenDistance(ArrayList<Card> list) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Collections.sort(list, Comparator.comparing(Card::isLikesMe).reversed().thenComparing(Card::getDistance));
+        } else {
+            Collections.sort(list, new Comparator<Card>() {
+                public int compare(Card o1, Card o2) {
+                    Boolean x1 = ((Card) o1).isLikesMe();
+                    Boolean x2 = ((Card) o2).isLikesMe();
+                    int sComp = x2.compareTo(x1);
+                    if (sComp != 0) {
+                        return sComp;
+                    }
                     return o1.getDistance() < o2.getDistance() ? -1 : 1;
                 }
             });
@@ -540,7 +606,6 @@ public class MainFirebase {
         String userId = dataObject.getUserId();
         usersDb.child(userId).child("connections").child("nope").child(currentUID).setValue(true);
     }
-
 //    public MutableLiveData<Double> getMyLatitude() {
 //        return myLatitude;
 //    }
