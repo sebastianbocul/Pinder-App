@@ -20,16 +20,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.util.StringDateToAge;
+import com.pinder.app.util.UpdateLocation;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -204,7 +209,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             userInfo.put("dateOfBirth", dateOfBirth);
                             userInfo.put("tags", tagsMap);
                             userInfo.put("showMyLocation", true);
-                            updateLocation();
+                            UpdateLocation.updateLocation(getApplicationContext());
                             currentUserDb.updateChildren(userInfo);
                             DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
                             tags.child("default").child(userId).setValue(true);
@@ -237,44 +242,6 @@ public class RegistrationActivity extends AppCompatActivity {
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
     }
-
-    public void updateLocation() {
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                Location location = task.getResult();
-                if (location != null) {
-                    try {
-                        Geocoder geocoder = new Geocoder(RegistrationActivity.this, Locale.getDefault());
-                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        String currentUID = mAuth.getCurrentUser().getUid();
-                        DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
-                        DatabaseReference myRef = usersDb.child(currentUID).child("location");
-                        myRef.child("longitude").setValue(addresses.get(0).getLongitude());
-                        myRef.child("latitude").setValue(addresses.get(0).getLatitude());
-                        if (addresses.get(0).getCountryName() != null) {
-                            myRef.child("countryName").setValue(addresses.get(0).getCountryName());
-                        } else {
-                            myRef.child("countryName").setValue("Not found");
-                        }
-                        if (addresses.get(0).getLocality() != null) {
-                            myRef.child("locality").setValue(addresses.get(0).getLocality());
-                        } else {
-                            myRef.child("locality").setValue("Not found");
-                        }
-                        if (addresses.get(0).getAddressLine(0) != null) {
-                            myRef.child("address").setValue(addresses.get(0).getAddressLine(0));
-                        } else {
-                            myRef.child("address").setValue("Not found");
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {

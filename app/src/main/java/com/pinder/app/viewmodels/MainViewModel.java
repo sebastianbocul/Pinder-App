@@ -26,13 +26,13 @@ public class MainViewModel extends AndroidViewModel {
 //    ToTestConstructor
 //    public MainViewModel(){}
 
-    public MutableLiveData<Double> getMyLatitude() {
-        return mainRepository.getMyLatitude();
-    }
-
-    public MutableLiveData<Double> getMyLongitude() {
-        return mainRepository.getMyLongitude();
-    }
+//    public MutableLiveData<Double> getMyLatitude() {
+//        return mainRepository.getMyLatitude();
+//    }
+//
+//    public MutableLiveData<Double> getMyLongitude() {
+//        return mainRepository.getMyLongitude();
+//    }
 
     public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
         myTagsAdapterLD = mainRepository.getMyTagsAdapterLD();

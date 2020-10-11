@@ -3,9 +3,6 @@ package com.pinder.app;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,12 +28,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.util.StringDateToAge;
+import com.pinder.app.util.UpdateLocation;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class FillInfoActivity extends AppCompatActivity {
@@ -156,7 +151,7 @@ public class FillInfoActivity extends AppCompatActivity {
             return;
         }
         if (ActivityCompat.checkSelfPermission(FillInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            updateLocation();
+            UpdateLocation.updateLocation(this);
             try {
                 updateDb();
                 changeActivty();
@@ -244,43 +239,6 @@ public class FillInfoActivity extends AppCompatActivity {
     private String getFirstName(String displayName) {
         String[] words = displayName.split(" ");
         return words[0];
-    }
-
-    public void updateLocation() {
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                Location location = task.getResult();
-                if (location != null) {
-                    try {
-                        Geocoder geocoder = new Geocoder(FillInfoActivity.this, Locale.getDefault());
-                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        String currentUID = mAuth.getCurrentUser().getUid();
-                        DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
-                        DatabaseReference myRef = usersDb.child(currentUID).child("location");
-                        myRef.child("longitude").setValue(addresses.get(0).getLongitude());
-                        myRef.child("latitude").setValue(addresses.get(0).getLatitude());
-                        if (addresses.get(0).getCountryName() != null) {
-                            myRef.child("countryName").setValue(addresses.get(0).getCountryName());
-                        } else {
-                            myRef.child("countryName").setValue("Not found");
-                        }
-                        if (addresses.get(0).getLocality() != null) {
-                            myRef.child("locality").setValue(addresses.get(0).getLocality());
-                        } else {
-                            myRef.child("locality").setValue("Not found");
-                        }
-                        if (addresses.get(0).getAddressLine(0) != null) {
-                            myRef.child("address").setValue(addresses.get(0).getAddressLine(0));
-                        } else {
-                            myRef.child("address").setValue("Not found");
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
     }
 
     @Override

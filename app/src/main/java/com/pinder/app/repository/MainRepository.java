@@ -22,13 +22,13 @@ public class MainRepository {
         return instance;
     }
 
-    public MutableLiveData<Double> getMyLatitude() {
-        return mainFirebase.getMyLatitude();
-    }
-
-    public MutableLiveData<Double> getMyLongitude() {
-        return mainFirebase.getMyLongitude();
-    }
+//    public MutableLiveData<Double> getMyLatitude() {
+//        return mainFirebase.getMyLatitude();
+//    }
+//
+//    public MutableLiveData<Double> getMyLongitude() {
+//        return mainFirebase.getMyLongitude();
+//    }
 
     public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
         return mainFirebase.getMyTagsAdapterLD();

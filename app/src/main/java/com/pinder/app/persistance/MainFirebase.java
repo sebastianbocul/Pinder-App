@@ -1,6 +1,8 @@
 package com.pinder.app.persistance;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,8 +20,11 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.MutableLiveData;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,6 +48,7 @@ import com.pinder.app.notifications.Token;
 import com.pinder.app.util.CalculateDistance;
 import com.pinder.app.util.Resource;
 import com.pinder.app.util.StringDateToAge;
+import com.pinder.app.util.UpdateLocation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,8 +77,8 @@ public class MainFirebase {
     private static final String TAG = "MainFirebase";
     public static MainFirebase instance = null;
     Context context;
-    MutableLiveData<Double> myLongitude = new MutableLiveData<>();
-    MutableLiveData<Double> myLatitude = new MutableLiveData<>();
+//    MutableLiveData<Double> myLongitude = new MutableLiveData<>();
+//    MutableLiveData<Double> myLatitude = new MutableLiveData<>();
     ArrayList<Card> rowItems = new ArrayList<Card>();
     ArrayList<Card> rowItemsRxJava = new ArrayList<Card>();
     private Map<String, String> myInfo = new HashMap<>();
@@ -87,7 +93,8 @@ public class MainFirebase {
         if (instance == null) {
             instance = new MainFirebase();
             instance.context = context2;
-            instance.updateLocation(context2);
+            UpdateLocation.updateLocation(context2);
+//            instance.updateLocation(context2);
         }
         return instance;
     }
@@ -315,76 +322,7 @@ public class MainFirebase {
                 });
     }
 
-    public void updateLocation(Context context) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        DatabaseReference usersDb;
-        String currentUID = mAuth.getCurrentUser().getUid();
-        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
-        DatabaseReference myRef = usersDb.child(currentUID).child("location");
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-//                ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-        }
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                Location location = task.getResult();
-                Log.d("updateLocation", "location: " + location);
-                if (location != null) {
-                    try {
-                        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        myLongitude.setValue(addresses.get(0).getLongitude());
-                        myLatitude.setValue(addresses.get(0).getLatitude());
-                        myRef.child("longitude").setValue(addresses.get(0).getLongitude());
-                        myRef.child("latitude").setValue(addresses.get(0).getLatitude());
-                        Log.d("updateLocation", "myLatitude updateLocation: " + myLatitude.getValue());
-                        Log.d("updateLocation", "myLongitude updateLocation: " + myLongitude.getValue());
-                        if (addresses.get(0).getCountryName() != null) {
-                            myRef.child("countryName").setValue(addresses.get(0).getCountryName());
-                        } else {
-                            myRef.child("countryName").setValue("Not found");
-                        }
-                        if (addresses.get(0).getLocality() != null) {
-                            myRef.child("locality").setValue(addresses.get(0).getLocality());
-                        } else {
-                            myRef.child("locality").setValue("Not found");
-                        }
-                        if (addresses.get(0).getAddressLine(0) != null) {
-                            myRef.child("address").setValue(addresses.get(0).getAddressLine(0));
-                        } else {
-                            myRef.child("address").setValue("Not found");
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                Log.d("updateLocation", "onDataChange: " + snapshot);
-                                Log.d("updateLocation", "onDataChange: " + snapshot.getKey());
-                                myLongitude.setValue(Double.parseDouble(snapshot.child("latitude").getValue().toString()));
-                                myLatitude.setValue(Double.parseDouble(snapshot.child("longitude").getValue().toString()));
-                            }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                        }
-                    });
-                }
-            }
-        });
-    }
 
     private void getTagsPreferencesUsers(DataSnapshot ds, Boolean likesMe) {
         ArrayList<String> mutalTagsList = new ArrayList<>();
@@ -400,7 +338,7 @@ public class MainFirebase {
             Log.d("getTagsPreferencesUsers", "latitude: " + latitude);
             double longitude = Double.parseDouble(ds.child("location").child("longitude").getValue().toString());
             Log.d("getTagsPreferencesUsers", "longitude: " + longitude);
-            double distanceDouble = CalculateDistance.distance(myLatitude.getValue(), myLongitude.getValue(), latitude, longitude);
+            double distanceDouble = CalculateDistance.distance(UpdateLocation.loc.latitude, UpdateLocation.loc.longitude, latitude, longitude);
             Log.d("getTagsPreferencesUsers", "distanceDouble" + distanceDouble);
             for (DataSnapshot dataTag : ds.child("tags").getChildren()) {
                 Log.d("maingetTag", "forFirst ");
@@ -603,13 +541,13 @@ public class MainFirebase {
         usersDb.child(userId).child("connections").child("nope").child(currentUID).setValue(true);
     }
 
-    public MutableLiveData<Double> getMyLatitude() {
-        return myLatitude;
-    }
-
-    public MutableLiveData<Double> getMyLongitude() {
-        return myLongitude;
-    }
+//    public MutableLiveData<Double> getMyLatitude() {
+//        return myLatitude;
+//    }
+//
+//    public MutableLiveData<Double> getMyLongitude() {
+//        return myLongitude;
+//    }
 
     public MutableLiveData<Resource<ArrayList<Card>>> getRowItemsLD() {
         return rowItemsLD;
