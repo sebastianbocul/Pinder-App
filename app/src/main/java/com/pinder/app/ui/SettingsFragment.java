@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +25,18 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.facebook.login.LoginManager;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.LoginActivity;
 import com.pinder.app.R;
 import com.pinder.app.ui.dialogs.BugsAndImprovementsDialog;
@@ -252,13 +261,7 @@ public class SettingsFragment extends Fragment {
                 deleteAccount();
             }
         });
-        restartMatches.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // settingsViewModel.clearInstances();
-                restartMatchesFun();
-            }
-        });
+
         privacyPolicyButton.setOnClickListener(v -> {
             PrivacyDialog pd = new PrivacyDialog();
             pd.show(getActivity().getSupportFragmentManager(), "Privacy dialog");
@@ -273,6 +276,64 @@ public class SettingsFragment extends Fragment {
         });
         bugsAndImprovements.setOnClickListener(v -> {
             openReportDialog();
+        });
+
+        helperButtons();
+    }
+
+    private void helperButtons() {
+        restartMatches.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // settingsViewModel.clearInstances();
+                restartMatchesFun();
+            }
+        });
+        getView().findViewById(R.id.moveUsersLocToGeoFire).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+                DatabaseReference geoFireReference = FirebaseDatabase.getInstance().getReference().child("Geofire");
+
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot dataSnapshot:snapshot.getChildren()){
+                            geoFireReference.child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot ds) {
+                                    if(ds.getValue()==null){
+                                        if(dataSnapshot.child("location").exists()){
+                                            LatLng loc = new LatLng(Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString()),Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString()));
+                                            Log.d("moveUsersToGeoloc", "users in geoLoc: " + dataSnapshot.getKey() + "latlng:"+ loc.toString());
+                                            DatabaseReference geofire = FirebaseDatabase.getInstance().getReference().child("Geofire");
+                                            GeoFire geoFire = new GeoFire(geofire);
+                                            geoFire.setLocation(dataSnapshot.getKey(), new GeoLocation(loc.latitude, loc.longitude), new GeoFire.CompletionListener() {
+                                                @Override
+                                                public void onComplete(String key, DatabaseError error) {
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+
+
+
+
+            }
         });
     }
 

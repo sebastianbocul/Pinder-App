@@ -73,6 +73,16 @@
                 android:paddingLeft="10sp"
                 android:paddingRight="10sp"
                 android:text="Restart matches" />
+            <Button
+                android:id="@+id/moveUsersLocToGeoFire"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center|bottom"
+                android:layout_marginBottom="10sp"
+                android:background="@drawable/rounded_button"
+                android:paddingLeft="10sp"
+                android:paddingRight="10sp"
+                android:text="move Users Loc To GeoFire" />
 
             <Button
                 android:id="@+id/logoutUser"
