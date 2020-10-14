@@ -151,7 +151,7 @@ public class FillInfoActivity extends AppCompatActivity {
             return;
         }
         if (ActivityCompat.checkSelfPermission(FillInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            UpdateLocation.updateLocation(this);
+//            UpdateLocation.updateLocation(this);
             try {
                 updateDb();
                 changeActivty();

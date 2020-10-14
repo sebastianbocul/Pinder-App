@@ -107,7 +107,7 @@ public class MainFragment extends Fragment {
         arrayAdapter = new CardsAdapter(getContext(), R.layout.item, rowItems);
         flingContainer.setAdapter(arrayAdapter);
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        mainViewModel.updateMyTagsAndSortBydDist();
+        mainViewModel.fetchDataOrUpdateLocationAndFetchData();
         mainViewModel.getRowItemsLD().observe(getActivity(), new Observer<Resource<ArrayList<Card>>>() {
             @Override
             public void onChanged(Resource<ArrayList<Card>> cards) {

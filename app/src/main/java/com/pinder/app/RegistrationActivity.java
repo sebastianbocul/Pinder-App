@@ -209,7 +209,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             userInfo.put("dateOfBirth", dateOfBirth);
                             userInfo.put("tags", tagsMap);
                             userInfo.put("showMyLocation", true);
-                            UpdateLocation.updateLocation(getApplicationContext());
+//                            UpdateLocation.updateLocation(getApplicationContext());
                             currentUserDb.updateChildren(userInfo);
                             DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
                             tags.child("default").child(userId).setValue(true);

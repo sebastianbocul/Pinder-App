@@ -11,6 +11,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -31,9 +33,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class UpdateLocation {
-    public static LatLng loc;
-
-    public static void updateLocation(Context context) {
+    public LatLng loc;
+    public MutableLiveData<LatLng> locLiveData = new MutableLiveData<>();
+    public void updateLocation(Context context) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         DatabaseReference usersDb;
         String currentUID = mAuth.getCurrentUser().getUid();
@@ -81,6 +83,7 @@ public class UpdateLocation {
                         } else {
                             myRef.child("address").setValue("Not found");
                         }
+                        locLiveData.postValue(loc);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -94,6 +97,7 @@ public class UpdateLocation {
                                 double lon = (Double.parseDouble(snapshot.child("0").getValue().toString()));
                                 double lat = (Double.parseDouble(snapshot.child("1").getValue().toString()));
                                 loc = new LatLng(lat,lon);
+                                locLiveData.postValue(loc);
                             }
                         }
 

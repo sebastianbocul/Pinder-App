@@ -23,14 +23,6 @@ public class MainRepository {
         return instance;
     }
 
-//    public MutableLiveData<Double> getMyLatitude() {
-//        return mainFirebase.getMyLatitude();
-//    }
-//
-//    public MutableLiveData<Double> getMyLongitude() {
-//        return mainFirebase.getMyLongitude();
-//    }
-
     public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
         return mainFirebase.getMyTagsAdapterLD();
     }
@@ -39,8 +31,8 @@ public class MainRepository {
         return mainFirebase.getRowItemsLD();
     }
 
-    public void updateMyTagsAndSortBydDist() {
-        mainFirebase.updateMyTagsAndSortBydDist();
+    public void fetchDataOrUpdateLocationAndFetchData() {
+        mainFirebase.fetchDataOrUpdateLocationAndFetchData();
     }
 
     public void isConnectionMatch(Card obj, Context con) {
