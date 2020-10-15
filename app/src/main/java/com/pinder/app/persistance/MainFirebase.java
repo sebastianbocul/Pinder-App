@@ -48,6 +48,7 @@ import com.pinder.app.notifications.Data;
 import com.pinder.app.notifications.Sender;
 import com.pinder.app.notifications.Token;
 import com.pinder.app.util.CalculateDistance;
+import com.pinder.app.util.MultiTaskHandler;
 import com.pinder.app.util.Resource;
 import com.pinder.app.util.StringDateToAge;
 
@@ -223,7 +224,6 @@ public class MainFirebase {
     }
 
     int myCounter = 0;
-
     protected void getUsersFromDb() {
         rowItems.clear();
         rowItemsLD.postValue(Resource.loading(rowItems));
@@ -238,7 +238,6 @@ public class MainFirebase {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    myCounter = 0;
                     Log.d(TAG, "onDataChange:  " + dataSnapshot.getKey() + " :" + dataSnapshot);
                     if (dataSnapshot.child("sex").exists()) {
                         myInfo.put("sex", dataSnapshot.child("sex").getValue().toString());
@@ -247,7 +246,15 @@ public class MainFirebase {
                         int myAge = new StringDateToAge().stringDateToAge(dataSnapshot.child("dateOfBirth").getValue().toString());
                         myInfo.put("age", String.valueOf(myAge));
                     }
-                    myCounter = (int) dataSnapshot.child("connections").child("yes").getChildrenCount();
+                    int nrOfChildren = (int) dataSnapshot.child("connections").child("yes").getChildrenCount();
+                    final MultiTaskHandler multiTaskHandler = new MultiTaskHandler(nrOfChildren) {
+                        @Override
+                        protected void onAllTasksCompleted() {
+                            //put the code that runs when all the tasks are complete here
+                            List<Card> notLikedMeList = rowItemsRxJava;
+                            emitter.onSuccess(notLikedMeList);
+                        }
+                    };
                     Log.d(TAG, "getUsersFromDb: " + myCounter);
                     if (dataSnapshot.child("connections").child("yes").exists()) {
                         for (DataSnapshot ds : dataSnapshot.child("connections").child("yes").getChildren()) {
@@ -259,16 +266,12 @@ public class MainFirebase {
                                             newUserDb.child(ds.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    myCounter--;
+
                                                     first.add(snapshot.getKey());
                                                     getTagsPreferencesUsers(snapshot, true);
                                                     Log.d(TAG, "from users liked me: " + snapshot.child("name").getValue());
                                                     Log.d(TAG, "getUsersFromDb getUsers: " + myCounter);
-                                                    if (myCounter == 0) {
-                                                        Log.d(TAG, "getUsersFromDb finish: " + myCounter);
-                                                        List<Card> likedMeList = rowItemsRxJava;
-                                                        emitter.onSuccess(likedMeList); //return collected data from database here...
-                                                    }
+                                                    multiTaskHandler.taskComplete();
                                                 }
 
                                                 @Override
@@ -276,12 +279,7 @@ public class MainFirebase {
                                                 }
                                             });
                                         } else {
-                                            myCounter--;
-                                            if (myCounter == 0) {
-                                                Log.d(TAG, "getUsersFromDb finish: " + myCounter);
-                                                List<Card> likedMeList = rowItemsRxJava;
-                                                emitter.onSuccess(likedMeList); //return collected data from database here...
-                                            }
+                                            multiTaskHandler.taskComplete();
                                         }
                                     }
 
@@ -290,12 +288,7 @@ public class MainFirebase {
                                     }
                                 });
                             } else {
-                                myCounter--;
-                                if (myCounter == 0) {
-                                    Log.d(TAG, "getUsersFromDb finish: " + myCounter);
-                                    List<Card> likedMeList = rowItemsRxJava;
-                                    emitter.onSuccess(likedMeList); //return collected data from database here...
-                                }
+                                multiTaskHandler.taskComplete();
                             }
                         }
                     }
@@ -303,6 +296,8 @@ public class MainFirebase {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
+                    List<Card> notLikedMeList = rowItemsRxJava;
+                    emitter.onSuccess(notLikedMeList);
                 }
             });
             // do some stuff
@@ -320,49 +315,63 @@ public class MainFirebase {
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Geofire");
             GeoFire geoFire = new GeoFire(ref);
             GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(loc.latitude, loc.longitude), maxDistance);
+            ArrayList<String> usersIdGeoFire=new ArrayList<>();
             geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                 @Override
                 public void onKeyEntered(String key, GeoLocation location) {
-                    Log.d("geoTag", "onKeyEntered: " + key);
-                    newUserDb.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot ds) {
-                            Log.d("fetchWithGeofire", "onDataChange: " + ds);
-                            if (ds.child("sex").getValue() != null) {
-                                if (ds.exists() && !first.contains(ds.getKey()) && !ds.child("connections").child("nope").hasChild(currentUID) && !ds.child("connections").child("yes").hasChild(currentUID) && !ds.getKey().equals(currentUID)) {
-                                    ds.getKey().equals(currentUID);
-                                    Log.d(TAG, "from geofire: " + ds.child("name").getValue());
-                                    getTagsPreferencesUsers(ds, false);
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                        }
-                    });
+                    Log.d(TAG, "onKeyEntered: " + key);
+                    usersIdGeoFire.add(key);
                 }
 
                 @Override
                 public void onKeyExited(String key) {
-                    Log.d("geoTag", "onKeyExited: " + key);
+                    Log.d(TAG, "onKeyExited: " + key);
                 }
 
                 @Override
                 public void onKeyMoved(String key, GeoLocation location) {
-                    Log.d("geoTag", "onKeyMoved: " + key);
+                    Log.d(TAG, "onKeyMoved: " + key);
                 }
 
                 @Override
                 public void onGeoQueryReady() {
-                    Log.d("geoTag", "onGeoQueryReady: ");
-                    List<Card> notLikedMeList = rowItemsRxJava;
-                    emitter.onSuccess(notLikedMeList);
-                }
+                    Log.d(TAG, "onGeoQueryReady: ");
+                    final MultiTaskHandler multiTaskHandler = new MultiTaskHandler(usersIdGeoFire.size()) {
+                        @Override
+                        protected void onAllTasksCompleted() {
+                            //put the code that runs when all the tasks are complete here
+                            List<Card> notLikedMeList = rowItemsRxJava;
+                            emitter.onSuccess(notLikedMeList);
+                        }
+                    };
+                    Log.d(TAG, "Number of users in geofire: " + usersIdGeoFire.size());
+                    for(String userId: usersIdGeoFire){
+                        newUserDb.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot ds) {
+                                Log.d("fetchWithGeofire", "onDataChange: " + ds);
+                                if (ds.child("sex").getValue() != null) {
+                                    if (ds.exists() && !first.contains(ds.getKey()) && !ds.child("connections").child("nope").hasChild(currentUID) && !ds.child("connections").child("yes").hasChild(currentUID) && !ds.getKey().equals(currentUID)) {
+                                        ds.getKey().equals(currentUID);
+                                        Log.d(TAG, "from geofire: " + ds.child("name").getValue());
+                                        getTagsPreferencesUsers(ds, false);
+                                    }
+                                }
+                                multiTaskHandler.taskComplete();
+                            }
 
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                multiTaskHandler.taskComplete();
+                            }
+                        });
+                    }
+                }
                 @Override
                 public void onGeoQueryError(DatabaseError error) {
-                    Log.d("geoTag", "onGeoQueryError: ");
+                    List<Card> notLikedMeList = rowItemsRxJava;
+                    emitter.onSuccess(notLikedMeList);
+                    Log.d(TAG, "onGeoQueryError: ");
                 }
             });
             // do some stuff
@@ -374,7 +383,7 @@ public class MainFirebase {
             });
         });
         Observable.merge(fetchLikedMeUsersObservable.toObservable(), fetchUsersInRangeObservable.toObservable())
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .subscribe(new Observer<List<Card>>() {
                     @Override
                     public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
@@ -388,12 +397,12 @@ public class MainFirebase {
 
                     @Override
                     public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                        Log.d(TAG, "onError: " + e
-                        );
+                        Log.e(TAG, "onError: " + e);
                     }
 
                     @Override
                     public void onComplete() {
+                        Log.d(TAG, "onComplete: ");
                         rowItems.addAll(rowItemsRxJava);
                         if (sortByDistance.equals("true")) {
                             rowItems = sortCollectionByLikesMeThenDistance(rowItems);
@@ -401,8 +410,9 @@ public class MainFirebase {
                             rowItems = sortCollectionByLikesMe(rowItems);
                         }
                         for (Card c : rowItems) {
-                            Log.d(TAG, "cards sorted:  likesme : " + c.isLikesMe() + " dist: " + c.getDistance());
+                            Log.d(TAG, "cards sorted: name: " + c.getName() + "  likesme : " + c.isLikesMe() + " dist: " + c.getDistance());
                         }
+                        Log.d(TAG, "Number of cards: " + rowItems.size());
                         rowItemsLD.postValue(Resource.success(rowItems));
                     }
                 });
@@ -659,13 +669,6 @@ public class MainFirebase {
         String userId = dataObject.getUserId();
         usersDb.child(userId).child("connections").child("nope").child(currentUID).setValue(true);
     }
-//    public MutableLiveData<Double> getMyLatitude() {
-//        return myLatitude;
-//    }
-//
-//    public MutableLiveData<Double> getMyLongitude() {
-//        return myLongitude;
-//    }
 
     public MutableLiveData<Resource<ArrayList<Card>>> getRowItemsLD() {
         return rowItemsLD;
