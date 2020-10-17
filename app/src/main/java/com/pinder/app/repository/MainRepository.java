@@ -27,8 +27,8 @@ public class MainRepository {
         return mainFirebase.getMyTagsAdapterLD();
     }
 
-    public MutableLiveData<Resource<ArrayList<Card>>> getRowItemsLD() {
-        return mainFirebase.getRowItemsLD();
+    public MutableLiveData<Resource<ArrayList<Card>>> getCardsArrayLD() {
+        return mainFirebase.getCardsArrayLD();
     }
 
     public void fetchDataOrUpdateLocationAndFetchData() {

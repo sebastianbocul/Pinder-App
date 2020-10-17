@@ -103,12 +103,12 @@ public class MainFragment extends Fragment {
         dislikeButton = getView().findViewById(R.id.dislikeButton);
         flingContainer = getView().findViewById(R.id.frame);
         progressBar = getView().findViewById(R.id.progress_bar);
-        List<Card> rowItems = new ArrayList<Card>();
-        arrayAdapter = new CardsAdapter(getContext(), R.layout.item, rowItems);
+        List<Card> cardsArray = new ArrayList<Card>();
+        arrayAdapter = new CardsAdapter(getContext(), R.layout.item, cardsArray);
         flingContainer.setAdapter(arrayAdapter);
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         mainViewModel.fetchDataOrUpdateLocationAndFetchData();
-        mainViewModel.getRowItemsLD().observe(getActivity(), new Observer<Resource<ArrayList<Card>>>() {
+        mainViewModel.getCardsArrayLD().observe(getActivity(), new Observer<Resource<ArrayList<Card>>>() {
             @Override
             public void onChanged(Resource<ArrayList<Card>> cards) {
                 noMoreEditText.setText("");
@@ -144,10 +144,10 @@ public class MainFragment extends Fragment {
                             break;
                         }
                     }
-                    rowItems.clear();
-                    rowItems.addAll(cards.data);
+                    cardsArray.clear();
+                    cardsArray.addAll(cards.data);
                     arrayAdapter.notifyDataSetChanged();
-                    for (Card ccc : rowItems) {
+                    for (Card ccc : cardsArray) {
                         Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
                     }
                 }

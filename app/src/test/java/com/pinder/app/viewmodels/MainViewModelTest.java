@@ -47,75 +47,75 @@ public class MainViewModelTest {
     void removeFirstObjectInAdapter_returnTrue() throws Exception {
         //Arrange
         LiveDataTestUtil<ArrayList<Card>> liveDataTestUtil = new LiveDataTestUtil<>();
-        ArrayList<Card> rowItems = new ArrayList<>();
+        ArrayList<Card> cardsArray = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
-        rowItems.addAll(Arrays.asList(card1,card2,card3));
-        cards.addAll(rowItems);
+        cardsArray.addAll(Arrays.asList(card1,card2,card3));
+        cards.addAll(cardsArray);
         cards.remove(0);
         //Act
-        mainViewModel.rowItemsLD.setValue(Resource.success(rowItems));
+        mainViewModel.cardsArrayLD.setValue(Resource.success(cardsArray));
         mainViewModel.removeFirstObjectInAdapter();
-        rowItems=mainViewModel.rowItemsLD.getValue().data;
+        cardsArray=mainViewModel.cardsArrayLD.getValue().data;
         //Assert
-        Assertions.assertTrue(cards.equals(rowItems));
-        System.out.println("Row items:" +rowItems.toString());
+        Assertions.assertTrue(cards.equals(cardsArray));
+        System.out.println("Row items:" +cardsArray.toString());
     }
 
     @Test
     void removeTwoFirstObjectsInAdapter_returnTrue() throws Exception {
         //Arrange
         LiveDataTestUtil<ArrayList<Card>> liveDataTestUtil = new LiveDataTestUtil<>();
-        ArrayList<Card> rowItems = new ArrayList<>();
+        ArrayList<Card> cardsArray = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
-        rowItems.addAll(Arrays.asList(card1,card2,card3));
-        cards.addAll(rowItems);
+        cardsArray.addAll(Arrays.asList(card1,card2,card3));
+        cards.addAll(cardsArray);
         cards.remove(0);
         cards.remove(0);
         //Act
-        mainViewModel.rowItemsLD.setValue(Resource.success(rowItems));
+        mainViewModel.cardsArrayLD.setValue(Resource.success(cardsArray));
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
-        rowItems=mainViewModel.rowItemsLD.getValue().data;
+        cardsArray=mainViewModel.cardsArrayLD.getValue().data;
         //Assert
-        Assertions.assertTrue(cards.equals(rowItems));
-        System.out.println("Row items:" +rowItems.toString());
+        Assertions.assertTrue(cards.equals(cardsArray));
+        System.out.println("Row items:" +cardsArray.toString());
     }
 
     @Test
     void removeThreeFirstObjectsInAdapter_returnTrue() throws Exception {
         //Arrange
         LiveDataTestUtil<ArrayList<Card>> liveDataTestUtil = new LiveDataTestUtil<>();
-        ArrayList<Card> rowItems = new ArrayList<>();
+        ArrayList<Card> cardsArray = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
-        rowItems.addAll(Arrays.asList(card1,card2,card3));
-        cards.addAll(rowItems);
+        cardsArray.addAll(Arrays.asList(card1,card2,card3));
+        cards.addAll(cardsArray);
         cards.remove(0);
         cards.remove(0);
         cards.remove(0);
         //Act
-        mainViewModel.rowItemsLD.setValue(Resource.success(rowItems));
+        mainViewModel.cardsArrayLD.setValue(Resource.success(cardsArray));
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
-        rowItems=mainViewModel.rowItemsLD.getValue().data;
+        cardsArray=mainViewModel.cardsArrayLD.getValue().data;
         //Assert
-        Assertions.assertTrue(cards.equals(rowItems));
-        System.out.println("Row items:" +rowItems.toString());
+        Assertions.assertTrue(cards.equals(cardsArray));
+        System.out.println("Row items:" +cardsArray.toString());
     }
 
     @Test
     void tryToRemoveEmptyListOfCards_returnTrue() throws Exception {
         //Arrange
         LiveDataTestUtil<ArrayList<Card>> liveDataTestUtil = new LiveDataTestUtil<>();
-        ArrayList<Card> rowItems = new ArrayList<>();
+        ArrayList<Card> cardsArray = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
-        rowItems.addAll(Arrays.asList(card1,card2,card3));
-        cards.addAll(rowItems);
+        cardsArray.addAll(Arrays.asList(card1,card2,card3));
+        cards.addAll(cardsArray);
         cards.remove(0);
         cards.remove(0);
         cards.remove(0);
         //Act
-        mainViewModel.rowItemsLD.setValue(Resource.success(rowItems));
+        mainViewModel.cardsArrayLD.setValue(Resource.success(cardsArray));
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
@@ -123,10 +123,10 @@ public class MainViewModelTest {
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
-        rowItems=mainViewModel.rowItemsLD.getValue().data;
+        cardsArray=mainViewModel.cardsArrayLD.getValue().data;
         //Assert
-        Assertions.assertTrue(cards.equals(rowItems));
-        System.out.println("Row items:" +rowItems.toString());
+        Assertions.assertTrue(cards.equals(cardsArray));
+        System.out.println("Row items:" +cardsArray.toString());
     }
 
 
