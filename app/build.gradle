@@ -129,4 +129,7 @@ dependencies {
 
     //GEOPOINT
     implementation 'com.firebase:geofire-java:3.0.0'
+
+    //FCM
+    implementation 'com.google.firebase:firebase-messaging-directboot:20.3.0'
 }

@@ -42,7 +42,7 @@ public class SendFirebaseNotification {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Token token = ds.getValue(Token.class);
-                    Data data = new Data(myID, R.drawable.ic_logovector, sendMessageText, myName, matchId,myProfileImageUrl);
+                    Data data = new Data(myID, sendMessageText, myName, matchId,myProfileImageUrl);
                     Sender sender = new Sender(data, token.getToken());
                     apiService.sendNotification(sender).enqueue(new Callback<ResponseBody>() {
                         @Override

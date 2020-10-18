@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.pinder.app">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -61,7 +62,10 @@
         <service
             android:name="com.pinder.app.notifications.MyFirebaseService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="false"
+            android:stopWithTask="false"
+            android:directBootAware="true"
+            tools:targetApi="n">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_SERVICE" />
             </intent-filter>
@@ -69,7 +73,10 @@
         <service
             android:name="com.pinder.app.notifications.FirebaseMessaging"
             android:enabled="true"
-            android:exported="true">
+            android:exported="false"
+            android:stopWithTask="false"
+            android:directBootAware="true"
+            tools:targetApi="n">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

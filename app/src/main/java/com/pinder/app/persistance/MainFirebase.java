@@ -38,6 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.pinder.app.MainPopUpActivity;
+import com.pinder.app.R;
 import com.pinder.app.models.Card;
 import com.pinder.app.models.TagsObject;
 import com.pinder.app.notifications.Token;
@@ -233,6 +234,7 @@ public class MainFirebase {
                         myInfo.put("age", String.valueOf(myAge));
                     }
                     int nrOfChildren = (int) dataSnapshot.child("connections").child("yes").getChildrenCount();
+                    Log.d(TAG, "nr of children " + nrOfChildren);
                     final MultiTaskHandler multiTaskHandler = new MultiTaskHandler(nrOfChildren) {
                         @Override
                         protected void onAllTasksCompleted() {
@@ -251,10 +253,11 @@ public class MainFirebase {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                     first.add(snapshot.getKey());
-                                                    Card card = validateUserByPreferences(ds, false, myLoc, myTagsList, myInfo);
+                                                    Card card = validateUserByPreferences(snapshot, false, myLoc, myTagsList, myInfo);
+                                                    Log.d(TAG, "from users liked me: before validation " + snapshot.child("name").getValue() + "  card: "+card);
                                                     if (card != null) {
+                                                        Log.d(TAG, "from users liked me:  after validation" + snapshot.child("name").getValue());
                                                         cardsArray.add(card);
-                                                        Log.d(TAG, "from users liked me: " + snapshot.child("name").getValue());
                                                     }
                                                     multiTaskHandler.taskComplete();
                                                 }
@@ -276,6 +279,8 @@ public class MainFirebase {
                                 multiTaskHandler.taskComplete();
                             }
                         }
+                    }else {
+                        emitter.onSuccess(cardsArray);
                     }
                 }
 
@@ -353,6 +358,7 @@ public class MainFirebase {
                                     if (ds.exists() && !first.contains(ds.getKey()) && !ds.child("connections").child("nope").hasChild(currentUID) && !ds.child("connections").child("yes").hasChild(currentUID) && !ds.getKey().equals(currentUID)) {
                                         Log.d(TAG, "from geofire: " + ds.child("name").getValue());
                                         Card card = validateUserByPreferences(ds, false, myLoc, myTagsList, myInfo);
+//                                        Card card=null;
                                         if (card != null) {
                                             cardsArray.add(card);
                                         }
@@ -446,7 +452,7 @@ public class MainFirebase {
                             if (dataSnapshot.child("profileImageUrl").exists()) {
                                 myProfileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
                             }
-                            SendFirebaseNotification.sendNotification(matchId, currentUID, myProfileImageUrl, myName, "You have new match!");
+                            SendFirebaseNotification.sendNotification(matchId, currentUID, myProfileImageUrl, myName, context.getString(R.string.notification_body_match));
                         }
 
                         @Override
@@ -467,9 +473,12 @@ public class MainFirebase {
     }
 
     public void updateToken() {
+        Log.d("FIREBASEMESSAGE", "updateToken: ");
         String token = FirebaseInstanceId.getInstance().getToken();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Tokens");
         Token mToken = new Token(token);
+        Log.d("FIREBASEMESSAGE", "token: " + token);
+        Log.d("FIREBASEMESSAGE", "mUID: " + mUID);
         ref.child(mUID).setValue(mToken);
     }
 

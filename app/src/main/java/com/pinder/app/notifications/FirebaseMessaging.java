@@ -22,22 +22,27 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.pinder.app.ChatActivity;
 import com.pinder.app.R;
 import com.pinder.app.ui.dialogs.SharedPreferencesHelper;
 
+import java.util.Random;
+
 public class FirebaseMessaging extends FirebaseMessagingService {
     private static final String TAG = "FirebaseMessaging";
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+        Log.d(TAG, "onMessageReceived: ");
         String saveCurrentUser = SharedPreferencesHelper.getCurrentUserID(this);
         String sent = remoteMessage.getData().get("sent");
         String user = remoteMessage.getData().get("user");
         FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
-        Log.d(TAG, "onMessageReceived: ");
         if (fUser != null && sent.equals(fUser.getUid())) {
             if (!saveCurrentUser.equals(user)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -98,21 +103,16 @@ public class FirebaseMessaging extends FirebaseMessagingService {
     }
 
     public NotificationCompat.Builder getNotifications(String title, String body, PendingIntent pIntent, Uri soundUri, Bitmap userImage) {
+        Random rnd = new Random();
+        int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
         return new NotificationCompat.Builder(getApplicationContext())
                 .setSmallIcon(R.drawable.ic_logovector)
-                .setColor(Color.CYAN)
+                .setColor(color)
                 .setLargeIcon(userImage)
                 .setContentIntent(pIntent)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSound(soundUri)
                 .setAutoCancel(true);
-    }
-
-    @Override
-    public void onNewToken(@NonNull String s) {
-        Log.d(TAG, "onNewToken: " +s);
-
-        super.onNewToken(s);
     }
 }

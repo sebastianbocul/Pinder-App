@@ -2,15 +2,13 @@ package com.pinder.app.notifications;
 
 public class Data {
     private String user;
-    private int icon;
     private String body;
     private String title;
     private String sent;
     private String profileImageUrl;
 
-    public Data(String user, int icon, String body, String title, String sent, String profileImageUrl) {
+    public Data(String user, String body, String title, String sent, String profileImageUrl) {
         this.user = user;
-        this.icon = icon;
         this.body = body;
         this.title = title;
         this.sent = sent;
@@ -23,14 +21,6 @@ public class Data {
 
     public void setUser(String user) {
         this.user = user;
-    }
-
-    public int getIcon() {
-        return icon;
-    }
-
-    public void setIcon(int icon) {
-        this.icon = icon;
     }
 
     public String getBody() {

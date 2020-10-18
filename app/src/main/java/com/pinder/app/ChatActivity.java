@@ -166,7 +166,7 @@ public class ChatActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     myName = dataSnapshot.child("name").getValue().toString();
                     if (notify) {
-                        SendFirebaseNotification.sendNotification(matchId,currentUserID,myProfileImageUrl, myName, sendMessageText);
+                        SendFirebaseNotification.sendNotification(matchId,currentUserID,myProfileImageUrl, myName, getApplicationContext().getString(R.string.notification_body_message));
                     }
                     notify = false;
                 }

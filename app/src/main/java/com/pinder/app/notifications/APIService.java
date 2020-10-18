@@ -11,6 +11,6 @@ public interface APIService {
             "Content-Type:application/json",
             "Authorization:key=AAAAhsio7d4:APA91bHDcW5F8M_xqUZ88bdz2IvZH2s7l-RIMc-ExFWevkT-7PjWOn909ZNaxEJfWbfv6q91CjxLaH8tCT5Hf0OuxWUqyQ1Ob8uNklCU36IMW-ymzuYtY1tPowsX472eL-y98218DYvu"
     })
-    @POST("fcm/send")
+    @POST("https://fcm.googleapis.com/fcm/send")
     Call<ResponseBody> sendNotification(@Body Sender body);
 }

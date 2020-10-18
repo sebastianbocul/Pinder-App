@@ -26,6 +26,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.pinder.app.ChatActivity;
 import com.pinder.app.R;
 
+import java.util.Random;
+
 public class OreoAndAboveNotification extends ContextWrapper {
     private static final String ID = "some id";
     private static final String NAME = "FirebaseAPP";
@@ -56,14 +58,17 @@ public class OreoAndAboveNotification extends ContextWrapper {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Notification.Builder getNotifications(String title, String body, PendingIntent pIntent, Uri soundUri, Bitmap userImage) {
+        Random rnd = new Random();
+        int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
         return new Notification.Builder(getApplicationContext(), ID)
                 .setSmallIcon(R.drawable.ic_logovector)
-                .setColor(Color.CYAN)
+                .setColor(color)
                 .setLargeIcon(userImage)
                 .setContentIntent(pIntent)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSound(soundUri)
+                .setGroup(title)
                 .setAutoCancel(true);
     }
 
