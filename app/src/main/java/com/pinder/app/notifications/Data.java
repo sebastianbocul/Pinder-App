@@ -6,16 +6,15 @@ public class Data {
     private String body;
     private String title;
     private String sent;
+    private String profileImageUrl;
 
-    public Data(String user, int icon, String body, String title, String sent) {
+    public Data(String user, int icon, String body, String title, String sent, String profileImageUrl) {
         this.user = user;
         this.icon = icon;
         this.body = body;
         this.title = title;
         this.sent = sent;
-    }
-
-    public Data() {
+        this.profileImageUrl = profileImageUrl;
     }
 
     public String getUser() {
@@ -56,5 +55,13 @@ public class Data {
 
     public void setSent(String sent) {
         this.sent = sent;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

@@ -89,7 +89,7 @@
             android:hint="message..." />
 
         <Button
-            android:id="@+id/send"
+            android:id="@+id/button_send"
             android:layout_width="100sp"
             android:layout_height="30sp"
             android:layout_marginRight="4sp"

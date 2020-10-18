@@ -6,10 +6,25 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.google.firebase.messaging.RemoteMessage;
+import com.pinder.app.ChatActivity;
+import com.pinder.app.R;
 
 public class OreoAndAboveNotification extends ContextWrapper {
     private static final String ID = "some id";
@@ -40,13 +55,63 @@ public class OreoAndAboveNotification extends ContextWrapper {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Notification.Builder getNotifications(String title, String body, PendingIntent pIntent, Uri soundUri, String icon) {
+    public Notification.Builder getNotifications(String title, String body, PendingIntent pIntent, Uri soundUri, Bitmap userImage) {
         return new Notification.Builder(getApplicationContext(), ID)
+                .setSmallIcon(R.drawable.ic_logovector)
+                .setColor(Color.CYAN)
+                .setLargeIcon(userImage)
                 .setContentIntent(pIntent)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSound(soundUri)
-                .setAutoCancel(true)
-                .setSmallIcon(Integer.parseInt(icon));
+                .setAutoCancel(true);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void sendOAndAboveNotification(RemoteMessage remoteMessage) {
+        String user = remoteMessage.getData().get("user");
+        String icon = remoteMessage.getData().get("icon");
+        String title = remoteMessage.getData().get("title");
+        String body = remoteMessage.getData().get("body");
+        String profileImageUrl = remoteMessage.getData().get("profileImageUrl");
+        RemoteMessage.Notification notification = remoteMessage.getNotification();
+        int i = Integer.parseInt(user.replaceAll("[\\D]", ""));
+        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+        intent.putExtra("matchId", user);
+        intent.putExtra("matchName", title);
+        intent.putExtra("matchImageUrl", profileImageUrl);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pIntent = PendingIntent.getActivity(this, i, intent, PendingIntent.FLAG_ONE_SHOT);
+        Uri defSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        if (profileImageUrl.equals("default")) {
+            Bitmap resource = BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                    R.drawable.ic_logo_256);
+            Notification.Builder builder = getNotifications(title, body, pIntent, defSoundUri, resource);
+            int j = 0;
+            if (i > 0) {
+                j = i;
+            }
+            getManager().notify(j, builder.build());
+        } else {
+            Glide.with(this)
+                    .asBitmap()
+                    .load(profileImageUrl)
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            Notification.Builder builder = getNotifications(title, body, pIntent, defSoundUri, resource);
+                            int j = 0;
+                            if (i > 0) {
+                                j = i;
+                            }
+                            getManager().notify(j, builder.build());
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                        }
+                    });
+        }
     }
 }

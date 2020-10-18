@@ -24,15 +24,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.adapters.ChatAdapter;
 import com.pinder.app.models.ChatObject;
-import com.pinder.app.notifications.APIService;
-import com.pinder.app.notifications.Client;
-import com.pinder.app.notifications.Data;
-import com.pinder.app.notifications.Sender;
-import com.pinder.app.notifications.Token;
+import com.pinder.app.util.SendFirebaseNotification;
 import com.pinder.app.viewmodels.MatchesViewModel;
 
 import java.util.ArrayList;
@@ -40,14 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class ChatActivity extends AppCompatActivity {
     DatabaseReference mDatabaseUserChat, mDatabaseChat, mDatabaseUser;
-    APIService apiService;
     boolean notify = false;
     private RecyclerView myRecyclerView;
     private RecyclerView.Adapter mChatAdapter;
@@ -72,6 +61,8 @@ public class ChatActivity extends AppCompatActivity {
         profileImage = findViewById(R.id.profileImage);
         userNameTextView = findViewById(R.id.userName);
         backArrow=findViewById(R.id.back_arrow);
+        mSendEditText = findViewById(R.id.message);
+        mSendButton = findViewById(R.id.button_send);
         matchId = getIntent().getExtras().getString("matchId");
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mDatabaseUserChat = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId).child("ChatId");
@@ -81,18 +72,14 @@ public class ChatActivity extends AppCompatActivity {
         if (getIntent().getExtras().getString("fromActivity") != null) {
             fromActivity = getIntent().getExtras().getString("fromActivity");
         }
-        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancelAll();
-        //create APISERVICE
-        Client client = new Client();
-        apiService = client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+        clearNotifications();
+
         myRecyclerView = findViewById(R.id.recyclerView);
         mChatLayoutManager = new LinearLayoutManager(ChatActivity.this);
         myRecyclerView.setLayoutManager(mChatLayoutManager);
         mChatAdapter = new ChatAdapter(getDataSetChat(), ChatActivity.this);
         myRecyclerView.setAdapter(mChatAdapter);
-        mSendEditText = findViewById(R.id.message);
-        mSendButton = findViewById(R.id.send);
+
         userNameTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,6 +114,11 @@ public class ChatActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+    }
+
+    private void clearNotifications() {
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
     }
 
     private void goToUsersProfile() {
@@ -174,7 +166,7 @@ public class ChatActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     myName = dataSnapshot.child("name").getValue().toString();
                     if (notify) {
-                        sendNotification(matchId, myName, sendMessageText);
+                        SendFirebaseNotification.sendNotification(matchId,currentUserID,myProfileImageUrl, myName, sendMessageText);
                     }
                     notify = false;
                 }
@@ -187,33 +179,6 @@ public class ChatActivity extends AppCompatActivity {
         mSendEditText.setText(null);
     }
 
-    private void sendNotification(String matchId, String myName, String sendMessageText) {
-        DatabaseReference allTokens = FirebaseDatabase.getInstance().getReference("Tokens");
-        Query query = allTokens.orderByKey().equalTo(matchId);
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Token token = ds.getValue(Token.class);
-                    Data data = new Data(currentUserID, R.drawable.ic_logovector, sendMessageText, myName, matchId);
-                    Sender sender = new Sender(data, token.getToken());
-                    apiService.sendNotification(sender).enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
 
     private void getChatId() {
         mDatabaseUserChat.addListenerForSingleValueEvent(new ValueEventListener() {

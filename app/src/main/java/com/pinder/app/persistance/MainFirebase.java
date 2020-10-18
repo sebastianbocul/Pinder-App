@@ -35,20 +35,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.pinder.app.MainPopUpActivity;
-import com.pinder.app.R;
 import com.pinder.app.models.Card;
 import com.pinder.app.models.TagsObject;
-import com.pinder.app.notifications.APIService;
-import com.pinder.app.notifications.Client;
-import com.pinder.app.notifications.Data;
-import com.pinder.app.notifications.Sender;
 import com.pinder.app.notifications.Token;
+import com.pinder.app.ui.dialogs.SharedPreferencesHelper;
 import com.pinder.app.util.MultiTaskHandler;
 import com.pinder.app.util.Resource;
+import com.pinder.app.util.SendFirebaseNotification;
 import com.pinder.app.util.StringDateToAge;
 
 import java.io.IOException;
@@ -65,12 +61,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Cancellable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-import static android.content.Context.MODE_PRIVATE;
 import static com.pinder.app.util.SortingFunctions.sortCollectionByLikesMe;
 import static com.pinder.app.util.SortingFunctions.sortCollectionByLikesMeThenDistance;
 import static com.pinder.app.util.SortingFunctions.sortTagsCollectionByDistance;
@@ -90,7 +81,6 @@ public class MainFirebase {
     private MutableLiveData<Resource<ArrayList<Card>>> cardsArrayLD = new MutableLiveData<>();
     private LatLng myLoc;
     private MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
-    private boolean notify = false;
     private String mUID;
     //counters- logs helpers
     int myCounterOnKeyExit = 0;
@@ -203,14 +193,14 @@ public class MainFirebase {
 
                     @Override
                     public void onComplete() {
-                        boolean hasTagsChanged = Arrays.equals(myTagsList.toArray(), myTagsListTemp.toArray());
-                        if (!hasTagsChanged) {
-                            Log.d("RxOnComplete", "onComplete: if1 " + hasTagsChanged);
+                        boolean tagsNotChanged = Arrays.equals(myTagsList.toArray(), myTagsListTemp.toArray());
+                        if (!tagsNotChanged) {
+                            Log.d("RxOnComplete", "onComplete: if1 " + tagsNotChanged);
                             myTagsAdapterLD.postValue(myTagsAdapter);
                         }
                         Log.d("RxOnComplete", "onComplete !sortByDistance.equals(sortByDistanceTemp) : " + !sortByDistance.equals(sortByDistanceTemp));
-                        Log.d("RxOnComplete", "onComplete retval2: " + hasTagsChanged);
-                        if (!sortByDistance.equals(sortByDistanceTemp) || !hasTagsChanged) {
+                        Log.d("RxOnComplete", "TagsNotChanged : " + tagsNotChanged);
+                        if (!sortByDistance.equals(sortByDistanceTemp) || !tagsNotChanged) {
                             Log.d("RxOnComplete", "onComplete if2: " + true);
                             sortByDistance = sortByDistanceTemp;
                             myTagsList.clear();
@@ -264,8 +254,8 @@ public class MainFirebase {
                                                     Card card = validateUserByPreferences(ds, false, myLoc, myTagsList, myInfo);
                                                     if (card != null) {
                                                         cardsArray.add(card);
+                                                        Log.d(TAG, "from users liked me: " + snapshot.child("name").getValue());
                                                     }
-                                                    Log.d(TAG, "from users liked me: " + snapshot.child("name").getValue());
                                                     multiTaskHandler.taskComplete();
                                                 }
 
@@ -306,6 +296,7 @@ public class MainFirebase {
             Log.d(TAG, "getUsersFromDb: latidute:" + myLoc.latitude + " longitude: " + myLoc.longitude);
             myTagsList = (ArrayList<TagsObject>) sortTagsCollectionByDistance(myTagsList);
             double maxSearchDistance = Double.parseDouble(myTagsList.get(myTagsList.size() - 1).getmDistance());
+            Log.d(TAG, "getUsersFromDb: " + maxSearchDistance);
             DatabaseReference geoFireDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Geofire");
             geoFireDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -324,7 +315,7 @@ public class MainFirebase {
                 @Override
                 public void onKeyEntered(String key, GeoLocation location) {
                     myCounterOnKeyEnter++;
-                    Log.d(TAG, "onKeyEntered: " + key);
+//                    Log.d(TAG, "onKeyEntered: " + key);
                     usersIdGeoFire.add(key);
                 }
 
@@ -447,53 +438,25 @@ public class MainFirebase {
                     database.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            String myName = currentUID;
-                            if (notify) {
-                                sendNotification(matchId, myName, " ");
+                            String myName = " ";
+                            if (dataSnapshot.child("name").exists()) {
+                                myName = dataSnapshot.child("name").getValue().toString();
                             }
-                            notify = false;
+                            String myProfileImageUrl = "default";
+                            if (dataSnapshot.child("profileImageUrl").exists()) {
+                                myProfileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
+                            }
+                            SendFirebaseNotification.sendNotification(matchId, currentUID, myProfileImageUrl, myName, "You have new match!");
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                         }
                     });
-                    notify = true;
                     //popactivity when matched
                     Intent i = new Intent(con, MainPopUpActivity.class);
                     i.putExtra("matchUser", obj);
                     con.startActivity(i);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void sendNotification(String matchId, String myName, String sendMessageText) {
-        Client client = new Client();
-        APIService apiService = client.getClient("https://fcm.googleapis.com/").create(APIService.class);
-        String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference allTokens = FirebaseDatabase.getInstance().getReference("Tokens");
-        Query query = allTokens.orderByKey().equalTo(matchId);
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Token token = ds.getValue(Token.class);
-                    Data data = new Data(currentUID, R.drawable.ic_logovector, "Check out now!", "New match!", matchId);
-                    Sender sender = new Sender(data, token.getToken());
-                    apiService.sendNotification(sender).enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        }
-                    });
                 }
             }
 
@@ -516,10 +479,7 @@ public class MainFirebase {
         if (user != null) {
             mUID = user.getUid();
             //save UID of current signin user in shared preferences
-            SharedPreferences sp = context.getSharedPreferences("SP_USER", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putString("Current_USERID", mUID);
-            editor.apply();
+            SharedPreferencesHelper.setCurrentUserID(context, mUID);
         }
     }
 
@@ -613,5 +573,4 @@ public class MainFirebase {
     public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
         return myTagsAdapterLD;
     }
-
 }
