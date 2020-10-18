@@ -22,11 +22,9 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.pinder.app.BaseApplication;
 import com.pinder.app.ChatActivity;
 import com.pinder.app.R;
 import com.pinder.app.ui.dialogs.SharedPreferencesHelper;
@@ -35,33 +33,36 @@ import java.util.Random;
 
 public class FirebaseMessaging extends FirebaseMessagingService {
     private static final String TAG = "FirebaseMessaging";
+
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Log.d(TAG, "onMessageReceived: ");
-        String saveCurrentUser = SharedPreferencesHelper.getCurrentUserID(this);
-        String sent = remoteMessage.getData().get("sent");
-        String user = remoteMessage.getData().get("user");
-        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (fUser != null && sent.equals(fUser.getUid())) {
-            if (!saveCurrentUser.equals(user)) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    OreoAndAboveNotification notification1 = new OreoAndAboveNotification(this);
-                    notification1.sendOAndAboveNotification(remoteMessage);
-                } else {
-                    sendNormalNotification(remoteMessage);
+        if (!BaseApplication.inForeground) {
+            Log.d(TAG, "onMessageReceived: APP IN BACKGROUND");
+            String saveCurrentUser = SharedPreferencesHelper.getCurrentUserID(this);
+            String sent = remoteMessage.getData().get("sent");
+            String user = remoteMessage.getData().get("user");
+            FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (fUser != null && sent.equals(fUser.getUid())) {
+                if (!saveCurrentUser.equals(user)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        OreoAndAboveNotification notification1 = new OreoAndAboveNotification(this);
+                        notification1.sendOAndAboveNotification(remoteMessage);
+                    } else {
+                        sendNormalNotification(remoteMessage);
+                    }
                 }
             }
+        }else {
+            Log.d(TAG, "onMessageReceived: APP IN FOREGROUND");
         }
     }
 
     private void sendNormalNotification(RemoteMessage remoteMessage) {
         String user = remoteMessage.getData().get("user");
-        String icon = remoteMessage.getData().get("icon");
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
         String profileImageUrl = remoteMessage.getData().get("profileImageUrl");
-        RemoteMessage.Notification notification = remoteMessage.getNotification();
         int i = Integer.parseInt(user.replaceAll("[\\D]", ""));
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra("matchId", user);

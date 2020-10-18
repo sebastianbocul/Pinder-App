@@ -72,8 +72,6 @@ public class ChatActivity extends AppCompatActivity {
         if (getIntent().getExtras().getString("fromActivity") != null) {
             fromActivity = getIntent().getExtras().getString("fromActivity");
         }
-        clearNotifications();
-
         myRecyclerView = findViewById(R.id.recyclerView);
         mChatLayoutManager = new LinearLayoutManager(ChatActivity.this);
         myRecyclerView.setLayoutManager(mChatLayoutManager);
@@ -116,10 +114,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void clearNotifications() {
-        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancelAll();
-    }
 
     private void goToUsersProfile() {
         Intent intent = new Intent(ChatActivity.this, UsersProfilesActivity.class);

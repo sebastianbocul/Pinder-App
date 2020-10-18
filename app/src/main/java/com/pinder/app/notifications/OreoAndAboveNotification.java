@@ -75,11 +75,9 @@ public class OreoAndAboveNotification extends ContextWrapper {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void sendOAndAboveNotification(RemoteMessage remoteMessage) {
         String user = remoteMessage.getData().get("user");
-        String icon = remoteMessage.getData().get("icon");
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
         String profileImageUrl = remoteMessage.getData().get("profileImageUrl");
-        RemoteMessage.Notification notification = remoteMessage.getNotification();
         int i = Integer.parseInt(user.replaceAll("[\\D]", ""));
         Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
         intent.putExtra("matchId", user);
@@ -88,7 +86,6 @@ public class OreoAndAboveNotification extends ContextWrapper {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pIntent = PendingIntent.getActivity(this, i, intent, PendingIntent.FLAG_ONE_SHOT);
         Uri defSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
         if (profileImageUrl.equals("default")) {
             Bitmap resource = BitmapFactory.decodeResource(getApplicationContext().getResources(),
                     R.drawable.ic_logo_256);

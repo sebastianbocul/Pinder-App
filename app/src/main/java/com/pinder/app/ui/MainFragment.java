@@ -53,6 +53,9 @@ public class MainFragment extends Fragment {
     MainViewModel mainViewModel;
     private static final String TAG = "MainFragment";
     private ProgressBar progressBar;
+    private TagsManagerAdapter tagsAdapter;
+    private ArrayList<String> myTags = new ArrayList<>();
+    private List<Card> cardsArray = new ArrayList<Card>();
 
     public MainFragment() {
         // Required empty public constructor
@@ -103,11 +106,28 @@ public class MainFragment extends Fragment {
         dislikeButton = getView().findViewById(R.id.dislikeButton);
         flingContainer = getView().findViewById(R.id.frame);
         progressBar = getView().findViewById(R.id.progress_bar);
-        List<Card> cardsArray = new ArrayList<Card>();
-        arrayAdapter = new CardsAdapter(getContext(), R.layout.item, cardsArray);
-        flingContainer.setAdapter(arrayAdapter);
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         mainViewModel.fetchDataOrUpdateLocationAndFetchData();
+        mainViewModel.checkUserStatus(getActivity());
+        mainViewModel.updateToken();
+        setAdapters();
+        setObservers();
+        setButtonListeners();
+        swipeIfButtonClickedInUserProfile();
+    }
+
+    private void setAdapters() {
+        arrayAdapter = new CardsAdapter(getContext(), R.layout.item, cardsArray);
+        flingContainer.setAdapter(arrayAdapter);
+        tagsAdapter = new TagsManagerAdapter(getContext(), myTags);
+        RecyclerView recyclerView = getView().findViewById(R.id.mainTagsRecyclerView);
+        LinearLayoutManager horizontalLayoutManager
+                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(horizontalLayoutManager);
+        recyclerView.setAdapter(tagsAdapter);
+    }
+
+    private void setObservers() {
         mainViewModel.getCardsArrayLD().observe(getActivity(), new Observer<Resource<ArrayList<Card>>>() {
             @Override
             public void onChanged(Resource<ArrayList<Card>> cards) {
@@ -153,13 +173,6 @@ public class MainFragment extends Fragment {
                 }
             }
         });
-        ArrayList<String> myTags = new ArrayList<>();
-        TagsManagerAdapter adapter = new TagsManagerAdapter(getContext(), myTags);
-        RecyclerView recyclerView = getView().findViewById(R.id.mainTagsRecyclerView);
-        LinearLayoutManager horizontalLayoutManager
-                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(horizontalLayoutManager);
-        recyclerView.setAdapter(adapter);
         mainViewModel.getMyTagsAdapterLD().observe(getActivity(), new Observer<ArrayList<String>>() {
             @Override
             public void onChanged(ArrayList<String> strings) {
@@ -168,11 +181,12 @@ public class MainFragment extends Fragment {
                 Log.d(TAG, "onChanged: LoadTags" + strings2);
                 myTags.clear();
                 myTags.addAll(strings);
-                adapter.notifyDataSetChanged();
+                tagsAdapter.notifyDataSetChanged();
             }
         });
-        mainViewModel.checkUserStatus(getActivity());
-        mainViewModel.updateToken();
+    }
+
+    private void setButtonListeners() {
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -235,7 +249,6 @@ public class MainFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        swipeIfButtonClickedInUserProfile();
     }
 
     private void swipeIfButtonClickedInUserProfile() {
