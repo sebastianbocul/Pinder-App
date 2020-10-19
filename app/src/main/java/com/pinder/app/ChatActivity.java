@@ -240,4 +240,16 @@ public class ChatActivity extends AppCompatActivity {
     private List<ChatObject> getDataSetChat() {
         return resultChat;
     }
+
+    @Override
+    public void onBackPressed() {
+        if(fromActivity.equals("notification")){
+            Intent intent = new Intent(this,MainFragmentManager.class);
+            intent.putExtra("fromActivity","chatActivity");
+            startActivity(intent);
+            finish();
+        }else {
+            super.onBackPressed();
+        }
+    }
 }

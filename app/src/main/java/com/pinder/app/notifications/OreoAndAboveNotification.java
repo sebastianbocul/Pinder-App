@@ -83,6 +83,7 @@ public class OreoAndAboveNotification extends ContextWrapper {
         intent.putExtra("matchId", user);
         intent.putExtra("matchName", title);
         intent.putExtra("matchImageUrl", profileImageUrl);
+        intent.putExtra("fromActivity", "notification");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pIntent = PendingIntent.getActivity(this, i, intent, PendingIntent.FLAG_ONE_SHOT);
         Uri defSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);

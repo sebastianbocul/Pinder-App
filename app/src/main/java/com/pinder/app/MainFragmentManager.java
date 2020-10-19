@@ -15,6 +15,7 @@ import com.pinder.app.util.HideSoftKeyboard;
 public class MainFragmentManager extends AppCompatActivity {
     private static final String TAG = "MainFragmentManager";
     private BottomNavigationView bottomNavigationView;
+    private String fromActivity = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +24,20 @@ public class MainFragmentManager extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_main);
         final ViewPager viewPager = findViewById(R.id.pager);
+        if (getIntent().getExtras() != null) {
+            if (getIntent().getExtras().getString("fromActivity") != null) {
+                fromActivity = getIntent().getExtras().getString("fromActivity");
+            }
+        }
         Log.d(TAG, "  bottomNavigationView.getMaxItemCount(): " + bottomNavigationView.getMaxItemCount());
         MainFragmentManagerPagerAdapter adapter = new MainFragmentManagerPagerAdapter(getSupportFragmentManager(), bottomNavigationView.getMaxItemCount());
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(2);
+        if (fromActivity.equals("chatActivity")) {
+            viewPager.setCurrentItem(3);
+            bottomNavigationView.setSelectedItemId(R.id.nav_matches);
+        } else {
+            viewPager.setCurrentItem(2);
+        }
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -84,6 +95,7 @@ public class MainFragmentManager extends AppCompatActivity {
             }
         });
     }
+
     public void replaceTabPage(int tabPage) {
         bottomNavigationView.setSelectedItemId(tabPage);
     }
