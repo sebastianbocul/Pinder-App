@@ -59,6 +59,7 @@ public class ValidateUserByPreferences {
                                             Log.d(TAG, "7th if: " + dataTag.child("maxDistance").getValue().toString() + " >= " + distanceDouble);
                                             if (Double.parseDouble(dataTag.child("maxDistance").getValue().toString()) >= distanceDouble) {
                                                 ///CAN VALIDATE OTHER USER PREFERENCES
+                                                Log.d(TAG, "USER VALIDATE PASS: ");
                                                 mutualTagsList.add(tag.getTagName());
                                                 tagsMap.put(tag.getTagName(), true);
                                                 mutualTagsStringBuilder.append("#" + tag.getTagName() + " ");
@@ -100,12 +101,14 @@ public class ValidateUserByPreferences {
                     description = userDatasnapshot.child("description").getValue().toString();
                 }
                 card = new Card(userDatasnapshot.getKey(), userDatasnapshot.child("name").getValue().toString(), profileImageUrl, images, gender, dateOfBirth, mutualTagsStringBuilder.toString(), tagsMap, distanceDouble, location, likesMe, description);
-                Log.d(TAG, card.getName().toString() + " likesMe " + likesMe);
+                Log.d(TAG, "CREATED NEW CARD :  "+ card.getName().toString() + " likesMe " + likesMe);
             } else {
             }
         } catch (Exception e) {
             Log.d(TAG, "tryError " + e.toString());
         }
+        Log.d(TAG, "RETURN CARD :  "+ card + " likesMe " + likesMe);
+
         return card;
     }
 }

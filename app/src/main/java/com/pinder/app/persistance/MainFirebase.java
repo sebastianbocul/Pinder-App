@@ -83,6 +83,7 @@ public class MainFirebase {
     private LatLng myLoc;
     private MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
     private String mUID;
+    private ArrayList<String> usersIdLikesMe = new ArrayList<>();
     //counters- logs helpers
     int myCounterOnKeyExit = 0;
     int myCounterOnKeyEnter = 0;
@@ -216,11 +217,48 @@ public class MainFirebase {
     protected void getUsersFromDb() {
         cardsArray.clear();
         cardsArrayLD.postValue(Resource.loading(cardsArray));
-        ArrayList<String> first = new ArrayList<>();
-        String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Single<List<Card>> fetchUsersLikeMeSingleObs = createFetchUsersLikedMeObservable();
+        Single<List<Card>> fetchCurrentUserInfoSingleObs = createUpdateMyInfoObservable();
+        Single<List<Card>> fetchUsersInRangeSingleObs = createFetchInRangeObservable();
+        Observable.concat(fetchCurrentUserInfoSingleObs.toObservable(), fetchUsersLikeMeSingleObs.toObservable(), fetchUsersInRangeSingleObs.toObservable())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<List<Card>>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull List<Card> o) {
+                        Log.d(TAG, "onNext: ");
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                        cardsArrayLD.postValue(Resource.error(e.toString(), cardsArray));
+                        Log.e(TAG, "onError: " + e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onComplete: ");
+                        if (sortByDistance.equals("true")) {
+                            cardsArray = sortCollectionByLikesMeThenDistance(cardsArray);
+                        } else {
+                            cardsArray = sortCollectionByLikesMe(cardsArray);
+                        }
+                        for (Card c : cardsArray) {
+                            Log.d(TAG, "cards sorted: name: " + c.getName() + "  likesme : " + c.isLikesMe() + " dist: " + c.getDistance());
+                        }
+                        Log.d(TAG, "Number of cards: " + cardsArray.size());
+                        cardsArrayLD.postValue(Resource.success(cardsArray));
+                    }
+                });
+    }
+
+    private Single<List<Card>> createUpdateMyInfoObservable() {
         DatabaseReference usersDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+        String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Single<List<Card>> fetchLikedMeUsersSingleObs = Single.create(emitter -> {
-            //updates my sex and age, then takes users that liked me
             usersDatabaseReference.child(currentUID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
@@ -233,11 +271,40 @@ public class MainFirebase {
                         int myAge = new StringDateToAge().stringDateToAge(dataSnapshot.child("dateOfBirth").getValue().toString());
                         myInfo.put("age", String.valueOf(myAge));
                     }
+                    Log.d(TAG, "UPPPDATE MY INFO: ");
+                    emitter.onSuccess(cardsArray);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    emitter.onSuccess(cardsArray);
+                }
+            });
+            // do some stuff
+            emitter.setCancellable(new Cancellable() {
+                @Override
+                public void cancel() throws Exception {
+                    //clean memory
+                }
+            });
+        });
+        return fetchLikedMeUsersSingleObs;
+    }
+
+    private Single<List<Card>> createFetchUsersLikedMeObservable() {
+        DatabaseReference usersDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+        String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Single<List<Card>> fetchUsersLikedMeSingleObs = Single.create(emitter -> {
+            usersDatabaseReference.child(currentUID).addListenerForSingleValueEvent(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     int nrOfChildren = (int) dataSnapshot.child("connections").child("yes").getChildrenCount();
                     Log.d(TAG, "nr of children " + nrOfChildren);
                     final MultiTaskHandler multiTaskHandler = new MultiTaskHandler(nrOfChildren) {
                         @Override
                         protected void onAllTasksCompleted() {
+                            Log.d(TAG, "onAllTasksCompleted: LIKED ME");
                             //put the code that runs when all the tasks are complete here
                             emitter.onSuccess(cardsArray);
                         }
@@ -252,9 +319,9 @@ public class MainFirebase {
                                             usersDatabaseReference.child(ds.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    first.add(snapshot.getKey());
-                                                    Card card = validateUserByPreferences(snapshot, false, myLoc, myTagsList, myInfo);
-                                                    Log.d(TAG, "from users liked me: before validation " + snapshot.child("name").getValue() + "  card: "+card);
+                                                    usersIdLikesMe.add(snapshot.getKey());
+                                                    Card card = validateUserByPreferences(snapshot, true, myLoc, myTagsList, myInfo);
+                                                    Log.d(TAG, "from users liked me: before validation " + snapshot.child("name").getValue() + "  card: " + card);
                                                     if (card != null) {
                                                         Log.d(TAG, "from users liked me:  after validation" + snapshot.child("name").getValue());
                                                         cardsArray.add(card);
@@ -279,7 +346,7 @@ public class MainFirebase {
                                 multiTaskHandler.taskComplete();
                             }
                         }
-                    }else {
+                    } else {
                         emitter.onSuccess(cardsArray);
                     }
                 }
@@ -297,6 +364,12 @@ public class MainFirebase {
                 }
             });
         });
+        return fetchUsersLikedMeSingleObs;
+    }
+
+    private Single<List<Card>> createFetchInRangeObservable() {
+        DatabaseReference usersDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+        String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Single<List<Card>> fetchUsersInRangeSingleObs = Single.create(emitter -> {
             Log.d(TAG, "getUsersFromDb: latidute:" + myLoc.latitude + " longitude: " + myLoc.longitude);
             myTagsList = (ArrayList<TagsObject>) sortTagsCollectionByDistance(myTagsList);
@@ -342,6 +415,7 @@ public class MainFirebase {
                         @Override
                         protected void onAllTasksCompleted() {
                             //put the code that runs when all the tasks are complete here
+                            Log.d(TAG, "onAllTasksCompleted: GEOQUERY ");
                             emitter.onSuccess(cardsArray);
                         }
                     };
@@ -355,7 +429,7 @@ public class MainFirebase {
                             public void onDataChange(@NonNull DataSnapshot ds) {
                                 Log.d("fetchWithGeofire", "onDataChange: " + ds);
                                 if (ds.child("sex").getValue() != null) {
-                                    if (ds.exists() && !first.contains(ds.getKey()) && !ds.child("connections").child("nope").hasChild(currentUID) && !ds.child("connections").child("yes").hasChild(currentUID) && !ds.getKey().equals(currentUID)) {
+                                    if (ds.exists() && !usersIdLikesMe.contains(ds.getKey()) && !ds.child("connections").child("nope").hasChild(currentUID) && !ds.child("connections").child("yes").hasChild(currentUID) && !ds.getKey().equals(currentUID)) {
                                         Log.d(TAG, "from geofire: " + ds.child("name").getValue());
                                         Card card = validateUserByPreferences(ds, false, myLoc, myTagsList, myInfo);
 //                                        Card card=null;
@@ -377,7 +451,7 @@ public class MainFirebase {
 
                 @Override
                 public void onGeoQueryError(DatabaseError error) {
-                    emitter.onSuccess(cardsArray);
+                    emitter.onError(new Throwable("onGeoQueryError"));
                     Log.d(TAG, "onGeoQueryError: ");
                 }
             });
@@ -389,38 +463,7 @@ public class MainFirebase {
                 }
             });
         });
-        Observable.merge(fetchLikedMeUsersSingleObs.toObservable(), fetchUsersInRangeSingleObs.toObservable())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<List<Card>>() {
-                    @Override
-                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull List<Card> o) {
-                        Log.d(TAG, "onNext: ");
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                        Log.e(TAG, "onError: " + e);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d(TAG, "onComplete: ");
-                        if (sortByDistance.equals("true")) {
-                            cardsArray = sortCollectionByLikesMeThenDistance(cardsArray);
-                        } else {
-                            cardsArray = sortCollectionByLikesMe(cardsArray);
-                        }
-                        for (Card c : cardsArray) {
-                            Log.d(TAG, "cards sorted: name: " + c.getName() + "  likesme : " + c.isLikesMe() + " dist: " + c.getDistance());
-                        }
-                        Log.d(TAG, "Number of cards: " + cardsArray.size());
-                        cardsArrayLD.postValue(Resource.success(cardsArray));
-                    }
-                });
+        return fetchUsersInRangeSingleObs;
     }
 
     public void isConnectionMatch(Card obj, Context con) {
