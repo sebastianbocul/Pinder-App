@@ -35,6 +35,17 @@ android {
             jvmTarget = "1.8"
         }
     }
+    android {
+        sourceSets {
+            String sharedTestDir = 'src/testUtils/java'
+            test {
+                java.srcDir sharedTestDir
+            }
+            androidTest {
+                java.srcDir sharedTestDir
+            }
+        }
+    }
 
 
 }
