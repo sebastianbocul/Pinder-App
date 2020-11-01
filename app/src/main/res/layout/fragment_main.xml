@@ -7,84 +7,95 @@
     android:orientation="vertical"
     tools:context="com.pinder.app.ui.MainFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/mainTagsRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="45sp"
-            android:orientation="horizontal"
-            tools:listitem="@layout/item_tags" />
-    </LinearLayout>
-
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_gravity="top"
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/noMore"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mainTagsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="45sp"
+                android:orientation="horizontal"
+                tools:listitem="@layout/item_tags" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:gravity="center"
-            android:text=""
-            android:textSize="20sp" />
+            android:layout_alignParentBottom="true">
 
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="@style/Widget.AppCompat.ProgressBar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:paddingBottom="0dp"
-            android:scaleX="0.2"
-            android:scaleY="0.2"
-            android:visibility="gone" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:paddingBottom="5sp">
 
-        <com.lorentzos.flingswipe.SwipeFlingAdapterView
-            android:id="@+id/frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            app:rotation_degrees="15.5"
-            tools:context=".MyActivity" />
+                <ImageView
+                    android:id="@+id/dislikeButton"
+                    android:layout_width="20sp"
+                    android:layout_height="75sp"
+                    android:layout_weight="1"
+                    android:paddingLeft="50sp"
+                    android:text="DISLIKE"
+                    app:srcCompat="@drawable/ic_dislike" />
 
+                <ImageView
+                    android:id="@+id/likeButton"
+                    android:layout_width="20sp"
+                    android:layout_height="75sp"
+                    android:layout_weight="1"
+                    android:paddingRight="50sp"
+                    android:text="LIKE"
+                    app:srcCompat="@drawable/ic_like" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/noMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:text=""
+                android:textSize="20sp" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingBottom="0dp"
+                android:scaleX="0.2"
+                android:scaleY="0.2"
+                android:visibility="gone" />
+
+            <com.lorentzos.flingswipe.SwipeFlingAdapterView
+                android:id="@+id/frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                app:rotation_degrees="15.5"
+                tools:context=".MyActivity" />
+        </RelativeLayout>
     </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        android:paddingBottom="5sp">
-
-        <ImageView
-            android:id="@+id/dislikeButton"
-            android:layout_width="20sp"
-            android:layout_height="75sp"
-            android:layout_weight="1"
-            android:paddingLeft="50sp"
-            android:text="DISLIKE"
-            app:srcCompat="@drawable/ic_dislike" />
-
-        <ImageView
-            android:id="@+id/likeButton"
-            android:layout_width="20sp"
-            android:layout_height="75sp"
-            android:layout_weight="1"
-            android:paddingRight="50sp"
-            android:text="LIKE"
-            app:srcCompat="@drawable/ic_like" />
-    </LinearLayout>
 </LinearLayout>
 

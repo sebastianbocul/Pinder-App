@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,8 @@ public class UsersProfilesActivity extends AppCompatActivity {
     private ArrayList<String> mutualTagsExtras = null;
     private ArrayList<String> myTags = new ArrayList<>();
     private Card user;
+    private ProgressBar progressBar;
+    private ImageView defaultImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +72,8 @@ public class UsersProfilesActivity extends AppCompatActivity {
         dislikeButton = findViewById(R.id.dislikeButton);
         reportUserButton = findViewById(R.id.reportUserImage);
         likeButton = findViewById(R.id.likeButton);
+        progressBar = findViewById(R.id.user_progress_bar);
+        defaultImage = findViewById(R.id.default_image);
         mAuth = FirebaseAuth.getInstance();
         myId = mAuth.getCurrentUser().getUid();
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -182,9 +187,13 @@ public class UsersProfilesActivity extends AppCompatActivity {
 
     private void loadImagesBundle() {
         if (getIntent().getParcelableExtra("user") != null) {
-            if(user.getImages()==null) {
+            int size = user.getImages().size();
+            if (user.getImages() == null || user.getImages().size()==0) {
+                defaultImage.setVisibility(View.VISIBLE);
                 viewPager.setBackgroundColor(Color.TRANSPARENT);
                 return;
+            } else if(user.getImages().size()>=1){
+                defaultImage.setVisibility(View.GONE);
             }
             mImages = (ArrayList) user.getImages();
             ImageAdapter adapter = new ImageAdapter(UsersProfilesActivity.this, mImages);
@@ -195,7 +204,6 @@ public class UsersProfilesActivity extends AppCompatActivity {
     private void fillUserProfileBundle() {
         if (getIntent().getParcelableExtra("user") != null) {
             distanceTextView.setText(", " + Math.round(user.getDistance()) + " km away");
-
             tagsTextView.setText(user.getTags().toString());
             int age = new StringDateToAge().stringDateToAge(user.getDateOfBirth());
             userAge = String.valueOf(age);
@@ -234,17 +242,23 @@ public class UsersProfilesActivity extends AppCompatActivity {
     }
 
     private void loadImagesFireBase() {
+        progressBar.setVisibility(View.VISIBLE);
+        defaultImage.setVisibility(View.GONE);
         mImageDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList arrayList = new ArrayList();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    arrayList.add(ds.child("uri").getValue());
+                if(dataSnapshot.getValue()!=null){
+                    ArrayList arrayList = new ArrayList();
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        arrayList.add(ds.child("uri").getValue());
+                    }
+                    mImages = arrayList;
+                    ImageAdapter adapter = new ImageAdapter(UsersProfilesActivity.this, mImages);
+                    viewPager.setAdapter(adapter);
+                }else {
+                    defaultImage.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
                 }
-                mImages = arrayList;
-                ImageAdapter adapter = new ImageAdapter(UsersProfilesActivity.this, mImages);
-                viewPager.setAdapter(adapter);
-                return;
             }
 
             @Override
@@ -315,7 +329,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
                         descriptionTextView.setText(description);
                     } else descriptionTextView.setText("");
                     if (map.get("images") == null) {
-                        viewPager.setBackgroundColor(Color.TRANSPARENT);
+//                        viewPager.setBackgroundColor(Color.TRANSPARENT);
 //                        viewPager.setBackground(getDrawable(R.drawable.ic_profile_hq));
                     }
                 }

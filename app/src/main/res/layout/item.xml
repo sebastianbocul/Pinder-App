@@ -8,9 +8,9 @@
     android:clipToPadding="false"
     android:outlineProvider="bounds"
     android:paddingLeft="10sp"
-    android:paddingTop="10sp"
+    android:paddingTop="47sp"
     android:paddingRight="10sp"
-    android:paddingBottom="10sp"
+    android:paddingBottom="88sp"
     android:id="@+id/item_card">
 
     <androidx.cardview.widget.CardView

@@ -246,6 +246,7 @@ public class MainFragment extends Fragment {
                 Intent intent = new Intent(getContext(), UsersProfilesActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.putExtra("user", user);
+                intent.putExtra("userId", user.getUserId());
                 startActivity(intent);
             }
         });
