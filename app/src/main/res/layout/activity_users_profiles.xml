@@ -49,16 +49,16 @@
                     android:layout_height="500sp" />
 
 
-                <!--            <ImageView-->
-                <!--                android:id="@+id/back_arrow"-->
-                <!--                android:layout_width="wrap_content"-->
-                <!--                android:layout_height="wrap_content"-->
-                <!--                android:layout_marginTop="17sp"-->
-                <!--                android:paddingLeft="21sp"-->
-                <!--                android:paddingRight="10sp"-->
-                <!--                android:scaleX="1.25"-->
-                <!--                android:scaleY="1.25"-->
-                <!--                app:srcCompat="@drawable/ic_back_arrow" />-->
+                <ImageView
+                    android:id="@+id/back_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="17sp"
+                    android:paddingLeft="21sp"
+                    android:paddingRight="10sp"
+                    android:scaleX="1.25"
+                    android:scaleY="1.25"
+                    app:srcCompat="@drawable/ic_back_arrow" />
             </RelativeLayout>
 
             <LinearLayout
@@ -179,9 +179,9 @@
                     android:id="@+id/descriptionTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingBottom="100sp"
                     android:textColor="@android:color/black"
                     android:textSize="20sp"
-                    android:paddingBottom="100sp"
                     tools:text="description" />
             </LinearLayout>
         </LinearLayout>

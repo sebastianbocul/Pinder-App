@@ -299,7 +299,6 @@ public class SettingsFragment extends Fragment {
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
                 DatabaseReference geoFireReference = FirebaseDatabase.getInstance().getReference().child("Geofire");
-
                 databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -333,10 +332,6 @@ public class SettingsFragment extends Fragment {
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
                 });
-
-
-
-
             }
         });
     }

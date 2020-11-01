@@ -28,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.adapters.ChatAdapter;
 import com.pinder.app.models.ChatObject;
 import com.pinder.app.util.SendFirebaseNotification;
+import com.pinder.app.utils.DisableButton;
 import com.pinder.app.viewmodels.MatchesViewModel;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class ChatActivity extends AppCompatActivity {
     private String myName;
     private String fromActivity = "";
     private ArrayList<ChatObject> resultChat = new ArrayList<ChatObject>();
-    private ImageView backArrow;
+    private ImageView backArrowImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +61,6 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         profileImage = findViewById(R.id.profileImage);
         userNameTextView = findViewById(R.id.userName);
-        backArrow=findViewById(R.id.back_arrow);
         mSendEditText = findViewById(R.id.message);
         mSendButton = findViewById(R.id.button_send);
         matchId = getIntent().getExtras().getString("matchId");
@@ -77,7 +77,7 @@ public class ChatActivity extends AppCompatActivity {
         myRecyclerView.setLayoutManager(mChatLayoutManager);
         mChatAdapter = new ChatAdapter(getDataSetChat(), ChatActivity.this);
         myRecyclerView.setAdapter(mChatAdapter);
-
+        handleBackArrow();
         userNameTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,12 +104,6 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 sendMessage();
                 notify = true;
-            }
-        });
-        backArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
             }
         });
     }
@@ -251,5 +245,12 @@ public class ChatActivity extends AppCompatActivity {
         }else {
             super.onBackPressed();
         }
+    }
+    public void handleBackArrow(){
+        backArrowImage = findViewById(R.id.back_arrow);
+        DisableButton.disableButton(backArrowImage);
+        backArrowImage.setOnClickListener(v->{
+            onBackPressed();
+        });
     }
 }

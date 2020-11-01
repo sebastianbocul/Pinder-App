@@ -120,6 +120,8 @@
                 android:layout_weight="1">
 
                 <ImageView
+                    android:scaleX="0.75"
+                    android:scaleY="0.75"
                     android:id="@+id/smallLogo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

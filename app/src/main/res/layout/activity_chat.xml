@@ -50,7 +50,7 @@
                 android:layout_marginTop="3sp"
                 android:layout_marginBottom="3sp"
                 android:padding="5sp"
-                android:src="@drawable/ic_profile_hq" />
+                app:srcCompat="@drawable/ic_profile_hq" />
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 

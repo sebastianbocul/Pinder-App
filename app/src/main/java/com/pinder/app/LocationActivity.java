@@ -10,6 +10,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -41,6 +42,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.util.CalculateDistance;
+import com.pinder.app.utils.DisableButton;
 
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback {
     public String currentUID;
@@ -57,7 +59,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     private ImageView profileImage, goToChat;
     private String matchId, myId,userProfileImg,userName;
     private boolean mapRdy = false;
-
+    private ImageView backArrowImage;
     public static Bitmap drawableToBitmap(Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable) drawable).getBitmap();
@@ -89,12 +91,14 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         name = findViewById(R.id.MatchName);
         profileImage = findViewById(R.id.profileImage);
         goToChat = findViewById(R.id.goToChat);
+        handleBackArrow();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.google_map);
         supportMapFragment.getMapAsync(LocationActivity.this);
     }
 
     public void onMapReady(GoogleMap googleMap) {
+        backArrowImage.setVisibility(View.VISIBLE);
         myGoogleMap = googleMap;
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
@@ -306,5 +310,13 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         intent.putExtra("matchImageUrl", userProfileImg);
         intent.putExtra("fromActivity", "LocationActivity");
         startActivity(intent);
+    }
+
+    public void handleBackArrow(){
+        backArrowImage = findViewById(R.id.back_arrow);
+        DisableButton.disableButton(backArrowImage);
+        backArrowImage.setOnClickListener(v->{
+            onBackPressed();
+        });
     }
 }

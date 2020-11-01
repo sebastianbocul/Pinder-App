@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.util.StringDateToAge;
 import com.pinder.app.util.UpdateLocation;
+import com.pinder.app.utils.DisableButton;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -44,6 +46,7 @@ public class FillInfoActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private TextView title;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
+    private ImageView backArrowImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,7 @@ public class FillInfoActivity extends AppCompatActivity {
         mRegister = findViewById(R.id.register);
         mRadioGroup = findViewById(R.id.radioGroup);
         mName = findViewById(R.id.name);
+        handleBackArrow();
         mName.setText(getFirstName(user.getDisplayName()));
         date.addTextChangedListener(new TextWatcher() {
             String clean;
@@ -254,5 +258,12 @@ public class FillInfoActivity extends AppCompatActivity {
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+    public void handleBackArrow(){
+        backArrowImage = findViewById(R.id.back_arrow);
+        DisableButton.disableButton(backArrowImage);
+        backArrowImage.setOnClickListener(v->{
+            onBackPressed();
+        });
     }
 }

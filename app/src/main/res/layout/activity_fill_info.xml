@@ -3,9 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="50sp"
     tools:context="com.pinder.app.RegistrationActivity">
+
+    <ImageView
+        android:id="@+id/back_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17sp"
+        android:paddingLeft="21sp"
+        android:paddingRight="10sp"
+        android:scaleX="1.25"
+        android:scaleY="1.25"
+        app:srcCompat="@drawable/ic_back_arrow" />
 
     <TextView
         android:id="@+id/title"
@@ -83,12 +95,14 @@
         android:background="@drawable/rounded_button"
         android:text="Register" />
 
-    <TextView
+    <View
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="1" />
 
     <ImageView
+        android:scaleX="0.75"
+        android:scaleY="0.75"
         android:layout_width="200sp"
         android:layout_height="200sp"
         android:layout_gravity="bottom|center"

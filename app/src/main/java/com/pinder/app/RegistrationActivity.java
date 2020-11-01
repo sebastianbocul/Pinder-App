@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.util.StringDateToAge;
+import com.pinder.app.utils.DisableButton;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -41,6 +43,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText date;
     private boolean dateValid = false;
     private FusedLocationProviderClient fusedLocationProviderClient;
+    private ImageView backArrowImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,7 @@ public class RegistrationActivity extends AppCompatActivity {
         date = findViewById(R.id.date);
         mAuth = FirebaseAuth.getInstance();
         mName = findViewById(R.id.name);
+        handleBackArrow();
         date.addTextChangedListener(new TextWatcher() {
             String clean;
             String cleanC;
@@ -245,5 +249,12 @@ public class RegistrationActivity extends AppCompatActivity {
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+    public void handleBackArrow(){
+        backArrowImage = findViewById(R.id.back_arrow);
+        DisableButton.disableButton(backArrowImage);
+        backArrowImage.setOnClickListener(v->{
+            onBackPressed();
+        });
     }
 }

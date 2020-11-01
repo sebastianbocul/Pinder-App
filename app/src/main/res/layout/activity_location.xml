@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,11 +8,23 @@
     android:orientation="vertical"
     tools:context="com.pinder.app.LocationActivity">
 
+
     <fragment
         android:id="@+id/google_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/back_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17sp"
+        android:paddingLeft="21sp"
+        android:paddingRight="10sp"
+        android:scaleX="1.25"
+        android:scaleY="1.25"
+        android:src="@drawable/ic_back_arrow" />
 
     <LinearLayout
         android:id="@+id/userLayout"
@@ -47,7 +60,7 @@
             android:layout_gravity="center|end"
             android:layout_marginRight="20sp"
             android:layout_weight="0"
-            android:src="@drawable/ic_chat" />
+            app:srcCompat="@drawable/ic_chat" />
 
     </LinearLayout>
 </RelativeLayout>
