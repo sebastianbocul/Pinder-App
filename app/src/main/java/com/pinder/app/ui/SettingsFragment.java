@@ -44,6 +44,7 @@ import com.pinder.app.ui.dialogs.LicencesDialog;
 import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
 import com.pinder.app.util.StringDateToAge;
+import com.pinder.app.utils.DisableButton;
 import com.pinder.app.viewmodels.SettingsViewModel;
 
 import java.util.Calendar;
@@ -67,7 +68,6 @@ public class SettingsFragment extends Fragment {
     private Switch mapLocationSwitch, sortUsersByDistanceSwitch;
     private EditText date;
     private boolean dateValid = false;
-    private Button restartMatches;
     private Button bugsAndImprovements;
     SharedPreferences prefs;
 
@@ -124,7 +124,6 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         sortUsersByDistanceSwitch = getView().findViewById(R.id.sortUsersByDistance);
         mapLocationSwitch = getView().findViewById(R.id.mapLocationSwitch);
-        restartMatches = getView().findViewById(R.id.restartMatches);
         logoutUser = getView().findViewById(R.id.logoutUser);
         deleteUser = getView().findViewById(R.id.deleteUser);
         date = getView().findViewById(R.id.date);
@@ -282,6 +281,11 @@ public class SettingsFragment extends Fragment {
     }
 
     private void helperButtons() {
+        Button restartMatches,moveUsersLocToGeoFire;
+        restartMatches = getView().findViewById(R.id.restartMatches);
+        moveUsersLocToGeoFire = getView().findViewById(R.id.moveUsersLocToGeoFire);
+        DisableButton.disableButton(restartMatches);
+        DisableButton.disableButton(moveUsersLocToGeoFire);
         restartMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -289,7 +293,7 @@ public class SettingsFragment extends Fragment {
                 restartMatchesFun();
             }
         });
-        getView().findViewById(R.id.moveUsersLocToGeoFire).setOnClickListener(new View.OnClickListener() {
+        moveUsersLocToGeoFire.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
