@@ -69,4 +69,15 @@ public class TagsObject {
                 this.mDistance.equals(object.getmDistance()));
         return res;
     }
+
+    @Override
+    public String toString() {
+        return "TagsObject{" +
+                "tagName='" + tagName + '\'' +
+                ", gender='" + gender + '\'' +
+                ", mAgeMin='" + mAgeMin + '\'' +
+                ", mAgeMax='" + mAgeMax + '\'' +
+                ", mDistance='" + mDistance + '\'' +
+                '}';
+    }
 }

@@ -36,13 +36,16 @@ android {
         }
     }
     android {
+        testOptions {
+            unitTests.returnDefaultValues = true
+        }
         sourceSets {
-            String sharedTestDir = 'src/testUtils/java'
+            String testUtils = 'src/testUtils/java'
             test {
-                java.srcDir sharedTestDir
+                java.srcDir testUtils
             }
             androidTest {
-                java.srcDir sharedTestDir
+                java.srcDir testUtils
             }
         }
     }

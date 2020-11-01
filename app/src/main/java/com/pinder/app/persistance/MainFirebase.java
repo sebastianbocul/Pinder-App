@@ -393,7 +393,6 @@ public class MainFirebase {
                 @Override
                 public void onKeyEntered(String key, GeoLocation location) {
                     myCounterOnKeyEnter++;
-//                    Log.d(TAG, "onKeyEntered: " + key);
                     usersIdGeoFire.add(key);
                 }
 

@@ -14,8 +14,16 @@ import java.util.Map;
 public class ValidateUserByPreferences {
     private static final String TAG = "ValidateUserByPreferenc";
 
-    public static Card validateUserByPreferences(DataSnapshot userDatasnapshot, Boolean likesMe, LatLng myLocation, ArrayList<TagsObject> myTagsList, Map<String, String> myInfo) {
+    public static Card validateUserByPreferences(DataSnapshot userDatasnapshot , Boolean likesMe, LatLng myLocation, ArrayList<TagsObject> myTagsList, Map<String, String> myInfo) {
         Card card = null;
+//        Log.d(TAG, "validateUserByPreferences: datasnapshot:" + userDatasnapshot.toString());
+        Log.d(TAG, "validateUserByPreferences: likesMe:" + likesMe);
+        Log.d(TAG, "validateUserByPreferences: myLocation:" + myLocation);
+//        for(TagsObject t:myTagsList){
+//            Log.d(TAG, "validateUserByPreferences: tag:  : " + t.toString());
+//        }
+        Log.d(TAG, "validateUserByPreferences: myTagsList:" + myTagsList);
+        Log.d(TAG, "validateUserByPreferences: myInfo:" + myInfo);
         ArrayList<String> mutualTagsList = new ArrayList<>();
         StringBuilder mutualTagsStringBuilder = new StringBuilder();
         Map<Object, Object> tagsMap = new HashMap<>();
@@ -33,7 +41,7 @@ public class ValidateUserByPreferences {
             double distanceDouble = CalculateDistance.distance(myLocation.latitude, myLocation.longitude, latitude, longitude);
             Log.d(TAG, "distanceDouble" + distanceDouble);
             //VALIDATE USER
-            for (DataSnapshot dataTag : userDatasnapshot.child("tags").getChildren()) {
+            for (DataSnapshot dataTag: userDatasnapshot.child("tags").getChildren()) {
                 Log.d(TAG, "forFirst ");
                 for (TagsObject tag : myTagsList) {
                     ///VALIDATING TAGS BY MY PREFERENCES
