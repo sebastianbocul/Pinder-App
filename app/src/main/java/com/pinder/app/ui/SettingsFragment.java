@@ -1,5 +1,6 @@
 package com.pinder.app.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.facebook.login.LoginManager;
@@ -38,11 +41,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.LoginActivity;
+import com.pinder.app.MainFragmentManager;
 import com.pinder.app.R;
 import com.pinder.app.ui.dialogs.BugsAndImprovementsDialog;
 import com.pinder.app.ui.dialogs.LicencesDialog;
 import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
+import com.pinder.app.util.Resource;
 import com.pinder.app.util.StringDateToAge;
 import com.pinder.app.utils.DisableButton;
 import com.pinder.app.viewmodels.SettingsViewModel;
@@ -69,7 +74,9 @@ public class SettingsFragment extends Fragment {
     private EditText date;
     private boolean dateValid = false;
     private Button bugsAndImprovements;
+    private Context context;
     SharedPreferences prefs;
+    ProgressBar progressBar;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -122,6 +129,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        context=view.getContext();
         sortUsersByDistanceSwitch = getView().findViewById(R.id.sortUsersByDistance);
         mapLocationSwitch = getView().findViewById(R.id.mapLocationSwitch);
         logoutUser = getView().findViewById(R.id.logoutUser);
@@ -131,27 +139,10 @@ public class SettingsFragment extends Fragment {
         termsButton = getView().findViewById(R.id.termsButton);
         licenceButton = getView().findViewById(R.id.licenceButton);
         bugsAndImprovements = getView().findViewById(R.id.bugs_improvement);
+        progressBar = getView().findViewById(R.id.progress_bar);
         settingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
         logoutFlag = 0;
-        settingsViewModel.getDate().observe(getActivity(), new androidx.lifecycle.Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                date.setText(s);
-                i++;
-            }
-        });
-        settingsViewModel.getShowMyLocation().observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                mapLocationSwitch.setChecked(aBoolean);
-            }
-        });
-        settingsViewModel.getSortByDistance().observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                sortUsersByDistanceSwitch.setChecked(aBoolean);
-            }
-        });
+        setObservers();
         date.addTextChangedListener(new TextWatcher() {
             String clean;
             String cleanC;
@@ -250,8 +241,7 @@ public class SettingsFragment extends Fragment {
         logoutUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateMyDb();
-                logoutUser();
+                updateMyDb(1);
             }
         });
         deleteUser.setOnClickListener(new View.OnClickListener() {
@@ -338,8 +328,7 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        if (logoutFlag != 1)
-            updateMyDb();
+            updateMyDb(0);
         super.onDetach();
     }
 
@@ -361,12 +350,56 @@ public class SettingsFragment extends Fragment {
         alertDialog.show();
     }
 
+    public void setObservers(){
+        settingsViewModel.getLogoutLiveData().observe(getActivity(), new Observer<Resource<Integer>>() {
+            @Override
+            public void onChanged(Resource<Integer> integerResource) {
+                if(integerResource!= null){
+                    switch (integerResource.status){
+                        case LOADING:
+                            progressBar.setVisibility(View.VISIBLE);
+                            break;
+                        case SUCCESS:
+                            if(integerResource.data!=null){
+                                if(integerResource.data==1){
+                                    logoutUser();
+                                }
+                            }
+                            progressBar.setVisibility(View.GONE);
+                            break;
+                        default:
+                            progressBar.setVisibility(View.GONE);
+                            break;
+                    }
+                }
+            }
+        });
+        settingsViewModel.getDate().observe(getActivity(), new androidx.lifecycle.Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                date.setText(s);
+                i++;
+            }
+        });
+        settingsViewModel.getShowMyLocation().observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                mapLocationSwitch.setChecked(aBoolean);
+            }
+        });
+        settingsViewModel.getSortByDistance().observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                sortUsersByDistanceSwitch.setChecked(aBoolean);
+            }
+        });
+    }
+
     public void logoutUser() {
+        Intent intent = new Intent(context, LoginActivity.class);
         LoginManager.getInstance().logOut();
         //settingsViewModel.clearInstances();
         mAuth.signOut();
-        Intent intent = new Intent(getContext(), LoginActivity.class);
-        logoutFlag = 1;
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         return;
@@ -400,7 +433,6 @@ public class SettingsFragment extends Fragment {
                         if (task.isSuccessful()) {
                             Toast.makeText(getContext(), "User account deleted.", Toast.LENGTH_LONG).show();
                             settingsViewModel.deleteWithRxJava(userId);
-                            logoutUser();
                         } else {
                             AlertDialog.Builder error = new AlertDialog.Builder(getContext());
                             error.setMessage("Due to safety reasons please re-login and try again").setCancelable(false)
@@ -417,9 +449,9 @@ public class SettingsFragment extends Fragment {
                 });
     }
 
-    private void updateMyDb() {
+    private void updateMyDb(int logoutFlag) {
         settingsViewModel.setDate(date.getText().toString());
-        settingsViewModel.updateMyDb(dateValid);
+        settingsViewModel.updateMyDb(dateValid,logoutFlag);
     }
 
     private void openReportDialog() {

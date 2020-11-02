@@ -1,10 +1,12 @@
 package com.pinder.app.repository;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.pinder.app.persistance.SettingsFirebase;
 import com.pinder.app.persistance.SettingsFirebaseDao;
+import com.pinder.app.util.Resource;
 
 public class SettingsRepository implements SettingsFirebaseDao {
     public static SettingsRepository instance = null;
@@ -19,8 +21,8 @@ public class SettingsRepository implements SettingsFirebaseDao {
     }
 
     @Override
-    public void updateMyDb(Boolean dateValid) {
-        SettingsFirebase.getInstance().updateMyDb(dateValid);
+    public void updateMyDb(Boolean dateValid, int logoutFlag) {
+        SettingsFirebase.getInstance().updateMyDb(dateValid,logoutFlag);
     }
 
     @Override
@@ -62,5 +64,9 @@ public class SettingsRepository implements SettingsFirebaseDao {
 
     public void restartMatches(){
         SettingsFirebase.getInstance().restartMatches();
+    }
+
+    public MutableLiveData<Resource<Integer>> getLogoutLiveData() {
+        return SettingsFirebase.getInstance().getLogoutLiveData();
     }
 }

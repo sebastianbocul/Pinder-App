@@ -20,6 +20,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.pinder.app.models.SettingInfoObject;
+import com.pinder.app.util.Resource;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -33,6 +34,7 @@ public class SettingsFirebase implements SettingsFirebaseDao {
     private MutableLiveData<String> date = new MutableLiveData<>();
     private MutableLiveData<Boolean> showMyLocation = new MutableLiveData<>();
     private MutableLiveData<Boolean> sortByDistance = new MutableLiveData<>();
+    private MutableLiveData<Resource<Integer>> logoutLiveData = new MutableLiveData<>();
     public static SettingsFirebase instance = null;
 
     public static SettingsFirebase getInstance() {
@@ -91,7 +93,7 @@ public class SettingsFirebase implements SettingsFirebaseDao {
     }
 
     @Override
-    public void updateMyDb(Boolean dateValid) {
+    public void updateMyDb(Boolean dateValid, int logoutFlag) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser().getUid();
         DatabaseReference myDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
@@ -117,9 +119,11 @@ public class SettingsFirebase implements SettingsFirebaseDao {
             myDatabaseReference.child("dateOfBirth").setValue(dateOfBirth);
             bufferInfo.setDate(dateOfBirth);
         }
+        logoutLiveData.postValue(Resource.success(logoutFlag));
     }
 
     public void deleteWithRxJava(String userId) {
+        logoutLiveData.postValue(Resource.loading(0));
         Observable<Object> deleteUserTagsObservable = Single.create(emitter -> {
             DatabaseReference usersTagReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("tags");
             DatabaseReference tagsReference = FirebaseDatabase.getInstance().getReference().child("Tags");
@@ -216,7 +220,7 @@ public class SettingsFirebase implements SettingsFirebaseDao {
 
                     @Override
                     public void onComplete() {
-//                        logoutUser();
+                        logoutLiveData.postValue(Resource.success(1));
                     }
                 });
     }
@@ -277,5 +281,9 @@ public class SettingsFirebase implements SettingsFirebaseDao {
     @Override
     public void setShowMyLocation(Boolean bool) {
         this.showMyLocation.postValue(bool);
+    }
+
+    public MutableLiveData<Resource<Integer>> getLogoutLiveData() {
+        return logoutLiveData;
     }
 }

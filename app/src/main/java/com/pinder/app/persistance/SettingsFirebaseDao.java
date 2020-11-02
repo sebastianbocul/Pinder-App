@@ -3,7 +3,7 @@ package com.pinder.app.persistance;
 import androidx.lifecycle.LiveData;
 
 public interface SettingsFirebaseDao {
-    void updateMyDb(Boolean dateValid);
+    void updateMyDb(Boolean dateValid, int logoutFlag);
 
     LiveData<String> getDate();
 
