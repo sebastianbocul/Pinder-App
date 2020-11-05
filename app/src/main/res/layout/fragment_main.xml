@@ -7,59 +7,13 @@
     android:orientation="vertical"
     tools:context="com.pinder.app.ui.MainFragment">
 
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="top"
         android:layout_weight="1"
         android:orientation="horizontal">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/mainTagsRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="45sp"
-                android:orientation="horizontal"
-                tools:listitem="@layout/item_tags" />
-        </RelativeLayout>
-
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:gravity="bottom"
-                android:orientation="horizontal"
-                android:paddingBottom="5sp">
-
-                <ImageView
-                    android:id="@+id/dislikeButton"
-                    android:layout_width="20sp"
-                    android:layout_height="75sp"
-                    android:layout_weight="1"
-                    android:paddingLeft="50sp"
-                    android:text="DISLIKE"
-                    app:srcCompat="@drawable/ic_dislike" />
-
-                <ImageView
-                    android:id="@+id/likeButton"
-                    android:layout_width="20sp"
-                    android:layout_height="75sp"
-                    android:layout_weight="1"
-                    android:paddingRight="50sp"
-                    android:text="LIKE"
-                    app:srcCompat="@drawable/ic_like" />
-            </LinearLayout>
-        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -95,6 +49,72 @@
                 android:background="@android:color/transparent"
                 app:rotation_degrees="15.5"
                 tools:context=".MyActivity" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mainTagsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="45sp"
+                android:orientation="horizontal"
+                tools:listitem="@layout/item_tags" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+
+            <View
+                android:id="@+id/empty_field"
+                android:layout_width="wrap_content"
+                android:onClick="emptyFunction"
+                android:layout_height="75sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:paddingBottom="5sp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/dislikeButton"
+                        android:layout_width="75sp"
+                        android:layout_height="75sp"
+                        android:layout_gravity="center_horizontal"
+                        android:text="DISLIKE"
+                        app:srcCompat="@drawable/ic_dislike"
+                        android:layout_marginLeft="50sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/likeButton"
+                        android:layout_width="75sp"
+                        android:layout_height="75sp"
+                        android:text="LIKE"
+                        app:srcCompat="@drawable/ic_like"
+                        android:layout_marginRight="50sp" />
+                </LinearLayout>
+            </LinearLayout>
         </RelativeLayout>
     </RelativeLayout>
 </LinearLayout>

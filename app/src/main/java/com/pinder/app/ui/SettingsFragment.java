@@ -40,6 +40,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pinder.app.BaseApplication;
 import com.pinder.app.LoginActivity;
 import com.pinder.app.MainFragmentManager;
 import com.pinder.app.R;
@@ -53,6 +54,9 @@ import com.pinder.app.utils.DisableButton;
 import com.pinder.app.viewmodels.SettingsViewModel;
 
 import java.util.Calendar;
+
+import static com.pinder.app.BaseApplication.*;
+import static com.pinder.app.BaseApplication.LoginEnum.*;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -77,6 +81,11 @@ public class SettingsFragment extends Fragment {
     private Context context;
     SharedPreferences prefs;
     ProgressBar progressBar;
+
+    int i = 0;
+    SettingsViewModel settingsViewModel;
+    int logoutFlag = 0;
+
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -115,10 +124,6 @@ public class SettingsFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false);
     }
-
-    int i = 0;
-    SettingsViewModel settingsViewModel;
-    int logoutFlag = 0;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -276,6 +281,7 @@ public class SettingsFragment extends Fragment {
         moveUsersLocToGeoFire = getView().findViewById(R.id.moveUsersLocToGeoFire);
         DisableButton.disableButton(restartMatches);
         DisableButton.disableButton(moveUsersLocToGeoFire);
+        DisableButton.disableButtonInDebug(deleteUser);
         restartMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -401,8 +407,8 @@ public class SettingsFragment extends Fragment {
         //settingsViewModel.clearInstances();
         mAuth.signOut();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        UserStatus = NOT_LOGGED;
         startActivity(intent);
-        return;
     }
 
     public void deleteAccount() {
@@ -450,8 +456,10 @@ public class SettingsFragment extends Fragment {
     }
 
     private void updateMyDb(int logoutFlag) {
-        settingsViewModel.setDate(date.getText().toString());
-        settingsViewModel.updateMyDb(dateValid,logoutFlag);
+        if(UserStatus == LOGGED){
+            settingsViewModel.setDate(date.getText().toString());
+            settingsViewModel.updateMyDb(dateValid,logoutFlag);
+        }
     }
 
     private void openReportDialog() {

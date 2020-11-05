@@ -17,6 +17,7 @@ public class SettingsViewModel extends AndroidViewModel {
     private LiveData<Boolean> sortByDistance;
     private SettingsRepository settingsRepository = null;
 
+
     public SettingsViewModel(@NonNull Application application) {
         super(application);
         settingsRepository = SettingsRepository.getInstance();

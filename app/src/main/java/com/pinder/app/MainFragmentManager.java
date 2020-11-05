@@ -3,6 +3,7 @@ package com.pinder.app;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,9 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.pinder.app.adapters.MainFragmentManagerPagerAdapter;
 import com.pinder.app.util.HideSoftKeyboard;
+
+import static com.pinder.app.BaseApplication.*;
+import static com.pinder.app.BaseApplication.LoginEnum.*;
 
 public class MainFragmentManager extends AppCompatActivity {
     private static final String TAG = "MainFragmentManager";
@@ -21,6 +25,7 @@ public class MainFragmentManager extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_fragment_menager);
+        UserStatus = LOGGED;
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_main);
         final ViewPager viewPager = findViewById(R.id.pager);
@@ -99,6 +104,8 @@ public class MainFragmentManager extends AppCompatActivity {
     public void replaceTabPage(int tabPage) {
         bottomNavigationView.setSelectedItemId(tabPage);
     }
+
+    public void emptyFunction(View v){}
 }
 
    

@@ -13,7 +13,10 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 public class BaseApplication extends Application implements LifecycleObserver {
     public static boolean inForeground = false;
     private static final String TAG = "BaseApplication";
-
+    public enum LoginEnum{
+        LOGGED, NOT_LOGGED
+    }
+    public static LoginEnum UserStatus;
     @Override
     public void onCreate() {
         super.onCreate();

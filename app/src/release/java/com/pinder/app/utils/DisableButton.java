@@ -14,4 +14,9 @@ public class DisableButton {
         button.setVisibility(View.INVISIBLE);
         button.setLayoutParams(new LinearLayout.LayoutParams(0,0));
     }
+
+    public static void disableButtonInDebug(Button button){
+    }
+    public static void disableButtonInDebug(ImageView button){
+    }
 }
