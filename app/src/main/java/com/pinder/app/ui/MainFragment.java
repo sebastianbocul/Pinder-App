@@ -236,6 +236,13 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onScroll(float scrollProgressPercent) {
+                View view = flingContainer.getSelectedView();
+                if(view!=null){
+                    view.findViewById(R.id.dislike_icon).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.like_icon).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.dislike_icon).setAlpha(scrollProgressPercent < 0 ? -scrollProgressPercent : 0);
+                    view.findViewById(R.id.like_icon).setAlpha(scrollProgressPercent > 0 ? scrollProgressPercent : 0);
+                }
             }
         });
         // Optionally add an OnItemClickListener

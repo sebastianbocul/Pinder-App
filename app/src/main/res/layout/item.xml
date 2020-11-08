@@ -21,6 +21,8 @@
         android:elevation="2dp"
         app:cardCornerRadius="10dp">
 
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -57,5 +59,35 @@
                 android:textSize="20sp"
                 tools:text="tags" />
         </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="500sp">
+            <ImageView
+                android:id="@+id/star_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="0sp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                app:srcCompat="@drawable/ic_star"
+                android:visibility="invisible"/>
+
+            <ImageView
+                android:id="@+id/dislike_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20sp"
+                android:layout_alignParentRight="true"
+                app:srcCompat="@drawable/ic_cancel"
+                android:visibility="invisible"/>
+            <ImageView
+                android:id="@+id/like_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20sp"
+                android:layout_alignParentLeft="true"
+                app:srcCompat="@drawable/ic_heart"
+                android:visibility="invisible"/>
+        </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>
