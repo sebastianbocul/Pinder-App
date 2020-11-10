@@ -22,6 +22,9 @@ import com.google.firebase.storage.StorageReference;
 import com.pinder.app.models.SettingInfoObject;
 import com.pinder.app.util.Resource;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
@@ -124,6 +127,7 @@ public class SettingsFirebase implements SettingsFirebaseDao {
 
     public void deleteWithRxJava(String userId) {
         logoutLiveData.postValue(Resource.loading(0));
+        //delete Tags
         Observable<Object> deleteUserTagsObservable = Single.create(emitter -> {
             DatabaseReference usersTagReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("tags");
             DatabaseReference tagsReference = FirebaseDatabase.getInstance().getReference().child("Tags");
@@ -131,6 +135,7 @@ public class SettingsFirebase implements SettingsFirebaseDao {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        Log.d(TAG,"delete: Tags/images/"+ds.getKey()+"/"+userId);
                         tagsReference.child(ds.getKey()).child(userId).removeValue();
                     }
                     emitter.onSuccess("finished");
@@ -141,15 +146,17 @@ public class SettingsFirebase implements SettingsFirebaseDao {
                 }
             });
         }).toObservable();
-        Observable<Object> deleteDatabseAndStorageObservable = Single.create(emitter -> {
-            StorageReference filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId);
-            StorageReference storageRef = filePath;
+        //delete Storage images
+        Observable<Object> deleteStorageObservable = Single.create(emitter -> {
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images").child(userId);
             // Delete the userStorage
             storageRef.listAll()
                     .addOnSuccessListener(new OnSuccessListener<ListResult>() {
                         @Override
                         public void onSuccess(ListResult listResult) {
                             for (StorageReference item : listResult.getItems()) {
+                                Log.d(TAG,"delete: Storage/images/"+userId+"/"+item.getName());
+
                                 // All the items under listRef.
                                 item.delete();
                             }
@@ -170,6 +177,9 @@ public class SettingsFirebase implements SettingsFirebaseDao {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         try {
+                            Log.d(TAG,"delete: Users/" +ds.getKey()+"/connections/matches/"+userId);
+                            Log.d(TAG,"delete: Users/" +ds.getKey()+"/connections/yes/"+userId);
+
                             users.child(ds.getKey()).child("connections").child("matches").child(userId).removeValue();
                             users.child(ds.getKey()).child("connections").child("yes").child(userId).removeValue();
                         } catch (Exception e) {
@@ -184,14 +194,32 @@ public class SettingsFirebase implements SettingsFirebaseDao {
                 }
             });
         }).toObservable();
-        Observable<Object> deleteTokensAndUserObservable = Single.create(emitter -> {
+        //remove geofire
+        Observable<Object> deleteUserGooFire = Single.create(emitter -> {
+            DatabaseReference geoFireRef = FirebaseDatabase.getInstance().getReference().child("Geofire");
+            geoFireRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.child(userId).exists()) {
+                        Log.d(TAG,"delete: Geofire/" +userId);
+                        geoFireRef.child(userId).removeValue();
+                    }
+                    emitter.onSuccess("finished");
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }).toObservable();
+        //remove token
+        Observable<Object> deleteTokensObservable = Single.create(emitter -> {
             DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("Tokens");
-            DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-            mUserDatabase.removeValue();
             tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.child(userId).exists()) {
+                        Log.d(TAG,"delete: Tokens/" +userId);
                         tokenRef.child(userId).removeValue();
                     }
 
@@ -203,7 +231,59 @@ public class SettingsFirebase implements SettingsFirebaseDao {
                 }
             });
         }).toObservable();
-        Observable.concat(deleteUserTagsObservable, deleteDatabseAndStorageObservable, deleteMatchesObservable, deleteTokensAndUserObservable)
+        //delete chat mess
+        Observable<Object> deleteChatObservable = Single.create(emitter -> {
+            DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("Users");
+            DatabaseReference chat = FirebaseDatabase.getInstance().getReference().child("Chat");
+            users.child(userId).child("connections").child("matches").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        try {
+                            Log.d(TAG,"delete: Chat/" +ds.child("ChatId").getValue().toString());
+                            chat.child(ds.child("ChatId").getValue().toString()).removeValue();
+                        } catch (Exception e) {
+                            //   Toast.makeText(getContext(), "Oooops something went wrong", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    emitter.onSuccess("finished");
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }).toObservable();
+
+        Observable<Object> observable = Observable.merge(Arrays.asList(deleteUserTagsObservable,
+                deleteMatchesObservable,
+                deleteStorageObservable,
+                deleteUserGooFire,
+                deleteTokensObservable,
+                deleteChatObservable));
+
+
+        //remove user
+        Observable<Object> deleteUserObservable = Single.create(emitter -> {
+            DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+            mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Log.d(TAG,"delete: User/"+userId);
+                    if (dataSnapshot.exists()) {
+                        mUserDatabase.removeValue();
+                    }
+                    emitter.onSuccess("finished");
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }).toObservable();
+
+        //remove data + user
+        Observable.concat(observable, deleteUserObservable)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Object>() {
                     @Override
