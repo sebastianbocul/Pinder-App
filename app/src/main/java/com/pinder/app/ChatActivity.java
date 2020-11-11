@@ -1,14 +1,14 @@
 package com.pinder.app;
 
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,6 +54,8 @@ public class ChatActivity extends AppCompatActivity {
     private String fromActivity = "";
     private ArrayList<ChatObject> resultChat = new ArrayList<ChatObject>();
     private ImageView backArrowImage;
+    private static final String TAG = "ChatActivity";
+    private boolean chatRoomExists = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +110,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-
     private void goToUsersProfile() {
         Intent intent = new Intent(ChatActivity.this, UsersProfilesActivity.class);
         intent.putExtra("userId", matchId);
@@ -142,31 +143,34 @@ public class ChatActivity extends AppCompatActivity {
     private void sendMessage() {
         String sendMessageText = mSendEditText.getText().toString().trim();
         if (!sendMessageText.isEmpty()) {
-            DatabaseReference newMessageDb = mDatabaseChat.push();
-            Map newMessage = new HashMap<>();
-            newMessage.put("createdByUser", currentUserID);
-            newMessage.put("text", sendMessageText);
-            newMessageDb.setValue(newMessage);
-            String msg = sendMessageText;
-            DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID);
-            database.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    myName = dataSnapshot.child("name").getValue().toString();
-                    if (notify) {
-                        SendFirebaseNotification.sendNotification(matchId,currentUserID,myProfileImageUrl, myName, getApplicationContext().getString(R.string.notification_body_message));
+            if (chatRoomExists) {
+                DatabaseReference newMessageDb = mDatabaseChat.push();
+                Map newMessage = new HashMap<>();
+                newMessage.put("createdByUser", currentUserID);
+                newMessage.put("text", sendMessageText);
+                newMessageDb.setValue(newMessage);
+                String msg = sendMessageText;
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID);
+                database.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        myName = dataSnapshot.child("name").getValue().toString();
+                        if (notify) {
+                            SendFirebaseNotification.sendNotification(matchId, currentUserID, myProfileImageUrl, myName, getApplicationContext().getString(R.string.notification_body_message));
+                        }
+                        notify = false;
                     }
-                    notify = false;
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+            }else {
+                Toast.makeText(this,"Looks like you are not a match anymore :(",Toast.LENGTH_SHORT).show();
+            }
         }
         mSendEditText.setText(null);
     }
-
 
     private void getChatId() {
         mDatabaseUserChat.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -189,6 +193,7 @@ public class ChatActivity extends AppCompatActivity {
         mDatabaseChat.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d(TAG, "onChildAdded: " + dataSnapshot.toString() + "    s: " + s);
                 if (dataSnapshot.exists()) {
                     String message = null;
                     String createdByUser = null;
@@ -215,18 +220,38 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d(TAG, "onChildChanged: " + dataSnapshot.toString() + "    s: " + s);
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                mDatabaseChat.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Log.d(TAG, "Checker :");
+                        if (snapshot.exists()) {
+                            Log.d(TAG, "Checker onDataChange: " + dataSnapshot.toString());
+                        } else {
+                            chatRoomExists = false;
+                            Log.d(TAG, "Checker onDataChange: data not exists");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+                Log.d(TAG, "onChildRemoved: " + dataSnapshot.toString());
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d(TAG, "onChildMoved: " + dataSnapshot.toString() + "    s: " + s);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: " + databaseError.toString());
             }
         });
     }
@@ -237,19 +262,20 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(fromActivity.equals("notification")){
-            Intent intent = new Intent(this,MainFragmentManager.class);
-            intent.putExtra("fromActivity","chatActivity");
+        if (fromActivity.equals("notification")) {
+            Intent intent = new Intent(this, MainFragmentManager.class);
+            intent.putExtra("fromActivity", "chatActivity");
             startActivity(intent);
             finish();
-        }else {
+        } else {
             super.onBackPressed();
         }
     }
-    public void handleBackArrow(){
+
+    public void handleBackArrow() {
         backArrowImage = findViewById(R.id.back_arrow);
         DisableButton.disableButton(backArrowImage);
-        backArrowImage.setOnClickListener(v->{
+        backArrowImage.setOnClickListener(v -> {
             onBackPressed();
         });
     }
