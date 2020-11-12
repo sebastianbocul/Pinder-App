@@ -50,8 +50,7 @@ class ValidateUserByPreferencesTest {
             put("a", "b");
             put("c", "d");
         }};
-        D
-        when(userDatasnapshot.getValue(myMap)).thenReturn(myMap);
+
         when(userDatasnapshot.exists()).thenReturn(true);
         when(userDatasnapshot.child("name").getValue()).thenReturn("Natalie");
         when(userDatasnapshot.getKey()).thenReturn("v9FfAejJLAMPc95bEqEPPB6xSRV2");
@@ -99,10 +98,6 @@ class ValidateUserByPreferencesTest {
         }
 
         String str;
-    }
-
-    private class MockDatabaseReference extends DatabaseReference {
-
     }
 }
 

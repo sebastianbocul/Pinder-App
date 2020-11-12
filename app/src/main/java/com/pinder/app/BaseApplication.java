@@ -10,6 +10,9 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import dagger.hilt.android.HiltAndroidApp;
+
+@HiltAndroidApp
 public class BaseApplication extends Application implements LifecycleObserver {
     public static boolean inForeground = false;
     private static final String TAG = "BaseApplication";

@@ -4,6 +4,8 @@ ext {
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -150,4 +152,17 @@ dependencies {
 
     //FCM
     implementation 'com.google.firebase:firebase-messaging-directboot:20.3.0'
+
+    //hilt
+    implementation "com.google.dagger:hilt-android:2.28-alpha"
+    androidTestImplementation 'org.testng:testng:6.9.6'
+    kapt "com.google.dagger:hilt-android-compiler:2.28-alpha"
+
+    //viewmodelinject
+    implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02'
+    annotationProcessor 'androidx.hilt:hilt-compiler:1.0.0-alpha02'
+    kapt 'androidx.hilt:hilt-compiler:1.0.0-alpha02'
+}
+kapt {
+    correctErrorTypes = true
 }

@@ -30,10 +30,10 @@
 
         <activity android:name="com.pinder.app.LocationActivity" />
         <activity android:name="com.pinder.app.ChatActivity" />
-        <activity android:name="com.pinder.app.LoginActivity">
+        <activity android:name="com.pinder.app.LoginActivity"
+            android:theme="@style/AppTheme.LoginTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

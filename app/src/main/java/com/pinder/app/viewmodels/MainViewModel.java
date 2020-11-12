@@ -1,12 +1,10 @@
 package com.pinder.app.viewmodels;
 
-import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
+import androidx.hilt.lifecycle.ViewModelInject;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.pinder.app.models.Card;
 import com.pinder.app.repository.MainRepository;
@@ -14,14 +12,14 @@ import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;
 
-public class MainViewModel extends AndroidViewModel {
+
+public class MainViewModel extends ViewModel {
     MainRepository mainRepository;
     MutableLiveData<Resource<ArrayList<Card>>> cardsArrayLD = new MutableLiveData<>();
     MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
-
-    public MainViewModel(@NonNull Application application) {
-        super(application);
-        mainRepository = MainRepository.getInstance(application);
+    @ViewModelInject
+    public MainViewModel(MainRepository mainRepository) {
+        this.mainRepository = mainRepository;
     }
 //    ToTestConstructor
 //    public MainViewModel(){}

@@ -20,6 +20,21 @@
         <item name="android:windowBackground" > @android:color/transparent</item>"
     </style>
 
+    <style name="AppTheme.LoginTheme">
+        <item name="android:windowAnimationStyle">@style/Replace</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Replace">
+        <item name="android:activityOpenEnterAnimation">@anim/replace_anim</item>
+        <item name="android:activityOpenExitAnimation">@anim/replace_anim</item>
+        <item name="android:activityCloseEnterAnimation">@anim/replace_anim</item>
+        <item name="android:activityCloseExitAnimation">@anim/replace_anim</item>
+        <item name="android:taskOpenEnterAnimation">@anim/replace_anim</item>
+        <item name="android:taskOpenExitAnimation">@anim/replace_anim</item>
+    </style>
+
     <style name="BottomNavigationTheme" parent="Theme.AppCompat.Light">
         <!--        <item name="android:textColorSecondary"</item>-->
         <item name="colorPrimary">@android:color/holo_red_light</item>

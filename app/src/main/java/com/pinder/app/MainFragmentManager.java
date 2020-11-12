@@ -13,9 +13,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.pinder.app.adapters.MainFragmentManagerPagerAdapter;
 import com.pinder.app.util.HideSoftKeyboard;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 import static com.pinder.app.BaseApplication.*;
 import static com.pinder.app.BaseApplication.LoginEnum.*;
 
+@AndroidEntryPoint
 public class MainFragmentManager extends AppCompatActivity {
     private static final String TAG = "MainFragmentManager";
     private BottomNavigationView bottomNavigationView;

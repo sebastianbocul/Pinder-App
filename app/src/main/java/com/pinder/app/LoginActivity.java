@@ -398,4 +398,5 @@ public class LoginActivity extends AppCompatActivity {
         MainFirebase.instance = null;
         MainRepository.instance = null;
     }
+
 }

@@ -88,12 +88,8 @@ public class MainFirebase {
     int myCounterOnKeyExit = 0;
     int myCounterOnKeyEnter = 0;
 
-    public static MainFirebase getInstance(Application context2) {
-        if (instance == null) {
-            instance = new MainFirebase();
-            instance.context = context2;
-        }
-        return instance;
+    public MainFirebase(Context context) {
+        this.context = context;
     }
 
     public void fetchDataOrUpdateLocationAndFetchData() {
