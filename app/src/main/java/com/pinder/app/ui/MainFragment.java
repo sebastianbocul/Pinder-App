@@ -42,7 +42,6 @@ import dagger.hilt.android.AndroidEntryPoint;
  * Use the {@link MainFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-@AndroidEntryPoint
 public class MainFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

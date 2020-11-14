@@ -24,14 +24,18 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         />
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/ad_banner"
+    <FrameLayout
+        android:id="@+id/ad_frame"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        ads:adSize="BANNER"
-        ads:adUnitId="@string/test_ad">
-    </com.google.android.gms.ads.AdView>
+        android:layout_height="50dp"/>
+<!--    <com.google.android.gms.ads.AdView-->
+<!--        xmlns:ads="http://schemas.android.com/apk/res-auto"-->
+<!--        android:id="@+id/ad_banner"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        ads:adSize="BANNER"-->
+<!--        ads:adUnitId="@string/test_ad">-->
+<!--    </com.google.android.gms.ads.AdView>-->
 </LinearLayout>
