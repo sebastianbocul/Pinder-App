@@ -7,12 +7,10 @@ import android.widget.LinearLayout;
 
 public class DisableButton {
     public static void disableButton(Button button){
-        button.setVisibility(View.INVISIBLE);
-        button.setLayoutParams(new LinearLayout.LayoutParams(0,0));
+        button.setVisibility(View.GONE);
     }
     public static void disableButton(ImageView button){
-        button.setVisibility(View.INVISIBLE);
-        button.setLayoutParams(new LinearLayout.LayoutParams(0,0));
+        button.setVisibility(View.GONE);
     }
 
     public static void disableButtonInDebug(Button button){
