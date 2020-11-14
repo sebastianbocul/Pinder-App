@@ -9,6 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.pinder.app.adapters.MainFragmentManagerPagerAdapter;
 import com.pinder.app.util.HideSoftKeyboard;
@@ -23,7 +28,7 @@ public class MainFragmentManager extends AppCompatActivity {
     private static final String TAG = "MainFragmentManager";
     private BottomNavigationView bottomNavigationView;
     private String fromActivity = "";
-
+    private AdView mBannerAd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +36,7 @@ public class MainFragmentManager extends AppCompatActivity {
         UserStatus = LOGGED;
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_main);
+        initAd();
         final ViewPager viewPager = findViewById(R.id.pager);
         if (getIntent().getExtras() != null) {
             if (getIntent().getExtras().getString("fromActivity") != null) {
@@ -106,6 +112,18 @@ public class MainFragmentManager extends AppCompatActivity {
 
     public void replaceTabPage(int tabPage) {
         bottomNavigationView.setSelectedItemId(tabPage);
+    }
+
+    public void initAd(){
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        mBannerAd = findViewById(R.id.ad_banner);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mBannerAd.loadAd(adRequest);
     }
 }
 

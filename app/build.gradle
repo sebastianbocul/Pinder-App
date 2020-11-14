@@ -162,6 +162,9 @@ dependencies {
     implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02'
     annotationProcessor 'androidx.hilt:hilt-compiler:1.0.0-alpha02'
     kapt 'androidx.hilt:hilt-compiler:1.0.0-alpha02'
+
+    //adMob
+    implementation 'com.google.android.gms:play-services-ads:19.5.0'
 }
 kapt {
     correctErrorTypes = true

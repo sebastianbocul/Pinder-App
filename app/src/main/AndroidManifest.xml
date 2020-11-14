@@ -83,6 +83,10 @@
             </intent-filter>
         </service>
 
+<!--        AddMob-->
+                <meta-data
+                    android:name="com.google.android.gms.ads.APPLICATION_ID"
+                    android:value="ca-app-pub-8819276309653342~6474862133"/>
     </application>
 
 </manifest>
