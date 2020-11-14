@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +61,8 @@ public class MainFragment extends Fragment {
     private TagsManagerAdapter tagsAdapter;
     private ArrayList<String> myTags = new ArrayList<>();
     private List<Card> cardsArray = new ArrayList<Card>();
-
+    private RelativeLayout relativeLayoutTags;
+    private LinearLayout linearLayoutBottom;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -109,6 +112,8 @@ public class MainFragment extends Fragment {
         dislikeButton = getView().findViewById(R.id.dislikeButton);
         flingContainer = getView().findViewById(R.id.frame);
         progressBar = getView().findViewById(R.id.progress_bar);
+        relativeLayoutTags = getView().findViewById(R.id.relative_layout_tags);
+        linearLayoutBottom = getView().findViewById(R.id.linear_layout_bottom);
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         mainViewModel.fetchDataOrUpdateLocationAndFetchData();
         mainViewModel.checkUserStatus(getActivity());
@@ -259,6 +264,11 @@ public class MainFragment extends Fragment {
                 intent.putExtra("userId", user.getUserId());
                 startActivity(intent);
             }
+        });
+
+        linearLayoutBottom.setOnClickListener(v->{
+        });
+        relativeLayoutTags.setOnClickListener(v->{
         });
     }
 

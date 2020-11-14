@@ -38,9 +38,9 @@
                         android:layout_width="75sp"
                         android:layout_height="75sp"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginLeft="50sp"
                         android:text="DISLIKE"
-                        app:srcCompat="@drawable/ic_dislike"
-                        android:layout_marginLeft="50sp"/>
+                        app:srcCompat="@drawable/ic_dislike" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -52,9 +52,9 @@
                     <ImageView
                         android:layout_width="75sp"
                         android:layout_height="75sp"
+                        android:layout_marginRight="50sp"
                         android:text="LIKE"
-                        app:srcCompat="@drawable/ic_like"
-                        android:layout_marginRight="50sp" />
+                        app:srcCompat="@drawable/ic_like" />
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
@@ -111,11 +111,10 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/relativeLayout_tags"
+            android:id="@+id/relative_layout_tags"
             android:layout_width="match_parent"
             android:layout_height="45sp"
-            android:orientation="horizontal"
-            android:onClick="emptyFunction">
+            android:orientation="horizontal">
         </RelativeLayout>
 
         <RelativeLayout
@@ -125,11 +124,11 @@
             android:layout_alignParentBottom="true">
 
             <LinearLayout
+                android:id="@+id/linear_layout_bottom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:gravity="bottom"
-                android:onClick="emptyFunction"
                 android:orientation="horizontal"
                 android:paddingBottom="5sp">
 
@@ -144,8 +143,8 @@
                         android:layout_width="75sp"
                         android:layout_height="75sp"
                         android:layout_gravity="center_horizontal"
-                        android:text="DISLIKE"
-                        android:layout_marginLeft="50sp"/>
+                        android:layout_marginLeft="50sp"
+                        android:text="DISLIKE" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -158,8 +157,8 @@
                         android:id="@+id/likeButton"
                         android:layout_width="75sp"
                         android:layout_height="75sp"
-                        android:text="LIKE"
-                        android:layout_marginRight="50sp" />
+                        android:layout_marginRight="50sp"
+                        android:text="LIKE" />
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>

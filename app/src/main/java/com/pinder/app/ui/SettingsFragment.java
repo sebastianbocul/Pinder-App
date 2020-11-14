@@ -281,7 +281,7 @@ public class SettingsFragment extends Fragment {
         moveUsersLocToGeoFire = getView().findViewById(R.id.moveUsersLocToGeoFire);
         DisableButton.disableButton(restartMatches);
         DisableButton.disableButton(moveUsersLocToGeoFire);
-//        DisableButton.disableButtonInDebug(deleteUser);
+        DisableButton.disableButtonInDebug(deleteUser);
         restartMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -357,7 +357,7 @@ public class SettingsFragment extends Fragment {
     }
 
     public void setObservers(){
-        settingsViewModel.getLogoutLiveData().observe(getActivity(), new Observer<Resource<Integer>>() {
+        settingsViewModel.getLogoutLiveData().observe(getViewLifecycleOwner(), new Observer<Resource<Integer>>() {
             @Override
             public void onChanged(Resource<Integer> integerResource) {
                 if(integerResource!= null){
@@ -380,20 +380,20 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
-        settingsViewModel.getDate().observe(getActivity(), new androidx.lifecycle.Observer<String>() {
+        settingsViewModel.getDate().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<String>() {
             @Override
             public void onChanged(String s) {
                 date.setText(s);
                 i++;
             }
         });
-        settingsViewModel.getShowMyLocation().observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
+        settingsViewModel.getShowMyLocation().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 mapLocationSwitch.setChecked(aBoolean);
             }
         });
-        settingsViewModel.getSortByDistance().observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
+        settingsViewModel.getSortByDistance().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 sortUsersByDistanceSwitch.setChecked(aBoolean);

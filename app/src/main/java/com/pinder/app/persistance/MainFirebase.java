@@ -13,6 +13,8 @@ import android.location.Location;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -87,6 +89,7 @@ public class MainFirebase {
     //counters- logs helpers
     int myCounterOnKeyExit = 0;
     int myCounterOnKeyEnter = 0;
+
 
     public MainFirebase(Context context) {
         this.context = context;

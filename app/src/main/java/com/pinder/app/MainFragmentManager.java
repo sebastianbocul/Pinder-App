@@ -107,8 +107,6 @@ public class MainFragmentManager extends AppCompatActivity {
     public void replaceTabPage(int tabPage) {
         bottomNavigationView.setSelectedItemId(tabPage);
     }
-
-    public void emptyFunction(View v){}
 }
 
    

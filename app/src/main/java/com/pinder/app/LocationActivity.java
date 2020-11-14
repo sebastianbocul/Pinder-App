@@ -106,8 +106,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                 //get my location
-                mAuth = FirebaseAuth.getInstance();
-                currentUID = mAuth.getCurrentUser().getUid();
                 String lat;
                 String lon;
                 String latMap;

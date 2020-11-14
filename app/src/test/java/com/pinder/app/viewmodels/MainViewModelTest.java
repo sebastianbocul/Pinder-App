@@ -5,6 +5,7 @@ import android.app.Application;
 import com.pinder.app.InstantExecutorExtension;
 import com.pinder.app.LiveDataTestUtil;
 import com.pinder.app.models.Card;
+import com.pinder.app.repository.MainRepository;
 import com.pinder.app.util.Resource;
 
 import org.junit.jupiter.api.Assertions;
@@ -26,9 +27,10 @@ public class MainViewModelTest {
 
     @BeforeEach
     public void init() {
+        MainRepository mainRepository=null;
         MockitoAnnotations.initMocks(this);
         Application application = new Application();
-        mainViewModel=new MainViewModel(application);
+        mainViewModel=new MainViewModel(mainRepository);
         System.out.println("DUpa");
     }
 
