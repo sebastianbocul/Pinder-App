@@ -12,9 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
@@ -35,6 +37,8 @@ public class MainFragmentManager extends AppCompatActivity {
     private AdView mBannerAd;
     private FrameLayout adContainerView;
     private AdView adView;
+    private InterstitialAd mFullScreenAd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +48,7 @@ public class MainFragmentManager extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.nav_main);
 //        initAd();
         initAdaptiveAd();
+        initFullScreenAdd();
         final ViewPager viewPager = findViewById(R.id.pager);
         if (getIntent().getExtras() != null) {
             if (getIntent().getExtras().getString("fromActivity") != null) {
@@ -142,7 +147,7 @@ public class MainFragmentManager extends AppCompatActivity {
         adContainerView = findViewById(R.id.ad_frame);
         // Step 1 - Create an AdView and set the ad unit ID on it.
         adView = new AdView(this);
-        adView.setAdUnitId(getString(R.string.test_ad));
+        adView.setAdUnitId(getString(R.string.test_banner_ad));
         adContainerView.addView(adView);
         loadBanner();
     }
@@ -179,6 +184,32 @@ public class MainFragmentManager extends AppCompatActivity {
 
         // Step 3 - Get adaptive ad size and return for setting on the ad view.
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth);
+    }
+
+
+    private void initFullScreenAdd(){
+        MobileAds.initialize(this,
+                getString(R.string.test_app_ad_id));
+        mFullScreenAd = new InterstitialAd(this);
+        mFullScreenAd.setAdUnitId(getString(R.string.test_full_screen_ad));
+        mFullScreenAd.loadAd(new AdRequest.Builder().build());
+        mFullScreenAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                // Load the next interstitial.
+                mFullScreenAd.loadAd(new AdRequest.Builder().build());
+            }
+        });
+    }
+
+    public InterstitialAd getmFullScreenAd() {
+        return mFullScreenAd;
+    }
+
+    public void showFullScreenAd(){
+        if(mFullScreenAd!=null){
+            mFullScreenAd.show();
+        }
     }
 }
 

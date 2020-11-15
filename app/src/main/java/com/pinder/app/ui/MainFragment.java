@@ -1,6 +1,7 @@
 package com.pinder.app.ui;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -16,12 +17,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.pinder.app.MainFragmentManager;
 import com.pinder.app.R;
@@ -34,8 +39,7 @@ import com.pinder.app.viewmodels.MainViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import dagger.hilt.android.AndroidEntryPoint;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,6 +66,8 @@ public class MainFragment extends Fragment {
     private List<Card> cardsArray = new ArrayList<Card>();
     private RelativeLayout relativeLayoutTags;
     private LinearLayout linearLayoutBottom;
+    int adCounter = 0;
+
     public MainFragment() {
         // Required empty public constructor
     }
@@ -220,6 +226,7 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onLeftCardExit(Object dataObject) {
+                displayAd();
                 //Do something on the left!
                 //You also have access to the original object.
                 //If you want to use it just cast it (String) dataObject
@@ -229,8 +236,17 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onRightCardExit(Object dataObject) {
-                mainViewModel.isConnectionMatch((Card) dataObject, getContext());
                 Toast.makeText(getContext(), "Liked!", Toast.LENGTH_SHORT).show();
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    CompletableFuture<Void> adCompletableFuture = new CompletableFuture<>();
+                    adCompletableFuture = displayAd(adCompletableFuture);
+                    adCompletableFuture.thenRun(() -> {
+                        mainViewModel.isConnectionMatch((Card) dataObject, getContext());
+                    });
+                } else {
+                    mainViewModel.isConnectionMatch((Card) dataObject, getContext());
+                    displayAd();
+                }
             }
 
             @Override
@@ -244,7 +260,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onScroll(float scrollProgressPercent) {
                 View view = flingContainer.getSelectedView();
-                if(view!=null){
+                if (view != null) {
                     view.findViewById(R.id.dislike_icon).setVisibility(View.VISIBLE);
                     view.findViewById(R.id.like_icon).setVisibility(View.VISIBLE);
                     view.findViewById(R.id.dislike_icon).setAlpha(scrollProgressPercent < 0 ? -scrollProgressPercent : 0);
@@ -264,11 +280,45 @@ public class MainFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        linearLayoutBottom.setOnClickListener(v -> {
+        });
+        relativeLayoutTags.setOnClickListener(v -> {
+        });
+    }
 
-        linearLayoutBottom.setOnClickListener(v->{
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private CompletableFuture<Void> handleCompletableAd(CompletableFuture<Void> adCompletableFuture) {
+        InterstitialAd mFullScreenAd = ((MainFragmentManager) getActivity()).getmFullScreenAd();
+        mFullScreenAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                // Load the next interstitial.
+                adCompletableFuture.complete(null);
+                mFullScreenAd.loadAd(new AdRequest.Builder().build());
+            }
         });
-        relativeLayoutTags.setOnClickListener(v->{
-        });
+        return adCompletableFuture;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private CompletableFuture<Void> displayAd(CompletableFuture<Void> adCompletableFuture) {
+        adCounter++;
+        if (adCounter % 8 == 0) {
+            adCompletableFuture = handleCompletableAd(adCompletableFuture);
+            ((MainFragmentManager) getActivity()).showFullScreenAd();
+            adCounter = 0;
+        } else {
+            adCompletableFuture.complete(null);
+        }
+        return adCompletableFuture;
+    }
+
+    private void displayAd() {
+        adCounter++;
+        if (adCounter % 8 == 0) {
+            ((MainFragmentManager) getActivity()).showFullScreenAd();
+            adCounter = 0;
+        }
     }
 
     private void swipeIfButtonClickedInUserProfile() {
