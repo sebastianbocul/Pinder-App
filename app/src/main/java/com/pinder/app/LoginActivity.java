@@ -56,13 +56,19 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthOptions;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -82,10 +88,12 @@ import com.pinder.app.repository.SettingsRepository;
 import com.pinder.app.repository.TagsRepository;
 import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
+import com.pinder.app.util.ExpandCollapseView;
 
 import org.w3c.dom.Text;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import static com.pinder.app.util.ExpandCollapseView.collapse;
 import static com.pinder.app.util.ExpandCollapseView.decideExpandOrCollapse;
@@ -103,11 +111,12 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
     private TextView regulationsTextView, registerTextView;
     private LinearLayout myLayout, logoLayout;
-    private Button continueFacebook;
-
-    private SignInButton continueGoogle;
-    private ViewGroup continueEmailLayout,continuePhoneLayout;
+    private Button continueFacebook,continueGoogle;
+    private ViewGroup continueEmailLayout,continuePhoneLayout,phoneVerificationLayout;
     private Button continueEmail,continuePhone;
+    private Button sendPhoneAuth, phoneVerificationButton;
+    private EditText phoneEditText, phoneVerificationEditText;
+    private String phoneAuthCode;
     private boolean show = false;
     ImageView image;
 
@@ -147,68 +156,45 @@ public class LoginActivity extends AppCompatActivity {
             anim.setRepeatCount(Animation.INFINITE);
             image.startAnimation(anim);
         }
-        firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
+        authStateListener();
+    }
 
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user != null) {
-                    dr.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (logoLayout.getVisibility() == View.VISIBLE) {
-                                Animation animscale = AnimationUtils.loadAnimation(getApplication(), R.anim.scale);
-                                logoLayout.startAnimation(animscale);
-                            }
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    logoLayout.setVisibility(View.GONE);
-                                    logoLayout.clearAnimation();
-                                    image.clearAnimation();
-                                    if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
-                                        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                            Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
-                                            startActivity(intent);
-                                            finish();
-                                            return;
-                                        } else {
-                                            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-                                        }
-                                    } else {
-                                        Intent intent = new Intent(LoginActivity.this, FillInfoActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                        return;
-                                    }
-                                }
-                            }, 300);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                        }
-                    });
-                }
-            }
-        };
+    private void setObjectsById() {
+        myLayout = findViewById(R.id.mainLayout);
+        logoLayout = findViewById(R.id.logoLayout);
+        continueFacebook = findViewById(R.id.continue_facebook);
+        mLogin = findViewById(R.id.login);
+        mEmail = findViewById(R.id.email);
+        mPassword = findViewById(R.id.password);
+        image = findViewById(R.id.bigLogo);
+        continueEmail = findViewById(R.id.continue_email);
+        continueGoogle = findViewById(R.id.continue_google);
+        registerTextView = findViewById(R.id.registerTextView);
+        regulationsTextView = findViewById(R.id.regulationsTextView);
+        continueEmailLayout = findViewById(R.id.continue_email_layout);
+        continuePhoneLayout = findViewById(R.id.continue_with_phone_layout);
+        continuePhone = findViewById(R.id.continue_with_phone);
+        sendPhoneAuth = findViewById(R.id.send_phone_auth);
+        phoneEditText = findViewById(R.id.phone_edit_text);
+        phoneVerificationEditText = findViewById(R.id.phone_verification_edit_text);
+        phoneVerificationButton = findViewById(R.id.phone_verification_button);
+        phoneVerificationLayout = findViewById(R.id.phone_verification_layout);
     }
 
     private void setOnClickListeners() {
         continueEmail.setOnClickListener(v -> {
             decideExpandOrCollapse(continueEmailLayout);
         });
+        mLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logInEmailPassword();
+            }
+        });
         continueGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.continue_google:
-                        signIn();
-                        break;
-                    // ...
-                }
+                signIn();
             }
         });
         continueFacebook.setOnClickListener(new View.OnClickListener() {
@@ -234,30 +220,85 @@ public class LoginActivity extends AppCompatActivity {
         continuePhone.setOnClickListener(v->{
             decideExpandOrCollapse(continuePhoneLayout);
         });
-        mLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logInEmailPassword();
+        sendPhoneAuth.setOnClickListener(v -> {
+            String phoneNumber = phoneEditText.getText().toString().trim();
+            if(phoneNumber.length()==0){
+                return;
             }
+            ExpandCollapseView.expand(phoneVerificationLayout);
+            Log.d("PhoneAuth", "onButtonClicked");
+            PhoneAuthOptions options =
+                    PhoneAuthOptions.newBuilder(mAuth)
+                            .setPhoneNumber(phoneNumber)       // Phone number to verify
+                            .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                            .setActivity(this)                 // Activity (for callback binding)
+                            .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
+                            .build();
+            PhoneAuthProvider.verifyPhoneNumber(options);
+        });
+        phoneVerificationButton.setOnClickListener(v -> {
+            verifyCode(phoneVerificationEditText.getText().toString().trim());
         });
     }
 
-    private void setObjectsById() {
-        myLayout = findViewById(R.id.mainLayout);
-        logoLayout = findViewById(R.id.logoLayout);
-        continueFacebook = findViewById(R.id.continue_facebook);
-        mLogin = findViewById(R.id.login);
-        mEmail = findViewById(R.id.email);
-        mPassword = findViewById(R.id.password);
-        image = findViewById(R.id.bigLogo);
-        continueEmail = findViewById(R.id.continue_email);
-        continueGoogle = findViewById(R.id.continue_google);
-        registerTextView = findViewById(R.id.registerTextView);
-        regulationsTextView = findViewById(R.id.regulationsTextView);
-        continueEmailLayout = findViewById(R.id.continue_email_layout);
-        continuePhoneLayout = findViewById(R.id.continue_with_phone_layout);
-        continuePhone = findViewById(R.id.continue_with_phone);
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential credential) {
+            // This callback will be invoked in two situations:
+            // 1 - Instant verification. In some cases the phone number can be instantly
+            //     verified without needing to send or enter a verification code.
+            // 2 - Auto-retrieval. On some devices Google Play services can automatically
+            //     detect the incoming verification SMS and perform verification without
+            //     user action.
+            Log.d("PhoneAuth", "onVerificationCompleted:" + credential);
+            authCredentials(credential);
+        }
+
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            // This callback is invoked in an invalid request for verification is made,
+            // for instance if the the phone number format is not valid.
+            Log.w("PhoneAuth", "onVerificationFailed", e);
+
+            if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                // Invalid request
+                // ...
+            } else if (e instanceof FirebaseTooManyRequestsException) {
+                // The SMS quota for the project has been exceeded
+                // ...
+            }
+
+            // Show a message and update the UI
+            // ...
+        }
+
+        @Override
+        public void onCodeSent(@NonNull String verificationId,
+                               @NonNull PhoneAuthProvider.ForceResendingToken token) {
+            super.onCodeSent(verificationId,token);
+
+            // The SMS verification code has been sent to the provided phone number, we
+            // now need to ask the user to enter the code and then construct a credential
+            // by combining the code with a verification ID.
+            phoneAuthCode = verificationId;
+            Log.d("PhoneAuth", "onCodeSent:" + verificationId);
+
+            // Save verification ID and resending token so we can use them later
+//            mVerificationId = verificationId;
+//            mResendToken = token;
+
+            // ...
+        }
+    };
+
+    private void verifyCode(String userVerificationId){
+        if(userVerificationId==null || userVerificationId.length()==0){
+            return;
+        }
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(phoneAuthCode,userVerificationId);
+        authCredentials(credential);
     }
+
 
     private void setRegisterClickable() {
         String text = registerTextView.getText().toString();
@@ -340,13 +381,13 @@ public class LoginActivity extends AppCompatActivity {
         }
         if (!email.isEmpty() && !password.isEmpty()) {
             AuthCredential credential = EmailAuthProvider.getCredential(email, password);
-            linkWithCredential(credential);
+            authCredentials(credential);
         }
     }
 
     private void handleFacebookToken(AccessToken token) {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        linkWithCredential(credential);
+        authCredentials(credential);
     }
 
     @Override
@@ -381,10 +422,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void FirebaseGoogleAuth(GoogleSignInAccount account) {
         AuthCredential authCredential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-        linkWithCredential(authCredential);
+        authCredentials(authCredential);
     }
 
-    private void linkWithCredential(AuthCredential credential) {
+    private void authCredentials(AuthCredential credential) {
         Log.d(TAG, "linkWithCredential: credential" + credential);
         mAuth = FirebaseAuth.getInstance();
         mAuth.signInWithCredential(credential)
@@ -403,37 +444,54 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    public void linkWithCredential5(AuthCredential credential) {
-        mAuth.getCurrentUser().linkWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "linkWithCredential:success");
-                            FirebaseUser user = task.getResult().getUser();
-                        } else {
-                            Log.w(TAG, "linkWithCredential:failure", task.getException());
-                        }
-                        // [START_EXCLUDE]
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
 
-    public void linkAndMerge(AuthCredential credential) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        // [START auth_link_and_merge]
-        FirebaseUser prevUser = FirebaseAuth.getInstance().getCurrentUser();
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        FirebaseUser currentUser = task.getResult().getUser();
-                        // Merge prevUser and currentUser accounts and data
-                        // ...
-                    }
-                });
-        // [END auth_link_and_merge]
+    private void authStateListener() {
+        firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    dr.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (logoLayout.getVisibility() == View.VISIBLE) {
+                                Animation animscale = AnimationUtils.loadAnimation(getApplication(), R.anim.scale);
+                                logoLayout.startAnimation(animscale);
+                            }
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    logoLayout.setVisibility(View.GONE);
+                                    logoLayout.clearAnimation();
+                                    image.clearAnimation();
+                                    if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
+                                        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                            Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
+                                            startActivity(intent);
+                                            finish();
+                                            return;
+                                        } else {
+                                            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+                                        }
+                                    } else {
+                                        Intent intent = new Intent(LoginActivity.this, FillInfoActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                        return;
+                                    }
+                                }
+                            }, 300);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+                }
+            }
+        };
     }
 
     @Override

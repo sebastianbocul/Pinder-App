@@ -165,6 +165,9 @@ dependencies {
 
     //adMob
     implementation 'com.google.android.gms:play-services-ads:19.5.0'
+
+    //phone auth
+    implementation platform('com.google.firebase:firebase-bom:26.1.0')
 }
 kapt {
     correctErrorTypes = true
