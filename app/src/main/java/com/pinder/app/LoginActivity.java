@@ -101,10 +101,11 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mEmail, mPassword;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
-    private LoginButton continueFacebook;
     private TextView regulationsTextView, registerTextView;
-    private SignInButton continueGoogle;
     private LinearLayout myLayout, logoLayout;
+    private Button continueFacebook;
+
+    private SignInButton continueGoogle;
     private ViewGroup continueEmailLayout,continuePhoneLayout;
     private Button continueEmail,continuePhone;
     private boolean show = false;
@@ -120,7 +121,6 @@ public class LoginActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(getApplication());
         callbackManager = CallbackManager.Factory.create();
-        continueFacebook.setReadPermissions(Arrays.asList(EMAIL));
         setOnClickListeners();
         clearInstances();
         paintLogo();
@@ -211,19 +211,24 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-        // Callback registration
-        continueFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        continueFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
-                handleFacebookToken(loginResult.getAccessToken());
-            }
+            public void onClick(View v) {
+                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this,Arrays.asList(EMAIL));
+                LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        handleFacebookToken(loginResult.getAccessToken());
+                    }
 
-            @Override
-            public void onCancel() {
-            }
+                    @Override
+                    public void onCancel() {
+                    }
 
-            @Override
-            public void onError(FacebookException exception) {
+                    @Override
+                    public void onError(FacebookException exception) {
+                    }
+                });
             }
         });
         continuePhone.setOnClickListener(v->{
@@ -240,7 +245,7 @@ public class LoginActivity extends AppCompatActivity {
     private void setObjectsById() {
         myLayout = findViewById(R.id.mainLayout);
         logoLayout = findViewById(R.id.logoLayout);
-        continueFacebook = findViewById(R.id.continue_fb);
+        continueFacebook = findViewById(R.id.continue_facebook);
         mLogin = findViewById(R.id.login);
         mEmail = findViewById(R.id.email);
         mPassword = findViewById(R.id.password);

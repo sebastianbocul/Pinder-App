@@ -48,7 +48,9 @@
                     android:id="@+id/continue_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Continue with email" />
+                    android:text="Continue with email"
+                    android:drawableLeft="@drawable/ic_login_mail"
+                    android:drawableStart="@drawable/ic_login_mail"/>
 
                 <LinearLayout
                     android:id="@+id/continue_email_layout"
@@ -112,19 +114,14 @@
                             android:text="Register with email? Click HERE." />
                     </LinearLayout>
                 </LinearLayout>
-
-                <com.facebook.login.widget.LoginButton
-                    android:id="@+id/continue_fb"
+                
+                <Button
+                    android:id="@+id/continue_facebook"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginLeft="3sp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginRight="3sp"
-                    android:layout_weight="1"
-                    android:paddingTop="15sp"
-                    android:paddingBottom="15sp"
-                    android:textSize="15sp" />
+                    android:text="Continue with facebook"
+                    android:drawableLeft="@drawable/ic_login_facebook"
+                    android:drawableStart="@drawable/ic_login_facebook" />
 
                 <com.google.android.gms.common.SignInButton
                     android:id="@+id/continue_google"
@@ -140,7 +137,9 @@
                     android:id="@+id/continue_with_phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Continue with phone" />
+                    android:text="Continue with phone"
+                    android:drawableLeft="@drawable/ic_login_phone"
+                    android:drawableStart="@drawable/ic_login_phone" />
 
                 <LinearLayout
                     android:id="@+id/continue_with_phone_layout"
