@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
@@ -12,9 +13,13 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Transformation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,8 +28,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.transition.Slide;
+import androidx.transition.Transition;
+import androidx.transition.TransitionManager;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -72,8 +81,12 @@ import com.pinder.app.ui.dialogs.TermsDialog;
 
 import java.util.Arrays;
 
+import static com.pinder.app.util.ExpandCollapseView.collapse;
+import static com.pinder.app.util.ExpandCollapseView.expand;
+
 public class LoginActivity extends AppCompatActivity {
     private static final String EMAIL = "email";
+    private static final String TAG = "LoginActivity";
     CallbackManager callbackManager;
     GoogleSignInClient mGoogleSignInClient;
     private Button mLogin;
@@ -81,28 +94,28 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mEmail, mPassword;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
-    private LoginButton loginButton;
+    private LoginButton continueFacebook;
     private TextView regulationsTextView, registerTextView;
-    private SignInButton googleSignIn;
+    private SignInButton continueGoogle;
     private LinearLayout myLayout, logoLayout;
+    private ViewGroup continueEmailLayout;
+    private Button continueEmail;
+    private ViewGroup continueEmailParentLayout;
+    private boolean show = false;
     ImageView image;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        setObjectsById();
         mAuth = FirebaseAuth.getInstance();
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(getApplication());
         callbackManager = CallbackManager.Factory.create();
-        myLayout = findViewById(R.id.mainLayout);
-        logoLayout = findViewById(R.id.logoLayout);
-        loginButton = findViewById(R.id.login_button);
-        loginButton.setReadPermissions(Arrays.asList(EMAIL));
-        mLogin = findViewById(R.id.login);
-        mEmail = findViewById(R.id.email);
-        mPassword = findViewById(R.id.password);
-        image = findViewById(R.id.bigLogo);
+        continueFacebook.setReadPermissions(Arrays.asList(EMAIL));
+        setOnClickListeners();
         clearInstances();
         NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
@@ -114,18 +127,6 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        googleSignIn = findViewById(R.id.sign_in_button);
-        googleSignIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.sign_in_button:
-                        signIn();
-                        break;
-                    // ...
-                }
-            }
-        });
         setRegulationsClickable();
         setRegisterClickable();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -149,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                     dr.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(logoLayout.getVisibility()==View.VISIBLE){
+                            if (logoLayout.getVisibility() == View.VISIBLE) {
                                 Animation animscale = AnimationUtils.loadAnimation(getApplication(), R.anim.scale);
                                 logoLayout.startAnimation(animscale);
                             }
@@ -186,8 +187,31 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         };
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void setOnClickListeners() {
+        continueEmail.setOnClickListener(v -> {
+            show = !show;
+            if(show){
+                expand(continueEmailLayout);
+            }else {
+                collapse(continueEmailLayout);
+            }
+        });
+        continueGoogle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.continue_google:
+                        signIn();
+                        break;
+                    // ...
+                }
+            }
+        });
         // Callback registration
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        continueFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 handleFacebookToken(loginResult.getAccessToken());
@@ -209,8 +233,23 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void setRegisterClickable() {
+    private void setObjectsById() {
+        myLayout = findViewById(R.id.mainLayout);
+        logoLayout = findViewById(R.id.logoLayout);
+        continueFacebook = findViewById(R.id.continue_fb);
+        mLogin = findViewById(R.id.login);
+        mEmail = findViewById(R.id.email);
+        mPassword = findViewById(R.id.password);
+        image = findViewById(R.id.bigLogo);
+        continueEmail = findViewById(R.id.continue_email);
+        continueGoogle = findViewById(R.id.continue_google);
         registerTextView = findViewById(R.id.registerTextView);
+        regulationsTextView = findViewById(R.id.regulationsTextView);
+        continueEmailLayout = findViewById(R.id.continue_email_layout);
+        continueEmailParentLayout = findViewById(R.id.continue_email_parent);
+    }
+
+    private void setRegisterClickable() {
         String text = registerTextView.getText().toString();
         SpannableString ss = new SpannableString(text);
         ClickableSpan clickableSpan = new ClickableSpan() {
@@ -228,7 +267,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setRegulationsClickable() {
-        regulationsTextView = findViewById(R.id.regulationsTextView);
         String text = regulationsTextView.getText().toString();
         SpannableString ss = new SpannableString(text);
         ClickableSpan clickableSpan1 = new ClickableSpan() {
@@ -337,6 +375,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void linkWithCredential(AuthCredential credential) {
+        Log.d(TAG, "linkWithCredential: credential" + credential);
         mAuth = FirebaseAuth.getInstance();
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -352,6 +391,39 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    public void linkWithCredential5(AuthCredential credential) {
+        mAuth.getCurrentUser().linkWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "linkWithCredential:success");
+                            FirebaseUser user = task.getResult().getUser();
+                        } else {
+                            Log.w(TAG, "linkWithCredential:failure", task.getException());
+                        }
+                        // [START_EXCLUDE]
+                        // [END_EXCLUDE]
+                    }
+                });
+    }
+
+    public void linkAndMerge(AuthCredential credential) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        // [START auth_link_and_merge]
+        FirebaseUser prevUser = FirebaseAuth.getInstance().getCurrentUser();
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        FirebaseUser currentUser = task.getResult().getUser();
+                        // Merge prevUser and currentUser accounts and data
+                        // ...
+                    }
+                });
+        // [END auth_link_and_merge]
     }
 
     @Override
@@ -377,11 +449,10 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 default:
                     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            } 
-        }catch (Exception e){
+            }
+        } catch (Exception e) {
             Toast.makeText(this, "Opps something went wrong!", Toast.LENGTH_SHORT).show();
         }
-        
     }
 
     public void clearInstances() {
@@ -398,5 +469,4 @@ public class LoginActivity extends AppCompatActivity {
         MainFirebase.instance = null;
         MainRepository.instance = null;
     }
-
 }

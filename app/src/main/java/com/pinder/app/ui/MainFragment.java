@@ -34,6 +34,7 @@ import com.pinder.app.UsersProfilesActivity;
 import com.pinder.app.adapters.CardsAdapter;
 import com.pinder.app.adapters.TagsManagerAdapter;
 import com.pinder.app.models.Card;
+import com.pinder.app.util.Constants;
 import com.pinder.app.util.Resource;
 import com.pinder.app.viewmodels.MainViewModel;
 
@@ -303,7 +304,7 @@ public class MainFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private CompletableFuture<Void> displayAd(CompletableFuture<Void> adCompletableFuture) {
         adCounter++;
-        if (adCounter % 8 == 0) {
+        if (adCounter % Constants.numberOfCardsPerAd == 0) {
             adCompletableFuture = handleCompletableAd(adCompletableFuture);
             ((MainFragmentManager) getActivity()).showFullScreenAd();
             adCounter = 0;
@@ -315,7 +316,7 @@ public class MainFragment extends Fragment {
 
     private void displayAd() {
         adCounter++;
-        if (adCounter % 8 == 0) {
+        if (adCounter % Constants.numberOfCardsPerAd == 0) {
             ((MainFragmentManager) getActivity()).showFullScreenAd();
             adCounter = 0;
         }
