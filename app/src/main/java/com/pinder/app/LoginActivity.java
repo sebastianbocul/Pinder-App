@@ -5,11 +5,15 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
@@ -79,9 +83,12 @@ import com.pinder.app.repository.TagsRepository;
 import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
 
+import org.w3c.dom.Text;
+
 import java.util.Arrays;
 
 import static com.pinder.app.util.ExpandCollapseView.collapse;
+import static com.pinder.app.util.ExpandCollapseView.decideExpandOrCollapse;
 import static com.pinder.app.util.ExpandCollapseView.expand;
 
 public class LoginActivity extends AppCompatActivity {
@@ -98,9 +105,8 @@ public class LoginActivity extends AppCompatActivity {
     private TextView regulationsTextView, registerTextView;
     private SignInButton continueGoogle;
     private LinearLayout myLayout, logoLayout;
-    private ViewGroup continueEmailLayout;
-    private Button continueEmail;
-    private ViewGroup continueEmailParentLayout;
+    private ViewGroup continueEmailLayout,continuePhoneLayout;
+    private Button continueEmail,continuePhone;
     private boolean show = false;
     ImageView image;
 
@@ -117,6 +123,7 @@ public class LoginActivity extends AppCompatActivity {
         continueFacebook.setReadPermissions(Arrays.asList(EMAIL));
         setOnClickListeners();
         clearInstances();
+        paintLogo();
         NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
         // Configure sign-in to request the user's ID, email address, and basic
@@ -189,15 +196,9 @@ public class LoginActivity extends AppCompatActivity {
         };
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void setOnClickListeners() {
         continueEmail.setOnClickListener(v -> {
-            show = !show;
-            if(show){
-                expand(continueEmailLayout);
-            }else {
-                collapse(continueEmailLayout);
-            }
+            decideExpandOrCollapse(continueEmailLayout);
         });
         continueGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,6 +226,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onError(FacebookException exception) {
             }
         });
+        continuePhone.setOnClickListener(v->{
+            decideExpandOrCollapse(continuePhoneLayout);
+        });
         mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -246,7 +250,8 @@ public class LoginActivity extends AppCompatActivity {
         registerTextView = findViewById(R.id.registerTextView);
         regulationsTextView = findViewById(R.id.regulationsTextView);
         continueEmailLayout = findViewById(R.id.continue_email_layout);
-        continueEmailParentLayout = findViewById(R.id.continue_email_parent);
+        continuePhoneLayout = findViewById(R.id.continue_with_phone_layout);
+        continuePhone = findViewById(R.id.continue_with_phone);
     }
 
     private void setRegisterClickable() {
@@ -453,6 +458,24 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, "Opps something went wrong!", Toast.LENGTH_SHORT).show();
         }
+    }
+    public void paintLogo(){
+        TextView logoTextView = findViewById(R.id.logo_text_view);
+        TextPaint paint = logoTextView.getPaint();
+        float width = paint.measureText("Pinder");
+        Shader textShader = new LinearGradient(0, 0, width, logoTextView.getTextSize(),
+                new int[]{
+                        Color.parseColor("#E0232B"),
+                        Color.parseColor("#F4427E"),
+                        Color.parseColor("#713471"),
+                        Color.parseColor("#213487"),
+                        Color.parseColor("#2299F8"),
+                        Color.parseColor("#20B89C"),
+                        Color.parseColor("#54C634"),
+                        Color.parseColor("#FFC107"),
+                }, null, Shader.TileMode.CLAMP);
+        logoTextView.getPaint().setShader(textShader);
+        logoTextView.setTextColor( Color.parseColor("#E0232B"));
     }
 
     public void clearInstances() {

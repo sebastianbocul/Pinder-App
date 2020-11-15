@@ -61,4 +61,12 @@ public class ExpandCollapseView {
         a.setDuration((int)(initialHeight / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
     }
+
+    public static void decideExpandOrCollapse(View v){
+        if(v.getVisibility()==View.VISIBLE){
+            collapse(v);
+        }else {
+            expand(v);
+        }
+    }
 }
