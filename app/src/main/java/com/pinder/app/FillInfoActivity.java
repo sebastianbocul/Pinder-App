@@ -29,7 +29,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.util.StringDateToAge;
-import com.pinder.app.util.UpdateLocation;
 import com.pinder.app.utils.DisableButton;
 
 import java.util.Calendar;
@@ -61,7 +60,11 @@ public class FillInfoActivity extends AppCompatActivity {
         mRadioGroup = findViewById(R.id.radioGroup);
         mName = findViewById(R.id.name);
         handleBackArrow();
-        mName.setText(getFirstName(user.getDisplayName()));
+        if (user != null) {
+            if(user.getDisplayName()!=null){
+                mName.setText(getFirstName(user.getDisplayName()));
+            }
+        }
         date.addTextChangedListener(new TextWatcher() {
             String clean;
             String cleanC;
@@ -158,7 +161,7 @@ public class FillInfoActivity extends AppCompatActivity {
 //            UpdateLocation.updateLocation(this);
             try {
                 updateDb();
-                changeActivty();
+                changeActivity();
             } catch (Exception e) {
                 Toast.makeText(FillInfoActivity.this, "Opps something went wrong", Toast.LENGTH_SHORT).show();
             }
@@ -203,7 +206,7 @@ public class FillInfoActivity extends AppCompatActivity {
         return;
     }
 
-    private void changeActivty() {
+    private void changeActivity() {
         Intent intent = new Intent(FillInfoActivity.this, MainFragmentManager.class);
         startActivity(intent);
         finish();

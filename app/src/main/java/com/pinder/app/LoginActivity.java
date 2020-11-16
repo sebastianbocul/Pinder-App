@@ -17,17 +17,15 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.Transformation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,9 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.transition.Slide;
-import androidx.transition.Transition;
-import androidx.transition.TransitionManager;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -47,12 +42,10 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -64,6 +57,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthSettings;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -90,14 +84,10 @@ import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
 import com.pinder.app.util.ExpandCollapseView;
 
-import org.w3c.dom.Text;
-
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import static com.pinder.app.util.ExpandCollapseView.collapse;
 import static com.pinder.app.util.ExpandCollapseView.decideExpandOrCollapse;
-import static com.pinder.app.util.ExpandCollapseView.expand;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String EMAIL = "email";
@@ -111,12 +101,13 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
     private TextView regulationsTextView, registerTextView;
     private LinearLayout myLayout, logoLayout;
-    private Button continueFacebook,continueGoogle;
-    private ViewGroup continueEmailLayout,continuePhoneLayout,phoneVerificationLayout;
-    private Button continueEmail,continuePhone;
+    private Button continueFacebook, continueGoogle;
+    private ViewGroup continueEmailLayout, continuePhoneLayout, phoneVerificationLayout;
+    private Button continueEmail, continuePhone;
     private Button sendPhoneAuth, phoneVerificationButton;
     private EditText phoneEditText, phoneVerificationEditText;
     private String phoneAuthCode;
+    private ProgressBar progressBar;
     private boolean show = false;
     ImageView image;
 
@@ -179,6 +170,7 @@ public class LoginActivity extends AppCompatActivity {
         phoneVerificationEditText = findViewById(R.id.phone_verification_edit_text);
         phoneVerificationButton = findViewById(R.id.phone_verification_button);
         phoneVerificationLayout = findViewById(R.id.phone_verification_layout);
+        progressBar = findViewById(R.id.progress_bar);
     }
 
     private void setOnClickListeners() {
@@ -200,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
         continueFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this,Arrays.asList(EMAIL));
+                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList(EMAIL));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
@@ -217,12 +209,18 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
-        continuePhone.setOnClickListener(v->{
+        continuePhone.setOnClickListener(v -> {
             decideExpandOrCollapse(continuePhoneLayout);
         });
         sendPhoneAuth.setOnClickListener(v -> {
             String phoneNumber = phoneEditText.getText().toString().trim();
-            if(phoneNumber.length()==0){
+//            Intent phoneVer = new Intent(this, PhoneVerificationActivity.class);
+//            phoneVer.putExtra("phone",phoneNumber);
+//            startActivity(phoneVer);
+            FirebaseAuthSettings firebaseAuthSettings = mAuth.getFirebaseAuthSettings();
+            // Configure faking the auto-retrieval with the whitelisted numbers.
+            firebaseAuthSettings.setAutoRetrievedSmsCodeForPhoneNumber("+48790712419", "123123");
+            if (phoneNumber.length() == 0) {
                 return;
             }
             ExpandCollapseView.expand(phoneVerificationLayout);
@@ -235,6 +233,8 @@ public class LoginActivity extends AppCompatActivity {
                             .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
                             .build();
             PhoneAuthProvider.verifyPhoneNumber(options);
+            progressBar.setVisibility(View.VISIBLE);
+
         });
         phoneVerificationButton.setOnClickListener(v -> {
             verifyCode(phoneVerificationEditText.getText().toString().trim());
@@ -251,6 +251,8 @@ public class LoginActivity extends AppCompatActivity {
             //     detect the incoming verification SMS and perform verification without
             //     user action.
             Log.d("PhoneAuth", "onVerificationCompleted:" + credential);
+            progressBar.setVisibility(View.GONE);
+            phoneVerificationEditText.setText(phoneAuthCode);
             authCredentials(credential);
         }
 
@@ -258,8 +260,8 @@ public class LoginActivity extends AppCompatActivity {
         public void onVerificationFailed(FirebaseException e) {
             // This callback is invoked in an invalid request for verification is made,
             // for instance if the the phone number format is not valid.
+            progressBar.setVisibility(View.GONE);
             Log.w("PhoneAuth", "onVerificationFailed", e);
-
             if (e instanceof FirebaseAuthInvalidCredentialsException) {
                 // Invalid request
                 // ...
@@ -267,7 +269,6 @@ public class LoginActivity extends AppCompatActivity {
                 // The SMS quota for the project has been exceeded
                 // ...
             }
-
             // Show a message and update the UI
             // ...
         }
@@ -275,30 +276,26 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void onCodeSent(@NonNull String verificationId,
                                @NonNull PhoneAuthProvider.ForceResendingToken token) {
-            super.onCodeSent(verificationId,token);
-
+            super.onCodeSent(verificationId, token);
             // The SMS verification code has been sent to the provided phone number, we
             // now need to ask the user to enter the code and then construct a credential
             // by combining the code with a verification ID.
             phoneAuthCode = verificationId;
             Log.d("PhoneAuth", "onCodeSent:" + verificationId);
-
             // Save verification ID and resending token so we can use them later
 //            mVerificationId = verificationId;
 //            mResendToken = token;
-
             // ...
         }
     };
 
-    private void verifyCode(String userVerificationId){
-        if(userVerificationId==null || userVerificationId.length()==0){
+    private void verifyCode(String userVerificationId) {
+        if (userVerificationId == null || userVerificationId.length() == 0) {
             return;
         }
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(phoneAuthCode,userVerificationId);
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(phoneAuthCode, userVerificationId);
         authCredentials(credential);
     }
-
 
     private void setRegisterClickable() {
         String text = registerTextView.getText().toString();
@@ -336,6 +333,7 @@ public class LoginActivity extends AppCompatActivity {
         };
         ss.setSpan(clickableSpan1, 29, 34, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         ss.setSpan(clickableSpan2, 39, 53, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        regulationsTextView.setHighlightColor(Color.TRANSPARENT);
         regulationsTextView.setText(ss);
         regulationsTextView.setMovementMethod(LinkMovementMethod.getInstance());
     }
@@ -433,6 +431,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            Log.d(TAG, "linkWithCredential: SUCCESS" + credential);
                             FirebaseUser user = task.getResult().getUser();
                         } else {
                             Log.w("myLog", "linkWithCredential:failure", task.getException());
@@ -444,10 +443,10 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-
     private void authStateListener() {
         firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
             DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
+
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -522,7 +521,8 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, "Opps something went wrong!", Toast.LENGTH_SHORT).show();
         }
     }
-    public void paintLogo(){
+
+    public void paintLogo() {
         TextView logoTextView = findViewById(R.id.logo_text_view);
         TextPaint paint = logoTextView.getPaint();
         float width = paint.measureText("Pinder");
@@ -538,7 +538,7 @@ public class LoginActivity extends AppCompatActivity {
                         Color.parseColor("#FFC107"),
                 }, null, Shader.TileMode.CLAMP);
         logoTextView.getPaint().setShader(textShader);
-        logoTextView.setTextColor( Color.parseColor("#E0232B"));
+        logoTextView.setTextColor(Color.parseColor("#E0232B"));
     }
 
     public void clearInstances() {

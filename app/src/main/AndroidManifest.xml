@@ -17,27 +17,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name="com.pinder.app.MainFragmentManager"></activity>
-        <activity android:name="com.pinder.app.FillInfoActivity" />
+        <activity android:name=".viewmodels.PhoneVerificationActivity"></activity>
+        <activity android:name=".MainFragmentManager" />
+        <activity android:name=".FillInfoActivity" />
         <activity
-            android:name="com.pinder.app.MainPopUpActivity"
+            android:name=".MainPopUpActivity"
             android:theme="@style/AppTheme.PopMe" />
-        <activity android:name="com.pinder.app.UsersProfilesActivity" />
+        <activity android:name=".UsersProfilesActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_key" />
 
-        <activity android:name="com.pinder.app.LocationActivity" />
-        <activity android:name="com.pinder.app.ChatActivity" />
-        <activity android:name="com.pinder.app.LoginActivity"
-            android:theme="@style/AppTheme.LoginTheme" >
+        <activity android:name=".LocationActivity" />
+        <activity android:name=".ChatActivity" />
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/AppTheme.LoginTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.pinder.app.RegistrationActivity" />
+        <activity android:name=".RegistrationActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -61,32 +64,30 @@
         </activity>
 
         <service
-            android:name="com.pinder.app.notifications.MyFirebaseService"
+            android:name=".notifications.MyFirebaseService"
+            android:directBootAware="true"
             android:enabled="true"
             android:exported="false"
             android:stopWithTask="false"
-            android:directBootAware="true"
             tools:targetApi="n">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_SERVICE" />
             </intent-filter>
         </service>
         <service
-            android:name="com.pinder.app.notifications.FirebaseMessaging"
+            android:name=".notifications.FirebaseMessaging"
+            android:directBootAware="true"
             android:enabled="true"
             android:exported="false"
             android:stopWithTask="false"
-            android:directBootAware="true"
             tools:targetApi="n">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>
-
-<!--        AddMob-->
-                <meta-data
-                    android:name="com.google.android.gms.ads.APPLICATION_ID"
-                    android:value="ca-app-pub-8819276309653342~6474862133"/>
+        </service> <!-- AddMob -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8819276309653342~6474862133" />
     </application>
 
 </manifest>
