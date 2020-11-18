@@ -14,6 +14,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -91,14 +92,14 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         name = findViewById(R.id.MatchName);
         profileImage = findViewById(R.id.profileImage);
         goToChat = findViewById(R.id.goToChat);
-        handleBackArrow();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.google_map);
         supportMapFragment.getMapAsync(LocationActivity.this);
     }
 
     public void onMapReady(GoogleMap googleMap) {
-        backArrowImage.setVisibility(View.VISIBLE);
+        findViewById(R.id.back_arrow).setVisibility(View.VISIBLE);
+        handleBackArrow();
         myGoogleMap = googleMap;
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();

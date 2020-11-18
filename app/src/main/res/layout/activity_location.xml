@@ -15,16 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ImageView
-        android:id="@+id/back_arrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="17sp"
-        android:paddingLeft="21sp"
-        android:paddingRight="10sp"
-        android:scaleX="1.25"
-        android:scaleY="1.25"
-        app:srcCompat="@drawable/ic_back_arrow" />
 
     <LinearLayout
         android:id="@+id/userLayout"
@@ -63,4 +53,23 @@
             app:srcCompat="@drawable/ic_chat" />
 
     </LinearLayout>
+<!--    <Button-->
+<!--        android:id="@+id/back_arrow"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:visibility="gone"-->
+<!--        android:text="back"/>-->
+    <ImageView
+        android:id="@+id/back_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17sp"
+        android:paddingLeft="21sp"
+        android:paddingRight="10sp"
+        android:scaleX="1.25"
+        android:scaleY="1.25"
+        android:src="@drawable/ic_back_arrow"
+        android:paddingEnd="10sp"
+        android:paddingStart="21sp" />
+
 </RelativeLayout>
