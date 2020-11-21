@@ -18,7 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".viewmodels.PhoneVerificationActivity"></activity>
-        <activity android:name=".MainFragmentManager" />
+        <activity android:name=".MainFragmentManager"
+            android:windowSoftInputMode="adjustResize"
+            />
         <activity android:name=".FillInfoActivity" />
         <activity
             android:name=".MainPopUpActivity"
