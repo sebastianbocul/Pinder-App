@@ -12,26 +12,26 @@ import com.google.firebase.auth.FirebaseAuth
 import com.pinder.app.util.PaintText
 import com.pinder.app.utils.DisableButton
 
-class RegisterActivity : AppCompatActivity() {
+class RegistrationActivity : AppCompatActivity() {
     private var logoTextView: TextView? = null;
     private var registerType: String? = null
     private var fragment: Fragment? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        setContentView(R.layout.activity_registration)
         registerType = intent.getStringExtra("register_type")
         logoTextView = findViewById(R.id.logo_text_view)
         PaintText.paintLogo(logoTextView, "Pinder")
         handleBackArrow()
         when (registerType) {
             "email" -> {
-                fragment = EmailRegisterFragment()
+                fragment = RegistrationEmailFragment()
             }
             "phone" -> {
-                fragment = PhoneRegisterFragment()
+                fragment = RegistrationPhoneFragment()
             }
             "external" -> {
-                fragment = ExternalRegisterFragment()
+                fragment = RegistrationExternalFragment()
             }
 
         }
@@ -58,10 +58,10 @@ class RegisterActivity : AppCompatActivity() {
     fun handleBackArrow() {
         var backArrowImage: ImageView = findViewById(R.id.back_arrow)
         DisableButton.disableButton(backArrowImage)
-        backArrowImage.setOnClickListener(View.OnClickListener { v: View? ->
+        backArrowImage.setOnClickListener {
             val i = Intent(this, LoginActivity::class.java)
             startActivity(i)
-        })
+        }
     }
 
     private fun deleteUser() {

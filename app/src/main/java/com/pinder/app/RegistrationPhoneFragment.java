@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -19,14 +18,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.util.Constants;
@@ -40,10 +37,10 @@ import static androidx.core.content.PermissionChecker.checkSelfPermission;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ExternalRegisterFragment#newInstance} factory method to
+ * Use the {@link RegistrationExternalFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ExternalRegisterFragment extends Fragment {
+public class RegistrationPhoneFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -61,7 +58,7 @@ public class ExternalRegisterFragment extends Fragment {
     private TextView title;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
 
-    public ExternalRegisterFragment() {
+    public RegistrationPhoneFragment() {
         // Required empty public constructor
     }
 
@@ -71,11 +68,11 @@ public class ExternalRegisterFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ExternalRegisterFragment.
+     * @return A new instance of fragment RegistrationExternalFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ExternalRegisterFragment newInstance(String param1, String param2) {
-        ExternalRegisterFragment fragment = new ExternalRegisterFragment();
+    public static RegistrationExternalFragment newInstance(String param1, String param2) {
+        RegistrationExternalFragment fragment = new RegistrationExternalFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -96,7 +93,7 @@ public class ExternalRegisterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_external_register, container, false);
+        return inflater.inflate(R.layout.fragment_registration_phone, container, false);
     }
 
     @Override
@@ -106,15 +103,9 @@ public class ExternalRegisterFragment extends Fragment {
         title = getView().findViewById(R.id.title);
         date = getView().findViewById(R.id.date);
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         mRegister = getView().findViewById(R.id.register);
         mRadioGroup = getView().findViewById(R.id.radioGroup);
         mName = getView().findViewById(R.id.name);
-        if (user != null) {
-            if (user.getDisplayName() != null) {
-                mName.setText(getFirstName(user.getDisplayName()));
-            }
-        }
         date.addTextChangedListener(new TextWatcher() {
             String clean;
             String cleanC;
@@ -174,7 +165,6 @@ public class ExternalRegisterFragment extends Fragment {
                     date.setText("");
                 }
             }
-
             //set max lines in descriptions field
             @Override
             public void afterTextChanged(Editable editable) {
@@ -259,11 +249,6 @@ public class ExternalRegisterFragment extends Fragment {
         DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
         tags.child("default").child(userId).setValue(true);
         Toast.makeText(getContext(), "Register successful!", Toast.LENGTH_SHORT).show();
-    }
-
-    private String getFirstName(String displayName) {
-        String[] words = displayName.split(" ");
-        return words[0];
     }
 
     @Override

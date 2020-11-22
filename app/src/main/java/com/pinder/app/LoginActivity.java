@@ -2,8 +2,10 @@ package com.pinder.app;
 
 import android.Manifest;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.PermissionRequest;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -44,7 +47,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
@@ -54,7 +56,6 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthSettings;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -271,7 +272,7 @@ public class LoginActivity extends AppCompatActivity {
                                             ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.requestLocationPermission);
                                         }
                                     } else {
-                                        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                                        Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
                                         intent.putExtra("register_type", registerProvider);
                                         startActivity(intent);
                                         finish();
@@ -358,7 +359,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(@NonNull View widget) {
                 registerProvider = "email";
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
                 intent.putExtra("register_type", registerProvider);
                 startActivity(intent);
             }
@@ -413,8 +414,6 @@ public class LoginActivity extends AppCompatActivity {
         handlePhoneAuth(credential);
     }
 
-
-
     private void logInGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -431,6 +430,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.w("myLog", "signInResult:failed code=" + e.getStatusCode());
         }
     }
+
     private void handlePhoneAuth(PhoneAuthCredential credential) {
         registerProvider = "phone";
         authCredentials(credential);
@@ -447,6 +447,7 @@ public class LoginActivity extends AppCompatActivity {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         authCredentials(credential);
     }
+
     private void handleGoogleAuth(GoogleSignInAccount account) {
         registerProvider = "external";
         AuthCredential authCredential = GoogleAuthProvider.getCredential(account.getIdToken(), null);

@@ -10,7 +10,7 @@
     android:paddingRight="30sp"
     android:paddingTop="50sp"
     android:paddingBottom="10sp"
-    tools:context="com.pinder.app.RegistrationActivity">
+    tools:context="com.pinder.app.LoginActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
