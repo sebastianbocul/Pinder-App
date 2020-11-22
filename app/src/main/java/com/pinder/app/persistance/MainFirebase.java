@@ -45,6 +45,7 @@ import com.pinder.app.models.Card;
 import com.pinder.app.models.TagsObject;
 import com.pinder.app.notifications.Token;
 import com.pinder.app.ui.dialogs.SharedPreferencesHelper;
+import com.pinder.app.util.Constants;
 import com.pinder.app.util.MultiTaskHandler;
 import com.pinder.app.util.Resource;
 import com.pinder.app.util.SendFirebaseNotification;
@@ -552,7 +553,7 @@ public class MainFirebase {
         DatabaseReference geofireUser = geofire.child(currentUID);
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},  Constants.requestLocationPermission);
         }
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override

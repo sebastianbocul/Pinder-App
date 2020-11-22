@@ -6,14 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Shader;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
@@ -82,7 +79,9 @@ import com.pinder.app.repository.SettingsRepository;
 import com.pinder.app.repository.TagsRepository;
 import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
+import com.pinder.app.util.Constants;
 import com.pinder.app.util.ExpandCollapseView;
+import com.pinder.app.util.PaintText;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -92,10 +91,10 @@ import static com.pinder.app.util.ExpandCollapseView.decideExpandOrCollapse;
 public class LoginActivity extends AppCompatActivity {
     private static final String EMAIL = "email";
     private static final String TAG = "LoginActivity";
-    CallbackManager callbackManager;
-    GoogleSignInClient mGoogleSignInClient;
+    private CallbackManager callbackManager;
+    private GoogleSignInClient mGoogleSignInClient;
     private Button mLogin;
-    private int RC_SIGN_IN = 0;
+    private int RC_SIGN_IN = 1001;
     private EditText mEmail, mPassword;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
@@ -108,7 +107,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText phoneEditText, phoneVerificationEditText;
     private String phoneAuthCode;
     private ProgressBar progressBar;
-    private boolean show = false;
+    private TextView logoTextView;
+    private String registerProvider;
     ImageView image;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -123,17 +123,9 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
         setOnClickListeners();
         clearInstances();
-        paintLogo();
-        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancelAll();
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        PaintText.paintLogo(logoTextView, "Pinder");
+        clearNotifications();
+        prepareGoogleSignIn();
         setRegulationsClickable();
         setRegisterClickable();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -171,22 +163,26 @@ public class LoginActivity extends AppCompatActivity {
         phoneVerificationButton = findViewById(R.id.phone_verification_button);
         phoneVerificationLayout = findViewById(R.id.phone_verification_layout);
         progressBar = findViewById(R.id.progress_bar);
+        logoTextView = findViewById(R.id.logo_text_view);
     }
 
     private void setOnClickListeners() {
         continueEmail.setOnClickListener(v -> {
+            if (continuePhoneLayout.getVisibility() == View.VISIBLE) {
+                ExpandCollapseView.collapse(continuePhoneLayout);
+            }
             decideExpandOrCollapse(continueEmailLayout);
         });
         mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logInEmailPassword();
+                validateEmailPassword();
             }
         });
         continueGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signIn();
+                logInGoogle();
             }
         });
         continueFacebook.setOnClickListener(new View.OnClickListener() {
@@ -196,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        handleFacebookToken(loginResult.getAccessToken());
+                        handleFacebookAuth(loginResult.getAccessToken());
                     }
 
                     @Override
@@ -210,15 +206,19 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         continuePhone.setOnClickListener(v -> {
+            if (continueEmailLayout.getVisibility() == View.VISIBLE) {
+                ExpandCollapseView.collapse(continueEmailLayout);
+            }
             decideExpandOrCollapse(continuePhoneLayout);
         });
         sendPhoneAuth.setOnClickListener(v -> {
             String phoneNumber = phoneEditText.getText().toString().trim();
+            // Configure faking the auto-retrieval with the whitelisted numbers.
+//            FirebaseAuthSettings firebaseAuthSettings = mAuth.getFirebaseAuthSettings();
+//            firebaseAuthSettings.setAutoRetrievedSmsCodeForPhoneNumber("+48790712419", "123123");
             if (phoneNumber.length() == 0) {
                 return;
             }
-            FirebaseAuthSettings firebaseAuthSettings = mAuth.getFirebaseAuthSettings();
-            firebaseAuthSettings.setAutoRetrievedSmsCodeForPhoneNumber("+48790712419", "123123");
             Log.d("PhoneAuth", "onButtonClicked");
             PhoneAuthOptions options =
                     PhoneAuthOptions.newBuilder(mAuth)
@@ -229,11 +229,78 @@ public class LoginActivity extends AppCompatActivity {
                             .build();
             PhoneAuthProvider.verifyPhoneNumber(options);
             progressBar.setVisibility(View.VISIBLE);
-
         });
         phoneVerificationButton.setOnClickListener(v -> {
-            verifyCode(phoneVerificationEditText.getText().toString().trim());
+            String userVerificationId = phoneVerificationEditText.getText().toString().trim();
+            if (userVerificationId.length() == 0) {
+                return;
+            }
+            validatePhoneCode(userVerificationId);
         });
+    }
+
+    private void authStateListener() {
+        firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
+
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    dr.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (logoLayout.getVisibility() == View.VISIBLE) {
+                                Animation animScale = AnimationUtils.loadAnimation(getApplication(), R.anim.scale);
+                                logoLayout.startAnimation(animScale);
+                            }
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    logoLayout.setVisibility(View.GONE);
+                                    logoLayout.clearAnimation();
+                                    image.clearAnimation();
+                                    if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
+                                        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                            Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
+                                            startActivity(intent);
+                                            finish();
+                                            return;
+                                        } else {
+                                            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.requestLocationPermission);
+                                        }
+                                    } else {
+                                        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                                        intent.putExtra("register_type", registerProvider);
+                                        startActivity(intent);
+                                        finish();
+                                        return;
+                                    }
+                                }
+                            }, 300);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+                }
+            }
+        };
+    }
+
+    private void clearNotifications() {
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+    }
+
+    private void prepareGoogleSignIn() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -241,20 +308,21 @@ public class LoginActivity extends AppCompatActivity {
         public void onVerificationCompleted(PhoneAuthCredential credential) {
             Log.d("PhoneAuth", "onVerificationCompleted:" + credential);
             progressBar.setVisibility(View.GONE);
-            phoneVerificationEditText.setText(phoneAuthCode);
-            authCredentials(credential);
+            handlePhoneAuth(credential);
         }
 
         @Override
         public void onVerificationFailed(FirebaseException e) {
+            // This callback is invoked in an invalid request for verification is made,
+            // for instance if the the phone number format is not valid.
             progressBar.setVisibility(View.GONE);
-            ExpandCollapseView.expand(phoneVerificationLayout);
-
             Log.w("PhoneAuth", "onVerificationFailed", e);
             if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                Toast.makeText(LoginActivity.this, "Oops, something went wrong! Please check phone number format", Toast.LENGTH_SHORT).show();
                 // Invalid request
                 // ...
             } else if (e instanceof FirebaseTooManyRequestsException) {
+                Toast.makeText(LoginActivity.this, "Too many requests! Please try again later.", Toast.LENGTH_SHORT).show();
                 // The SMS quota for the project has been exceeded
                 // ...
             }
@@ -269,23 +337,19 @@ public class LoginActivity extends AppCompatActivity {
             // The SMS verification code has been sent to the provided phone number, we
             // now need to ask the user to enter the code and then construct a credential
             // by combining the code with a verification ID.
+            ExpandCollapseView.expand(phoneVerificationLayout);
             phoneAuthCode = verificationId;
-            Log.d("PhoneAuth", "onCodeSent ver:" + verificationId);
-            Log.d("PhoneAuth", "onCodeSent token:" + token);
-            // Save verification ID and resending token so we can use them later
-//            mVerificationId = verificationId;
-//            mResendToken = token;
-            // ...
+            Log.d("PhoneAuth", "onCodeSent:" + verificationId);
+        }
+
+        @Override
+        public void onCodeAutoRetrievalTimeOut(@NonNull String s) {
+            super.onCodeAutoRetrievalTimeOut(s);
+            ExpandCollapseView.collapse(phoneVerificationLayout);
+            Toast.makeText(LoginActivity.this, "Oops, something went wrong!", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
         }
     };
-
-    private void verifyCode(String userVerificationId) {
-        if (userVerificationId == null || userVerificationId.length() == 0) {
-            return;
-        }
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(phoneAuthCode, userVerificationId);
-        authCredentials(credential);
-    }
 
     private void setRegisterClickable() {
         String text = registerTextView.getText().toString();
@@ -293,10 +357,10 @@ public class LoginActivity extends AppCompatActivity {
         ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
-                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+                registerProvider = "email";
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                intent.putExtra("register_type", registerProvider);
                 startActivity(intent);
-                finish();
-                return;
             }
         };
         ss.setSpan(clickableSpan, 27, 31, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -328,35 +392,7 @@ public class LoginActivity extends AppCompatActivity {
         regulationsTextView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private void checkLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-        } else {
-            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        mAuth.addAuthStateListener(firebaseAuthStateListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mAuth.removeAuthStateListener(firebaseAuthStateListener);
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
-    }
-
-    private void logInEmailPassword() {
+    private void validateEmailPassword() {
         String email = mEmail.getText().toString();
         String password = mPassword.getText().toString();
         if (email.isEmpty()) {
@@ -368,30 +404,18 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(LoginActivity.this, "Wrong password", Toast.LENGTH_SHORT).show();
         }
         if (!email.isEmpty() && !password.isEmpty()) {
-            AuthCredential credential = EmailAuthProvider.getCredential(email, password);
-            authCredentials(credential);
+            handleEmailAuth(email, password);
         }
     }
 
-    private void handleFacebookToken(AccessToken token) {
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        authCredentials(credential);
+    private void validatePhoneCode(String userVerificationId) {
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(phoneAuthCode, userVerificationId);
+        handlePhoneAuth(credential);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-        }
-    }
 
-    private void signIn() {
+
+    private void logInGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -399,7 +423,7 @@ public class LoginActivity extends AppCompatActivity {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            FirebaseGoogleAuth(account);
+            handleGoogleAuth(account);
             // Signed in successfully, show authenticated UI.
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
@@ -407,8 +431,24 @@ public class LoginActivity extends AppCompatActivity {
             Log.w("myLog", "signInResult:failed code=" + e.getStatusCode());
         }
     }
+    private void handlePhoneAuth(PhoneAuthCredential credential) {
+        registerProvider = "phone";
+        authCredentials(credential);
+    }
 
-    private void FirebaseGoogleAuth(GoogleSignInAccount account) {
+    private void handleEmailAuth(String email, String password) {
+        registerProvider = "email";
+        AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+        authCredentials(credential);
+    }
+
+    private void handleFacebookAuth(AccessToken token) {
+        registerProvider = "external";
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        authCredentials(credential);
+    }
+    private void handleGoogleAuth(GoogleSignInAccount account) {
+        registerProvider = "external";
         AuthCredential authCredential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         authCredentials(authCredential);
     }
@@ -433,61 +473,52 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void authStateListener() {
-        firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
+    private void checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        } else {
+            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.requestLocationPermission);
+        }
+    }
 
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user != null) {
-                    dr.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (logoLayout.getVisibility() == View.VISIBLE) {
-                                Animation animscale = AnimationUtils.loadAnimation(getApplication(), R.anim.scale);
-                                logoLayout.startAnimation(animscale);
-                            }
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    logoLayout.setVisibility(View.GONE);
-                                    logoLayout.clearAnimation();
-                                    image.clearAnimation();
-                                    if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
-                                        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                            Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
-                                            startActivity(intent);
-                                            finish();
-                                            return;
-                                        } else {
-                                            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-                                        }
-                                    } else {
-                                        Intent intent = new Intent(LoginActivity.this, FillInfoActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                        return;
-                                    }
-                                }
-                            }, 300);
-                        }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        mAuth.addAuthStateListener(firebaseAuthStateListener);
+    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                        }
-                    });
-                }
-            }
-        };
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAuth.removeAuthStateListener(firebaseAuthStateListener);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         try {
             switch (requestCode) {
-                case 44:
+                case Constants.requestLocationPermission:
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
                         startActivity(intent);
@@ -510,25 +541,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, "Opps something went wrong!", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    public void paintLogo() {
-        TextView logoTextView = findViewById(R.id.logo_text_view);
-        TextPaint paint = logoTextView.getPaint();
-        float width = paint.measureText("Pinder");
-        Shader textShader = new LinearGradient(0, 0, width, logoTextView.getTextSize(),
-                new int[]{
-                        Color.parseColor("#E0232B"),
-                        Color.parseColor("#F4427E"),
-                        Color.parseColor("#713471"),
-                        Color.parseColor("#213487"),
-                        Color.parseColor("#2299F8"),
-                        Color.parseColor("#20B89C"),
-                        Color.parseColor("#54C634"),
-                        Color.parseColor("#FFC107"),
-                }, null, Shader.TileMode.CLAMP);
-        logoTextView.getPaint().setShader(textShader);
-        logoTextView.setTextColor(Color.parseColor("#E0232B"));
     }
 
     public void clearInstances() {

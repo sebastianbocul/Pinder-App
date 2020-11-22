@@ -184,7 +184,7 @@ public class SettingsFragment extends Fragment {
                             if (mon > 12) mon = 12;
                             if (mon == 0) mon = 1;
                             cal.set(Calendar.MONTH, mon - 1);
-                            year = (year < 1900) ? 1900 : (year > 2019) ? 2019 : year;
+                            year = (year < 1920) ? 1920 : (year > 2019) ? 2019 : year;
                             cal.set(Calendar.YEAR, year);
                             // ^ first set year for the line below to work correctly
                             //with leap years - otherwise, date e.g. 29/02/2012
@@ -281,7 +281,7 @@ public class SettingsFragment extends Fragment {
         moveUsersLocToGeoFire = getView().findViewById(R.id.moveUsersLocToGeoFire);
         DisableButton.disableButton(restartMatches);
         DisableButton.disableButton(moveUsersLocToGeoFire);
-        DisableButton.disableButtonInDebug(deleteUser);
+//        DisableButton.disableButtonInDebug(deleteUser);
         restartMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

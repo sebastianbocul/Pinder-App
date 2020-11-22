@@ -17,10 +17,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".viewmodels.PhoneVerificationActivity"></activity>
-        <activity android:name=".MainFragmentManager"
-            android:windowSoftInputMode="adjustResize"
-            />
+        <activity android:name=".RegisterActivity"></activity>
+        <activity android:name=".viewmodels.PhoneVerificationActivity" />
+        <activity
+            android:name=".MainFragmentManager"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".FillInfoActivity" />
         <activity
             android:name=".MainPopUpActivity"

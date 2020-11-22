@@ -16,16 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="@style/Widget.AppCompat.ProgressBar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:paddingBottom="0dp"
-            android:scaleX="0.2"
-            android:scaleY="0.2"
-            android:visibility="gone" />
+
 
         <LinearLayout
             android:id="@+id/mainLayout"
@@ -172,16 +163,6 @@
                     android:drawableLeft="@drawable/ic_logo_google_white"
                     android:drawableStart="@drawable/ic_logo_google_white" />
 
-<!--                <com.google.android.gms.common.SignInButton-->
-<!--                    android:id="@+id/continue_google"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_gravity="center_horizontal"-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                    android:paddingBottom="5sp"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:textSize="15sp" />-->
-
                 <Button
                     android:id="@+id/continue_with_phone"
                     android:layout_width="match_parent"
@@ -246,6 +227,10 @@
                             android:text="Enter verification code:"
                             android:textSize="12sp" />
 
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
                         <EditText
                             android:id="@+id/phone_verification_edit_text"
                             android:layout_width="match_parent"
@@ -256,6 +241,14 @@
                             android:autofillHints="phoneNational"
                             android:paddingTop="2sp" />
 
+                            <ProgressBar
+                                android:id="@+id/progress_bar"
+                                style="@style/Widget.AppCompat.ProgressBar"
+                                android:layout_width="30sp"
+                                android:layout_height="30sp"
+                                android:layout_alignParentRight="true"
+                                android:visibility="visible" />
+                        </RelativeLayout>
                         <Button
                             android:id="@+id/phone_verification_button"
                             android:layout_width="match_parent"
