@@ -2,7 +2,6 @@ package com.pinder.app
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -33,7 +32,6 @@ class RegistrationActivity : AppCompatActivity() {
             "external" -> {
                 fragment = RegistrationExternalFragment()
             }
-
         }
         if (fragment == null) {
             deleteUser()
@@ -50,9 +48,8 @@ class RegistrationActivity : AppCompatActivity() {
         if (registerType.equals("external") || registerType.equals("phone")) {
             deleteUser()
             logoutUser()
-        } else {
-            super.onBackPressed()
         }
+        super.onBackPressed()
     }
 
     fun handleBackArrow() {
@@ -73,9 +70,5 @@ class RegistrationActivity : AppCompatActivity() {
     fun logoutUser() {
         FirebaseAuth.getInstance().signOut()
         LoginManager.getInstance().logOut()
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-        finish()
-        return
     }
 }

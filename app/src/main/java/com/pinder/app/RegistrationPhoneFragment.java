@@ -2,7 +2,6 @@ package com.pinder.app;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,7 +25,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pinder.app.util.Constants;
 import com.pinder.app.util.StringDateToAge;
 
 import java.util.Calendar;
@@ -165,6 +163,7 @@ public class RegistrationPhoneFragment extends Fragment {
                     date.setText("");
                 }
             }
+
             //set max lines in descriptions field
             @Override
             public void afterTextChanged(Editable editable) {
@@ -197,15 +196,11 @@ public class RegistrationPhoneFragment extends Fragment {
             Toast.makeText(getContext(), "Fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
-            try {
-                updateDb();
-                changeActivity();
-            } catch (Exception e) {
-                Toast.makeText(getContext(), "Opps something went wrong", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.requestLocationPermission);
+        try {
+            updateDb();
+            changeActivity();
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Opps something went wrong", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -216,7 +211,12 @@ public class RegistrationPhoneFragment extends Fragment {
     }
 
     private void changeActivity() {
-        Intent intent = new Intent(getActivity(), MainFragmentManager.class);
+        Intent intent;
+        if (checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
+            intent = new Intent(getActivity(), MainFragmentManager.class);
+        } else {
+            intent = new Intent(getActivity(), RequestLocationPermissionActivity.class);
+        }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
@@ -249,20 +249,5 @@ public class RegistrationPhoneFragment extends Fragment {
         DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
         tags.child("default").child(userId).setValue(true);
         Toast.makeText(getContext(), "Register successful!", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case Constants.requestLocationPermission:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    register();
-                } else {
-                    Toast.makeText(getContext(), "You need to accept permission!", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
     }
 }

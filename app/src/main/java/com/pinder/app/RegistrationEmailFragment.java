@@ -2,14 +2,7 @@ package com.pinder.app;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.PermissionChecker;
-import androidx.fragment.app.Fragment;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -21,8 +14,11 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.PermissionChecker;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -30,7 +26,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pinder.app.util.Constants;
 import com.pinder.app.util.StringDateToAge;
 
 import java.util.Calendar;
@@ -56,8 +51,6 @@ public class RegistrationEmailFragment extends Fragment {
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
     private EditText date;
     private boolean dateValid = false;
-    private FusedLocationProviderClient fusedLocationProviderClient;
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -109,13 +102,17 @@ public class RegistrationEmailFragment extends Fragment {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null) {
-                    Intent intent = new Intent(getContext(), MainFragmentManager.class);
+                    Intent intent;
+                    if (checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
+                        intent = new Intent(getActivity(), MainFragmentManager.class);
+                    } else {
+                        intent = new Intent(getActivity(), RequestLocationPermissionActivity.class);
+                    }
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }
             }
         };
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
         mRegister = getView().findViewById(R.id.register);
         mEmail = getView().findViewById(R.id.email);
         mPassword = getView().findViewById(R.id.password);
@@ -229,43 +226,38 @@ public class RegistrationEmailFragment extends Fragment {
                 Toast.makeText(getContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(getContext(), "sign_up_error", Toast.LENGTH_SHORT).show();
-                        } else {
-                            String userId = mAuth.getCurrentUser().getUid();
-                            DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-                            String dateOfBirth = date.getText().toString();
-                            Map tagsMap = new HashMap<>();
-                            Map tagInfo = new HashMap<>();
-                            Map userInfo = new HashMap<>();
-                            tagInfo.put("minAge", "18");
-                            tagInfo.put("maxAge", "99");
-                            tagInfo.put("maxDistance", "100000");
-                            if (radioButton.getText().toString().equals("Male")) {
-                                tagInfo.put("gender", "Female");
-                            } else tagInfo.put("gender", "Male");
-                            tagsMap.put("default", tagInfo);
-                            userInfo.put("name", name);
-                            userInfo.put("sex", radioButton.getText().toString());
-                            userInfo.put("profileImageUrl", "default");
-                            userInfo.put("dateOfBirth", dateOfBirth);
-                            userInfo.put("tags", tagsMap);
-                            userInfo.put("showMyLocation", true);
-//                            UpdateLocation.updateLocation(getApplicationContext());
-                            currentUserDb.updateChildren(userInfo);
-                            DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
-                            tags.child("default").child(userId).setValue(true);
-                            Toast.makeText(getContext(), "Register successful!", Toast.LENGTH_SHORT).show();
-                        }
+            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(getContext(), "sign_up_error", Toast.LENGTH_SHORT).show();
+                    } else {
+                        String userId = mAuth.getCurrentUser().getUid();
+                        DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+                        String dateOfBirth = date.getText().toString();
+                        Map tagsMap = new HashMap<>();
+                        Map tagInfo = new HashMap<>();
+                        Map userInfo = new HashMap<>();
+                        tagInfo.put("minAge", "18");
+                        tagInfo.put("maxAge", "99");
+                        tagInfo.put("maxDistance", "100000");
+                        if (radioButton.getText().toString().equals("Male")) {
+                            tagInfo.put("gender", "Female");
+                        } else tagInfo.put("gender", "Male");
+                        tagsMap.put("default", tagInfo);
+                        userInfo.put("name", name);
+                        userInfo.put("sex", radioButton.getText().toString());
+                        userInfo.put("profileImageUrl", "default");
+                        userInfo.put("dateOfBirth", dateOfBirth);
+                        userInfo.put("tags", tagsMap);
+                        userInfo.put("showMyLocation", true);
+                        currentUserDb.updateChildren(userInfo);
+                        DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
+                        tags.child("default").child(userId).setValue(true);
+                        Toast.makeText(getContext(), "Register successful!", Toast.LENGTH_SHORT).show();
                     }
-                });
-            } else {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.requestLocationPermission);
-            }
+                }
+            });
         } catch (Exception e) {
             Toast.makeText(getContext(), "Fill all fields!", Toast.LENGTH_SHORT).show();
         }
@@ -282,21 +274,4 @@ public class RegistrationEmailFragment extends Fragment {
         super.onStop();
         mAuth.removeAuthStateListener(firebaseAuthStateListener);
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case Constants.requestLocationPermission:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    register();
-                } else {
-                    Toast.makeText(getContext(), "You need to accept permission!", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-
 }

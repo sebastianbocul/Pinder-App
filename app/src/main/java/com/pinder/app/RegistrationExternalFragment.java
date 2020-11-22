@@ -2,7 +2,6 @@ package com.pinder.app;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,13 +19,10 @@ import androidx.annotation.Nullable;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pinder.app.util.Constants;
 import com.pinder.app.util.StringDateToAge;
 
 import java.util.Calendar;
@@ -55,9 +50,6 @@ public class RegistrationExternalFragment extends Fragment {
     private boolean dateValid = false;
     private FirebaseAuth mAuth;
     private EditText date;
-    private FusedLocationProviderClient fusedLocationProviderClient;
-    private TextView title;
-    private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
 
     public RegistrationExternalFragment() {
         // Required empty public constructor
@@ -100,8 +92,6 @@ public class RegistrationExternalFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        title = getView().findViewById(R.id.title);
         date = getView().findViewById(R.id.date);
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -205,26 +195,26 @@ public class RegistrationExternalFragment extends Fragment {
             Toast.makeText(getContext(), "Fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
-            try {
-                updateDb();
-                changeActivity();
-            } catch (Exception e) {
-                Toast.makeText(getContext(), "Opps something went wrong", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.requestLocationPermission);
+        try {
+            updateDb();
+            changeActivity();
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Opps something went wrong", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mAuth.removeAuthStateListener(firebaseAuthStateListener);
     }
 
     private void changeActivity() {
-        Intent intent = new Intent(getActivity(), MainFragmentManager.class);
+        Intent intent;
+        if (checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
+            intent = new Intent(getActivity(), MainFragmentManager.class);
+        } else {
+            intent = new Intent(getActivity(), RequestLocationPermissionActivity.class);
+        }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
@@ -262,20 +252,5 @@ public class RegistrationExternalFragment extends Fragment {
     private String getFirstName(String displayName) {
         String[] words = displayName.split(" ");
         return words[0];
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case Constants.requestLocationPermission:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    register();
-                } else {
-                    Toast.makeText(getContext(), "You need to accept permission!", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
     }
 }

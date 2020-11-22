@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RequestLocationPermissionActivity"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="200sp"
+        android:src="@drawable/ic_request_location"/>
+    <TextView
+        android:id="@+id/text_view_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="48sp"
+        android:text="Location"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20sp"
+        android:paddingTop="10sp"
+        android:paddingRight="20sp"
+        android:paddingBottom="20sp"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:text="Pinder requires location permission to function property."/>
+
+    <Button
+        android:id="@+id/button_request_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Grant permission"
+        android:paddingRight="10sp"
+        android:paddingLeft="10sp"
+        android:background="@drawable/rounded_button"
+        />
+
+</LinearLayout>

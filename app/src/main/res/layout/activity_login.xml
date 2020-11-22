@@ -282,21 +282,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/logoLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/bigLogo"
-                android:layout_width="match_parent"
-                android:layout_height="500sp"
-                android:layout_weight="1"
-                android:padding="10sp"
-                android:src="@drawable/ic_logovector" />
-
-        </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

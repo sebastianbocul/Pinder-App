@@ -2,10 +2,8 @@ package com.pinder.app;
 
 import android.Manifest;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
@@ -20,10 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.webkit.PermissionRequest;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -47,6 +43,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
@@ -100,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
     private TextView regulationsTextView, registerTextView;
-    private LinearLayout myLayout, logoLayout;
+    private LinearLayout myLayout;
     private Button continueFacebook, continueGoogle;
     private ViewGroup continueEmailLayout, continuePhoneLayout, phoneVerificationLayout;
     private Button continueEmail, continuePhone;
@@ -109,8 +106,7 @@ public class LoginActivity extends AppCompatActivity {
     private String phoneAuthCode;
     private ProgressBar progressBar;
     private TextView logoTextView;
-    private String registerProvider;
-    ImageView image;
+    private String registerProvider = "external";
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -130,27 +126,16 @@ public class LoginActivity extends AppCompatActivity {
         setRegulationsClickable();
         setRegisterClickable();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            myLayout.setVisibility(View.VISIBLE);
-            logoLayout.setVisibility(View.INVISIBLE);
-        } else {
-            logoLayout.setVisibility(View.VISIBLE);
-            myLayout.setVisibility(View.INVISIBLE);
-            Animation anim = AnimationUtils.loadAnimation(this, R.anim.rotate);
-            anim.setRepeatCount(Animation.INFINITE);
-            image.startAnimation(anim);
-        }
+        myLayout.setVisibility(View.VISIBLE);
         authStateListener();
     }
 
     private void setObjectsById() {
         myLayout = findViewById(R.id.mainLayout);
-        logoLayout = findViewById(R.id.logoLayout);
         continueFacebook = findViewById(R.id.continue_facebook);
         mLogin = findViewById(R.id.login);
         mEmail = findViewById(R.id.email);
         mPassword = findViewById(R.id.password);
-        image = findViewById(R.id.bigLogo);
         continueEmail = findViewById(R.id.continue_email);
         continueGoogle = findViewById(R.id.continue_google);
         registerTextView = findViewById(R.id.registerTextView);
@@ -243,7 +228,6 @@ public class LoginActivity extends AppCompatActivity {
     private void authStateListener() {
         firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
             DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
-
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -251,32 +235,24 @@ public class LoginActivity extends AppCompatActivity {
                     dr.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (logoLayout.getVisibility() == View.VISIBLE) {
-                                Animation animScale = AnimationUtils.loadAnimation(getApplication(), R.anim.scale);
-                                logoLayout.startAnimation(animScale);
-                            }
                             final Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    logoLayout.setVisibility(View.GONE);
-                                    logoLayout.clearAnimation();
-                                    image.clearAnimation();
                                     if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
                                         if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                             Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
                                             startActivity(intent);
                                             finish();
-                                            return;
                                         } else {
-                                            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.requestLocationPermission);
+                                            Intent requestLocationActivity = new Intent(LoginActivity.this, RequestLocationPermissionActivity.class);
+                                            startActivity(requestLocationActivity);
+                                            finish();
                                         }
                                     } else {
                                         Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
                                         intent.putExtra("register_type", registerProvider);
                                         startActivity(intent);
-                                        finish();
-                                        return;
                                     }
                                 }
                             }, 300);
@@ -309,6 +285,7 @@ public class LoginActivity extends AppCompatActivity {
         public void onVerificationCompleted(PhoneAuthCredential credential) {
             Log.d("PhoneAuth", "onVerificationCompleted:" + credential);
             progressBar.setVisibility(View.GONE);
+            phoneVerificationEditText.setText("Auto-fill");
             handlePhoneAuth(credential);
         }
 
@@ -319,7 +296,7 @@ public class LoginActivity extends AppCompatActivity {
             progressBar.setVisibility(View.GONE);
             Log.w("PhoneAuth", "onVerificationFailed", e);
             if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                Toast.makeText(LoginActivity.this, "Oops, something went wrong! Please check phone number format", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Please check phone number format", Toast.LENGTH_SHORT).show();
                 // Invalid request
                 // ...
             } else if (e instanceof FirebaseTooManyRequestsException) {
@@ -474,17 +451,10 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void checkLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-        } else {
-            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.requestLocationPermission);
-        }
-    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         mAuth.addAuthStateListener(firebaseAuthStateListener);
     }
 
@@ -514,36 +484,6 @@ public class LoginActivity extends AppCompatActivity {
             handleSignInResult(task);
         }
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        try {
-            switch (requestCode) {
-                case Constants.requestLocationPermission:
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this, "You need to accept permission!", Toast.LENGTH_SHORT).show();
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                checkLocationPermission();
-                            }
-                        }, 2000);
-                        return;
-                    }
-                    break;
-                default:
-                    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            }
-        } catch (Exception e) {
-            Toast.makeText(this, "Opps something went wrong!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     public void clearInstances() {
         SettingsFirebase.instance = null;
         SettingsRepository.instance = null;
