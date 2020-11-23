@@ -168,6 +168,10 @@ dependencies {
     //phone auth not working
     //implementation 'com.google.firebase:firebase-auth:20.0.1'
     implementation 'com.google.firebase:firebase-auth:19.4.0'
+
+    //observable fields
+    implementation group: 'androidx.databinding', name: 'databinding-common', version: '4.2.0-alpha16'
+
 }
 kapt {
     correctErrorTypes = true

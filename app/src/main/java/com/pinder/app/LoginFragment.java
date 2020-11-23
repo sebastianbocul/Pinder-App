@@ -1,12 +1,12 @@
 package com.pinder.app;
 
 import android.Manifest;
+import android.app.Application;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
@@ -14,10 +14,9 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -26,9 +25,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -77,16 +76,34 @@ import com.pinder.app.repository.SettingsRepository;
 import com.pinder.app.repository.TagsRepository;
 import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
-import com.pinder.app.util.Constants;
 import com.pinder.app.util.ExpandCollapseView;
 import com.pinder.app.util.PaintText;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.android.WithFragmentBindings;
+
 import static com.pinder.app.util.ExpandCollapseView.decideExpandOrCollapse;
 
-public class LoginActivity extends AppCompatActivity {
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link LoginFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+@WithFragmentBindings
+@AndroidEntryPoint
+public class LoginFragment extends Fragment {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
     private static final String EMAIL = "email";
     private static final String TAG = "LoginActivity";
     private CallbackManager callbackManager;
@@ -108,15 +125,54 @@ public class LoginActivity extends AppCompatActivity {
     private TextView logoTextView;
     private String registerProvider = "external";
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Inject
+    Application application;
+
+    public LoginFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment LoginFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static LoginFragment newInstance(String param1, String param2) {
+        LoginFragment fragment = new LoginFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_login, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         setObjectsById();
         mAuth = FirebaseAuth.getInstance();
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(getApplication());
+        FacebookSdk.sdkInitialize(application);
+        AppEventsLogger.activateApp(application);
         callbackManager = CallbackManager.Factory.create();
         setOnClickListeners();
         clearInstances();
@@ -131,25 +187,25 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setObjectsById() {
-        myLayout = findViewById(R.id.mainLayout);
-        continueFacebook = findViewById(R.id.continue_facebook);
-        mLogin = findViewById(R.id.login);
-        mEmail = findViewById(R.id.email);
-        mPassword = findViewById(R.id.password);
-        continueEmail = findViewById(R.id.continue_email);
-        continueGoogle = findViewById(R.id.continue_google);
-        registerTextView = findViewById(R.id.registerTextView);
-        regulationsTextView = findViewById(R.id.regulationsTextView);
-        continueEmailLayout = findViewById(R.id.continue_email_layout);
-        continuePhoneLayout = findViewById(R.id.continue_with_phone_layout);
-        continuePhone = findViewById(R.id.continue_with_phone);
-        sendPhoneAuth = findViewById(R.id.send_phone_auth);
-        phoneEditText = findViewById(R.id.phone_edit_text);
-        phoneVerificationEditText = findViewById(R.id.phone_verification_edit_text);
-        phoneVerificationButton = findViewById(R.id.phone_verification_button);
-        phoneVerificationLayout = findViewById(R.id.phone_verification_layout);
-        progressBar = findViewById(R.id.progress_bar);
-        logoTextView = findViewById(R.id.logo_text_view);
+        myLayout = getView().findViewById(R.id.mainLayout);
+        continueFacebook = getView().findViewById(R.id.continue_facebook);
+        mLogin = getView().findViewById(R.id.login);
+        mEmail = getView().findViewById(R.id.email);
+        mPassword = getView().findViewById(R.id.password);
+        continueEmail = getView().findViewById(R.id.continue_email);
+        continueGoogle = getView().findViewById(R.id.continue_google);
+        registerTextView = getView().findViewById(R.id.registerTextView);
+        regulationsTextView = getView().findViewById(R.id.regulationsTextView);
+        continueEmailLayout = getView().findViewById(R.id.continue_email_layout);
+        continuePhoneLayout = getView().findViewById(R.id.continue_with_phone_layout);
+        continuePhone = getView().findViewById(R.id.continue_with_phone);
+        sendPhoneAuth = getView().findViewById(R.id.send_phone_auth);
+        phoneEditText = getView().findViewById(R.id.phone_edit_text);
+        phoneVerificationEditText = getView().findViewById(R.id.phone_verification_edit_text);
+        phoneVerificationButton = getView().findViewById(R.id.phone_verification_button);
+        phoneVerificationLayout = getView().findViewById(R.id.phone_verification_layout);
+        progressBar = getView().findViewById(R.id.progress_bar);
+        logoTextView = getView().findViewById(R.id.logo_text_view);
     }
 
     private void setOnClickListeners() {
@@ -174,7 +230,7 @@ public class LoginActivity extends AppCompatActivity {
         continueFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList(EMAIL));
+                LoginManager.getInstance().logInWithReadPermissions(getActivity(), Arrays.asList(EMAIL));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
@@ -210,7 +266,7 @@ public class LoginActivity extends AppCompatActivity {
                     PhoneAuthOptions.newBuilder(mAuth)
                             .setPhoneNumber(phoneNumber)       // Phone number to verify
                             .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                            .setActivity(this)                 // Activity (for callback binding)
+                            .setActivity(getActivity())                 // Activity (for callback binding)
                             .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
                             .build();
             PhoneAuthProvider.verifyPhoneNumber(options);
@@ -228,6 +284,7 @@ public class LoginActivity extends AppCompatActivity {
     private void authStateListener() {
         firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
             DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
+
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -240,17 +297,15 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
-                                        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                            Intent intent = new Intent(LoginActivity.this, MainFragmentManager.class);
+                                        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                            Intent intent = new Intent(getActivity(), MainFragmentManager.class);
                                             startActivity(intent);
-                                            finish();
                                         } else {
-                                            Intent requestLocationActivity = new Intent(LoginActivity.this, RequestLocationPermissionActivity.class);
+                                            Intent requestLocationActivity = new Intent(getActivity(), RequestLocationPermissionActivity.class);
                                             startActivity(requestLocationActivity);
-                                            finish();
                                         }
                                     } else {
-                                        Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+                                        Intent intent = new Intent(getActivity(), RegistrationActivity.class);
                                         intent.putExtra("register_type", registerProvider);
                                         startActivity(intent);
                                     }
@@ -268,7 +323,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void clearNotifications() {
-        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
     }
 
@@ -277,7 +332,7 @@ public class LoginActivity extends AppCompatActivity {
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
     }
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -296,11 +351,11 @@ public class LoginActivity extends AppCompatActivity {
             progressBar.setVisibility(View.GONE);
             Log.w("PhoneAuth", "onVerificationFailed", e);
             if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                Toast.makeText(LoginActivity.this, "Please check phone number format", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Please check phone number format", Toast.LENGTH_SHORT).show();
                 // Invalid request
                 // ...
             } else if (e instanceof FirebaseTooManyRequestsException) {
-                Toast.makeText(LoginActivity.this, "Too many requests! Please try again later.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Too many requests! Please try again later.", Toast.LENGTH_SHORT).show();
                 // The SMS quota for the project has been exceeded
                 // ...
             }
@@ -324,7 +379,7 @@ public class LoginActivity extends AppCompatActivity {
         public void onCodeAutoRetrievalTimeOut(@NonNull String s) {
             super.onCodeAutoRetrievalTimeOut(s);
             ExpandCollapseView.collapse(phoneVerificationLayout);
-            Toast.makeText(LoginActivity.this, "Oops, something went wrong!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Oops, something went wrong!", Toast.LENGTH_SHORT).show();
             progressBar.setVisibility(View.GONE);
         }
     };
@@ -336,7 +391,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(@NonNull View widget) {
                 registerProvider = "email";
-                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+                Intent intent = new Intent(getActivity(), RegistrationActivity.class);
                 intent.putExtra("register_type", registerProvider);
                 startActivity(intent);
             }
@@ -353,14 +408,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(@NonNull View widget) {
                 TermsDialog rg = new TermsDialog();
-                rg.show(getSupportFragmentManager(), "Terms Dialog");
+                rg.show(getChildFragmentManager(), "Terms Dialog");
             }
         };
         ClickableSpan clickableSpan2 = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
                 PrivacyDialog pd = new PrivacyDialog();
-                pd.show(getSupportFragmentManager(), "Privacy Dialog");
+                pd.show(getChildFragmentManager(), "Privacy Dialog");
             }
         };
         ss.setSpan(clickableSpan1, 29, 34, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -374,12 +429,12 @@ public class LoginActivity extends AppCompatActivity {
         String email = mEmail.getText().toString();
         String password = mPassword.getText().toString();
         if (email.isEmpty()) {
-            Toast.makeText(LoginActivity.this, "Wrong email", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Wrong email", Toast.LENGTH_SHORT).show();
             mEmail.setError("Enter email!");
         }
         if (password.isEmpty()) {
             mPassword.setError("Enter password!");
-            Toast.makeText(LoginActivity.this, "Wrong password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Wrong password", Toast.LENGTH_SHORT).show();
         }
         if (!email.isEmpty() && !password.isEmpty()) {
             handleEmailAuth(email, password);
@@ -435,7 +490,7 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "linkWithCredential: credential" + credential);
         mAuth = FirebaseAuth.getInstance();
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -443,7 +498,7 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = task.getResult().getUser();
                         } else {
                             Log.w("myLog", "linkWithCredential:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                            Toast.makeText(getActivity(), "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             LoginManager.getInstance().logOut();
                         }
@@ -451,29 +506,20 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(firebaseAuthStateListener);
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         mAuth.removeAuthStateListener(firebaseAuthStateListener);
     }
 
     @Override
-    public void onBackPressed() {
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
@@ -484,6 +530,7 @@ public class LoginActivity extends AppCompatActivity {
             handleSignInResult(task);
         }
     }
+
     public void clearInstances() {
         SettingsFirebase.instance = null;
         SettingsRepository.instance = null;

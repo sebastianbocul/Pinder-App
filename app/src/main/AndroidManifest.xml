@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".RequestLocationPermissionActivity"></activity>
-        <activity android:name=".SplashActivity">
+        <activity android:name=".StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,9 +40,6 @@
 
         <activity android:name=".LocationActivity" />
         <activity android:name=".ChatActivity" />
-        <activity
-            android:name=".LoginActivity"
-            android:theme="@style/AppTheme.LoginTheme"></activity>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

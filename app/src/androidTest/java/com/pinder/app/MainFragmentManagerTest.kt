@@ -21,7 +21,7 @@ class MainFragmentManagerTest {
     @Test
     @RepeatTest(1)
     fun click_randomNavigationButtons() {
-        val activityScenario = ActivityScenario.launch(LoginActivity::class.java)
+        val activityScenario = ActivityScenario.launch(StartActivity::class.java)
         Thread.sleep(5000);
         val array = intArrayOf(R.id.nav_settings,R.id.nav_tags,R.id.nav_main,R.id.nav_matches,R.id.nav_profile)
         for (x in 0 until 50){

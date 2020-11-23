@@ -2,39 +2,4 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation"
-    app:startDestination="@id/mainFragment">
-
-    <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.pinder.app.ui.MainFragment"
-        android:label="fragment_main_activity"
-        tools:layout="@layout/fragment_main" >
-        <action
-            android:id="@+id/action_mainFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_profileFragment2"
-            app:destination="@id/profileFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_tagsManagerFragment"
-            app:destination="@id/tagsManagerFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/profileFragment"
-        android:name="com.pinder.app.ui.ProfileFragment"
-        android:label="ProfileFragment" >
-        <action
-            android:id="@+id/action_profileFragment_to_mainFragment3"
-            app:destination="@id/mainFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/tagsManagerFragment"
-        android:name="com.pinder.app.ui.TagsManagerFragment"
-        android:label="fragment_tags_manager"
-        tools:layout="@layout/fragment_tags_manager" >
-        <action
-            android:id="@+id/action_tagsManagerFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
-    </fragment>
-</navigation>
+    android:id="@+id/navigation" />

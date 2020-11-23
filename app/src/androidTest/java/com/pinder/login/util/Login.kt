@@ -5,11 +5,11 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
-import com.pinder.app.LoginActivity
 import com.pinder.app.R
+import com.pinder.app.StartActivity
 
 fun login() {
-    val activityScenario = ActivityScenario.launch(LoginActivity::class.java)
+    val activityScenario = ActivityScenario.launch(StartActivity::class.java)
     val testUser = "test@test.test"
     val testUserPassword = "dupa12"
     //CHECK LOGIN VIEW

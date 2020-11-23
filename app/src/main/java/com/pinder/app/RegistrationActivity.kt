@@ -56,7 +56,7 @@ class RegistrationActivity : AppCompatActivity() {
         var backArrowImage: ImageView = findViewById(R.id.back_arrow)
         DisableButton.disableButton(backArrowImage)
         backArrowImage.setOnClickListener {
-            val i = Intent(this, LoginActivity::class.java)
+            val i = Intent(this, StartActivity::class.java)
             startActivity(i)
         }
     }

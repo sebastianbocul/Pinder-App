@@ -231,15 +231,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
-                        <EditText
-                            android:id="@+id/phone_verification_edit_text"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="000000"
-                            android:inputType="phone"
-                            android:maxLength="10"
-                            android:autofillHints="phoneNational"
-                            android:paddingTop="2sp" />
+                            <EditText
+                                android:id="@+id/phone_verification_edit_text"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="000000"
+                                android:inputType="phone"
+                                android:maxLength="10"
+                                android:autofillHints="phoneNational"
+                                android:paddingTop="2sp" />
 
                             <ProgressBar
                                 android:id="@+id/progress_bar"

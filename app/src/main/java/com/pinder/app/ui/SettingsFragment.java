@@ -1,6 +1,5 @@
 package com.pinder.app.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,10 +39,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pinder.app.BaseApplication;
-import com.pinder.app.LoginActivity;
-import com.pinder.app.MainFragmentManager;
 import com.pinder.app.R;
+import com.pinder.app.StartActivity;
 import com.pinder.app.ui.dialogs.BugsAndImprovementsDialog;
 import com.pinder.app.ui.dialogs.LicencesDialog;
 import com.pinder.app.ui.dialogs.PrivacyDialog;
@@ -402,7 +399,7 @@ public class SettingsFragment extends Fragment {
     }
 
     public void logoutUser() {
-        Intent intent = new Intent(context, LoginActivity.class);
+        Intent intent = new Intent(context, StartActivity.class);
         LoginManager.getInstance().logOut();
         //settingsViewModel.clearInstances();
         mAuth.signOut();

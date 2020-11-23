@@ -11,14 +11,12 @@ import androidx.test.espresso.action.*
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import com.pinder.app.LoginActivity
 import com.pinder.app.R
-import com.pinder.app.adapters.TagsAdapter
+import com.pinder.app.StartActivity
 import com.pinder.app.adapters.TagsManagerAdapter
 import com.pinder.app.util.RecyclerViewSizeMatcher
 import com.pinder.app.util.RepeatRule
@@ -36,7 +34,7 @@ class TagsFragmentTest {
     var repeatRule: RepeatRule = RepeatRule()
 
     @get:Rule
-    var activityScenarioRule = activityScenarioRule<LoginActivity>()
+    var activityScenarioRule = activityScenarioRule<StartActivity>()
 
     @Test
     @RepeatTest(1)
