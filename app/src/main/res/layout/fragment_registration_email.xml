@@ -110,7 +110,7 @@
         android:layout_height="30sp"
         android:layout_gravity="center"
         android:layout_marginTop="10sp"
-        android:background="@drawable/rounded_button"
+        android:background="@drawable/view_rounded_button"
         android:text="Register">
     </Button>
 </LinearLayout>

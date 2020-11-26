@@ -9,7 +9,6 @@ import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -53,8 +52,7 @@ public class MainFragmentManager extends AppCompatActivity {
         UserStatus = LOGGED;
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_main);
-        initAdaptiveAd();
-        initFullScreenAdd();
+
         final ViewPager viewPager = findViewById(R.id.pager);
         if (getIntent().getExtras() != null) {
             if (getIntent().getExtras().getString("fromActivity") != null) {
@@ -126,17 +124,25 @@ public class MainFragmentManager extends AppCompatActivity {
                 return true;
             }
         });
+
+        initAdmob();
+        initAdaptiveAd();
+        initFullScreenAdd();
+    }
+
+    private void initAdmob() {
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+                Log.d("ADS INIT SUCCES", "onSuccess: ");
+            }
+        });
     }
 
     public void replaceTabPage(int tabPage) {
         bottomNavigationView.setSelectedItemId(tabPage);
     }
     private void initAdaptiveAd() {
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
         adContainerView = findViewById(R.id.ad_frame);
         // Step 1 - Create an AdView and set the ad unit ID on it.
         adView = new AdView(this);
@@ -173,8 +179,7 @@ public class MainFragmentManager extends AppCompatActivity {
     }
 
     private void initFullScreenAdd() {
-        MobileAds.initialize(this,
-                getString(R.string.test_app_ad_id));
+
         mFullScreenAd = new InterstitialAd(this);
         mFullScreenAd.setAdUnitId(getString(R.string.test_full_screen_ad));
         mFullScreenAd.loadAd(new AdRequest.Builder().build());

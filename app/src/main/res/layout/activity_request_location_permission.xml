@@ -35,7 +35,7 @@
         android:text="Grant permission"
         android:paddingRight="10sp"
         android:paddingLeft="10sp"
-        android:background="@drawable/rounded_button"
+        android:background="@drawable/view_rounded_button"
         />
 
 </LinearLayout>

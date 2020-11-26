@@ -74,7 +74,7 @@
                     android:layout_height="50dp"
                     android:layout_gravity="center|bottom"
                     android:layout_marginBottom="10sp"
-                    android:background="@drawable/rounded_button"
+                    android:background="@drawable/view_rounded_button"
                     android:paddingLeft="10sp"
                     android:paddingRight="10sp"
                     android:text="Restart matches" />
@@ -85,7 +85,7 @@
                     android:layout_height="50dp"
                     android:layout_gravity="center|bottom"
                     android:layout_marginBottom="10sp"
-                    android:background="@drawable/rounded_button"
+                    android:background="@drawable/view_rounded_button"
                     android:paddingLeft="10sp"
                     android:paddingRight="10sp"
                     android:text="move Users Loc To GeoFire" />
@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|bottom"
                     android:layout_marginBottom="10sp"
-                    android:background="@drawable/rounded_button"
+                    android:background="@drawable/view_rounded_button"
                     android:paddingLeft="10sp"
                     android:paddingRight="10sp"
                     android:text="SignOut" />
@@ -107,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|bottom"
                     android:layout_marginBottom="20sp"
-                    android:background="@drawable/rounded_button"
+                    android:background="@drawable/view_rounded_button"
                     android:paddingLeft="10sp"
                     android:paddingRight="10sp"
                     android:text="Delete account" />
@@ -125,7 +125,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|bottom"
                     android:layout_marginBottom="50sp"
-                    android:background="@drawable/rounded_button"
+                    android:background="@drawable/view_rounded_button"
                     android:paddingLeft="10sp"
                     android:paddingRight="10sp"
                     android:text="Bugs / Improvement" />

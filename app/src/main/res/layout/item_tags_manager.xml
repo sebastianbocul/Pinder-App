@@ -8,8 +8,9 @@
     android:id="@+id/tagsRecyclerViewItem">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/view_tags_gradient"
         android:padding="8dp">
 
         <TextView
@@ -87,7 +88,8 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="center|right">
+        android:layout_gravity="center|right"
+        android:gravity="center">
         <ImageView
             android:id="@+id/tag_delete"
             android:layout_width="34sp"

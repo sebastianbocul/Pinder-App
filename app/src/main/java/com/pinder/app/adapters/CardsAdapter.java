@@ -26,7 +26,7 @@ public class CardsAdapter extends ArrayAdapter<Card> {
     public View getView(int position, View convertView, ViewGroup parent) {
         Card card_item = getItem(position);
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_card, parent, false);
         }
         TextView name = convertView.findViewById(R.id.name);
         TextView tags = convertView.findViewById(R.id.tags);

@@ -95,7 +95,7 @@
             android:layout_marginRight="4sp"
             android:layout_weight="0.2"
             android:width="0dp"
-            android:background="@drawable/rounded_button"
+            android:background="@drawable/view_rounded_button"
             android:text="Send" />
 
     </LinearLayout>

@@ -59,7 +59,7 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="20dp"
                     android:textColor="#000000"
-                    android:background="@drawable/rounded_button"
+                    android:background="@drawable/view_rounded_button"
                     android:drawableStart="@drawable/ic_login_mail"
                     android:drawableLeft="@drawable/ic_login_mail"
                     android:text="Continue with email" />
@@ -114,7 +114,7 @@
                         android:layout_gravity="center"
                         android:layout_marginLeft="2sp"
                         android:layout_marginRight="2sp"
-                        android:background="@drawable/rounded_button"
+                        android:background="@drawable/view_rounded_button"
                         android:text="LOGIN" />
 
                     <LinearLayout
@@ -137,7 +137,7 @@
                     android:layout_height="40sp"
                     android:text="Continue with facebook"
                     android:textColor="#000000"
-                    android:background="@drawable/rounded_button"
+                    android:background="@drawable/view_rounded_button"
                     android:drawableLeft="@drawable/ic_login_facebook_white"
                     android:drawableStart="@drawable/ic_login_facebook_white"
                     android:layout_marginTop="10sp"
@@ -158,7 +158,7 @@
                     android:layout_marginBottom="10sp"
                     android:layout_marginLeft="6sp"
                     android:layout_marginRight="6sp"
-                    android:background="@drawable/rounded_button"
+                    android:background="@drawable/view_rounded_button"
                     android:text="Continue with Google"
                     android:drawableLeft="@drawable/ic_logo_google_white"
                     android:drawableStart="@drawable/ic_logo_google_white" />
@@ -172,7 +172,7 @@
                     android:layout_marginBottom="5sp"
                     android:layout_marginLeft="6sp"
                     android:layout_marginRight="6sp"
-                    android:background="@drawable/rounded_button"
+                    android:background="@drawable/view_rounded_button"
                     android:text="Continue with phone"
                     android:textColor="#000000"
                     android:drawableLeft="@drawable/ic_login_phone"
@@ -210,7 +210,7 @@
                         android:layout_gravity="center"
                         android:layout_marginLeft="2sp"
                         android:layout_marginRight="2sp"
-                        android:background="@drawable/rounded_button"
+                        android:background="@drawable/view_rounded_button"
                         android:layout_marginBottom="5sp"
                         android:text="Send" />
                     <LinearLayout
@@ -256,7 +256,7 @@
                             android:layout_gravity="center"
                             android:layout_marginLeft="2sp"
                             android:layout_marginRight="2sp"
-                            android:background="@drawable/rounded_button"
+                            android:background="@drawable/view_rounded_button"
                             android:layout_marginBottom="5sp"
                             android:text="Verify" />
                     </LinearLayout>

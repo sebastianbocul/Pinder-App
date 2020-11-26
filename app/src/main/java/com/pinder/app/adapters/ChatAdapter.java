@@ -55,7 +55,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             holder.mMessaage.setTextColor(Color.parseColor("#404040"));
             holder.mContainer.setLayoutParams(paramsContainer2);
             holder.mMessaage.setLayoutParams(paramsText);
-            holder.mContainer.setBackgroundResource(R.drawable.my_chat);
+            holder.mContainer.setBackgroundResource(R.drawable.view_my_chat);
             if (position != 0) {
                 if (chatList.get(position - 1).getCurrentUser() == false) {
                     holder.mChatImage.getLayoutParams().height = 125;
@@ -81,7 +81,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             holder.mMessaage.setTextColor(Color.parseColor("#404040"));
             holder.mContainer.setLayoutParams(paramsContainer);
             holder.mMessaage.setLayoutParams(paramsText);
-            holder.mContainer.setBackgroundResource(R.drawable.other_chat);
+            holder.mContainer.setBackgroundResource(R.drawable.view_other_chat);
             if (position != 0) {
                 if (chatList.get(position - 1).getCurrentUser() == true) {
                     holder.mChatImage.getLayoutParams().height = 125;

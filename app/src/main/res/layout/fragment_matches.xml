@@ -26,7 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5sp"
-            android:background="@drawable/rounded_button"
+
+            android:background="@drawable/view_rounded_button"
             android:text="all" />
 
         <androidx.recyclerview.widget.RecyclerView

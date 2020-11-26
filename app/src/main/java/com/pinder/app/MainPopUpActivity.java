@@ -24,7 +24,7 @@ public class MainPopUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_pop_up);
+        setContentView(R.layout.pop_up_matched);
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         profileImage = findViewById(R.id.profileImage);

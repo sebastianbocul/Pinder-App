@@ -4,7 +4,7 @@
     android:id="@+id/layoutId"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/pop_bg"
+    android:background="@drawable/view_pop_up_matched"
     android:orientation="vertical"
     tools:context="com.pinder.app.MainPopUpActivity">
 

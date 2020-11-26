@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="5sp"
-        android:background="@drawable/rounded_button"
+        android:background="@drawable/view_rounded_button"
         android:text="tag1"
         android:textSize="10sp" />
 </LinearLayout>
