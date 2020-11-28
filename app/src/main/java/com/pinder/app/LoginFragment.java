@@ -230,6 +230,7 @@ public class LoginFragment extends Fragment {
         continueFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "onClick: facebook");
                 LoginManager.getInstance().logInWithReadPermissions(getActivity(), Arrays.asList(EMAIL));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
@@ -239,10 +240,13 @@ public class LoginFragment extends Fragment {
 
                     @Override
                     public void onCancel() {
+                        Toast.makeText(getContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
+
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
+                        Toast.makeText(getContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -299,9 +303,11 @@ public class LoginFragment extends Fragment {
                                     if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
                                         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                             Intent intent = new Intent(getActivity(), MainFragmentManager.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                             startActivity(intent);
                                         } else {
                                             Intent requestLocationActivity = new Intent(getActivity(), RequestLocationPermissionActivity.class);
+                                            requestLocationActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                             startActivity(requestLocationActivity);
                                         }
                                     } else {

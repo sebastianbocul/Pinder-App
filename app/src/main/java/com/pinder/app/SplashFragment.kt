@@ -78,13 +78,16 @@ class SplashFragment : Fragment() {
                                 if (dataSnapshot.child("Users").child(user.uid).exists()) {
                                     if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                         val intent = Intent(activity, MainFragmentManager::class.java)
+                                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                         startActivity(intent)
                                     } else {
                                         val requestLocationActivity = Intent(activity, RequestLocationPermissionActivity::class.java)
+                                        requestLocationActivity.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                         startActivity(requestLocationActivity)
                                     }
                                 } else {
                                     val intent = Intent(activity, StartActivity::class.java)
+                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                     startActivity(intent)
                                 }
                             }, 300)

@@ -261,9 +261,7 @@
                             android:text="Verify" />
                     </LinearLayout>
                 </LinearLayout>
-
             </LinearLayout>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -281,7 +279,5 @@
                     app:srcCompat="@drawable/ic_logovector" />
             </LinearLayout>
         </LinearLayout>
-
-
     </RelativeLayout>
 </LinearLayout>
