@@ -84,7 +84,6 @@ public class MainFirebase {
     //change later// temp solution
     private MutableLiveData<Resource<ArrayList<Card>>> cardsArrayLD = new MutableLiveData<>();
     private LatLng myLoc;
-    private MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
     private String mUID;
     private ArrayList<String> usersIdLikesMe = new ArrayList<>();
     //counters- logs helpers
@@ -129,8 +128,7 @@ public class MainFirebase {
                     } else {
                         if (myTagsListTemp.size() == 0) {
                             myTagsAdapter.clear();
-                            myTagsAdapterLD.postValue(myTagsAdapter);
-                            myTagsList.clear();
+                              myTagsList.clear();
                             cardsArray.clear();
                             cardsArrayLD.postValue(Resource.emptydata(cardsArray));
                         }
@@ -196,10 +194,6 @@ public class MainFirebase {
                     @Override
                     public void onComplete() {
                         boolean tagsNotChanged = Arrays.equals(myTagsList.toArray(), myTagsListTemp.toArray());
-                        if (!tagsNotChanged) {
-                            Log.d("RxOnComplete", "onComplete: if1 " + tagsNotChanged);
-                            myTagsAdapterLD.postValue(myTagsAdapter);
-                        }
                         Log.d("RxOnComplete", "onComplete !sortByDistance.equals(sortByDistanceTemp) : " + !sortByDistance.equals(sortByDistanceTemp));
                         Log.d("RxOnComplete", "TagsNotChanged : " + tagsNotChanged);
                         if (!sortByDistance.equals(sortByDistanceTemp) || !tagsNotChanged) {
@@ -621,7 +615,4 @@ public class MainFirebase {
         return cardsArrayLD;
     }
 
-    public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
-        return myTagsAdapterLD;
-    }
 }

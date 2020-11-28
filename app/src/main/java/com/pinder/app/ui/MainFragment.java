@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +21,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -62,10 +60,7 @@ public class MainFragment extends Fragment {
     MainViewModel mainViewModel;
     private static final String TAG = "MainFragment";
     private ProgressBar progressBar;
-    private TagsManagerAdapter tagsAdapter;
-    private ArrayList<String> myTags = new ArrayList<>();
     private List<Card> cardsArray = new ArrayList<Card>();
-    private RelativeLayout relativeLayoutTags;
     private LinearLayout linearLayoutBottom;
     int adCounter = 0;
 
@@ -118,7 +113,6 @@ public class MainFragment extends Fragment {
         dislikeButton = getView().findViewById(R.id.dislikeButton);
         flingContainer = getView().findViewById(R.id.frame);
         progressBar = getView().findViewById(R.id.progress_bar);
-        relativeLayoutTags = getView().findViewById(R.id.relative_layout_tags);
         linearLayoutBottom = getView().findViewById(R.id.linear_layout_bottom);
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         mainViewModel.fetchDataOrUpdateLocationAndFetchData();
@@ -131,14 +125,9 @@ public class MainFragment extends Fragment {
     }
 
     private void setAdapters() {
-        arrayAdapter = new CardsAdapter(getContext(), R.layout.item, cardsArray);
+        arrayAdapter = new CardsAdapter(getContext(), R.layout.item_card, cardsArray);
         flingContainer.setAdapter(arrayAdapter);
-        tagsAdapter = new TagsManagerAdapter(getContext(), myTags);
-        RecyclerView recyclerView = getView().findViewById(R.id.mainTagsRecyclerView);
-        LinearLayoutManager horizontalLayoutManager
-                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(horizontalLayoutManager);
-        recyclerView.setAdapter(tagsAdapter);
+
     }
 
     private void setObservers() {
@@ -185,17 +174,6 @@ public class MainFragment extends Fragment {
                         Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
                     }
                 }
-            }
-        });
-        mainViewModel.getMyTagsAdapterLD().observe(getActivity(), new Observer<ArrayList<String>>() {
-            @Override
-            public void onChanged(ArrayList<String> strings) {
-                Log.d(TAG, "onChanged: LoadTags" + strings);
-                ArrayList<String> strings2 = mainViewModel.getMyTagsAdapterLD().getValue();
-                Log.d(TAG, "onChanged: LoadTags" + strings2);
-                myTags.clear();
-                myTags.addAll(strings);
-                tagsAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -282,8 +260,6 @@ public class MainFragment extends Fragment {
             }
         });
         linearLayoutBottom.setOnClickListener(v -> {
-        });
-        relativeLayoutTags.setOnClickListener(v -> {
         });
     }
 

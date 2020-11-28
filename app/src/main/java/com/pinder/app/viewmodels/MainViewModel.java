@@ -12,18 +12,17 @@ import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;
 
-
 public class MainViewModel extends ViewModel {
     MainRepository mainRepository;
     MutableLiveData<Resource<ArrayList<Card>>> cardsArrayLD = new MutableLiveData<>();
     MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
+
     @ViewModelInject
     public MainViewModel(MainRepository mainRepository) {
         this.mainRepository = mainRepository;
     }
 //    ToTestConstructor
 //    public MainViewModel(){}
-
 //    public MutableLiveData<Double> getMyLatitude() {
 //        return mainRepository.getMyLatitude();
 //    }
@@ -31,11 +30,6 @@ public class MainViewModel extends ViewModel {
 //    public MutableLiveData<Double> getMyLongitude() {
 //        return mainRepository.getMyLongitude();
 //    }
-
-    public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
-        myTagsAdapterLD = mainRepository.getMyTagsAdapterLD();
-        return myTagsAdapterLD;
-    }
 
     public MutableLiveData<com.pinder.app.util.Resource<ArrayList<Card>>> getCardsArrayLD() {
         cardsArrayLD = mainRepository.getCardsArrayLD();
@@ -45,6 +39,7 @@ public class MainViewModel extends ViewModel {
     public void fetchDataOrUpdateLocationAndFetchData() {
         mainRepository.fetchDataOrUpdateLocationAndFetchData();
     }
+
     public void isConnectionMatch(Card obj, Context con) {
         mainRepository.isConnectionMatch(obj, con);
     }

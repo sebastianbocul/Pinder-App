@@ -18,10 +18,6 @@ public class MainRepository {
         this.mainFirebase = mainFirebase;
     }
 
-    public MutableLiveData<ArrayList<String>> getMyTagsAdapterLD() {
-        return mainFirebase.getMyTagsAdapterLD();
-    }
-
     public MutableLiveData<Resource<ArrayList<Card>>> getCardsArrayLD() {
         return mainFirebase.getCardsArrayLD();
     }
