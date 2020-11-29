@@ -146,7 +146,7 @@ public class MainFragmentManager extends AppCompatActivity {
         adContainerView = findViewById(R.id.ad_frame);
         // Step 1 - Create an AdView and set the ad unit ID on it.
         adView = new AdView(this);
-        adView.setAdUnitId(getString(R.string.test_banner_ad));
+        adView.setAdUnitId(getString(R.string.banner_ad));
         adContainerView.addView(adView);
         loadBanner();
     }
@@ -179,9 +179,8 @@ public class MainFragmentManager extends AppCompatActivity {
     }
 
     private void initFullScreenAdd() {
-
         mFullScreenAd = new InterstitialAd(this);
-        mFullScreenAd.setAdUnitId(getString(R.string.test_full_screen_ad));
+        mFullScreenAd.setAdUnitId(getString(R.string.full_screen_ad));
         mFullScreenAd.loadAd(new AdRequest.Builder().build());
         mFullScreenAd.setAdListener(new AdListener() {
             @Override
