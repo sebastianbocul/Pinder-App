@@ -278,7 +278,7 @@ public class SettingsFragment extends Fragment {
         moveUsersLocToGeoFire = getView().findViewById(R.id.moveUsersLocToGeoFire);
         DisableButton.disableButton(restartMatches);
         DisableButton.disableButton(moveUsersLocToGeoFire);
-//        DisableButton.disableButtonInDebug(deleteUser);
+        DisableButton.disableButtonInDebug(deleteUser);
         restartMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

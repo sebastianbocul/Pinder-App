@@ -20,6 +20,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.pinder.app.ui.TagsFragment
 
 /**
  * A simple [Fragment] subclass.
@@ -86,9 +87,7 @@ class SplashFragment : Fragment() {
                                         startActivity(requestLocationActivity)
                                     }
                                 } else {
-                                    val intent = Intent(activity, StartActivity::class.java)
-                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                    startActivity(intent)
+                                    activity!!.supportFragmentManager.beginTransaction().replace(R.id.start_fragment_container, LoginFragment()).commit()
                                 }
                             }, 300)
                         }

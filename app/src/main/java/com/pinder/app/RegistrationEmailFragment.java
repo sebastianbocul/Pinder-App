@@ -230,7 +230,7 @@ public class RegistrationEmailFragment extends Fragment {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (!task.isSuccessful()) {
-                        Toast.makeText(getContext(), "sign_up_error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "User with that email already exists!", Toast.LENGTH_SHORT).show();
                     } else {
                         String userId = mAuth.getCurrentUser().getUid();
                         DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);

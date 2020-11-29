@@ -7,13 +7,15 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.pinder.app.R
 import com.pinder.app.StartActivity
+import org.hamcrest.Matchers
 
-fun login() {
-    val activityScenario = ActivityScenario.launch(StartActivity::class.java)
+fun loginEmail() {
     val testUser = "test@test.test"
     val testUserPassword = "dupa12"
     //CHECK LOGIN VIEW
     Thread.sleep(1000);
+    Espresso.onView(ViewMatchers.withId(R.id.continue_email)).perform(ViewActions.click());
+
     Espresso.onView(ViewMatchers.withId(R.id.loginActivity)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     Espresso.onView(ViewMatchers.withId(R.id.email)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     Espresso.onView(ViewMatchers.withId(R.id.password)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))

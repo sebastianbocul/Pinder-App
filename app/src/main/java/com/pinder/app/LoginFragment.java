@@ -124,7 +124,7 @@ public class LoginFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView logoTextView;
     private String registerProvider = "external";
-
+    private ProgressBar progressBarGoogle, progressBarEmail, progressBarPhone, progressBarFacebook;
     @Inject
     Application application;
 
@@ -206,6 +206,10 @@ public class LoginFragment extends Fragment {
         phoneVerificationLayout = getView().findViewById(R.id.phone_verification_layout);
         progressBar = getView().findViewById(R.id.progress_bar);
         logoTextView = getView().findViewById(R.id.logo_text_view);
+        progressBarGoogle = getView().findViewById(R.id.progress_bar_google);
+        progressBarEmail = getView().findViewById(R.id.progress_bar_email);
+        progressBarPhone = getView().findViewById(R.id.progress_bar_phone);
+        progressBarFacebook = getView().findViewById(R.id.progress_bar_facebook);
     }
 
     private void setOnClickListeners() {
@@ -231,7 +235,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: facebook");
-                LoginManager.getInstance().logInWithReadPermissions(getActivity(), Arrays.asList(EMAIL));
+                LoginManager.getInstance().logInWithReadPermissions(LoginFragment.this, Arrays.asList(EMAIL));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
@@ -240,13 +244,12 @@ public class LoginFragment extends Fragment {
 
                     @Override
                     public void onCancel() {
-                        Toast.makeText(getContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
-
+                        Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        Toast.makeText(getContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -288,7 +291,6 @@ public class LoginFragment extends Fragment {
     private void authStateListener() {
         firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
             DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
-
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -300,6 +302,7 @@ public class LoginFragment extends Fragment {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
+                                    disableProgressBars();
                                     if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
                                         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                             Intent intent = new Intent(getActivity(), MainFragmentManager.class);
@@ -470,23 +473,27 @@ public class LoginFragment extends Fragment {
     }
 
     private void handlePhoneAuth(PhoneAuthCredential credential) {
+        progressBarPhone.setVisibility(View.VISIBLE);
         registerProvider = "phone";
         authCredentials(credential);
     }
 
     private void handleEmailAuth(String email, String password) {
+        progressBarEmail.setVisibility(View.VISIBLE);
         registerProvider = "email";
         AuthCredential credential = EmailAuthProvider.getCredential(email, password);
         authCredentials(credential);
     }
 
     private void handleFacebookAuth(AccessToken token) {
+        progressBarFacebook.setVisibility(View.VISIBLE);
         registerProvider = "external";
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         authCredentials(credential);
     }
 
     private void handleGoogleAuth(GoogleSignInAccount account) {
+        progressBarGoogle.setVisibility(View.VISIBLE);
         registerProvider = "external";
         AuthCredential authCredential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         authCredentials(authCredential);
@@ -507,6 +514,7 @@ public class LoginFragment extends Fragment {
                             Toast.makeText(getActivity(), "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             LoginManager.getInstance().logOut();
+                           disableProgressBars();
                         }
                     }
                 });
@@ -550,5 +558,11 @@ public class LoginFragment extends Fragment {
         ProfileRepository.instance = null;
         MainFirebase.instance = null;
         MainRepository.instance = null;
+    }
+    public void disableProgressBars(){
+        progressBarPhone.setVisibility(View.GONE);
+        progressBarEmail.setVisibility(View.GONE);
+        progressBarFacebook.setVisibility(View.GONE);
+        progressBarGoogle.setVisibility(View.GONE);
     }
 }
