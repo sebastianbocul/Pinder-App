@@ -47,7 +47,7 @@ import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
 import com.pinder.app.util.Resource;
 import com.pinder.app.util.StringDateToAge;
-import com.pinder.app.utils.DisableButton;
+import com.pinder.app.utils.BuildVariantsHelper;
 import com.pinder.app.viewmodels.SettingsViewModel;
 
 import java.util.Calendar;
@@ -276,9 +276,9 @@ public class SettingsFragment extends Fragment {
         Button restartMatches,moveUsersLocToGeoFire;
         restartMatches = getView().findViewById(R.id.restartMatches);
         moveUsersLocToGeoFire = getView().findViewById(R.id.moveUsersLocToGeoFire);
-        DisableButton.disableButton(restartMatches);
-        DisableButton.disableButton(moveUsersLocToGeoFire);
-        DisableButton.disableButtonInDebug(deleteUser);
+        BuildVariantsHelper.disableButton(restartMatches);
+        BuildVariantsHelper.disableButton(moveUsersLocToGeoFire);
+        BuildVariantsHelper.disableButtonInDebug(deleteUser);
         restartMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.pinder.app.util.PaintText
-import com.pinder.app.utils.DisableButton
+import com.pinder.app.utils.BuildVariantsHelper
 
 class RegistrationActivity : AppCompatActivity() {
     private var logoTextView: TextView? = null;
@@ -54,7 +54,7 @@ class RegistrationActivity : AppCompatActivity() {
 
     fun handleBackArrow() {
         var backArrowImage: ImageView = findViewById(R.id.back_arrow)
-        DisableButton.disableButton(backArrowImage)
+        BuildVariantsHelper.disableButton(backArrowImage)
         backArrowImage.setOnClickListener {
             val i = Intent(this, StartActivity::class.java)
             startActivity(i)

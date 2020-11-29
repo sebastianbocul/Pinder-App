@@ -78,6 +78,7 @@ import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
 import com.pinder.app.util.ExpandCollapseView;
 import com.pinder.app.util.PaintText;
+import com.pinder.app.utils.BuildVariantsHelper;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -184,6 +185,7 @@ public class LoginFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myLayout.setVisibility(View.VISIBLE);
         authStateListener();
+        BuildVariantsHelper.showLayout(getView().findViewById(R.id.continue_email_layout));
     }
 
     private void setObjectsById() {

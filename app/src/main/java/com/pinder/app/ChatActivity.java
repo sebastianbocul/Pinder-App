@@ -28,7 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.adapters.ChatAdapter;
 import com.pinder.app.models.ChatObject;
 import com.pinder.app.util.SendFirebaseNotification;
-import com.pinder.app.utils.DisableButton;
+import com.pinder.app.utils.BuildVariantsHelper;
 import com.pinder.app.viewmodels.MatchesViewModel;
 
 import java.util.ArrayList;
@@ -274,7 +274,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public void handleBackArrow() {
         backArrowImage = findViewById(R.id.back_arrow);
-        DisableButton.disableButton(backArrowImage);
+        BuildVariantsHelper.disableButton(backArrowImage);
         backArrowImage.setOnClickListener(v -> {
             onBackPressed();
         });

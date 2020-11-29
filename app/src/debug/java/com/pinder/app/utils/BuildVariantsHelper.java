@@ -5,7 +5,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.view.View;
 
-public class DisableButton {
+public class BuildVariantsHelper {
     public static void disableButton(Button button){
     }
     public static void disableButton(ImageView button){
@@ -16,5 +16,10 @@ public class DisableButton {
     }
     public static void disableButtonInDebug(ImageView button){
         button.setVisibility(View.GONE);
+    }
+
+    //for firebase testing
+    public static void showLayout(LinearLayout linearLayout){
+        linearLayout.setVisibility(View.VISIBLE);
     }
 }

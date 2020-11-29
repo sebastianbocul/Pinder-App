@@ -28,7 +28,7 @@ import com.pinder.app.models.Card;
 import com.pinder.app.ui.dialogs.ReportUserDialog;
 import com.pinder.app.util.CalculateDistance;
 import com.pinder.app.util.StringDateToAge;
-import com.pinder.app.utils.DisableButton;
+import com.pinder.app.utils.BuildVariantsHelper;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -76,7 +76,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.user_progress_bar);
         defaultImage = findViewById(R.id.default_image);
         backArrowImage=findViewById(R.id.back_arrow);
-        DisableButton.disableButton(backArrowImage);
+        BuildVariantsHelper.disableButton(backArrowImage);
         mAuth = FirebaseAuth.getInstance();
         myId = mAuth.getCurrentUser().getUid();
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users");

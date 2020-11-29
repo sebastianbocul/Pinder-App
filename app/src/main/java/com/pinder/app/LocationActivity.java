@@ -10,11 +10,9 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,7 +42,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.util.CalculateDistance;
 import com.pinder.app.util.Constants;
-import com.pinder.app.utils.DisableButton;
+import com.pinder.app.utils.BuildVariantsHelper;
 
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback {
     public String currentUID;
@@ -315,7 +313,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
     public void handleBackArrow(){
         backArrowImage = findViewById(R.id.back_arrow);
-        DisableButton.disableButton(backArrowImage);
+        BuildVariantsHelper.disableButton(backArrowImage);
         backArrowImage.setOnClickListener(v->{
             onBackPressed();
         });
