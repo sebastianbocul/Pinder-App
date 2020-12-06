@@ -1,22 +1,25 @@
 package com.pinder.app.viewmodels;
 
+import androidx.hilt.lifecycle.ViewModelInject;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.pinder.app.models.MatchesObject;
+import com.pinder.app.repository.MainRepository;
 import com.pinder.app.repository.MatchesRepository;
 import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;
 
 public class MatchesViewModel extends ViewModel {
-    MatchesRepository matchesRepository;
+    private MatchesRepository matchesRepository;
     LiveData<Resource<ArrayList<MatchesObject>>> oryginalMatchesLiveData = new MutableLiveData<>();
     public MutableLiveData<String> tagLD;
 
-    public MatchesViewModel() {
-        matchesRepository = new MatchesRepository();
+    @ViewModelInject
+    public MatchesViewModel(MatchesRepository matchesRepository) {
+        this.matchesRepository=matchesRepository;
         oryginalMatchesLiveData = getOryginalMatches();
         if (tagLD == null) {
             tagLD = new MutableLiveData<>();
@@ -25,12 +28,12 @@ public class MatchesViewModel extends ViewModel {
     }
 
     public LiveData<Resource<ArrayList<MatchesObject>>> getOryginalMatches() {
-        oryginalMatchesLiveData = matchesRepository.getInstance().getOryginalMatches();
+        oryginalMatchesLiveData = matchesRepository.getMatches();
         return oryginalMatchesLiveData;
     }
 
     public LiveData<ArrayList<String>> getTags() {
-        return matchesRepository.getInstance().getTags();
+        return matchesRepository.getTags();
     }
 
     public Resource<ArrayList<MatchesObject>> getSortedMatches() {

@@ -27,11 +27,16 @@ import com.pinder.app.viewmodels.MatchesViewModel;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MatchesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class MatchesFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,8 +55,11 @@ public class MatchesFragment extends Fragment {
     private String sortBy;
     private TextView sortByTextView;
     private Button allMatches;
-    MatchesViewModel matchesViewModel;
     ArrayList<MatchesObject> oryginalMatches = new ArrayList<>();
+
+    @Inject
+    MatchesViewModel matchesViewModel;
+
 
     public MatchesFragment() {
         // Required empty public constructor
@@ -109,7 +117,6 @@ public class MatchesFragment extends Fragment {
         recyclerView.setLayoutManager(verticalLayoutManager);
         adapter = new MatchesTagsAdapter(getActivity(), myTags);
         recyclerView.setAdapter(adapter);
-        matchesViewModel = new ViewModelProvider(getActivity()).get(MatchesViewModel.class);
         matchesViewModel.tagLD.observe(getActivity(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
@@ -119,11 +126,15 @@ public class MatchesFragment extends Fragment {
         matchesViewModel.getOryginalMatches().observe(getActivity(), new Observer<Resource<ArrayList<MatchesObject>>>() {
             @Override
             public void onChanged(Resource<ArrayList<MatchesObject>> matchesObjects) {
-                matchesObjects = matchesViewModel.getSortedMatches();
-                oryginalMatches.clear();
-                oryginalMatches.addAll(matchesObjects.data);
-                mMatchesAdapter = new MatchesAdapter(oryginalMatches, getContext());
-                myRecyclerView.setAdapter(mMatchesAdapter);
+                if(matchesObjects!=null){
+                    if(matchesObjects.data!=null){
+                        matchesObjects = matchesViewModel.getSortedMatches();
+                        oryginalMatches.clear();
+                        oryginalMatches.addAll(matchesObjects.data);
+                        mMatchesAdapter = new MatchesAdapter(oryginalMatches, getContext());
+                        myRecyclerView.setAdapter(mMatchesAdapter);
+                    }
+                }
             }
         });
         matchesViewModel.getTags().observe(getActivity(), new Observer<ArrayList<String>>() {

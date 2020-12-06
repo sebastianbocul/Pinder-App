@@ -36,6 +36,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ChatActivity extends AppCompatActivity {
     DatabaseReference mDatabaseUserChat, mDatabaseChat, mDatabaseUser;
     boolean notify = false;
@@ -56,6 +61,9 @@ public class ChatActivity extends AppCompatActivity {
     private ImageView backArrowImage;
     private static final String TAG = "ChatActivity";
     private boolean chatRoomExists = true;
+
+    @Inject
+    public MatchesViewModel matchesViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +128,6 @@ public class ChatActivity extends AppCompatActivity {
     private void fillImagesAndName() {
         String matchName = "";
         String matchImageUrl = "default";
-        MatchesViewModel matchesViewModel = new ViewModelProvider(ChatActivity.this).get(MatchesViewModel.class);
         myProfileImageUrl = matchesViewModel.getMyImageUrl();
         if (getIntent().getExtras() != null) {
             matchName = getIntent().getExtras().getString("matchName");

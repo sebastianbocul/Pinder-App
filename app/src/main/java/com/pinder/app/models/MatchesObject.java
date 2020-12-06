@@ -1,7 +1,12 @@
 package com.pinder.app.models;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MatchesObject {
     private String userId;
     private String name;
@@ -19,6 +24,9 @@ public class MatchesObject {
         this.createdByMe = createdByMe;
         this.sortId = sortId;
         this.mutualTags = mutualTags;
+    }
+
+    public MatchesObject() {
     }
 
     public String getName() {
@@ -76,4 +84,5 @@ public class MatchesObject {
     public void setMutualTags(ArrayList<String> mutualTags) {
         this.mutualTags = mutualTags;
     }
+
 }

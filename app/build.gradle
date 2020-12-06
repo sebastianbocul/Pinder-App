@@ -175,6 +175,11 @@ dependencies {
 
     //couchbase
     implementation 'com.couchbase.lite:couchbase-lite-android-ee:2.6.0'
+
+    //jackson pojo -> map and vice versa
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.5'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.8.5'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.8.5'
 }
 kapt {
     correctErrorTypes = true

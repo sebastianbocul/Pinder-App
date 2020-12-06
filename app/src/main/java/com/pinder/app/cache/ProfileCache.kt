@@ -7,11 +7,10 @@ import com.couchbase.lite.DatabaseConfiguration
 import com.pinder.app.util.Constants
 
 
-class ProfileCache{
-    private var context:Context
+class ProfileCache(private var context: Context) {
     private var mDatabase: Database? = null
-    constructor(context: Context){
-        this.context = context
+
+    init {
         init()
     }
 
