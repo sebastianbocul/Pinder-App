@@ -28,7 +28,7 @@ import java.util.Set;
 public class MatchesFirebase implements MatchesDao {
     public static MatchesFirebase instance = null;
     String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-    MutableLiveData<ArrayList<String>> myTagsLiveData = new MutableLiveData<ArrayList<String>>();
+    MutableLiveData<Resource<ArrayList<String>>> myTagsLiveData = new MutableLiveData<Resource<ArrayList<String>>>();
     ArrayList<String> myTags = new ArrayList<>();
     private String myImageUrl = new String();
     private static final String TAG = "MatchesFirebase";
@@ -84,6 +84,7 @@ public class MatchesFirebase implements MatchesDao {
 
     public void loadTags() {
         myTags.clear();
+
         DatabaseReference matchesReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
         matchesReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -94,7 +95,7 @@ public class MatchesFirebase implements MatchesDao {
                     }
                 } else {
                     myTags.add("No matches");
-                    myTagsLiveData.postValue(myTags);
+                    myTagsLiveData.postValue(Resource.success(myTags));
                     myTags.clear();
                 }
             }
@@ -114,7 +115,7 @@ public class MatchesFirebase implements MatchesDao {
                 Set<String> set = new HashSet<>(myTags);
                 myTags.clear();
                 myTags.addAll(set);
-                myTagsLiveData.postValue(myTags);
+                myTagsLiveData.postValue(Resource.success(myTags));
             }
 
             @Override
@@ -285,7 +286,7 @@ public class MatchesFirebase implements MatchesDao {
     }
 
     @Override
-    public LiveData<ArrayList<String>> getTags() {
+    public LiveData<Resource<ArrayList<String>>> getTags() {
         return myTagsLiveData;
     }
 

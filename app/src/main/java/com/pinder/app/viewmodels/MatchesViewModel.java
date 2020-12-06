@@ -44,7 +44,7 @@ public class MatchesViewModel extends ViewModel {
         return sortedLiveData;
     }
 
-    public LiveData<ArrayList<String>> getTags() {
+    public LiveData<Resource<ArrayList<String>>> getTags() {
         return matchesRepository.getTags();
     }
 

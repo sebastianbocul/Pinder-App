@@ -61,7 +61,6 @@ class MatchesCache constructor(private var context: Context) {
                     for (matchObject in matches) {
                         Log.d(TAG, "Saving to CACHE : ${matchObject.userId}")
                         val map: Map<String, Any> = mapper.convertValue(matchObject, object : TypeReference<Map<String?, Any?>?>() {})
-                        Log.d(TAG,"Saving map: $map")
                         mutableDoc.setValue(matchObject.userId, map)
                     }
                     // Save it to the database.
@@ -72,7 +71,7 @@ class MatchesCache constructor(private var context: Context) {
     }
 
     fun getTags(): MutableLiveData<ArrayList<String>>? {
-        Log.d(TAG, "GET MATCHES")
+        Log.d(TAG, "GET MATCHES FROM CACHE")
         val tagsLD: MutableLiveData<ArrayList<String>> = MutableLiveData()
         var tags: ArrayList<String>? = arrayListOf()
         tagsLD.value = tags
@@ -81,7 +80,7 @@ class MatchesCache constructor(private var context: Context) {
             if (mDatabase != null) {
                 val document: Document? = mDatabase!!.getDocument("tags")
                 if (document != null) {
-                    val arrayCouchBase: Array? = document.getArray("mytags") as MutableArray?
+                    val arrayCouchBase: Array? = document.getArray("mytags")
                     tags = arrayCouchBase?.toList() as ArrayList<String>?
                     tagsLD.value = tags
                     Log.d(TAG, "Getting from cache finished")
@@ -97,7 +96,7 @@ class MatchesCache constructor(private var context: Context) {
     fun saveTags(tags: ArrayList<String>) {
         Log.d(TAG, "SAVING TAGS TO CACHE")
         try {
-            Log.d(TAG, "matches: $matches")
+            Log.d(TAG, "tags: $tags")
             val mutableDoc = MutableDocument("tags")
             var mutablearray:MutableArray = MutableArray(tags.toList())
             mutableDoc.setArray("mytags",mutablearray)

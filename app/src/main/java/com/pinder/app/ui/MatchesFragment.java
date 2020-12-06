@@ -135,20 +135,22 @@ public class MatchesFragment extends Fragment {
                 }
             }
         });
-        matchesViewModel.getTags().observe(getActivity(), new Observer<ArrayList<String>>() {
+        matchesViewModel.getTags().observe(getActivity(), new Observer<Resource<ArrayList<String>>>() {
             @Override
-            public void onChanged(ArrayList<String> strings) {
-                myTags.clear();
-                myTags.addAll(strings);
-                adapter.notifyDataSetChanged();
-                adapter.setClickListener(new MatchesTagsAdapter.ItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        sortBy = myTags.get(position);
-                        mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag(sortBy), getContext());
-                        myRecyclerView.setAdapter(mMatchesAdapter);
-                    }
-                });
+            public void onChanged(Resource<ArrayList<String>> strings) {
+                if (strings.data !=null) {
+                    myTags.clear();
+                    myTags.addAll(strings.data);
+                    adapter.notifyDataSetChanged();
+                    adapter.setClickListener(new MatchesTagsAdapter.ItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+                            sortBy = myTags.get(position);
+                            mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag(sortBy), getContext());
+                            myRecyclerView.setAdapter(mMatchesAdapter);
+                        }
+                    });
+                }
             }
         });
         allMatches.setOnClickListener(new View.OnClickListener() {

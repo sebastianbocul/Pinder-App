@@ -29,8 +29,34 @@ public class MatchesRepository {
         return MatchesFirebase.getInstance().getOryginalMatches();
     }
 
-    public LiveData<ArrayList<String>> getTags() {
-        return MatchesFirebase.getInstance().getTags();
+    public LiveData<Resource<ArrayList<String>>> getTags() {
+        return new ConstantNetworkBoundResource<ArrayList<String>, ArrayList<String>>(AppExecutors.getInstance()) {
+            @Override
+            protected void saveFirebaseResult(@NonNull ArrayList<String> item) {
+                Log.d(TAG, "saveFirebaseResult TAGS: " + item.toString());
+                matchesCache.saveTags(item);
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable ArrayList<String> data) {
+                Log.d(TAG, "shouldFetch TAGS: true");
+                return true;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ArrayList<String>> loadFromDb() {
+                Log.d(TAG, "loadFromDb TAGS: ");
+                return matchesCache.getTags();
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<Resource<ArrayList<String>>> createFirebaseCall() {
+                Log.d(TAG, "createFirebaseCall TAGS: ");
+                return MatchesFirebase.getInstance().getTags();
+            }
+        }.getAsLiveData();
     }
 
     public String getMyImageUrl() {

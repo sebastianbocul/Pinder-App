@@ -8,7 +8,7 @@ import com.pinder.app.util.Resource;
 import java.util.ArrayList;
 
 public interface MatchesDao {
-    LiveData<ArrayList<String>> getTags();
+    LiveData<Resource<ArrayList<String>>> getTags();
 
     LiveData<Resource<ArrayList<MatchesObject>>> getOryginalMatches();
 }
