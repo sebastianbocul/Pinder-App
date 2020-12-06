@@ -17,6 +17,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 @Module
 @InstallIn(ApplicationComponent.class)
 class AppModules {
+//    @Singleton
+//    @Provides
+//    public static
+
+
+
     @Singleton
     @Provides
     public static MainFirebase mainFirebase(Application application) {

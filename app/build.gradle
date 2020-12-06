@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.pinder.app"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 9
         versionName "1.6"
@@ -173,6 +173,8 @@ dependencies {
     //observable fields
     implementation group: 'androidx.databinding', name: 'databinding-common', version: '4.2.0-alpha16'
 
+    //couchbase
+    implementation 'com.couchbase.lite:couchbase-lite-android-ee:2.6.0'
 }
 kapt {
     correctErrorTypes = true

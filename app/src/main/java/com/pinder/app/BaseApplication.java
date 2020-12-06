@@ -10,6 +10,8 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.couchbase.lite.CouchbaseLite;
+
 import dagger.hilt.android.HiltAndroidApp;
 
 @HiltAndroidApp
@@ -24,6 +26,8 @@ public class BaseApplication extends Application implements LifecycleObserver {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate: ");
+        // Initialize the Couchbase Lite system
+        CouchbaseLite.init(this);
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     }
 
