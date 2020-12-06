@@ -16,12 +16,12 @@ import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public abstract class NetworkBoundResource<CacheObject, FirebaseObject> {
-    private static final String TAG = "NetworkBoundResource";
+public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> {
+    private static final String TAG = "ConstantNetworkBound";
     private AppExecutors appExecutors;
     private MediatorLiveData<Resource<CacheObject>> results = new MediatorLiveData<>();
 
-    public NetworkBoundResource(AppExecutors appExecutors) {
+    public ConstantNetworkBoundResource(AppExecutors appExecutors) {
         this.appExecutors = appExecutors;
         init();
     }
@@ -73,7 +73,7 @@ public abstract class NetworkBoundResource<CacheObject, FirebaseObject> {
             @Override
             public void onChanged(@Nullable final Resource<FirebaseObject> firebaseObjectResponse) {
                 results.removeSource(dbSource);
-                results.removeSource(firebaseResponse);
+//                results.removeSource(firebaseResponse);
                 /*
                     3 cases:
                        1) FirebaseSuccessResponse
@@ -93,11 +93,11 @@ public abstract class NetworkBoundResource<CacheObject, FirebaseObject> {
 
                             @Override
                             public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull Object o) {
-                                Log.d(TAG,"success");
+                                Log.d(TAG, "success");
                                 results.addSource(loadFromDb(), new Observer<CacheObject>() {
                                     @Override
                                     public void onChanged(@Nullable CacheObject cacheObject) {
-                                        Log.d(TAG,"success");
+                                        Log.d(TAG, "success");
                                         setValue(Resource.success(cacheObject));
                                     }
                                 });
@@ -107,18 +107,6 @@ public abstract class NetworkBoundResource<CacheObject, FirebaseObject> {
                             public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
                             }
                         });
-//                        appExecutors.diskIO().execute(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                // save the response to the local db
-//                                appExecutors.mainThread().execute(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//
-//                                    }
-//                                });
-//                            }
-//                        });
                         break;
                     case EMPTY:
                         Log.d(TAG, "onChanged: empty request");

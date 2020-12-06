@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,10 +55,8 @@ public class MatchesFragment extends Fragment {
     private TextView sortByTextView;
     private Button allMatches;
     ArrayList<MatchesObject> oryginalMatches = new ArrayList<>();
-
     @Inject
     MatchesViewModel matchesViewModel;
-
 
     public MatchesFragment() {
         // Required empty public constructor
@@ -126,11 +123,12 @@ public class MatchesFragment extends Fragment {
         matchesViewModel.getOryginalMatches().observe(getActivity(), new Observer<Resource<ArrayList<MatchesObject>>>() {
             @Override
             public void onChanged(Resource<ArrayList<MatchesObject>> matchesObjects) {
-                if(matchesObjects!=null){
-                    if(matchesObjects.data!=null){
-                        matchesObjects = matchesViewModel.getSortedMatches();
+                if (matchesObjects != null) {
+                    if (matchesObjects.data != null) {
+                        ArrayList<MatchesObject> sortedArray = new ArrayList<>();
+                        sortedArray = matchesViewModel.getSortedMatches();
                         oryginalMatches.clear();
-                        oryginalMatches.addAll(matchesObjects.data);
+                        oryginalMatches.addAll(sortedArray);
                         mMatchesAdapter = new MatchesAdapter(oryginalMatches, getContext());
                         myRecyclerView.setAdapter(mMatchesAdapter);
                     }
@@ -147,7 +145,7 @@ public class MatchesFragment extends Fragment {
                     @Override
                     public void onItemClick(View view, int position) {
                         sortBy = myTags.get(position);
-                        mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag(sortBy).data, getContext());
+                        mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag(sortBy), getContext());
                         myRecyclerView.setAdapter(mMatchesAdapter);
                     }
                 });
@@ -156,7 +154,7 @@ public class MatchesFragment extends Fragment {
         allMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag("all").data, getContext());
+                mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag("all"), getContext());
                 myRecyclerView.setAdapter(mMatchesAdapter);
             }
         });

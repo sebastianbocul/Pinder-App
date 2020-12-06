@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Objects;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MatchesObject {
     private String userId;
@@ -85,4 +87,22 @@ public class MatchesObject {
         this.mutualTags = mutualTags;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MatchesObject that = (MatchesObject) o;
+        return createdByMe == that.createdByMe &&
+                Objects.equals(userId, that.userId) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(profileImageUrl, that.profileImageUrl) &&
+                Objects.equals(lastMessage, that.lastMessage) &&
+                Objects.equals(sortId, that.sortId) &&
+                Objects.equals(mutualTags, that.mutualTags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, name, profileImageUrl, lastMessage, createdByMe, sortId, mutualTags);
+    }
 }

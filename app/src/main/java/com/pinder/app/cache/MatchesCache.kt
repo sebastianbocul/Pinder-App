@@ -38,11 +38,8 @@ class MatchesCache constructor(private var context: Context) {
                 if (document != null) {
                     document.forEach {
                         Log.d(TAG, "Getting from CACHE: $it")
-//                        Log.d(TAG, "Getting from CACHE: $it : value: ${document.getValue(it)}")
                         val doc = document.getDictionary(it)
                         val matchObject: MatchesObject = mapper.convertValue(doc.toMap(), MatchesObject::class.java)
-//                        Log.d(TAG, "Getting from CACHE: ${doc.toMap()}")
-//                        Log.d(TAG, "Getting from CACHE: ${matchObject.userId}  lastmess ${matchObject.lastMessage}  tags  ${matchObject.mutualTags}  ")
                         matchesArrayList.add(matchObject)
                     }
                     mNumbersLd.value = matchesArrayList
@@ -60,19 +57,6 @@ class MatchesCache constructor(private var context: Context) {
         try {
             Log.d(TAG, "matches: $matches")
             val mutableDoc = MutableDocument("matches")
-//            mutableDoc.removeAll {
-//                true
-//            }
-//            val iterator: MutableIterator<MatchesObject> = matches.iterator()
-//            while (iterator.hasNext()) {
-//                if(iterator.hasNext()){
-//                    val mutableDoc2 = MutableDocument("matches")
-//                    val value = iterator.next()
-//                    Log.d(TAG, "Saving to CACHE : ${value.userId}")
-//                    val map: Map<String, Any> = mapper.convertValue(value, object : TypeReference<Map<String?, Any?>?>() {})
-//                    mutableDoc2.setValue(value.userId, map)
-//                }
-//            }
             for (matchObject in matches) {
                 Log.d(TAG, "Saving to CACHE : ${matchObject.userId}")
                 val map: Map<String, Any> = mapper.convertValue(matchObject, object : TypeReference<Map<String?, Any?>?>() {})

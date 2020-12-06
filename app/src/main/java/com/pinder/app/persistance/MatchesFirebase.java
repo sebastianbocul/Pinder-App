@@ -1,5 +1,7 @@
 package com.pinder.app.persistance;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -29,6 +31,7 @@ public class MatchesFirebase implements MatchesDao {
     MutableLiveData<ArrayList<String>> myTagsLiveData = new MutableLiveData<ArrayList<String>>();
     ArrayList<String> myTags = new ArrayList<>();
     private String myImageUrl = new String();
+    private static final String TAG = "MatchesFirebase";
     MutableLiveData<Resource<ArrayList<MatchesObject>>> oryginalMatchesLiveData = new MutableLiveData<Resource<ArrayList<MatchesObject>>>();
 
     public static MatchesFirebase getInstance() {
@@ -254,7 +257,7 @@ public class MatchesFirebase implements MatchesDao {
                         usersID.add(obj.getUserId());
                         oryginalMatches.add(obj);
                     } else {
-                        oryginalMatches = sortCollection(oryginalMatches);
+//                        oryginalMatches = sortCollection(oryginalMatches);
                         for (int i = 0; i < oryginalMatches.size(); i++) {
                             if (oryginalMatches.get(i).getUserId().equals(obj.getUserId())) {
                                 oryginalMatches.get(i).setLastMessage(obj.getLastMessage());
@@ -263,8 +266,8 @@ public class MatchesFirebase implements MatchesDao {
                             }
                         }
                     }
-
-                    oryginalMatches = sortCollection(oryginalMatches);
+                    Log.d(TAG, "onDataChange: ");
+//                    oryginalMatches = sortCollection(oryginalMatches);
                     oryginalMatchesLiveData.postValue(Resource.success(oryginalMatches));
                 }
             }
@@ -275,19 +278,9 @@ public class MatchesFirebase implements MatchesDao {
         });
     }
 
-    private ArrayList<MatchesObject> sortCollection(ArrayList<MatchesObject> matchesList) {
-        Collections.sort(matchesList, new Comparator<MatchesObject>() {
-            @Override
-            public int compare(MatchesObject o1, MatchesObject o2) {
-                return o1.getSortId().compareTo(o2.getSortId());
-            }
-        });
-        Collections.reverse(matchesList);
-        return matchesList;
-    }
-
     @Override
     public LiveData<Resource<ArrayList<MatchesObject>>> getOryginalMatches() {
+        Log.d(TAG,"getOryginalMatches " + oryginalMatchesLiveData.getValue());
         return oryginalMatchesLiveData;
     }
 

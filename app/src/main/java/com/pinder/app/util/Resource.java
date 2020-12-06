@@ -5,11 +5,11 @@ import androidx.annotation.Nullable;
 
 public class Resource<T> {
     @NonNull
-    public final Status status;
+    public Status status;
     @Nullable
-    public final T data;
+    public T data;
     @Nullable
-    public final String message;
+    public String message;
 
     public Resource(@NonNull Status status, @Nullable T data, @Nullable String message) {
         this.status = status;
