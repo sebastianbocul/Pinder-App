@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.models.MatchesObject;
+import com.pinder.app.util.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,7 +29,7 @@ public class MatchesFirebase implements MatchesDao {
     MutableLiveData<ArrayList<String>> myTagsLiveData = new MutableLiveData<ArrayList<String>>();
     ArrayList<String> myTags = new ArrayList<>();
     private String myImageUrl = new String();
-    MutableLiveData<ArrayList<MatchesObject>> oryginalMatchesLiveData = new MutableLiveData<ArrayList<MatchesObject>>();
+    MutableLiveData<Resource<ArrayList<MatchesObject>>> oryginalMatchesLiveData = new MutableLiveData<Resource<ArrayList<MatchesObject>>>();
 
     public static MatchesFirebase getInstance() {
         if (instance == null) {
@@ -144,7 +145,7 @@ public class MatchesFirebase implements MatchesDao {
                     for (MatchesObject mo : oryginalMatches) {
                         if (mo.getUserId().equals(dataSnapshot.getKey())) {
                             oryginalMatches.remove(mo);
-                            oryginalMatchesLiveData.postValue(oryginalMatches);
+                            oryginalMatchesLiveData.postValue(Resource.success(oryginalMatches));
                         }
                     }
 
@@ -264,7 +265,7 @@ public class MatchesFirebase implements MatchesDao {
                     }
 
                     oryginalMatches = sortCollection(oryginalMatches);
-                    oryginalMatchesLiveData.postValue(oryginalMatches);
+                    oryginalMatchesLiveData.postValue(Resource.success(oryginalMatches));
                 }
             }
 
@@ -286,7 +287,7 @@ public class MatchesFirebase implements MatchesDao {
     }
 
     @Override
-    public LiveData<ArrayList<MatchesObject>> getOryginalMatches() {
+    public LiveData<Resource<ArrayList<MatchesObject>>> getOryginalMatches() {
         return oryginalMatchesLiveData;
     }
 

@@ -22,6 +22,7 @@ import com.pinder.app.R;
 import com.pinder.app.adapters.MatchesAdapter;
 import com.pinder.app.adapters.MatchesTagsAdapter;
 import com.pinder.app.models.MatchesObject;
+import com.pinder.app.util.Resource;
 import com.pinder.app.viewmodels.MatchesViewModel;
 
 import java.util.ArrayList;
@@ -115,12 +116,12 @@ public class MatchesFragment extends Fragment {
                 sortByTextView.setText("#" + s);
             }
         });
-        matchesViewModel.getOryginalMatches().observe(getActivity(), new Observer<ArrayList<MatchesObject>>() {
+        matchesViewModel.getOryginalMatches().observe(getActivity(), new Observer<Resource<ArrayList<MatchesObject>>>() {
             @Override
-            public void onChanged(ArrayList<MatchesObject> matchesObjects) {
+            public void onChanged(Resource<ArrayList<MatchesObject>> matchesObjects) {
                 matchesObjects = matchesViewModel.getSortedMatches();
                 oryginalMatches.clear();
-                oryginalMatches.addAll(matchesObjects);
+                oryginalMatches.addAll(matchesObjects.data);
                 mMatchesAdapter = new MatchesAdapter(oryginalMatches, getContext());
                 myRecyclerView.setAdapter(mMatchesAdapter);
             }
@@ -135,7 +136,7 @@ public class MatchesFragment extends Fragment {
                     @Override
                     public void onItemClick(View view, int position) {
                         sortBy = myTags.get(position);
-                        mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag(sortBy), getContext());
+                        mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag(sortBy).data, getContext());
                         myRecyclerView.setAdapter(mMatchesAdapter);
                     }
                 });
@@ -144,7 +145,7 @@ public class MatchesFragment extends Fragment {
         allMatches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag("all"), getContext());
+                mMatchesAdapter = new MatchesAdapter(matchesViewModel.setTag("all").data, getContext());
                 myRecyclerView.setAdapter(mMatchesAdapter);
             }
         });
