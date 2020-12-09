@@ -292,11 +292,11 @@ public class LoginFragment extends Fragment {
 
     private void authStateListener() {
         firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null) {
+                    DatabaseReference dr = FirebaseDatabase.getInstance().getReference().child("Users").child(user.getUid());
                     dr.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -305,7 +305,7 @@ public class LoginFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     disableProgressBars();
-                                    if (dataSnapshot.child("Users").child(user.getUid()).exists()) {
+                                    if (dataSnapshot.exists()) {
                                         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                             Intent intent = new Intent(getActivity(), MainFragmentManager.class);
                                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);

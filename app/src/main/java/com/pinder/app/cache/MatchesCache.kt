@@ -54,19 +54,19 @@ class MatchesCache constructor(private var context: Context) {
     }
 
     fun saveMatches(matches: ArrayList<MatchesObject>) {
-                Log.d(TAG, "SAVING TO DB")
-                try {
-                    Log.d(TAG, "matches: $matches")
-                    val mutableDoc = MutableDocument("matches")
-                    for (matchObject in matches) {
-                        Log.d(TAG, "Saving to CACHE : ${matchObject.userId}")
-                        val map: Map<String, Any> = mapper.convertValue(matchObject, object : TypeReference<Map<String?, Any?>?>() {})
-                        mutableDoc.setValue(matchObject.userId, map)
-                    }
-                    // Save it to the database.
-                    mDatabase!!.save(mutableDoc)
-                } catch (e: CouchbaseLiteException) {
-                    e.printStackTrace()
+        Log.d(TAG, "SAVING TO DB")
+        try {
+            Log.d(TAG, "matches: $matches")
+            val mutableDoc = MutableDocument("matches")
+            for (matchObject in matches) {
+                Log.d(TAG, "Saving to CACHE : ${matchObject.userId}")
+                val map: Map<String, Any> = mapper.convertValue(matchObject, object : TypeReference<Map<String?, Any?>?>() {})
+                mutableDoc.setValue(matchObject.userId, map)
+            }
+            // Save it to the database.
+            mDatabase!!.save(mutableDoc)
+        } catch (e: CouchbaseLiteException) {
+            e.printStackTrace()
         }
     }
 

@@ -3,10 +3,14 @@ package com.pinder.app.di;
 import android.app.Application;
 import android.content.Context;
 
+import com.pinder.app.cache.AuthCache;
 import com.pinder.app.cache.MatchesCache;
+import com.pinder.app.persistance.AuthFirebase;
 import com.pinder.app.persistance.MainFirebase;
+import com.pinder.app.repository.AuthRepository;
 import com.pinder.app.repository.MainRepository;
 import com.pinder.app.repository.MatchesRepository;
+import com.pinder.app.viewmodels.AuthViewModel;
 import com.pinder.app.viewmodels.MatchesViewModel;
 
 import javax.inject.Singleton;
@@ -47,6 +51,31 @@ class AppModules {
     @Provides
     public static MainRepository mainRepository(MainFirebase mainFirebase) {
         return new MainRepository(mainFirebase);
+    }
+
+
+    //auth
+    @Singleton
+    @Provides
+    public static AuthCache authCache(@ApplicationContext Context context) {
+        return new AuthCache(context);
+    }
+
+    @Singleton
+    @Provides
+    public static AuthFirebase authFirebase(@ApplicationContext Context context) {
+        return new AuthFirebase(context);
+    }
+
+    @Singleton
+    @Provides
+    public static AuthRepository authRepository(AuthFirebase authFirebase,AuthCache authCache) {
+        return new AuthRepository(authFirebase,authCache);
+    }
+    @Singleton
+    @Provides
+    public static AuthViewModel authViewModel(AuthRepository authRepository) {
+        return new AuthViewModel(authRepository);
     }
 
     @Singleton

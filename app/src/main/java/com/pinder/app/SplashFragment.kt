@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,13 +15,17 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.pinder.app.ui.TagsFragment
+import com.pinder.app.util.Resource.Status.*
+import com.pinder.app.viewmodels.AuthViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * A simple [Fragment] subclass.
@@ -28,6 +33,7 @@ import com.pinder.app.ui.TagsFragment
  * create an instance of this fragment.
  *
  */
+@AndroidEntryPoint
 class SplashFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var mParam1: String? = null
@@ -36,6 +42,10 @@ class SplashFragment : Fragment() {
     private var logoLayout: LinearLayout? = null
     private var firebaseAuthStateListener: AuthStateListener? = null
     private var mAuth: FirebaseAuth? = null
+    private val TAG = "SplashFragment"
+
+    @Inject
+    lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,38 +73,59 @@ class SplashFragment : Fragment() {
     }
 
     private fun authStateListener() {
-        firebaseAuthStateListener = object : AuthStateListener {
-            var dr = FirebaseDatabase.getInstance().reference
-            override fun onAuthStateChanged(firebaseAuth: FirebaseAuth) {
-                val user = FirebaseAuth.getInstance().currentUser
-                if (user != null) {
-                    dr.addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            val animScale = AnimationUtils.loadAnimation(context, R.anim.scale)
-                            logoLayout!!.startAnimation(animScale)
-                            val handler = Handler()
-                            handler.postDelayed({
-                                logoLayout!!.visibility = View.GONE
-                                logoLayout!!.clearAnimation()
-                                if (dataSnapshot.child("Users").child(user.uid).exists()) {
-                                    if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                        val intent = Intent(activity, MainFragmentManager::class.java)
-                                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                        startActivity(intent)
+        firebaseAuthStateListener = AuthStateListener {
+            val user = FirebaseAuth.getInstance().currentUser
+            if (user != null) {
+                Log.d(TAG, "USER!=NULL");
+                val animScale = AnimationUtils.loadAnimation(context, R.anim.scale)
+                logoLayout!!.startAnimation(animScale)
+                val handler = Handler()
+                authViewModel.fetchUserData().observe(viewLifecycleOwner, Observer {
+                    if (it != null) {
+                        Log.d(TAG, "OBSERVER it: ${it.status}")
+                        Log.d(TAG, "OBSERVER it: ${it.data}")
+                        Log.d(TAG, "HANDLER");
+                        Log.d(TAG, "OBSERVER HANDLER it: ${it.status}")
+                        Log.d(TAG, "OBSERVER HANDLER it: ${it.data}")
+                        when (it.status) {
+                            SUCCESS -> {
+                                handler.postDelayed({
+                                    logoLayout!!.visibility = View.GONE
+                                    logoLayout!!.clearAnimation()
+                                    Log.d(TAG, "SUCCESS");
+                                    if (it.data!!) {
+                                        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                            val intent = Intent(activity, MainFragmentManager::class.java)
+                                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                            startActivity(intent)
+                                        } else {
+                                            val requestLocationActivity = Intent(activity, RequestLocationPermissionActivity::class.java)
+                                            requestLocationActivity.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                            startActivity(requestLocationActivity)
+                                        }
                                     } else {
-                                        val requestLocationActivity = Intent(activity, RequestLocationPermissionActivity::class.java)
-                                        requestLocationActivity.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                        startActivity(requestLocationActivity)
+                                        requireActivity().supportFragmentManager.beginTransaction().replace(R.id.start_fragment_container, LoginFragment()).commit()
                                     }
-                                } else {
-                                    activity!!.supportFragmentManager.beginTransaction().replace(R.id.start_fragment_container, LoginFragment()).commit()
-                                }
-                            }, 300)
+                                }, 300)
+                            }
+                            ERROR -> {
+                                Log.d(TAG, "ERROR");
+                            }
+                            LOADING -> {
+                                Log.d(TAG, "LOADING");
+                            }
                         }
 
-                        override fun onCancelled(databaseError: DatabaseError) {}
-                    })
-                }
+                    }
+                })
+                val currentUserDatabaseReference = FirebaseDatabase.getInstance().reference.child("Users").child(user.uid)
+                currentUserDatabaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {}
+                })
             }
         }
     }
