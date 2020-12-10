@@ -10,7 +10,9 @@ import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.pinder.app.util.PaintText
 import com.pinder.app.utils.BuildVariantsHelper
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RegistrationActivity : AppCompatActivity() {
     private var logoTextView: TextView? = null;
     private var registerType: String? = null

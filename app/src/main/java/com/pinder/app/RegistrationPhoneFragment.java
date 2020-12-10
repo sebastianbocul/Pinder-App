@@ -26,10 +26,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.util.StringDateToAge;
+import com.pinder.app.viewmodels.AuthViewModel;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 import static androidx.core.content.PermissionChecker.checkSelfPermission;
 
@@ -38,6 +43,7 @@ import static androidx.core.content.PermissionChecker.checkSelfPermission;
  * Use the {@link RegistrationExternalFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class RegistrationPhoneFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -55,6 +61,8 @@ public class RegistrationPhoneFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private TextView title;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
+    @Inject
+    AuthViewModel authViewModel;
 
     public RegistrationPhoneFragment() {
         // Required empty public constructor
@@ -248,6 +256,7 @@ public class RegistrationPhoneFragment extends Fragment {
         mUserDatabase.updateChildren(userInfo);
         DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
         tags.child("default").child(userId).setValue(true);
+        authViewModel.saveUserToCache(userId);
         Toast.makeText(getContext(), "Register successful!", Toast.LENGTH_SHORT).show();
     }
 }

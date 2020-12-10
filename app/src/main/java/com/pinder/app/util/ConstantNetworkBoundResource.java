@@ -97,7 +97,7 @@ public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> 
                                 results.addSource(loadFromDb(), new Observer<CacheObject>() {
                                     @Override
                                     public void onChanged(@Nullable CacheObject cacheObject) {
-                                        Log.d(TAG, "success");
+                                        Log.d(TAG, "onChanged: success: " + cacheObject);
                                         setValue(Resource.success(cacheObject));
                                     }
                                 });

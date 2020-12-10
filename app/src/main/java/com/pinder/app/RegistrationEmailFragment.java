@@ -27,10 +27,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.util.StringDateToAge;
+import com.pinder.app.viewmodels.AuthViewModel;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 import static androidx.core.content.PermissionChecker.checkSelfPermission;
 
@@ -39,6 +44,7 @@ import static androidx.core.content.PermissionChecker.checkSelfPermission;
  * Use the {@link RegistrationEmailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class RegistrationEmailFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -54,6 +60,8 @@ public class RegistrationEmailFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    @Inject
+    AuthViewModel authViewModel;
 
     public RegistrationEmailFragment() {
         // Required empty public constructor
@@ -254,6 +262,7 @@ public class RegistrationEmailFragment extends Fragment {
                         currentUserDb.updateChildren(userInfo);
                         DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
                         tags.child("default").child(userId).setValue(true);
+                        authViewModel.saveUserToCache(userId);
                         Toast.makeText(getContext(), "Register successful!", Toast.LENGTH_SHORT).show();
                     }
                 }

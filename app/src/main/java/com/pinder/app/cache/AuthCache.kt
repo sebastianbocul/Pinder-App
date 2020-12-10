@@ -12,9 +12,9 @@ import com.pinder.app.util.Constants
 
 class AuthCache constructor(var context: Context) {
     private var mDatabase: Database? = null
-    private val TAG = "MatchesCache"
+    private val TAG = "AuthCache"
     val mapper = ObjectMapper()
-    val currentUID = FirebaseAuth.getInstance().currentUser!!.uid
+    val currentUID = FirebaseAuth.getInstance().currentUser?.uid
     val isUserInCache: MutableLiveData<Boolean> = MutableLiveData();
 
     init {
@@ -37,8 +37,10 @@ class AuthCache constructor(var context: Context) {
             if (mDatabase != null) {
                 val document: Document? = mDatabase!!.getDocument("auth")
                 if (document != null) {
-                    var auth: String = document.getString("user")
+                    var auth: String? = document.getString("user")
                     Log.d(TAG, "Getting user auth from cache finished $auth")
+//                    auth=null
+                    Log.d(TAG, "(auth.equals(currentUID) " + auth.equals(currentUID))
                     isUserInCache.postValue((auth.equals(currentUID)))
                 } else {
                     isUserInCache.postValue(false)
@@ -54,6 +56,17 @@ class AuthCache constructor(var context: Context) {
     }
 
     fun saveUserToCache() {
+        Log.d(TAG, "CACHE userId $currentUID")
+        try {
+            val mutableDoc = MutableDocument("auth")
+            mutableDoc.setValue("user", currentUID)
+            mDatabase!!.save(mutableDoc)
+        } catch (e: CouchbaseLiteException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun saveUserToCache(currentUID:String) {
         Log.d(TAG, "CACHE userId $currentUID")
         try {
             val mutableDoc = MutableDocument("auth")

@@ -79,6 +79,7 @@ import com.pinder.app.ui.dialogs.TermsDialog;
 import com.pinder.app.util.ExpandCollapseView;
 import com.pinder.app.util.PaintText;
 import com.pinder.app.utils.BuildVariantsHelper;
+import com.pinder.app.viewmodels.AuthViewModel;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -128,6 +129,8 @@ public class LoginFragment extends Fragment {
     private ProgressBar progressBarGoogle, progressBarEmail, progressBarPhone, progressBarFacebook;
     @Inject
     Application application;
+    @Inject
+    AuthViewModel authViewModel;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -300,26 +303,26 @@ public class LoginFragment extends Fragment {
                     dr.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Intent intent;
                             final Handler handler = new Handler();
+                            if (dataSnapshot.exists()) {
+                                Log.d(TAG,"USER ID : " + user.getUid());
+                                authViewModel.saveUserToCache(user.getUid());
+                                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                    intent = new Intent(getActivity(), MainFragmentManager.class);
+                                } else {
+                                    intent = new Intent(getActivity(), RequestLocationPermissionActivity.class);
+                                }
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            } else {
+                                intent = new Intent(getActivity(), RegistrationActivity.class);
+                                intent.putExtra("register_type", registerProvider);
+                            }
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     disableProgressBars();
-                                    if (dataSnapshot.exists()) {
-                                        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                            Intent intent = new Intent(getActivity(), MainFragmentManager.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                            startActivity(intent);
-                                        } else {
-                                            Intent requestLocationActivity = new Intent(getActivity(), RequestLocationPermissionActivity.class);
-                                            requestLocationActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                            startActivity(requestLocationActivity);
-                                        }
-                                    } else {
-                                        Intent intent = new Intent(getActivity(), RegistrationActivity.class);
-                                        intent.putExtra("register_type", registerProvider);
-                                        startActivity(intent);
-                                    }
+                                    startActivity(intent);
                                 }
                             }, 300);
                         }
@@ -516,7 +519,7 @@ public class LoginFragment extends Fragment {
                             Toast.makeText(getActivity(), "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             LoginManager.getInstance().logOut();
-                           disableProgressBars();
+                            disableProgressBars();
                         }
                     }
                 });
@@ -561,7 +564,8 @@ public class LoginFragment extends Fragment {
         MainFirebase.instance = null;
         MainRepository.instance = null;
     }
-    public void disableProgressBars(){
+
+    public void disableProgressBars() {
         progressBarPhone.setVisibility(View.GONE);
         progressBarEmail.setVisibility(View.GONE);
         progressBarFacebook.setVisibility(View.GONE);

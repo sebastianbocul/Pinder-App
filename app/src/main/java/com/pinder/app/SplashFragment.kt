@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,12 @@ import com.google.firebase.database.ValueEventListener
 import com.pinder.app.util.Resource.Status.*
 import com.pinder.app.viewmodels.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -77,9 +84,6 @@ class SplashFragment : Fragment() {
             val user = FirebaseAuth.getInstance().currentUser
             if (user != null) {
                 Log.d(TAG, "USER!=NULL");
-                val animScale = AnimationUtils.loadAnimation(context, R.anim.scale)
-                logoLayout!!.startAnimation(animScale)
-                val handler = Handler()
                 authViewModel.fetchUserData().observe(viewLifecycleOwner, Observer {
                     if (it != null) {
                         Log.d(TAG, "OBSERVER it: ${it.status}")
@@ -89,6 +93,9 @@ class SplashFragment : Fragment() {
                         Log.d(TAG, "OBSERVER HANDLER it: ${it.data}")
                         when (it.status) {
                             SUCCESS -> {
+                                val animScale = AnimationUtils.loadAnimation(context, R.anim.scale)
+                                logoLayout!!.startAnimation(animScale)
+                                val handler = Handler()
                                 handler.postDelayed({
                                     logoLayout!!.visibility = View.GONE
                                     logoLayout!!.clearAnimation()
@@ -118,14 +125,7 @@ class SplashFragment : Fragment() {
 
                     }
                 })
-                val currentUserDatabaseReference = FirebaseDatabase.getInstance().reference.child("Users").child(user.uid)
-                currentUserDatabaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                    }
-
-                    override fun onCancelled(databaseError: DatabaseError) {}
-                })
             }
         }
     }

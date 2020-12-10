@@ -34,4 +34,8 @@ class AuthRepository constructor(val authFirebase: AuthFirebase, val authCache: 
             }
         }.asLiveData
     }
+
+    fun saveUserToCache(currentUID:String){
+        authCache.saveUserToCache(currentUID)
+    }
 }
