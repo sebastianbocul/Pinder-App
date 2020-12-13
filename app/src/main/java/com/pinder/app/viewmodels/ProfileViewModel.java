@@ -3,33 +3,34 @@ package com.pinder.app.viewmodels;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.hilt.lifecycle.ViewModelInject;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.pinder.app.persistance.ProfileFirebase;
 import com.pinder.app.repository.ProfileRepository;
+import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;
 
 public class ProfileViewModel extends ViewModel {
-    ProfileRepository profileRepository;
-    private LiveData<String> name;
-    private LiveData<String> description;
-    private LiveData<ArrayList> images;
+    private ProfileRepository profileRepository;
 
-    public ProfileViewModel() {
-        profileRepository = ProfileRepository.getInstance();
+    @ViewModelInject
+    public ProfileViewModel(ProfileRepository profileRepository) {
+        this.profileRepository = profileRepository;
     }
 
-    public LiveData<String> getName() {
-        name = profileRepository.getName();
-        return name;
+    public LiveData<Resource<String>> getName() {
+        return profileRepository.getName();
     }
 
-    public LiveData<String> getDescription() {
-        description = profileRepository.getDescription();
-        return description;
+    public LiveData<Resource<String>> getDescription() {
+        return profileRepository.getDescription();
+    }
+    public LiveData<Resource<ArrayList<String>>> getImages() {
+        return profileRepository.getImages();
     }
 
     public void saveUserInformation(String nameEdt, String descriptionEdt) {
@@ -39,32 +40,26 @@ public class ProfileViewModel extends ViewModel {
     }
 
     public void deleteImage(Context context) {
-        profileRepository.getInstance().deleteImage(context);
+        profileRepository.deleteImage(context);
     }
 
     public void setImagePosition(int position) {
-        profileRepository.getInstance().setImagePosition(position);
+        profileRepository.setImagePosition(position);
     }
 
     public void loadImages() {
-        profileRepository.getInstance().loadImages();
+        profileRepository.loadImages();
     }
 
     public void setDefault(Context context) {
-        profileRepository.getInstance().setDefault(context);
+        profileRepository.setDefault(context);
     }
 
     public void addImage(Context context, Uri resultUri) {
-        profileRepository.getInstance().addImage(context, resultUri);
-    }
-
-    public LiveData<ArrayList> getImages() {
-        images = profileRepository.getInstance().getImages();
-        return images;
+        profileRepository.addImage(context, resultUri);
     }
 
     public MutableLiveData<Boolean> getShowProgressBar() {
-        return profileRepository.getInstance().getShowProgressBar();
+        return profileRepository.getShowProgressBar();
     }
-
 }

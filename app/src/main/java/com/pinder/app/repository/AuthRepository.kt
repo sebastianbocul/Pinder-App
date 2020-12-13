@@ -12,7 +12,7 @@ import com.pinder.app.util.Resource
 class AuthRepository constructor(val authFirebase: AuthFirebase, val authCache: AuthCache) {
     private val TAG = "AuthRepository"
     fun fetchUserData(): LiveData<Resource<Boolean>> {
-        return object : ConstantNetworkBoundResource<Boolean, Boolean>(AppExecutors.getInstance()) {
+        return object : ConstantNetworkBoundResource<Boolean, Boolean>() {
             override fun saveFirebaseResult(item: Boolean) {
                 Log.d(TAG, "saveFirebaseRes $item" )
                 authCache.saveUserToCache()

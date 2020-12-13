@@ -559,7 +559,7 @@ public class LoginFragment extends Fragment {
         PopularTagsRepository.instance = null;
         MatchesRepository.instance = null;
         MatchesFirebase.instance = null;
-        ProfileFirebase.instance = null;
+//        ProfileFirebase.instance = null;
         ProfileRepository.instance = null;
         MainFirebase.instance = null;
         MainRepository.instance = null;

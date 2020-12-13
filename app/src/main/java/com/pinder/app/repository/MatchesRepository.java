@@ -30,7 +30,7 @@ public class MatchesRepository {
     }
 
     public LiveData<Resource<ArrayList<String>>> getTags() {
-        return new ConstantNetworkBoundResource<ArrayList<String>, ArrayList<String>>(AppExecutors.getInstance()) {
+        return new ConstantNetworkBoundResource<ArrayList<String>, ArrayList<String>>() {
             @Override
             protected void saveFirebaseResult(@NonNull ArrayList<String> item) {
                 Log.d(TAG, "saveFirebaseResult TAGS: " + item.toString());
@@ -64,7 +64,7 @@ public class MatchesRepository {
     }
 
     public LiveData<Resource<ArrayList<MatchesObject>>> getMatches() {
-        return new ConstantNetworkBoundResource<ArrayList<MatchesObject>, ArrayList<MatchesObject>>(AppExecutors.getInstance()){
+        return new ConstantNetworkBoundResource<ArrayList<MatchesObject>, ArrayList<MatchesObject>>(){
             @Override
             protected void saveFirebaseResult(@NonNull ArrayList<MatchesObject> item) {
                 Log.d(TAG, "saveFirebaseResult: " + item.toString());

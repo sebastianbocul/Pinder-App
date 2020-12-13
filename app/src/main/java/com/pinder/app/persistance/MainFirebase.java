@@ -107,10 +107,10 @@ public class MainFirebase {
         ArrayList<String> myTagsAdapter = new ArrayList<>();
         Single<List<TagsObject>> updateTagsSingleObs = Single.create(emitter -> {
             String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            DatabaseReference currentUserDatabaseReferene = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
+            DatabaseReference currentUserDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
             myTagsAdapter.clear();
             myTagsListTemp.clear();
-            currentUserDatabaseReferene.child("tags").addListenerForSingleValueEvent(new ValueEventListener() {
+            currentUserDatabaseReference.child("tags").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -412,18 +412,18 @@ public class MainFirebase {
                             emitter.onSuccess(cardsArray);
                         }
                     };
-                    Log.d(TAG, "Number of users in geofire: " + usersIdGeoFire.size());
-                    Log.d("usersInGeoFire", "geofire: usersInArray: " + usersIdGeoFire.size());
-                    Log.d("usersInGeoFire", "geofire: onKeyEnter: " + myCounterOnKeyEnter);
-                    Log.d("usersInGeoFire", "geofire: onKeyExit: " + myCounterOnKeyExit);
+//                    Log.d(TAG, "Number of users in geofire: " + usersIdGeoFire.size());
+//                    Log.d("usersInGeoFire", "geofire: usersInArray: " + usersIdGeoFire.size());
+//                    Log.d("usersInGeoFire", "geofire: onKeyEnter: " + myCounterOnKeyEnter);
+//                    Log.d("usersInGeoFire", "geofire: onKeyExit: " + myCounterOnKeyExit);
                     for (String userId : usersIdGeoFire) {
                         usersDatabaseReference.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot ds) {
-                                Log.d("fetchWithGeofire", "onDataChange: " + ds);
+//                                Log.d("fetchWithGeofire", "onDataChange: " + ds);
                                 if (ds.child("sex").getValue() != null) {
                                     if (ds.exists() && !usersIdLikesMe.contains(ds.getKey()) && !ds.child("connections").child("nope").hasChild(currentUID) && !ds.child("connections").child("yes").hasChild(currentUID) && !ds.getKey().equals(currentUID)) {
-                                        Log.d(TAG, "from geofire: " + ds.child("name").getValue());
+//                                        Log.d(TAG, "from geofire: " + ds.child("name").getValue());
                                         Card card = validateUserByPreferences(ds, false, myLoc, myTagsList, myInfo);
 //                                        Card card=null;
                                         if (card != null) {

@@ -3,18 +3,20 @@ package com.pinder.app.persistance;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
+import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;
 
 public interface ProfileDao {
     void loadImages();
 
-    LiveData<String> getName();
+    MutableLiveData<Resource<String>> getName();
 
-    LiveData<String> getDescription();
+    MutableLiveData<Resource<String>> getDescription();
 
-    LiveData<ArrayList> getImages();
+    MutableLiveData<Resource<ArrayList<String>>> getImages();
 
     void setImagePosition(int position);
 

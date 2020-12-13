@@ -44,6 +44,11 @@ public class MatchesFirebase implements MatchesDao {
         return instance;
     }
 
+//    MatchesFirebase(){
+//        loadMatches();
+//        loadTags();
+//        fetchMyImageUrl();
+//    }
     private void fetchMyImageUrl() {
         myImageUrl = "default";
         DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID);

@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.exifinterface.media.ExifInterface;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -25,7 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
+import com.pinder.app.util.Resource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,29 +34,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProfileFirebase implements ProfileDao {
-    public static ProfileFirebase instance = null;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String userId = mAuth.getCurrentUser().getUid();
     private DatabaseReference mImageDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("images");
     private DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-    private MutableLiveData<ArrayList> mImages = new MutableLiveData<>();
-    private MutableLiveData<String> name = new MutableLiveData<>();
-    private MutableLiveData<String> description = new MutableLiveData<>();
+    private MutableLiveData<Resource<ArrayList<String>>> mImages = new MutableLiveData<>();
+    private MutableLiveData<Resource<String>> name = new MutableLiveData<>();
+    private MutableLiveData<Resource<String>> description = new MutableLiveData<>();
     private MutableLiveData<String> imageName = new MutableLiveData<>();
     private MutableLiveData<Integer> imagePosition = new MutableLiveData<>();
     private MutableLiveData<Boolean> showProgressBar = new MutableLiveData<>(false);
-    public static ProfileFirebase getInstance() {
-        if (instance == null) {
-            instance = new ProfileFirebase();
-            instance.imagePosition.setValue(0);
-            instance.sortImagesDatabase();
-            instance.getUserInfo();
-        }
-        return instance;
+
+    public ProfileFirebase() {
+        imagePosition.setValue(0);
+        sortImagesDatabase();
+        getUserInfo();
     }
-
     ArrayList arrayNameList = new ArrayList();
-
     public void loadImages() {
         try {
             arrayNameList.clear();
@@ -72,7 +65,7 @@ public class ProfileFirebase implements ProfileDao {
                         arrayList.add(ds.child("uri").getValue());
                         arrayNameList.add(ds.child("name").getValue());
                     }
-                    mImages.setValue(arrayList);
+                    mImages.setValue(Resource.success(arrayList));
                     return;
                 }
 
@@ -93,10 +86,10 @@ public class ProfileFirebase implements ProfileDao {
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
                     map = (Map<String, Object>) dataSnapshot.getValue();
                     if (map.get("name") != null) {
-                        name.setValue(map.get("name").toString());
+                        name.setValue(Resource.success(map.get("name").toString()));
                     }
                     if (map.get("description") != null) {
-                        description.setValue(map.get("description").toString());
+                        description.setValue(Resource.success(map.get("description").toString()));
                     }
                     try {
                         if (map.get("images") != null) {
@@ -122,8 +115,8 @@ public class ProfileFirebase implements ProfileDao {
 
     public void saveUserInformation(String nameEdt, String descriptionEdt) {
         if (name != null || description != null) {
-            name.postValue(nameEdt);
-            description.postValue(descriptionEdt);
+            name.postValue(Resource.success(nameEdt));
+            description.postValue(Resource.success(descriptionEdt));
             Map userInfo = new HashMap<>();
             userInfo.put("name", nameEdt);
             userInfo.put("description", descriptionEdt);
@@ -133,9 +126,11 @@ public class ProfileFirebase implements ProfileDao {
 
     public void deleteImage(Context context) {
         StorageReference filePath = FirebaseStorage.getInstance().getReference().child("images").child(userId);
-        StorageReference storageRef = filePath;
         // Create a reference to the file to delete
-        StorageReference desertRef = storageRef.child(imageName.getValue());
+        if (imageName.getValue() == null) {
+            return;
+        }
+        StorageReference desertRef = filePath.child(imageName.getValue());
         // Delete the file
         desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -174,7 +169,6 @@ public class ProfileFirebase implements ProfileDao {
             }
         });
     }
-
 
     @Override
     public void setDefault(Context context) {
@@ -261,8 +255,13 @@ public class ProfileFirebase implements ProfileDao {
                 filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Map newImage = new HashMap();
-                        String size = String.valueOf(mImages.getValue().size());
+                        HashMap newImage = new HashMap();
+                        String size = "0";
+                        if(mImages.getValue()!=null){
+                            if (mImages.getValue().data != null) {
+                                size = String.valueOf(mImages.getValue().data.size());
+                            }
+                        }
                         Map imgInfo = new HashMap();
                         imgInfo.put("uri", uri.toString());
                         imgInfo.put("name", imageStorageKey);
@@ -287,17 +286,17 @@ public class ProfileFirebase implements ProfileDao {
     }
 
     @Override
-    public LiveData<String> getName() {
+    public MutableLiveData<Resource<String>> getName() {
         return name;
     }
 
     @Override
-    public LiveData<String> getDescription() {
+    public MutableLiveData<Resource<String>> getDescription() {
         return description;
     }
 
     @Override
-    public LiveData<ArrayList> getImages() {
+    public MutableLiveData<Resource<ArrayList<String>>> getImages() {
         return mImages;
     }
 
@@ -351,5 +350,4 @@ public class ProfileFirebase implements ProfileDao {
     public MutableLiveData<Boolean> getShowProgressBar() {
         return showProgressBar;
     }
-
 }

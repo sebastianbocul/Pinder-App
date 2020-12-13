@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -24,22 +23,30 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pinder.app.R;
 import com.pinder.app.adapters.ImageAdapter;
 import com.pinder.app.persistance.ProfileFirebase;
+import com.pinder.app.util.Resource;
 import com.pinder.app.viewmodels.ProfileViewModel;
 
-import java.util.ArrayList;
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+import static com.pinder.app.util.Resource.Status.ERROR;
+import static com.pinder.app.util.Resource.Status.SUCCESS;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class ProfileFragment extends Fragment {
     private static int RESULT_LOAD_IMAGE = 1;
     ViewPager viewPager;
     private FloatingActionButton mAddImage, mDeleteImage, setDefaultButton;
     private EditText mNameField;
     private EditText descriptionEditText;
-    private ProfileViewModel profileViewModel;
+    @Inject
+    public ProfileViewModel profileViewModel;
     private ProgressBar progressBar;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -97,46 +104,9 @@ public class ProfileFragment extends Fragment {
         viewPager = getView().findViewById(R.id.viewPager);
         progressBar = getView().findViewById(R.id.profile_progress_bar);
         profileViewModel = new ViewModelProvider(getActivity()).get(ProfileViewModel.class);
-        if (viewPager.getChildCount() != 0) {
-        } else {
-        }
-
-        profileViewModel.getShowProgressBar().observe(getActivity(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-
-                if(aBoolean==true){
-                    progressBar.setVisibility(View.VISIBLE);
-                }else {
-                    progressBar.setVisibility(View.GONE);
-                }
-            }
-        });
-        profileViewModel.getImages().observe(getActivity(), new Observer<ArrayList>() {
-            @Override
-            public void onChanged(ArrayList arrayList) {
-                if (arrayList.size() == 0) {
-                    viewPager.setBackgroundColor(Color.TRANSPARENT);
-                } else {
-                    viewPager.setBackgroundColor(Color.parseColor("#fafafa"));
-                }
-                ImageAdapter adapter = new ImageAdapter(getContext(), arrayList);
-                viewPager.setAdapter(adapter);
-            }
-        });
+        setObservers();
         profileViewModel.loadImages();
-        profileViewModel.getName().observe(getActivity(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                mNameField.setText(s);
-            }
-        });
-        profileViewModel.getDescription().observe(getActivity(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                descriptionEditText.setText(s);
-            }
-        });
+        setButtons();
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -151,6 +121,26 @@ public class ProfileFragment extends Fragment {
             public void onPageScrollStateChanged(int state) {
             }
         });
+        descriptionEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            }
+
+            //set max lines in descriptions field
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (null != descriptionEditText.getLayout() && descriptionEditText.getLayout().getLineCount() > 5) {
+                    descriptionEditText.getText().delete(descriptionEditText.getText().length() - 1, descriptionEditText.getText().length());
+                }
+            }
+        });
+    }
+
+    private void setButtons() {
         mAddImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,20 +162,51 @@ public class ProfileFragment extends Fragment {
                 deleteImage();
             }
         });
-        descriptionEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-            }
+    }
 
+    private void setObservers() {
+        profileViewModel.getShowProgressBar().observe(getActivity(), new Observer<Boolean>() {
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+                    progressBar.setVisibility(View.VISIBLE);
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                }
             }
-
-            //set max lines in descriptions field
+        });
+        profileViewModel.getImages().observe(getActivity(), arrayList -> {
+            if (arrayList != null) {
+                if (arrayList.status != ERROR) {
+                    if (arrayList.data != null) {
+                        if (arrayList.data.size() == 0) {
+                            viewPager.setBackgroundColor(Color.TRANSPARENT);
+                        } else {
+                            viewPager.setBackgroundColor(Color.parseColor("#fafafa"));
+                        }
+                        ImageAdapter adapter = new ImageAdapter(getContext(), arrayList.data);
+                        viewPager.setAdapter(adapter);
+                    }
+                }
+            }
+        });
+        profileViewModel.getName().observe(getActivity(), new Observer<Resource<String>>() {
             @Override
-            public void afterTextChanged(Editable editable) {
-                if (null != descriptionEditText.getLayout() && descriptionEditText.getLayout().getLineCount() > 5) {
-                    descriptionEditText.getText().delete(descriptionEditText.getText().length() - 1, descriptionEditText.getText().length());
+            public void onChanged(Resource<String> name) {
+                if (name != null) {
+                    if (name.status != ERROR) {
+                        mNameField.setText(name.data);
+                    }
+                }
+            }
+        });
+        profileViewModel.getDescription().observe(getActivity(), new Observer<Resource<String>>() {
+            @Override
+            public void onChanged(Resource<String> description) {
+                if (description != null) {
+                    if (description.status != ERROR) {
+                        descriptionEditText.setText(description.data);
+                    }
                 }
             }
         });
@@ -224,11 +245,7 @@ public class ProfileFragment extends Fragment {
     public void onDetach() {
         String nameEdt = mNameField.getText().toString();
         String descriptionEdt = descriptionEditText.getText().toString().trim();
-        if (ProfileFirebase.instance != null) {
-            profileViewModel.saveUserInformation(nameEdt, descriptionEdt);
-        }
+        profileViewModel.saveUserInformation(nameEdt, descriptionEdt);
         super.onDetach();
     }
-
-
 }

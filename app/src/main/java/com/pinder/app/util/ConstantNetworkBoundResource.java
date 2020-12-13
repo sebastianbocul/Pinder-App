@@ -18,11 +18,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> {
     private static final String TAG = "ConstantNetworkBound";
-    private AppExecutors appExecutors;
     private MediatorLiveData<Resource<CacheObject>> results = new MediatorLiveData<>();
 
-    public ConstantNetworkBoundResource(AppExecutors appExecutors) {
-        this.appExecutors = appExecutors;
+    public ConstantNetworkBoundResource() {
         init();
     }
 
@@ -94,6 +92,7 @@ public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> 
                             @Override
                             public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull Object o) {
                                 Log.d(TAG, "success");
+//                                if(results.hasObservers()) results.removeSource(loadFromDb());
                                 results.addSource(loadFromDb(), new Observer<CacheObject>() {
                                     @Override
                                     public void onChanged(@Nullable CacheObject cacheObject) {
@@ -110,15 +109,10 @@ public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> 
                         break;
                     case EMPTY:
                         Log.d(TAG, "onChanged: empty request");
-                        appExecutors.mainThread().execute(new Runnable() {
+                        results.addSource(loadFromDb(), new Observer<CacheObject>() {
                             @Override
-                            public void run() {
-                                results.addSource(loadFromDb(), new Observer<CacheObject>() {
-                                    @Override
-                                    public void onChanged(@Nullable CacheObject cacheObject) {
-                                        setValue(Resource.success(cacheObject));
-                                    }
-                                });
+                            public void onChanged(@Nullable CacheObject cacheObject) {
+                                setValue(Resource.success(cacheObject));
                             }
                         });
                         break;
