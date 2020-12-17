@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -33,6 +34,8 @@ import com.pinder.app.utils.BuildVariantsHelper;
 import java.util.ArrayList;
 import java.util.Map;
 
+import io.reactivex.rxjava3.core.Single;
+
 public class UsersProfilesActivity extends AppCompatActivity {
     public String name, tags, gender, distance, location, description, profileImageUrl;
     public String userId, myId;
@@ -50,7 +53,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
     private Card user;
     private ProgressBar progressBar;
     private ImageView defaultImage, backArrowImage;
-
+    private static final String TAG = "UsersProfilesActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,37 +143,48 @@ public class UsersProfilesActivity extends AppCompatActivity {
         unmatchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "onClick");
+                Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
+                myIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//                myIntent.setFlags();
+//                myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                startActivity(myIntent);
+                Log.d(TAG, "startActivity: ");
+
+
                 unmatchButton.setText("clicked unmatch");
                 myDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        try {
-                            String chatId = dataSnapshot.child("Users").child(myId).child("connections").child("matches").child(userId).child("ChatId").getValue().toString();
-                            //for chat
-                            DatabaseReference mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
-                            mRemoveChild.removeValue();
-                            //for me
-                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(myId).child("connections");
-                            mRemoveChild.child("nope").child(userId).setValue(true);
-                            mRemoveChild.child("yes").child(userId).removeValue();
-                            mRemoveChild.child("matches").child(userId).removeValue();
-                            //for user
-                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("connections");
-                            mRemoveChild.child("nope").child(myId).setValue(true);
-                            mRemoveChild.child("yes").child(myId).removeValue();
-                            mRemoveChild.child("matches").child(myId).removeValue();
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
-                                    myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivity(myIntent);
-                                }
-                            }, 500);
-                        } catch (NullPointerException e) {
-                            Toast.makeText(UsersProfilesActivity.this, "Unable to do that operation", Toast.LENGTH_SHORT).show();
-                        }
+                        Log.d(TAG, "onDataChange: "+dataSnapshot);
+//                        try {
+//                            String chatId = dataSnapshot.child("Users").child(myId).child("connections").child("matches").child(userId).child("ChatId").getValue().toString();
+//                            //for chat
+//                            DatabaseReference mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
+//                            mRemoveChild.removeValue();
+//                            //for me
+//                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(myId).child("connections");
+//                            mRemoveChild.child("nope").child(userId).setValue(true);
+//                            mRemoveChild.child("yes").child(userId).removeValue();
+//                            mRemoveChild.child("matches").child(userId).removeValue();
+//                            //for user
+//                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("connections");
+//                            mRemoveChild.child("nope").child(myId).setValue(true);
+//                            mRemoveChild.child("yes").child(myId).removeValue();
+//                            mRemoveChild.child("matches").child(myId).removeValue();
+//                            final Handler handler = new Handler();
+//                            handler.postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
+//                                    myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                                    startActivity(myIntent);
+//                                }
+//                            }, 500);
+//                        } catch (NullPointerException e) {
+//                            Toast.makeText(UsersProfilesActivity.this, "Unable to do that operation", Toast.LENGTH_SHORT).show();
+//                        }
                     }
 
                     @Override
@@ -345,5 +359,17 @@ public class UsersProfilesActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause: ");
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
+        super.onDestroy();
     }
 }

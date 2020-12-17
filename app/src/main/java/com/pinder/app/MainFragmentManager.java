@@ -30,13 +30,14 @@ import com.pinder.app.util.ExpandCollapseView;
 import com.pinder.app.util.HideSoftKeyboard;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.android.HiltAndroidApp;
 
 import static com.pinder.app.BaseApplication.LoginEnum.LOGGED;
 import static com.pinder.app.BaseApplication.UserStatus;
 
 @AndroidEntryPoint
 public class MainFragmentManager extends AppCompatActivity {
-    private static final String TAG = "MainFragmentManager";
+    private static final String TAG = "MainFragmentManagerTAG";
     private BottomNavigationView bottomNavigationView;
     private String fromActivity = "";
     private FrameLayout adContainerView;
@@ -48,6 +49,7 @@ public class MainFragmentManager extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ON CREATE");
         setContentView(R.layout.activity_main_fragment_menager);
         UserStatus = LOGGED;
         bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -129,6 +131,7 @@ public class MainFragmentManager extends AppCompatActivity {
         initAdaptiveAd();
         initFullScreenAdd();
     }
+    
 
     private void initAdmob() {
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
@@ -245,6 +248,18 @@ public class MainFragmentManager extends AppCompatActivity {
     }
     private View getContentView() {
         return findViewById(R.id.mainFragmentManager);
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+//        super.onBackPressed();
     }
 }
 
