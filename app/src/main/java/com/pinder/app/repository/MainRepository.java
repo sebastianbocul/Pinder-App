@@ -11,7 +11,6 @@ import com.pinder.app.util.Resource;
 import java.util.ArrayList;
 
 public class MainRepository {
-    public static MainRepository instance = null;
     public MainFirebase mainFirebase;
 
     public MainRepository(MainFirebase mainFirebase) {

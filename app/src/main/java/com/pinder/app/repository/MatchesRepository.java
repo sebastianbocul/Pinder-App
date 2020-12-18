@@ -16,17 +16,18 @@ import com.pinder.app.util.Resource;
 import java.util.ArrayList;
 
 public class MatchesRepository {
-    public static MatchesRepository instance = null;
     private static final String TAG = "MatchesRepository";
 
     private MatchesCache matchesCache;
+    private MatchesFirebase matchesFirebase;
 
-    public MatchesRepository(MatchesCache matchesCache) {
+    public MatchesRepository(MatchesFirebase matchesFirebase,MatchesCache matchesCache) {
+        this.matchesFirebase=matchesFirebase;
         this.matchesCache = matchesCache;
     }
 
     public LiveData<Resource<ArrayList<MatchesObject>>> getOryginalMatches() {
-        return MatchesFirebase.getInstance().getOryginalMatches();
+        return matchesFirebase.getOryginalMatches();
     }
 
     public LiveData<Resource<ArrayList<String>>> getTags() {
@@ -54,13 +55,13 @@ public class MatchesRepository {
             @Override
             protected LiveData<Resource<ArrayList<String>>> createFirebaseCall() {
                 Log.d(TAG, "createFirebaseCall TAGS: ");
-                return MatchesFirebase.getInstance().getTags();
+                return matchesFirebase.getTags();
             }
         }.getAsLiveData();
     }
 
     public String getMyImageUrl() {
-        return MatchesFirebase.getInstance().getMyImageUrl();
+        return matchesFirebase.getMyImageUrl();
     }
 
     public LiveData<Resource<ArrayList<MatchesObject>>> getMatches() {
@@ -88,7 +89,7 @@ public class MatchesRepository {
             @Override
             protected LiveData<Resource<ArrayList<MatchesObject>>> createFirebaseCall() {
                 Log.d(TAG, "createFirebaseCall: ");
-                return MatchesFirebase.getInstance().getOryginalMatches();
+                return matchesFirebase.getOryginalMatches();
             }
         }.getAsLiveData();
     }

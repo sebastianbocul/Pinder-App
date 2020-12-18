@@ -6,6 +6,7 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -46,6 +47,7 @@ public class ProfileFirebase implements ProfileDao {
     private MutableLiveData<Boolean> showProgressBar = new MutableLiveData<>(false);
 
     public ProfileFirebase() {
+        Log.d("ProfileFirebase", "constructor: ");
         imagePosition.setValue(0);
         sortImagesDatabase();
         getUserInfo();
@@ -78,6 +80,7 @@ public class ProfileFirebase implements ProfileDao {
     }
 
     private void getUserInfo() {
+        Log.d("ProfileFirebase", "getUserInfo: ");
         mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -287,6 +290,7 @@ public class ProfileFirebase implements ProfileDao {
 
     @Override
     public MutableLiveData<Resource<String>> getName() {
+        Log.d("ProfileFirebase", "getName: ");
         return name;
     }
 

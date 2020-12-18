@@ -8,18 +8,13 @@ import com.pinder.app.persistance.PopularTagsFirebase;
 import java.util.List;
 
 public class PopularTagsRepository {
-    private static LiveData<List<PopularTagsObject>> allPopularTags;
-    public static PopularTagsRepository instance = null;
+    public PopularTagsFirebase popularTagsFirebase;
 
-    public static synchronized PopularTagsRepository getInstance() {
-        if (instance == null) {
-            instance = new PopularTagsRepository();
-        }
-        return instance;
+    public PopularTagsRepository(PopularTagsFirebase popularTagsFirebase) {
+        this.popularTagsFirebase = popularTagsFirebase;
     }
 
     public LiveData<List<PopularTagsObject>> getAllPopularTags() {
-        allPopularTags = new PopularTagsFirebase().getInstance().getAllPopularTags();
-        return allPopularTags;
+        return popularTagsFirebase.getAllPopularTags();
     }
 }

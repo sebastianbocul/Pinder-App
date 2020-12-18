@@ -3,70 +3,67 @@ package com.pinder.app.repository;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.firebase.auth.FirebaseUser;
 import com.pinder.app.persistance.SettingsFirebase;
 import com.pinder.app.persistance.SettingsFirebaseDao;
 import com.pinder.app.util.Resource;
 
 public class SettingsRepository implements SettingsFirebaseDao {
-    public static SettingsRepository instance = null;
     private LiveData<String> date;
     private LiveData<Boolean> showMyLocation;
     private LiveData<Boolean> sortByDistance;
-    public static synchronized SettingsRepository getInstance() {
-        if (instance == null) {
-            instance = new SettingsRepository();
-        }
-        return instance;
+    private SettingsFirebase settingsFirebase;
+
+    public SettingsRepository(SettingsFirebase settingsFirebase) {
+        this.settingsFirebase = settingsFirebase;
     }
 
     @Override
     public void updateMyDb(Boolean dateValid, int logoutFlag) {
-        SettingsFirebase.getInstance().updateMyDb(dateValid,logoutFlag);
+        settingsFirebase.updateMyDb(dateValid, logoutFlag);
     }
 
     @Override
     public LiveData<String> getDate() {
-        date = SettingsFirebase.getInstance().getDate();
+        date = settingsFirebase.getDate();
         return date;
     }
 
     @Override
     public LiveData<Boolean> getSortByDistance() {
-        sortByDistance = SettingsFirebase.getInstance().getSortByDistance();
+        sortByDistance = settingsFirebase.getSortByDistance();
         return sortByDistance;
     }
 
     @Override
     public LiveData<Boolean> getShowMyLocation() {
-        showMyLocation = SettingsFirebase.getInstance().getShowMyLocation();
+        showMyLocation = settingsFirebase.getShowMyLocation();
         return showMyLocation;
     }
 
     @Override
     public void setDate(String date) {
-        SettingsFirebase.getInstance().setDate(date);
+        settingsFirebase.setDate(date);
     }
 
     @Override
     public void setSortByDistance(Boolean bool) {
-        SettingsFirebase.getInstance().setSortByDistance(bool);
+        settingsFirebase.setSortByDistance(bool);
     }
 
     @Override
     public void setShowMyLocation(Boolean bool) {
-        SettingsFirebase.getInstance().setShowMyLocation(bool);
+        settingsFirebase.setShowMyLocation(bool);
     }
 
-    public void deleteWithRxJava(String userId){
-        SettingsFirebase.getInstance().deleteWithRxJava(userId);
+    public void deleteWithRxJava(String userId) {
+        settingsFirebase.deleteWithRxJava(userId);
     }
 
-    public void restartMatches(){
-        SettingsFirebase.getInstance().restartMatches();
+    public void restartMatches() {
+        settingsFirebase.restartMatches();
     }
 
     public MutableLiveData<Resource<Integer>> getLogoutLiveData() {
-        return SettingsFirebase.getInstance().getLogoutLiveData();
+        return settingsFirebase.getLogoutLiveData();
     }
 }

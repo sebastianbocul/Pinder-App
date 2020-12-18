@@ -10,28 +10,25 @@ import java.util.List;
 
 public class TagsRepository implements TagsFirebaseDao {
     private MutableLiveData<List<TagsObject>> tagList = new MutableLiveData<List<TagsObject>>();
-    public static TagsRepository instance = null;
+    private TagsFirebase tagsFirebase;
 
-    public static synchronized TagsRepository getInstance() {
-        if (instance == null) {
-            instance = new TagsRepository();
-        }
-        return instance;
+    public TagsRepository(TagsFirebase tagsFirebase) {
+        this.tagsFirebase = tagsFirebase;
     }
 
     @Override
     public MutableLiveData<List<TagsObject>> getAllTags() {
-        tagList = TagsFirebase.getInstance().getAllTags();
+        tagList = tagsFirebase.getAllTags();
         return tagList;
     }
 
     @Override
     public void deleteTag(TagsObject tag) {
-        TagsFirebase.getInstance().deleteTag(tag);
+        tagsFirebase.deleteTag(tag);
     }
 
     @Override
     public void addTag(TagsObject tag) {
-        TagsFirebase.getInstance().addTag(tag);
+        tagsFirebase.addTag(tag);
     }
 }

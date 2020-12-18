@@ -40,11 +40,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MainFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class MainFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -57,7 +62,8 @@ public class MainFragment extends Fragment {
     private TextView noMoreEditText;
     private SwipeFlingAdapterView flingContainer;
     private CardsAdapter arrayAdapter;
-    MainViewModel mainViewModel;
+    @Inject
+    public MainViewModel mainViewModel;
     private static final String TAG = "MainFragment";
     private ProgressBar progressBar;
     private List<Card> cardsArray = new ArrayList<Card>();
@@ -114,7 +120,6 @@ public class MainFragment extends Fragment {
         flingContainer = getView().findViewById(R.id.frame);
         progressBar = getView().findViewById(R.id.progress_bar);
         linearLayoutBottom = getView().findViewById(R.id.linear_layout_bottom);
-        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         mainViewModel.fetchDataOrUpdateLocationAndFetchData();
         mainViewModel.checkUserStatus(getActivity());
         mainViewModel.updateToken();

@@ -1,12 +1,11 @@
 package com.pinder.app.viewmodels;
 
-import android.app.Application;
 import android.os.Build;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
+import androidx.hilt.lifecycle.ViewModelInject;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
 
 import com.pinder.app.models.PopularTagsObject;
 import com.pinder.app.repository.PopularTagsRepository;
@@ -15,19 +14,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class PopularTagsFragmentViewModel extends AndroidViewModel {
+public class PopularTagsViewModel extends ViewModel {
     private PopularTagsRepository popularTagsRepository;
-    private LiveData<List<PopularTagsObject>> allPopularTags;
 
-    public PopularTagsFragmentViewModel(@NonNull Application application) {
-        super(application);
-        popularTagsRepository = new PopularTagsRepository().getInstance();
-        allPopularTags = popularTagsRepository.getAllPopularTags();
+    @ViewModelInject
+    public PopularTagsViewModel(PopularTagsRepository popularTagsRepository) {
+        this.popularTagsRepository = popularTagsRepository;
     }
 
     public LiveData<List<PopularTagsObject>> getAllPopularTags() {
-        allPopularTags = Transformations.map(allPopularTags, list -> sortCollection(list));
-        return allPopularTags;
+        return Transformations.map(popularTagsRepository.getAllPopularTags(), PopularTagsViewModel::sortCollection);
     }
 
     public static List<PopularTagsObject> sortCollection(List<PopularTagsObject> popularTagsList) {

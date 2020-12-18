@@ -24,7 +24,7 @@ import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar;
 import com.pinder.app.R;
 import com.pinder.app.models.TagsObject;
-import com.pinder.app.viewmodels.TagsFragmentViewModel;
+import com.pinder.app.viewmodels.TagsViewModel;
 
 import java.util.ArrayList;
 
@@ -35,7 +35,7 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
     private EditText tagsEditText;
     private RadioGroup mRadioGroup;
     private String ageMin, ageMax, distanceMax;
-    private TagsFragmentViewModel tagsFragmentViewModel;
+    private TagsViewModel tagsViewModel;
     private ArrayList<TagsObject> arrayList = new ArrayList<>();
     private View view;
     private TagsObject tag = null;
@@ -89,7 +89,7 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
             dialogTitle = "Edit search tag";
             possitiveButtonText = "edit";
         }
-        tagsFragmentViewModel =  new ViewModelProvider(this).get(TagsFragmentViewModel.class);
+        tagsViewModel =  new ViewModelProvider(this).get(TagsViewModel.class);
         ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
             @Override
             public void valueChanged(Number minValue, Number maxValue) {
@@ -145,17 +145,17 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
         String mAgeMin = ageMin;
         String mDistance = distanceMax;
         TagsObject tag = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
-        tagsFragmentViewModel.REQUEST_MODE = 1;
+        tagsViewModel.REQUEST_MODE = 1;
         if (this.tag != null) {
             if(!this.tag.equals(tag)){
-                tagsFragmentViewModel.removeTag(this.tag);
-                tagsFragmentViewModel.addTag(tag);
+                tagsViewModel.removeTag(this.tag);
+                tagsViewModel.addTag(tag);
                 Toast.makeText(getContext(), "Tag edited!", Toast.LENGTH_SHORT).show();
             }else {
                 Toast.makeText(getContext(), "Nothing changed!", Toast.LENGTH_SHORT).show();
             }
         } else {
-            tagsFragmentViewModel.addTag(tag);
+            tagsViewModel.addTag(tag);
             Toast.makeText(getContext(), "Tag added!", Toast.LENGTH_SHORT).show();
         }
         dialog.dismiss();

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,16 +20,21 @@ import com.pinder.app.R;
 import com.pinder.app.adapters.TagsAdapter;
 import com.pinder.app.models.TagsObject;
 import com.pinder.app.ui.dialogs.AddEditTagDialog;
-import com.pinder.app.viewmodels.TagsFragmentViewModel;
+import com.pinder.app.viewmodels.TagsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link TagsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class TagsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -42,7 +46,8 @@ public class TagsFragment extends Fragment {
     private TagsAdapter adapter;
     private RecyclerView recyclerView;
     private ArrayList<TagsObject> arrayList = new ArrayList<>();
-    private TagsFragmentViewModel tagsFragmentViewModel;
+    @Inject
+    public TagsViewModel tagsViewModel;
     private FloatingActionButton addTagButton;
     //public static final int LOAD = 1;
     public static final int ADD = 1;
@@ -93,7 +98,6 @@ public class TagsFragment extends Fragment {
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
-        tagsFragmentViewModel = new ViewModelProvider(this).get(TagsFragmentViewModel.class);
         adapter = new TagsAdapter(arrayList);
         new ItemTouchHelper(itemTouchHelperCallBack).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
@@ -143,7 +147,7 @@ public class TagsFragment extends Fragment {
     }
 
     private void fillTagsAdapter() {
-        tagsFragmentViewModel.getAllTags().observe(getActivity(), new Observer<List<TagsObject>>() {
+        tagsViewModel.getAllTags().observe(getActivity(), new Observer<List<TagsObject>>() {
             @Override
             public void onChanged(List<TagsObject> tagsObjects) {
                 int request = tagsObjects.size() - arrayList.size();
@@ -157,7 +161,7 @@ public class TagsFragment extends Fragment {
                     case REMOVE: {
                         arrayList.clear();
                         arrayList.addAll(tagsObjects);
-                        adapter.notifyItemRemoved(tagsFragmentViewModel.position);
+                        adapter.notifyItemRemoved(tagsViewModel.position);
                         break;
                     }
                     default: {
@@ -173,8 +177,8 @@ public class TagsFragment extends Fragment {
 
     public void removeItem(int position) {
         TagsObject tagToDel = adapter.getItem(position);
-        tagsFragmentViewModel.removeTag(tagToDel);
-        tagsFragmentViewModel.position = position;
-//        tagsFragmentViewModel.REQUEST_MODE=REMOVE;
+        tagsViewModel.removeTag(tagToDel);
+        tagsViewModel.position = position;
+//        tagsViewModel.REQUEST_MODE=REMOVE;
     }
 }

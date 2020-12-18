@@ -21,17 +21,12 @@ import java.util.Map;
 
 public class TagsFirebase implements TagsFirebaseDao {
     String TAG = "TagsFirebase";
-    public static TagsFirebase instance = null;
     private ArrayList<TagsObject> tagsList = new ArrayList<>();
     private MutableLiveData<List<TagsObject>> result = new MutableLiveData<List<TagsObject>>();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-    public static TagsFirebase getInstance() {
-        if (instance == null) {
-            instance = new TagsFirebase();
-            instance.loadDataFromDb();
-        }
-        return instance;
+    public TagsFirebase() {
+        loadDataFromDb();
     }
 
     private void loadDataFromDb() {

@@ -38,16 +38,10 @@ public class SettingsFirebase implements SettingsFirebaseDao {
     private MutableLiveData<Boolean> showMyLocation = new MutableLiveData<>();
     private MutableLiveData<Boolean> sortByDistance = new MutableLiveData<>();
     private MutableLiveData<Resource<Integer>> logoutLiveData = new MutableLiveData<>();
-    public static SettingsFirebase instance = null;
 
-    public static SettingsFirebase getInstance() {
-        if (instance == null) {
-            instance = new SettingsFirebase();
-            instance.loadDataFromDb();
-        }
-        return instance;
+    public SettingsFirebase() {
+        loadDataFromDb();
     }
-
     private void loadDataFromDb() {
         Log.d(TAG, "loadDataFromDb:  ");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();

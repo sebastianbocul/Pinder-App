@@ -52,6 +52,10 @@ import com.pinder.app.viewmodels.SettingsViewModel;
 
 import java.util.Calendar;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 import static com.pinder.app.BaseApplication.*;
 import static com.pinder.app.BaseApplication.LoginEnum.*;
 
@@ -60,6 +64,7 @@ import static com.pinder.app.BaseApplication.LoginEnum.*;
  * Use the {@link SettingsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class SettingsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -78,11 +83,10 @@ public class SettingsFragment extends Fragment {
     private Context context;
     SharedPreferences prefs;
     ProgressBar progressBar;
-
     int i = 0;
-    SettingsViewModel settingsViewModel;
     int logoutFlag = 0;
-
+    @Inject
+    public SettingsViewModel settingsViewModel;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -142,7 +146,6 @@ public class SettingsFragment extends Fragment {
         licenceButton = getView().findViewById(R.id.licenceButton);
         bugsAndImprovements = getView().findViewById(R.id.bugs_improvement);
         progressBar = getView().findViewById(R.id.progress_bar);
-        settingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
         logoutFlag = 0;
         setObservers();
         date.addTextChangedListener(new TextWatcher() {

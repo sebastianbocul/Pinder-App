@@ -73,7 +73,6 @@ import static com.pinder.app.util.ValidateUserByPreferences.validateUserByPrefer
 
 public class MainFirebase {
     private static final String TAG = "MainFirebase";
-    public static MainFirebase instance = null;
     private Context context;
     private ArrayList<Card> cardsArray = new ArrayList<Card>();
     private Map<String, String> myInfo = new HashMap<>();

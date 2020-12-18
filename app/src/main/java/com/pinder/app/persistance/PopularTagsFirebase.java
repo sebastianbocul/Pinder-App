@@ -15,16 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PopularTagsFirebase implements PopularTagsFirebaseDao {
-    public static PopularTagsFirebase instance = null;
     private ArrayList<PopularTagsObject> popularTagsList = new ArrayList<>();
     private MutableLiveData<List<PopularTagsObject>> result = new MutableLiveData<List<PopularTagsObject>>();
 
-    public static synchronized PopularTagsFirebase getInstance() {
-        if (instance == null) {
-            instance = new PopularTagsFirebase();
-            instance.loadDataFromDb();
-        }
-        return instance;
+    public PopularTagsFirebase() {
+        loadDataFromDb();
     }
 
     private void loadDataFromDb() {

@@ -128,9 +128,9 @@ public class LoginFragment extends Fragment {
     private String registerProvider = "external";
     private ProgressBar progressBarGoogle, progressBarEmail, progressBarPhone, progressBarFacebook;
     @Inject
-    Application application;
+    public Application application;
     @Inject
-    AuthViewModel authViewModel;
+    public AuthViewModel authViewModel;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -179,7 +179,6 @@ public class LoginFragment extends Fragment {
         AppEventsLogger.activateApp(application);
         callbackManager = CallbackManager.Factory.create();
         setOnClickListeners();
-        clearInstances();
         PaintText.paintLogo(logoTextView, "Pinder");
         clearNotifications();
         prepareGoogleSignIn();
@@ -549,22 +548,7 @@ public class LoginFragment extends Fragment {
             handleSignInResult(task);
         }
     }
-
-    public void clearInstances() {
-        SettingsFirebase.instance = null;
-        SettingsRepository.instance = null;
-        TagsFirebase.instance = null;
-        TagsRepository.instance = null;
-        PopularTagsFirebase.instance = null;
-        PopularTagsRepository.instance = null;
-        MatchesRepository.instance = null;
-        MatchesFirebase.instance = null;
-//        ProfileFirebase.instance = null;
-        ProfileRepository.instance = null;
-        MainFirebase.instance = null;
-        MainRepository.instance = null;
-    }
-
+    
     public void disableProgressBars() {
         progressBarPhone.setVisibility(View.GONE);
         progressBarEmail.setVisibility(View.GONE);

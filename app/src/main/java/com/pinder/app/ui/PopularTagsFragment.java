@@ -16,16 +16,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pinder.app.R;
 import com.pinder.app.adapters.PopularTagsAdapter;
 import com.pinder.app.models.PopularTagsObject;
-import com.pinder.app.viewmodels.PopularTagsFragmentViewModel;
+import com.pinder.app.viewmodels.PopularTagsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link PopularTagsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class PopularTagsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -35,6 +40,9 @@ public class PopularTagsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private OnFragmentInteractionListener mListener;
+
+    @Inject
+    public PopularTagsViewModel popularTagsViewModel;
 
     public PopularTagsFragment() {
         // Required empty public constructor
@@ -76,13 +84,12 @@ public class PopularTagsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        PopularTagsFragmentViewModel popularTagsFragmentViewModel = new ViewModelProvider(this).get(PopularTagsFragmentViewModel.class);
         RecyclerView popularTagsRecyclerView = getView().findViewById(R.id.popularTagsRecyclerView);
         ArrayList<PopularTagsObject> arrayList = new ArrayList<>();
         popularTagsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         PopularTagsAdapter tagsPopularAdapter = new PopularTagsAdapter(getContext(), arrayList);
         popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
-        popularTagsFragmentViewModel.getAllPopularTags().observe(getActivity(), new Observer<List<PopularTagsObject>>() {
+        popularTagsViewModel.getAllPopularTags().observe(getActivity(), new Observer<List<PopularTagsObject>>() {
             @Override
             public void onChanged(List<PopularTagsObject> popularTagsObjects) {
                 arrayList.clear();

@@ -98,6 +98,7 @@ public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> 
                                     public void onChanged(@Nullable CacheObject cacheObject) {
                                         Log.d(TAG, "onChanged: success: " + cacheObject);
                                         setValue(Resource.success(cacheObject));
+                                        results.removeSource(loadFromDb());
                                     }
                                 });
                             }
@@ -113,6 +114,7 @@ public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> 
                             @Override
                             public void onChanged(@Nullable CacheObject cacheObject) {
                                 setValue(Resource.success(cacheObject));
+                                results.removeSource(loadFromDb());
                             }
                         });
                         break;

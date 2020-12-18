@@ -20,13 +20,10 @@ import com.pinder.app.util.Resource;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
 public class MatchesFirebase implements MatchesDao {
-    public static MatchesFirebase instance = null;
     String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
     MutableLiveData<Resource<ArrayList<String>>> myTagsLiveData = new MutableLiveData<Resource<ArrayList<String>>>();
     ArrayList<String> myTags = new ArrayList<>();
@@ -34,38 +31,29 @@ public class MatchesFirebase implements MatchesDao {
     private static final String TAG = "MatchesFirebase";
     MutableLiveData<Resource<ArrayList<MatchesObject>>> oryginalMatchesLiveData = new MutableLiveData<Resource<ArrayList<MatchesObject>>>();
 
-    public static MatchesFirebase getInstance() {
-        if (instance == null) {
-            instance = new MatchesFirebase();
-            instance.loadMatches();
-            instance.loadTags();
-            instance.fetchMyImageUrl();
-        }
-        return instance;
+    public MatchesFirebase() {
+        loadMatches();
+        loadTags();
+        fetchMyImageUrl();
     }
 
-//    MatchesFirebase(){
-//        loadMatches();
-//        loadTags();
-//        fetchMyImageUrl();
-//    }
     private void fetchMyImageUrl() {
         myImageUrl = "default";
         DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID);
         currentUserDb.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if(snapshot.exists()){
-                    if(snapshot.getKey().equals("profileImageUrl"))
-                    myImageUrl=snapshot.getValue().toString();
+                if (snapshot.exists()) {
+                    if (snapshot.getKey().equals("profileImageUrl"))
+                        myImageUrl = snapshot.getValue().toString();
                 }
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if(snapshot.exists()){
-                    if(snapshot.getKey().equals("profileImageUrl"))
-                        myImageUrl=snapshot.getValue().toString();
+                if (snapshot.exists()) {
+                    if (snapshot.getKey().equals("profileImageUrl"))
+                        myImageUrl = snapshot.getValue().toString();
                 }
             }
 
@@ -89,7 +77,6 @@ public class MatchesFirebase implements MatchesDao {
 
     public void loadTags() {
         myTags.clear();
-
         DatabaseReference matchesReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches");
         matchesReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -157,7 +144,6 @@ public class MatchesFirebase implements MatchesDao {
                             oryginalMatchesLiveData.postValue(Resource.success(oryginalMatches));
                         }
                     }
-
                 } catch (Exception e) {
                 }
                 loadTags();
@@ -286,7 +272,7 @@ public class MatchesFirebase implements MatchesDao {
 
     @Override
     public LiveData<Resource<ArrayList<MatchesObject>>> getOryginalMatches() {
-        Log.d(TAG,"getOryginalMatches " + oryginalMatchesLiveData.getValue());
+        Log.d(TAG, "getOryginalMatches " + oryginalMatchesLiveData.getValue());
         return oryginalMatchesLiveData;
     }
 
@@ -298,5 +284,4 @@ public class MatchesFirebase implements MatchesDao {
     public String getMyImageUrl() {
         return myImageUrl;
     }
-
 }

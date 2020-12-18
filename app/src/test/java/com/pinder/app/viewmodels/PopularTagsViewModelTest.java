@@ -1,7 +1,6 @@
 package com.pinder.app.viewmodels;
 
 import com.pinder.app.models.PopularTagsObject;
-import com.pinder.app.viewmodels.PopularTagsFragmentViewModel;
 
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PopularTagsFragmentViewModelTest {
+public class PopularTagsViewModelTest {
     @Test
     public void sortCollectionTest() throws Exception {
         //Arrange
@@ -21,7 +20,7 @@ public class PopularTagsFragmentViewModelTest {
         PopularTagsObject o5 = new PopularTagsObject("EEE", 3);
         List<PopularTagsObject> input = new ArrayList<>();
         input.addAll(Arrays.asList(o1, o2, o3, o4, o5));
-        input = PopularTagsFragmentViewModel.sortCollection(input);
+        input = PopularTagsViewModel.sortCollection(input);
         PopularTagsObject[] inputP = new PopularTagsObject[5];
         for (int i = 0; i < input.size(); i++) {
             inputP[i] = input.get(i);

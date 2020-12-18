@@ -17,7 +17,6 @@ import com.pinder.app.util.Resource;
 import java.util.ArrayList;
 
 public class ProfileRepository {
-    public static ProfileRepository instance = null;
     private ProfileFirebase profileFirebase;
     private ProfileCache profileCache;
 
