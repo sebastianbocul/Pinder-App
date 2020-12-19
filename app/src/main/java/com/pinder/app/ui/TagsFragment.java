@@ -2,6 +2,7 @@ package com.pinder.app.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.pinder.app.R;
 import com.pinder.app.adapters.TagsAdapter;
 import com.pinder.app.models.TagsObject;
 import com.pinder.app.ui.dialogs.AddEditTagDialog;
+import com.pinder.app.util.Resource;
 import com.pinder.app.viewmodels.TagsViewModel;
 
 import java.util.ArrayList;
@@ -52,7 +54,7 @@ public class TagsFragment extends Fragment {
     //public static final int LOAD = 1;
     public static final int ADD = 1;
     public static final int REMOVE = -1;
-
+    private static final String TAG = "TagsFragment";
     public TagsFragment() {
         // Required empty public constructor
     }
@@ -147,30 +149,70 @@ public class TagsFragment extends Fragment {
     }
 
     private void fillTagsAdapter() {
-        tagsViewModel.getAllTags().observe(getActivity(), new Observer<List<TagsObject>>() {
+        tagsViewModel.getAllTags().observe(getActivity(), new Observer<Resource<List<TagsObject>>>() {
             @Override
-            public void onChanged(List<TagsObject> tagsObjects) {
-                int request = tagsObjects.size() - arrayList.size();
-                switch (request) {
-                    case ADD: {
-                        arrayList.clear();
-                        arrayList.addAll(tagsObjects);
-                        adapter.notifyDataSetChanged();
-                        break;
-                    }
-                    case REMOVE: {
-                        arrayList.clear();
-                        arrayList.addAll(tagsObjects);
-                        adapter.notifyItemRemoved(tagsViewModel.position);
-                        break;
-                    }
-                    default: {
-                        arrayList.clear();
-                        arrayList.addAll(tagsObjects);
-                        adapter.notifyDataSetChanged();
-                        break;
+            public void onChanged(Resource<List<TagsObject>> tagsObjects) {
+                
+                if(tagsObjects != null){
+                    switch (tagsObjects.status){
+                        case SUCCESS:
+                            Log.d(TAG, "onChanged: SUCCESS");
+                            if(tagsObjects.data!=null){
+                                int request = tagsObjects.data.size() - arrayList.size();
+                                switch (request) {
+                                    case ADD: {
+                                        arrayList.clear();
+                                        arrayList.addAll(tagsObjects.data);
+                                        adapter.notifyDataSetChanged();
+                                        break;
+                                    }
+                                    case REMOVE: {
+                                        arrayList.clear();
+                                        arrayList.addAll(tagsObjects.data);
+                                        adapter.notifyItemRemoved(tagsViewModel.position);
+                                        break;
+                                    }
+                                    default: {
+                                        arrayList.clear();
+                                        arrayList.addAll(tagsObjects.data);
+                                        adapter.notifyDataSetChanged();
+                                        break;
+                                    }
+                                }      
+                            }
+                            break;
+                        case LOADING:
+                            Log.d(TAG, "onChanged: LOADING");
+                            if(tagsObjects.data!=null){
+                                int request = tagsObjects.data.size() - arrayList.size();
+                                switch (request) {
+                                    case ADD: {
+                                        arrayList.clear();
+                                        arrayList.addAll(tagsObjects.data);
+                                        adapter.notifyDataSetChanged();
+                                        break;
+                                    }
+                                    case REMOVE: {
+                                        arrayList.clear();
+                                        arrayList.addAll(tagsObjects.data);
+                                        adapter.notifyItemRemoved(tagsViewModel.position);
+                                        break;
+                                    }
+                                    default: {
+                                        arrayList.clear();
+                                        arrayList.addAll(tagsObjects.data);
+                                        adapter.notifyDataSetChanged();
+                                        break;
+                                    }
+                                }   
+                            }
+                            break;
+                        case ERROR:
+                            Log.d(TAG, "onChanged: ERROR");
+                            break;
                     }
                 }
+                
             }
         });
     }

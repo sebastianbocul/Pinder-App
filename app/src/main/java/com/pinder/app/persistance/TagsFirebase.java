@@ -1,7 +1,5 @@
 package com.pinder.app.persistance;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
@@ -13,6 +11,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.models.TagsObject;
+import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +21,7 @@ import java.util.Map;
 public class TagsFirebase implements TagsFirebaseDao {
     String TAG = "TagsFirebase";
     private ArrayList<TagsObject> tagsList = new ArrayList<>();
-    private MutableLiveData<List<TagsObject>> result = new MutableLiveData<List<TagsObject>>();
+    private MutableLiveData<Resource<List<TagsObject>>> result = new MutableLiveData<>();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public TagsFirebase() {
@@ -42,7 +41,7 @@ public class TagsFirebase implements TagsFirebaseDao {
                 String mDistance = snapshot.child("maxDistance").getValue().toString();
                 TagsObject obj = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
                 tagsList.add(obj);
-                result.postValue(tagsList);
+                result.postValue(Resource.success(tagsList));
             }
 
             @Override
@@ -57,7 +56,7 @@ public class TagsFirebase implements TagsFirebaseDao {
                         tagsList.get(i).setmAgeMin(mAgeMin);
                         String mDistance = snapshot.child("maxDistance").getValue().toString();
                         tagsList.get(i).setmDistance(mDistance);
-                        result.postValue(tagsList);
+                        result.postValue(Resource.success(tagsList));
                     }
                 }
             }
@@ -77,7 +76,7 @@ public class TagsFirebase implements TagsFirebaseDao {
     }
 
     @Override
-    public MutableLiveData<List<TagsObject>> getAllTags() {
+    public MutableLiveData<Resource<List<TagsObject>>> getAllTags() {
         return result;
     }
 
@@ -89,7 +88,7 @@ public class TagsFirebase implements TagsFirebaseDao {
         DatabaseReference mTagsRemoved = FirebaseDatabase.getInstance().getReference().child("Tags").child(tag.getTagName()).child(currentUserId);
         mTagsRemoved.removeValue();
         tagsList.remove(tag);
-        result.postValue(tagsList);
+        result.postValue(Resource.success(tagsList));
     }
 
     @Override

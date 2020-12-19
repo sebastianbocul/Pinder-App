@@ -83,7 +83,6 @@ public class ProfileRepository {
             protected void saveFirebaseResult(@NonNull ArrayList<String> item) {
                 profileCache.setImages(item);
             }
-
             @Override
             protected boolean shouldFetch(@Nullable ArrayList<String> data) {
                 return true;

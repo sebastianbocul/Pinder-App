@@ -2,6 +2,9 @@ package com.pinder.app.models;
 
 import androidx.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TagsObject {
     private String tagName;
     private String gender;
@@ -15,6 +18,9 @@ public class TagsObject {
         this.mAgeMin = mAgeMin;
         this.mAgeMax = mAgeMax;
         this.mDistance = mDistance;
+    }
+
+    public TagsObject() {
     }
 
     public String getTagName() {

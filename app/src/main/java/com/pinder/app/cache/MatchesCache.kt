@@ -78,9 +78,9 @@ class MatchesCache constructor(private var context: Context) {
         Log.d(TAG,context!!.filesDir.absolutePath)
         if (Database.exists(Constants.DB_NAME, context!!.filesDir)) {
             if (mDatabase != null) {
-                val document: Document? = mDatabase!!.getDocument("tags")
+                val document: Document? = mDatabase!!.getDocument("my_tags")
                 if (document != null) {
-                    val arrayCouchBase: Array? = document.getArray("mytags")
+                    val arrayCouchBase: Array? = document.getArray("my_tags")
                     tags = arrayCouchBase?.toList() as ArrayList<String>?
                     tagsLD.value = tags
                     Log.d(TAG, "Getting from cache finished")
@@ -97,9 +97,9 @@ class MatchesCache constructor(private var context: Context) {
         Log.d(TAG, "SAVING TAGS TO CACHE")
         try {
             Log.d(TAG, "tags: $tags")
-            val mutableDoc = MutableDocument("tags")
+            val mutableDoc = MutableDocument("my_tags")
             var mutablearray:MutableArray = MutableArray(tags.toList())
-            mutableDoc.setArray("mytags",mutablearray)
+            mutableDoc.setArray("my_tags",mutablearray)
             // Save it to the database.
             mDatabase!!.save(mutableDoc)
         } catch (e: CouchbaseLiteException) {

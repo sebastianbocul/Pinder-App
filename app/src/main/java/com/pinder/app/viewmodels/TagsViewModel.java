@@ -1,16 +1,17 @@
 package com.pinder.app.viewmodels;
 
 import androidx.hilt.lifecycle.ViewModelInject;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.pinder.app.models.TagsObject;
 import com.pinder.app.repository.TagsRepository;
+import com.pinder.app.util.Resource;
 
 import java.util.List;
 
 public class TagsViewModel extends ViewModel {
-    private MutableLiveData<List<TagsObject>> tagList = new MutableLiveData<List<TagsObject>>();
     private TagsRepository tagsRepository;
     public int REQUEST_MODE = 1;
     public int position;
@@ -20,7 +21,7 @@ public class TagsViewModel extends ViewModel {
         this.tagsRepository = tagsRepository;
     }
 
-    public MutableLiveData<List<TagsObject>> getAllTags() {
+    public LiveData<Resource<List<TagsObject>>> getAllTags() {
         return tagsRepository.getAllTags();
     }
 
