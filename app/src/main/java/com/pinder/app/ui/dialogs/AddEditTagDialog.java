@@ -28,6 +28,11 @@ import com.pinder.app.viewmodels.TagsViewModel;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class AddEditTagDialog extends AppCompatDialogFragment {
     private TextView ageRangeTextView, maxDistanceTextView;
     private CrystalRangeSeekbar ageRangeSeeker;
@@ -35,7 +40,9 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
     private EditText tagsEditText;
     private RadioGroup mRadioGroup;
     private String ageMin, ageMax, distanceMax;
-    private TagsViewModel tagsViewModel;
+
+    @Inject
+    public TagsViewModel tagsViewModel;
     private ArrayList<TagsObject> arrayList = new ArrayList<>();
     private View view;
     private TagsObject tag = null;
@@ -89,7 +96,6 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
             dialogTitle = "Edit search tag";
             possitiveButtonText = "edit";
         }
-        tagsViewModel =  new ViewModelProvider(this).get(TagsViewModel.class);
         ageRangeSeeker.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
             @Override
             public void valueChanged(Number minValue, Number maxValue) {

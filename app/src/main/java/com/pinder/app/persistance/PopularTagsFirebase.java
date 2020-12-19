@@ -10,13 +10,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.models.PopularTagsObject;
+import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PopularTagsFirebase implements PopularTagsFirebaseDao {
     private ArrayList<PopularTagsObject> popularTagsList = new ArrayList<>();
-    private MutableLiveData<List<PopularTagsObject>> result = new MutableLiveData<List<PopularTagsObject>>();
+    private MutableLiveData<Resource<List<PopularTagsObject>>> result = new MutableLiveData<>();
 
     public PopularTagsFirebase() {
         loadDataFromDb();
@@ -52,7 +53,7 @@ public class PopularTagsFirebase implements PopularTagsFirebaseDao {
                 int tag_popularity = (int) snapshot.getChildrenCount();
                 PopularTagsObject popular_tag = new PopularTagsObject(tag_name, tag_popularity);
                 popularTagsList.add(popular_tag);
-                result.postValue(popularTagsList);
+                result.postValue(Resource.success(popularTagsList));
             }
 
             @Override
@@ -66,7 +67,7 @@ public class PopularTagsFirebase implements PopularTagsFirebaseDao {
                     }
                 }
                 popularTagsList.add(popular_tag);
-                result.postValue(popularTagsList);
+                result.postValue(Resource.success(popularTagsList));
             }
 
             @Override
@@ -84,7 +85,7 @@ public class PopularTagsFirebase implements PopularTagsFirebaseDao {
     }
 
     @Override
-    public MutableLiveData<List<PopularTagsObject>> getAllPopularTags() {
+    public MutableLiveData<Resource<List<PopularTagsObject>>> getAllPopularTags() {
         return result;
     }
 }

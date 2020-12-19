@@ -4,11 +4,13 @@ import android.os.Build;
 
 import androidx.hilt.lifecycle.ViewModelInject;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.pinder.app.models.PopularTagsObject;
 import com.pinder.app.repository.PopularTagsRepository;
+import com.pinder.app.util.Resource;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,14 +18,26 @@ import java.util.List;
 
 public class PopularTagsViewModel extends ViewModel {
     private PopularTagsRepository popularTagsRepository;
+    MediatorLiveData<Resource<List<PopularTagsObject>>> mediatorLiveData = new MediatorLiveData<>();
 
     @ViewModelInject
     public PopularTagsViewModel(PopularTagsRepository popularTagsRepository) {
         this.popularTagsRepository = popularTagsRepository;
     }
 
-    public LiveData<List<PopularTagsObject>> getAllPopularTags() {
-        return Transformations.map(popularTagsRepository.getAllPopularTags(), PopularTagsViewModel::sortCollection);
+    public LiveData<Resource<List<PopularTagsObject>>> getAllPopularTags() {
+        mediatorLiveData.addSource(popularTagsRepository.getAllPopularTags(), new Observer<Resource<List<PopularTagsObject>>>() {
+            @Override
+            public void onChanged(Resource<List<PopularTagsObject>> o) {
+                if (o != null && (o.status == Resource.Status.SUCCESS || o.status== Resource.Status.LOADING) && o.data!=null) {
+                    List<PopularTagsObject> list = o.data;
+                    mediatorLiveData.postValue(Resource.success(sortCollection(list)));
+                } else {
+                    mediatorLiveData.postValue(o);
+                }
+            }
+        });
+        return mediatorLiveData;
     }
 
     public static List<PopularTagsObject> sortCollection(List<PopularTagsObject> popularTagsList) {

@@ -2,6 +2,7 @@ package com.pinder.app.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,13 +10,13 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pinder.app.R;
 import com.pinder.app.adapters.PopularTagsAdapter;
 import com.pinder.app.models.PopularTagsObject;
+import com.pinder.app.util.Resource;
 import com.pinder.app.viewmodels.PopularTagsViewModel;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class PopularTagsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private OnFragmentInteractionListener mListener;
-
+    private static final String TAG = "PopularTagsFragment";
     @Inject
     public PopularTagsViewModel popularTagsViewModel;
 
@@ -89,12 +90,31 @@ public class PopularTagsFragment extends Fragment {
         popularTagsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         PopularTagsAdapter tagsPopularAdapter = new PopularTagsAdapter(getContext(), arrayList);
         popularTagsRecyclerView.setAdapter(tagsPopularAdapter);
-        popularTagsViewModel.getAllPopularTags().observe(getActivity(), new Observer<List<PopularTagsObject>>() {
+        popularTagsViewModel.getAllPopularTags().observe(getActivity(), new Observer<Resource<List<PopularTagsObject>>>() {
             @Override
-            public void onChanged(List<PopularTagsObject> popularTagsObjects) {
-                arrayList.clear();
-                arrayList.addAll(popularTagsObjects);
-                tagsPopularAdapter.notifyDataSetChanged();
+            public void onChanged(Resource<List<PopularTagsObject>> popularTagsObjects) {
+                if (popularTagsObjects != null) {
+                    switch (popularTagsObjects.status) {
+                        case LOADING:
+                            if (popularTagsObjects.data != null) {
+                                Log.d(TAG, "onChangd LADING: " + popularTagsObjects.data);
+                                arrayList.clear();
+                                arrayList.addAll(popularTagsObjects.data);
+                                tagsPopularAdapter.notifyDataSetChanged();
+                            }
+                            break;
+                        case SUCCESS:
+                            if (popularTagsObjects.data != null) {
+                                Log.d(TAG, "onChanged: SUCCESS" + popularTagsObjects.data);
+                                arrayList.clear();
+                                arrayList.addAll(popularTagsObjects.data);
+                                tagsPopularAdapter.notifyDataSetChanged();
+                            }
+                            break;
+                        case ERROR:
+                            Log.e(TAG, "Failed loading tags ");
+                    }
+                }
             }
         });
     }

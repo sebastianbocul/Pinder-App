@@ -18,11 +18,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public abstract class NetworkBoundResource<CacheObject, FirebaseObject> {
     private static final String TAG = "NetworkBound";
-    private AppExecutors appExecutors;
     private MediatorLiveData<Resource<CacheObject>> results = new MediatorLiveData<>();
 
-    public NetworkBoundResource(AppExecutors appExecutors) {
-        this.appExecutors = appExecutors;
+    public NetworkBoundResource() {
         init();
     }
 
@@ -110,15 +108,10 @@ public abstract class NetworkBoundResource<CacheObject, FirebaseObject> {
                         break;
                     case EMPTY:
                         Log.d(TAG, "onChanged: empty request");
-                        appExecutors.mainThread().execute(new Runnable() {
+                        results.addSource(loadFromDb(), new Observer<CacheObject>() {
                             @Override
-                            public void run() {
-                                results.addSource(loadFromDb(), new Observer<CacheObject>() {
-                                    @Override
-                                    public void onChanged(@Nullable CacheObject cacheObject) {
-                                        setValue(Resource.success(cacheObject));
-                                    }
-                                });
+                            public void onChanged(@Nullable CacheObject cacheObject) {
+                                setValue(Resource.success(cacheObject));
                             }
                         });
                         break;

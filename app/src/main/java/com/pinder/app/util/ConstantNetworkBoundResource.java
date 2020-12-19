@@ -63,9 +63,12 @@ public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> 
         results.addSource(dbSource, new Observer<CacheObject>() {
             @Override
             public void onChanged(@Nullable CacheObject cacheObject) {
+                Log.d(TAG, "CREATING SET LOADING.");
                 setValue(Resource.loading(cacheObject));
             }
         });
+        Log.d(TAG, "CREATING FIREBASE CALL.");
+
         final LiveData<Resource<FirebaseObject>> firebaseResponse = createFirebaseCall();
         results.addSource(firebaseResponse, new Observer<Resource<FirebaseObject>>() {
             @Override
