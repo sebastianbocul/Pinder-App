@@ -22,7 +22,7 @@ public class SettingInfoObject {
         this.date = date;
     }
 
-    public boolean getShowMyLocation() {
+    public Boolean getShowMyLocation() {
         return showMyLocation;
     }
 
@@ -30,7 +30,7 @@ public class SettingInfoObject {
         this.showMyLocation = showMyLocation;
     }
 
-    public boolean getSortByDistance() {
+    public Boolean getSortByDistance() {
         return sortByDistance;
     }
 

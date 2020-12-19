@@ -1,20 +1,27 @@
 package com.pinder.app.repository;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.Observer;
+
+import com.pinder.app.cache.SettingsCache;
 import com.pinder.app.persistance.SettingsFirebase;
 import com.pinder.app.persistance.SettingsFirebaseDao;
+import com.pinder.app.util.NetworkBoundResource;
 import com.pinder.app.util.Resource;
 
 public class SettingsRepository implements SettingsFirebaseDao {
-    private LiveData<String> date;
-    private LiveData<Boolean> showMyLocation;
-    private LiveData<Boolean> sortByDistance;
     private SettingsFirebase settingsFirebase;
+    private SettingsCache settingsCache;
+    private static final String TAG = "SettingsRepository";
 
-    public SettingsRepository(SettingsFirebase settingsFirebase) {
+    public SettingsRepository(SettingsFirebase settingsFirebase, SettingsCache settingsCache) {
         this.settingsFirebase = settingsFirebase;
+        this.settingsCache = settingsCache;
     }
 
     @Override
@@ -23,21 +30,87 @@ public class SettingsRepository implements SettingsFirebaseDao {
     }
 
     @Override
-    public LiveData<String> getDate() {
-        date = settingsFirebase.getDate();
-        return date;
+    public LiveData<Resource<String>> getDate() {
+        return new NetworkBoundResource<String, String>() {
+            @Override
+            protected void saveFirebaseResult(@NonNull String item) {
+                Log.d(TAG, "saveFirebaseResult: DATE " + item);
+                settingsCache.setDate(item);
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable String data) {
+                return true;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<String> loadFromDb() {
+                return settingsCache.getDate();
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<Resource<String>> createFirebaseCall() {
+                return settingsFirebase.getDate();
+            }
+        }.getAsLiveData();
     }
 
     @Override
-    public LiveData<Boolean> getSortByDistance() {
-        sortByDistance = settingsFirebase.getSortByDistance();
-        return sortByDistance;
+    public LiveData<Resource<Boolean>> getSortByDistance() {
+        return new NetworkBoundResource<Boolean, Boolean>() {
+            @Override
+            protected void saveFirebaseResult(@NonNull Boolean item) {
+                Log.d(TAG, "saveFirebaseResult SORT BY DISTN: " + item);
+                settingsCache.setSortByDistance(item);
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable Boolean data) {
+                return true;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<Boolean> loadFromDb() {
+                return settingsCache.getSortByDistance();
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<Resource<Boolean>> createFirebaseCall() {
+                return settingsFirebase.getSortByDistance();
+            }
+        }.getAsLiveData();
     }
 
     @Override
-    public LiveData<Boolean> getShowMyLocation() {
-        showMyLocation = settingsFirebase.getShowMyLocation();
-        return showMyLocation;
+    public LiveData<Resource<Boolean>> getShowMyLocation() {
+        return new NetworkBoundResource<Boolean, Boolean>() {
+            @Override
+            protected void saveFirebaseResult(@NonNull Boolean item) {
+                Log.d(TAG, "saveFirebaseResult: SHOW MY LOC " + item);
+                settingsCache.setShowMyLocation(item);
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable Boolean data) {
+                return true;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<Boolean> loadFromDb() {
+                return settingsCache.getShowMyLocation();
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<Resource<Boolean>> createFirebaseCall() {
+                return settingsFirebase.getShowMyLocation();
+            }
+        }.getAsLiveData();
     }
 
     @Override
@@ -63,7 +136,17 @@ public class SettingsRepository implements SettingsFirebaseDao {
         settingsFirebase.restartMatches();
     }
 
-    public MutableLiveData<Resource<Integer>> getLogoutLiveData() {
-        return settingsFirebase.getLogoutLiveData();
+    public LiveData<Resource<Integer>> getLogoutLiveData() {
+        MediatorLiveData<Resource<Integer>> logout = new MediatorLiveData<>();
+        logout.addSource(settingsFirebase.getLogoutLiveData(), new Observer<Resource<Integer>>() {
+                @Override
+                public void onChanged(Resource<Integer> integerResource) {
+                    if (integerResource.status == Resource.Status.SUCCESS) {
+                        settingsCache.removeUserCache();
+                    }
+                    logout.postValue(integerResource);
+                }
+            });
+        return logout;
     }
 }

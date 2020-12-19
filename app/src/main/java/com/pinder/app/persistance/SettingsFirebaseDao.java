@@ -2,14 +2,16 @@ package com.pinder.app.persistance;
 
 import androidx.lifecycle.LiveData;
 
+import com.pinder.app.util.Resource;
+
 public interface SettingsFirebaseDao {
     void updateMyDb(Boolean dateValid, int logoutFlag);
 
-    LiveData<String> getDate();
+    LiveData<Resource<String>> getDate();
 
-    LiveData<Boolean> getSortByDistance();
+    LiveData<Resource<Boolean>> getSortByDistance();
 
-    LiveData<Boolean> getShowMyLocation();
+    LiveData<Resource<Boolean>> getShowMyLocation();
 
     void setDate(String date);
 
@@ -17,5 +19,5 @@ public interface SettingsFirebaseDao {
 
     void setShowMyLocation(Boolean bool);
 
-    public void restartMatches();
+    void restartMatches();
 }

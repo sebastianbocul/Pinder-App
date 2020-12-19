@@ -24,7 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.facebook.login.LoginManager;
 import com.firebase.geofire.GeoFire;
@@ -56,8 +55,9 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import static com.pinder.app.BaseApplication.*;
-import static com.pinder.app.BaseApplication.LoginEnum.*;
+import static com.pinder.app.BaseApplication.LoginEnum.LOGGED;
+import static com.pinder.app.BaseApplication.LoginEnum.NOT_LOGGED;
+import static com.pinder.app.BaseApplication.UserStatus;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -81,8 +81,9 @@ public class SettingsFragment extends Fragment {
     private boolean dateValid = false;
     private Button bugsAndImprovements;
     private Context context;
-    SharedPreferences prefs;
-    ProgressBar progressBar;
+    private static final String TAG = "SettingsFragment";
+    private SharedPreferences prefs;
+    private ProgressBar progressBar;
     int i = 0;
     int logoutFlag = 0;
     @Inject
@@ -135,7 +136,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        context=view.getContext();
+        context = view.getContext();
         sortUsersByDistanceSwitch = getView().findViewById(R.id.sortUsersByDistance);
         mapLocationSwitch = getView().findViewById(R.id.mapLocationSwitch);
         logoutUser = getView().findViewById(R.id.logoutUser);
@@ -255,7 +256,6 @@ public class SettingsFragment extends Fragment {
                 deleteAccount();
             }
         });
-
         privacyPolicyButton.setOnClickListener(v -> {
             PrivacyDialog pd = new PrivacyDialog();
             pd.show(getActivity().getSupportFragmentManager(), "Privacy dialog");
@@ -271,12 +271,11 @@ public class SettingsFragment extends Fragment {
         bugsAndImprovements.setOnClickListener(v -> {
             openReportDialog();
         });
-
         helperButtons();
     }
 
     private void helperButtons() {
-        Button restartMatches,moveUsersLocToGeoFire;
+        Button restartMatches, moveUsersLocToGeoFire;
         restartMatches = getView().findViewById(R.id.restartMatches);
         moveUsersLocToGeoFire = getView().findViewById(R.id.moveUsersLocToGeoFire);
         BuildVariantsHelper.disableButton(restartMatches);
@@ -298,14 +297,14 @@ public class SettingsFragment extends Fragment {
                 databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot dataSnapshot:snapshot.getChildren()){
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             geoFireReference.child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot ds) {
-                                    if(ds.getValue()==null){
-                                        if(dataSnapshot.child("location").exists()){
-                                            LatLng loc = new LatLng(Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString()),Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString()));
-                                            Log.d("moveUsersToGeoloc", "users in geoLoc: " + dataSnapshot.getKey() + "latlng:"+ loc.toString());
+                                    if (ds.getValue() == null) {
+                                        if (dataSnapshot.child("location").exists()) {
+                                            LatLng loc = new LatLng(Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString()), Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString()));
+                                            Log.d("moveUsersToGeoloc", "users in geoLoc: " + dataSnapshot.getKey() + "latlng:" + loc.toString());
                                             DatabaseReference geofire = FirebaseDatabase.getInstance().getReference().child("Geofire");
                                             GeoFire geoFire = new GeoFire(geofire);
                                             geoFire.setLocation(dataSnapshot.getKey(), new GeoLocation(loc.latitude, loc.longitude), new GeoFire.CompletionListener() {
@@ -334,7 +333,7 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public void onDetach() {
-            updateMyDb(0);
+        updateMyDb(0);
         super.onDetach();
     }
 
@@ -356,18 +355,18 @@ public class SettingsFragment extends Fragment {
         alertDialog.show();
     }
 
-    public void setObservers(){
+    public void setObservers() {
         settingsViewModel.getLogoutLiveData().observe(getViewLifecycleOwner(), new Observer<Resource<Integer>>() {
             @Override
             public void onChanged(Resource<Integer> integerResource) {
-                if(integerResource!= null){
-                    switch (integerResource.status){
+                if (integerResource != null) {
+                    switch (integerResource.status) {
                         case LOADING:
                             progressBar.setVisibility(View.VISIBLE);
                             break;
                         case SUCCESS:
-                            if(integerResource.data!=null){
-                                if(integerResource.data==1){
+                            if (integerResource.data != null) {
+                                if (integerResource.data == 1) {
                                     logoutUser();
                                 }
                             }
@@ -380,23 +379,59 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
-        settingsViewModel.getDate().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                date.setText(s);
-                i++;
+        settingsViewModel.getDate().observe(getViewLifecycleOwner(), s -> {
+            if (s != null) {
+                switch (s.status) {
+                    case SUCCESS:
+                        Log.d(TAG, "getDate: SUCCESS " + s.data);
+                        date.setText(s.data);
+                        i++;
+                        break;
+                    case LOADING:
+                        Log.d(TAG, "getDate: LOADING " + s.data);
+                        date.setText(s.data);
+                        i++;
+                        break;
+                    case ERROR:
+                        Log.d(TAG, "getDate: ERROR ");
+                        break;
+                }
             }
         });
-        settingsViewModel.getShowMyLocation().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                mapLocationSwitch.setChecked(aBoolean);
+        settingsViewModel.getShowMyLocation().observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean != null) {
+                switch (aBoolean.status) {
+                    case SUCCESS:
+                        Log.d(TAG, "getShowMyLocation: SUCCESS " + aBoolean.data);
+                        if (aBoolean.data != null) mapLocationSwitch.setChecked(aBoolean.data);
+                        break;
+                    case LOADING:
+                        Log.d(TAG, "getShowMyLocation: LOADING " + aBoolean.data);
+                        if (aBoolean.data != null) mapLocationSwitch.setChecked(aBoolean.data);
+                        break;
+                    case ERROR:
+                        Log.d(TAG, "getShowMyLocation: ERROR ");
+                        break;
+                }
             }
         });
-        settingsViewModel.getSortByDistance().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                sortUsersByDistanceSwitch.setChecked(aBoolean);
+        settingsViewModel.getSortByDistance().observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean != null) {
+                switch (aBoolean.status) {
+                    case SUCCESS:
+                        Log.d(TAG, "getSortByDistance: SUCCESS " + aBoolean.data);
+                        if (aBoolean.data != null)
+                            sortUsersByDistanceSwitch.setChecked(aBoolean.data);
+                        break;
+                    case LOADING:
+                        Log.d(TAG, "getSortByDistance: LOADING " + aBoolean.data);
+                        if (aBoolean.data != null)
+                            sortUsersByDistanceSwitch.setChecked(aBoolean.data);
+                        break;
+                    case ERROR:
+                        Log.d(TAG, "getSortByDistance: ERROR ");
+                        break;
+                }
             }
         });
     }
@@ -456,9 +491,9 @@ public class SettingsFragment extends Fragment {
     }
 
     private void updateMyDb(int logoutFlag) {
-        if(UserStatus == LOGGED){
+        if (UserStatus == LOGGED) {
             settingsViewModel.setDate(date.getText().toString());
-            settingsViewModel.updateMyDb(dateValid,logoutFlag);
+            settingsViewModel.updateMyDb(dateValid, logoutFlag);
         }
     }
 

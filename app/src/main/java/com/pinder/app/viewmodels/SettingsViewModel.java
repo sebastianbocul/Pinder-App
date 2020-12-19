@@ -1,11 +1,8 @@
 package com.pinder.app.viewmodels;
 
-import android.app.Application;
 import android.content.SharedPreferences;
 
-import androidx.annotation.NonNull;
 import androidx.hilt.lifecycle.ViewModelInject;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -14,9 +11,6 @@ import com.pinder.app.repository.SettingsRepository;
 import com.pinder.app.util.Resource;
 
 public class SettingsViewModel extends ViewModel {
-    private LiveData<String> date;
-    private LiveData<Boolean> showMyLocation;
-    private LiveData<Boolean> sortByDistance;
     private SettingsRepository settingsRepository;
 
     @ViewModelInject
@@ -28,19 +22,16 @@ public class SettingsViewModel extends ViewModel {
         settingsRepository.updateMyDb(dateValid,logoutFlag);
     }
 
-    public LiveData<String> getDate() {
-        date = settingsRepository.getDate();
-        return date;
+    public LiveData<Resource<String>> getDate() {
+        return settingsRepository.getDate();
     }
 
-    public LiveData<Boolean> getSortByDistance() {
-        sortByDistance = settingsRepository.getSortByDistance();
-        return sortByDistance;
+    public LiveData<Resource<Boolean>> getSortByDistance() {
+       return settingsRepository.getSortByDistance();
     }
 
-    public LiveData<Boolean> getShowMyLocation() {
-        showMyLocation = settingsRepository.getShowMyLocation();
-        return showMyLocation;
+    public LiveData<Resource<Boolean>> getShowMyLocation() {
+        return settingsRepository.getShowMyLocation();
     }
 
     public void setDate(String date) {
@@ -64,7 +55,7 @@ public class SettingsViewModel extends ViewModel {
         settingsRepository.restartMatches();
     }
 
-    public MutableLiveData<Resource<Integer>> getLogoutLiveData() {
+    public LiveData<Resource<Integer>> getLogoutLiveData() {
         return settingsRepository.getLogoutLiveData();
     }
 }
