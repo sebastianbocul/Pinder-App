@@ -136,7 +136,7 @@ public class MainFragment extends Fragment {
     }
 
     private void setObservers() {
-        mainViewModel.getCardsArrayLD().observe(getActivity(), new Observer<Resource<ArrayList<Card>>>() {
+        mainViewModel.getCardsArrayLD().observe(getViewLifecycleOwner(), new Observer<Resource<ArrayList<Card>>>() {
             @Override
             public void onChanged(Resource<ArrayList<Card>> cards) {
                 noMoreEditText.setText("");
@@ -172,9 +172,11 @@ public class MainFragment extends Fragment {
                             break;
                         }
                     }
-                    cardsArray.clear();
-                    cardsArray.addAll(cards.data);
-                    arrayAdapter.notifyDataSetChanged();
+                    if(cards.data!=null){
+                        cardsArray.clear();
+                        cardsArray.addAll(cards.data);
+                        arrayAdapter.notifyDataSetChanged();
+                    }
                     for (Card ccc : cardsArray) {
                         Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
                     }

@@ -32,8 +32,8 @@ class MatchesCache constructor(private var context: Context) {
         val matchesLD: MutableLiveData<ArrayList<MatchesObject>> = MutableLiveData()
         val matchesArrayList: ArrayList<MatchesObject> = arrayListOf()
         matchesLD.value = matchesArrayList
-        Log.d(TAG,context!!.filesDir.absolutePath)
-        if (Database.exists(Constants.DB_NAME, context!!.filesDir)) {
+        Log.d(TAG, context.filesDir.absolutePath)
+        if (Database.exists(Constants.DB_NAME, context.filesDir)) {
             if (mDatabase != null) {
                 val document: Document? = mDatabase!!.getDocument("matches")
                 if (document != null) {
@@ -75,8 +75,8 @@ class MatchesCache constructor(private var context: Context) {
         val tagsLD: MutableLiveData<ArrayList<String>> = MutableLiveData()
         var tags: ArrayList<String>? = arrayListOf()
         tagsLD.value = tags
-        Log.d(TAG,context!!.filesDir.absolutePath)
-        if (Database.exists(Constants.DB_NAME, context!!.filesDir)) {
+        Log.d(TAG, context.filesDir.absolutePath)
+        if (Database.exists(Constants.DB_NAME, context.filesDir)) {
             if (mDatabase != null) {
                 val document: Document? = mDatabase!!.getDocument("my_tags")
                 if (document != null) {

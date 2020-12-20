@@ -3,6 +3,7 @@ package com.pinder.app.viewmodels;
 import android.content.Context;
 
 import androidx.hilt.lifecycle.ViewModelInject;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -31,8 +32,8 @@ public class MainViewModel extends ViewModel {
 //        return mainRepository.getMyLongitude();
 //    }
 
-    public MutableLiveData<com.pinder.app.util.Resource<ArrayList<Card>>> getCardsArrayLD() {
-        cardsArrayLD = mainRepository.getCardsArrayLD();
+    public LiveData<Resource<ArrayList<Card>>> getCardsArrayLD() {
+        cardsArrayLD = (MutableLiveData<Resource<ArrayList<Card>>>) mainRepository.getCardsArrayLD();
         return cardsArrayLD;
     }
 

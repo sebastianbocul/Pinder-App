@@ -40,6 +40,9 @@ public class Card implements Parcelable {
         this.description = description;
     }
 
+    public Card() {
+    }
+
     protected Card(Parcel in) {
         userId = in.readString();
         name = in.readString();

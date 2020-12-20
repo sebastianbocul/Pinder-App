@@ -20,7 +20,7 @@ class AuthRepository constructor(val authFirebase: AuthFirebase, val authCache: 
 
             override fun shouldFetch(data: Boolean?): Boolean {
                 Log.d(TAG, "shouldFetch " + !data!!)
-                return !data!!
+                return !data
             }
 
             override fun loadFromDb(): LiveData<Boolean> {
