@@ -177,9 +177,9 @@ public class MainFragment extends Fragment {
                         cardsArray.addAll(cards.data);
                         arrayAdapter.notifyDataSetChanged();
                     }
-                    for (Card ccc : cardsArray) {
-                        Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
-                    }
+//                    for (Card ccc : cardsArray) {
+//                        Log.d(TAG, "Row items : " + ccc.getName() + " dist: " + ccc.getDistance() + " UID: " + ccc.getUserId());
+//                    }
                 }
             }
         });

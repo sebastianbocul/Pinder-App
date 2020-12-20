@@ -1,6 +1,7 @@
 package com.pinder.app.repository;
 
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,8 +12,8 @@ import androidx.lifecycle.Observer;
 import com.pinder.app.cache.SettingsCache;
 import com.pinder.app.persistance.SettingsFirebase;
 import com.pinder.app.persistance.SettingsFirebaseDao;
-import com.pinder.app.util.NetworkBoundResource;
 import com.pinder.app.util.Resource;
+import com.pinder.app.util.bound_resources.NetworkBoundResource;
 
 public class SettingsRepository implements SettingsFirebaseDao {
     private SettingsFirebase settingsFirebase;
@@ -139,14 +140,18 @@ public class SettingsRepository implements SettingsFirebaseDao {
     public LiveData<Resource<Integer>> getLogoutLiveData() {
         MediatorLiveData<Resource<Integer>> logout = new MediatorLiveData<>();
         logout.addSource(settingsFirebase.getLogoutLiveData(), new Observer<Resource<Integer>>() {
-                @Override
-                public void onChanged(Resource<Integer> integerResource) {
-                    if (integerResource.status == Resource.Status.SUCCESS) {
-                        settingsCache.removeUserCache();
+            @Override
+            public void onChanged(Resource<Integer> integerResource) {
+                if (integerResource.status == Resource.Status.SUCCESS) {
+                    if (integerResource.data != null) {
+                        if (integerResource.data == 1) {
+                            settingsCache.removeUserCache();
+                        }
                     }
-                    logout.postValue(integerResource);
                 }
-            });
+                logout.postValue(integerResource);
+            }
+        });
         return logout;
     }
 }

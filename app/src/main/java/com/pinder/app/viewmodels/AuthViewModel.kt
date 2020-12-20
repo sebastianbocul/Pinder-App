@@ -8,9 +8,7 @@ import com.pinder.app.repository.AuthRepository
 import com.pinder.app.repository.MatchesRepository
 import com.pinder.app.util.Resource
 
-class AuthViewModel @ViewModelInject constructor(val authRepository: AuthRepository): ViewModel(){
-    val userData:LiveData<Resource<String>> = MutableLiveData()
-
+class AuthViewModel @ViewModelInject constructor(private val authRepository: AuthRepository): ViewModel(){
     fun fetchUserData():LiveData<Resource<Boolean>>{
         return authRepository.fetchUserData()
     }

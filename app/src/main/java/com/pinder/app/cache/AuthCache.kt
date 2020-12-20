@@ -34,12 +34,13 @@ class AuthCache constructor(var context: Context) {
         matchesLD.value = matchesArrayList
         Log.d(TAG, context.filesDir.absolutePath)
         if (Database.exists(Constants.DB_NAME, context.filesDir)) {
+            Log.d(TAG, "Database exists: ")
             if (mDatabase != null) {
+                Log.d(TAG, "mDatabase !=null: ")
                 val document: Document? = mDatabase!!.getDocument("auth")
                 if (document != null) {
                     var auth: String? = document.getString("user")
                     Log.d(TAG, "Getting user auth from cache finished $auth")
-//                    auth=null
                     Log.d(TAG, "(auth.equals(currentUID) " + auth.equals(currentUID))
                     isUserInCache.postValue((auth.equals(currentUID)))
                 } else {
@@ -56,7 +57,7 @@ class AuthCache constructor(var context: Context) {
     }
 
     fun saveUserToCache() {
-        Log.d(TAG, "CACHE userId $currentUID")
+        Log.d(TAG, "CACHE userId empty $currentUID")
         try {
             val mutableDoc = MutableDocument("auth")
             mutableDoc.setValue("user", currentUID)
@@ -67,7 +68,7 @@ class AuthCache constructor(var context: Context) {
     }
 
     fun saveUserToCache(currentUID:String) {
-        Log.d(TAG, "CACHE userId $currentUID")
+        Log.d(TAG, "CACHE userId string$currentUID")
         try {
             val mutableDoc = MutableDocument("auth")
             mutableDoc.setValue("user", currentUID)

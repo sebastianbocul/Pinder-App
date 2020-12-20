@@ -1,10 +1,13 @@
 package com.pinder.app.viewmodels;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.hilt.lifecycle.ViewModelInject;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.pinder.app.models.Card;
@@ -13,28 +16,37 @@ import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;
 
+import static com.pinder.app.util.SortingFunctions.sortCollectionByLikesMe;
+import static com.pinder.app.util.SortingFunctions.sortCollectionByLikesMeThenDistance;
+
 public class MainViewModel extends ViewModel {
     MainRepository mainRepository;
     MutableLiveData<Resource<ArrayList<Card>>> cardsArrayLD = new MutableLiveData<>();
-    MutableLiveData<ArrayList<String>> myTagsAdapterLD = new MutableLiveData<>();
+    MediatorLiveData<Resource<ArrayList<Card>>> mediatorLiveData = new MediatorLiveData<>();
 
+    private static final String TAG = "MainViewModel";
     @ViewModelInject
     public MainViewModel(MainRepository mainRepository) {
         this.mainRepository = mainRepository;
     }
-//    ToTestConstructor
-//    public MainViewModel(){}
-//    public MutableLiveData<Double> getMyLatitude() {
-//        return mainRepository.getMyLatitude();
-//    }
-//
-//    public MutableLiveData<Double> getMyLongitude() {
-//        return mainRepository.getMyLongitude();
-//    }
 
     public LiveData<Resource<ArrayList<Card>>> getCardsArrayLD() {
-        cardsArrayLD = (MutableLiveData<Resource<ArrayList<Card>>>) mainRepository.getCardsArrayLD();
-        return cardsArrayLD;
+        mediatorLiveData= new MediatorLiveData<>();
+        Log.d(TAG, "getCardsArrayLD: ");
+        mediatorLiveData.addSource(mainRepository.getCardsArrayLD(), arrayListResource -> {
+            Resource<ArrayList<Card>> cards = arrayListResource;
+            if(mainRepository.getSortByDistanceString().equals("true")){
+                if(cards!=null && cards.data!=null){
+                    cards.data=sortCollectionByLikesMeThenDistance(cards.data);
+                }
+            }else {
+                if(cards!=null && cards.data!=null){
+                    cards.data=sortCollectionByLikesMe(cards.data);
+                }
+            }
+            mediatorLiveData.postValue(cards);
+        });
+        return mediatorLiveData;
     }
 
     public void fetchDataOrUpdateLocationAndFetchData() {
@@ -46,13 +58,13 @@ public class MainViewModel extends ViewModel {
     }
 
     public void removeFirstObjectInAdapter() {
-        Resource<ArrayList<Card>> cardsArray = this.cardsArrayLD.getValue();
+        Resource<ArrayList<Card>> cardsArray = this.mediatorLiveData.getValue();
         if (cardsArray.data.size() != 0) {
             cardsArray.data.remove(0);
             if (cardsArray.data.size() == 0) {
                 cardsArray = Resource.emptydata(cardsArray.data);
             }
-            this.cardsArrayLD.postValue(cardsArray);
+            this.mediatorLiveData.postValue(cardsArray);
         }
     }
 

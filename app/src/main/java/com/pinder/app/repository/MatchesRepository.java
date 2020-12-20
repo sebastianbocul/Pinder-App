@@ -9,8 +9,7 @@ import androidx.lifecycle.LiveData;
 import com.pinder.app.cache.MatchesCache;
 import com.pinder.app.models.MatchesObject;
 import com.pinder.app.persistance.MatchesFirebase;
-import com.pinder.app.util.AppExecutors;
-import com.pinder.app.util.ConstantNetworkBoundResource;
+import com.pinder.app.util.bound_resources.ConstantNetworkBoundResource;
 import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;

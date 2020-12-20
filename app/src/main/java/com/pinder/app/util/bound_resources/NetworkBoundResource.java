@@ -1,4 +1,4 @@
-package com.pinder.app.util;
+package com.pinder.app.util.bound_resources;
 
 import android.util.Log;
 
@@ -10,17 +10,19 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
+import com.pinder.app.util.Resource;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> {
-    private static final String TAG = "ConstantNetworkBound";
+public abstract class NetworkBoundResource<CacheObject, FirebaseObject> {
+    private static final String TAG = "NetworkBound";
     private MediatorLiveData<Resource<CacheObject>> results = new MediatorLiveData<>();
 
-    public ConstantNetworkBoundResource() {
+    public NetworkBoundResource() {
         init();
     }
 
@@ -63,18 +65,15 @@ public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> 
         results.addSource(dbSource, new Observer<CacheObject>() {
             @Override
             public void onChanged(@Nullable CacheObject cacheObject) {
-                Log.d(TAG, "CREATING SET LOADING.");
                 setValue(Resource.loading(cacheObject));
             }
         });
-        Log.d(TAG, "CREATING FIREBASE CALL.");
-
         final LiveData<Resource<FirebaseObject>> firebaseResponse = createFirebaseCall();
         results.addSource(firebaseResponse, new Observer<Resource<FirebaseObject>>() {
             @Override
             public void onChanged(@Nullable final Resource<FirebaseObject> firebaseObjectResponse) {
                 results.removeSource(dbSource);
-//                results.removeSource(firebaseResponse);
+                results.removeSource(firebaseResponse);
                 /*
                     3 cases:
                        1) FirebaseSuccessResponse
@@ -95,13 +94,11 @@ public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> 
                             @Override
                             public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull Object o) {
                                 Log.d(TAG, "success");
-//                                if(results.hasObservers()) results.removeSource(loadFromDb());
                                 results.addSource(loadFromDb(), new Observer<CacheObject>() {
                                     @Override
                                     public void onChanged(@Nullable CacheObject cacheObject) {
-                                        Log.d(TAG, "onChanged: success: " + cacheObject);
+                                        Log.d(TAG, "success");
                                         setValue(Resource.success(cacheObject));
-                                        results.removeSource(loadFromDb());
                                     }
                                 });
                             }
@@ -117,7 +114,6 @@ public abstract class ConstantNetworkBoundResource<CacheObject, FirebaseObject> 
                             @Override
                             public void onChanged(@Nullable CacheObject cacheObject) {
                                 setValue(Resource.success(cacheObject));
-                                results.removeSource(loadFromDb());
                             }
                         });
                         break;

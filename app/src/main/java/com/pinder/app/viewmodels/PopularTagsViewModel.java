@@ -17,8 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class PopularTagsViewModel extends ViewModel {
-    private PopularTagsRepository popularTagsRepository;
-    MediatorLiveData<Resource<List<PopularTagsObject>>> mediatorLiveData = new MediatorLiveData<>();
+    private final PopularTagsRepository popularTagsRepository;
 
     @ViewModelInject
     public PopularTagsViewModel(PopularTagsRepository popularTagsRepository) {
@@ -26,6 +25,7 @@ public class PopularTagsViewModel extends ViewModel {
     }
 
     public LiveData<Resource<List<PopularTagsObject>>> getAllPopularTags() {
+        MediatorLiveData<Resource<List<PopularTagsObject>>> mediatorLiveData = new MediatorLiveData<>();
         mediatorLiveData.addSource(popularTagsRepository.getAllPopularTags(), new Observer<Resource<List<PopularTagsObject>>>() {
             @Override
             public void onChanged(Resource<List<PopularTagsObject>> o) {

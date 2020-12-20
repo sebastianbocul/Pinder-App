@@ -82,12 +82,11 @@ class SplashFragment : Fragment() {
     private fun authStateListener() {
         firebaseAuthStateListener = AuthStateListener {
             val user = FirebaseAuth.getInstance().currentUser
+            Log.d(TAG, "USER : $user");
             if (user != null) {
                 Log.d(TAG, "USER!=NULL");
                 authViewModel.fetchUserData().observe(viewLifecycleOwner, Observer {
                     if (it != null) {
-                        Log.d(TAG, "OBSERVER it: ${it.status}")
-                        Log.d(TAG, "OBSERVER it: ${it.data}")
                         Log.d(TAG, "HANDLER");
                         Log.d(TAG, "OBSERVER HANDLER it: ${it.status}")
                         Log.d(TAG, "OBSERVER HANDLER it: ${it.data}")

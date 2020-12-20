@@ -2,7 +2,6 @@ package com.pinder.app.repository;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,7 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.pinder.app.cache.ProfileCache;
 import com.pinder.app.persistance.ProfileFirebase;
-import com.pinder.app.util.ConstantNetworkBoundResource;
+import com.pinder.app.util.bound_resources.ConstantNetworkBoundResource;
 import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;

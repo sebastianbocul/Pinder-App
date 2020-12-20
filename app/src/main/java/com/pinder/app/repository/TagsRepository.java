@@ -9,7 +9,7 @@ import androidx.lifecycle.LiveData;
 import com.pinder.app.cache.TagsCache;
 import com.pinder.app.models.TagsObject;
 import com.pinder.app.persistance.TagsFirebase;
-import com.pinder.app.util.ConstantNetworkBoundResource;
+import com.pinder.app.util.bound_resources.ConstantNetworkBoundResource;
 import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;

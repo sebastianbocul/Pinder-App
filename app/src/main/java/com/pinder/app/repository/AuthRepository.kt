@@ -4,9 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import com.pinder.app.cache.AuthCache
 import com.pinder.app.persistance.AuthFirebase
-import com.pinder.app.util.AppExecutors
-import com.pinder.app.util.ConstantNetworkBoundResource
-import com.pinder.app.util.NetworkBoundResource
+import com.pinder.app.util.bound_resources.ConstantNetworkBoundResource
 import com.pinder.app.util.Resource
 
 class AuthRepository constructor(val authFirebase: AuthFirebase, val authCache: AuthCache) {

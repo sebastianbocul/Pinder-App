@@ -149,10 +149,9 @@ public class TagsFragment extends Fragment {
     }
 
     private void fillTagsAdapter() {
-        tagsViewModel.getAllTags().observe(getActivity(), new Observer<Resource<List<TagsObject>>>() {
+        tagsViewModel.getAllTags().observe(getViewLifecycleOwner(), new Observer<Resource<List<TagsObject>>>() {
             @Override
             public void onChanged(Resource<List<TagsObject>> tagsObjects) {
-                
                 if(tagsObjects != null){
                     switch (tagsObjects.status){
                         case SUCCESS:

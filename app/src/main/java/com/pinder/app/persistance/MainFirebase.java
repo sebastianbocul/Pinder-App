@@ -2,7 +2,6 @@ package com.pinder.app.persistance;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,13 +12,12 @@ import android.location.Location;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.firebase.geofire.GeoFire;
@@ -58,37 +56,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Cancellable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-
-import static com.pinder.app.util.SortingFunctions.sortCollectionByLikesMe;
-import static com.pinder.app.util.SortingFunctions.sortCollectionByLikesMeThenDistance;
 import static com.pinder.app.util.SortingFunctions.sortTagsCollectionByDistance;
 import static com.pinder.app.util.ValidateUserByPreferences.validateUserByPreferences;
 
 public class MainFirebase {
     private static final String TAG = "MainFirebase";
-    private Context context;
-    private ArrayList<Card> cardsArray = new ArrayList<Card>();
-    private Map<String, String> myInfo = new HashMap<>();
-    private ArrayList<TagsObject> myTagsListTemp = new ArrayList<>();
-    private ArrayList<TagsObject> myTagsList = new ArrayList<>();
-    private String sortByDistance = "false";
-    private String sortByDistanceTemp = "false";
-    //change later// temp solution
-    private MutableLiveData<Resource<ArrayList<Card>>> cardsArrayLD = new MutableLiveData<>();
-    private LatLng myLoc;
-    private String mUID;
-    private ArrayList<String> usersIdLikesMe = new ArrayList<>();
     //counters- logs helpers
     int myCounterOnKeyExit = 0;
     int myCounterOnKeyEnter = 0;
-
+    private final Context context;
+    private ArrayList<Card> cardsArray = new ArrayList<Card>();
+    private final Map<String, String> myInfo = new HashMap<>();
+    private final ArrayList<TagsObject> myTagsListTemp = new ArrayList<>();
+    private ArrayList<TagsObject> myTagsList = new ArrayList<>();
+    private String sortByDistance = "false";
+    //change later// temp solution
+    private final MutableLiveData<Resource<ArrayList<Card>>> cardsArrayLD = new MutableLiveData<>();
+    private LatLng myLoc;
+    private String mUID;
+    private final ArrayList<String> usersIdLikesMe = new ArrayList<>();
 
     public MainFirebase(Context context) {
         this.context = context;
@@ -127,7 +119,7 @@ public class MainFirebase {
                     } else {
                         if (myTagsListTemp.size() == 0) {
                             myTagsAdapter.clear();
-                              myTagsList.clear();
+                            myTagsList.clear();
                             cardsArray.clear();
                             cardsArrayLD.postValue(Resource.emptydata(cardsArray));
                         }
@@ -147,11 +139,11 @@ public class MainFirebase {
         });
         Single<String> updateSortByDistancePreferenceSingleObs = Single.create(emitter -> {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            sortByDistanceTemp = prefs.getString("sortByDistance", "notFound");
-            Log.d(TAG, "no prefs found: " + sortByDistanceTemp);
-            if (sortByDistanceTemp.equals("true") || sortByDistanceTemp.equals("false")) {
-                Log.d(TAG, "sortByDistanceTemp: " + sortByDistanceTemp.toString());
-                emitter.onSuccess(sortByDistanceTemp);
+            sortByDistance = prefs.getString("sortByDistance", "notFound");
+            Log.d(TAG, "no prefs found: " + sortByDistance);
+            if (sortByDistance.equals("true") || sortByDistance.equals("false")) {
+                Log.d(TAG, "sortByDistanceTemp: " + sortByDistance);
+                emitter.onSuccess(sortByDistance);
             } else {
                 String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 DatabaseReference ds = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID);
@@ -159,8 +151,8 @@ public class MainFirebase {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Log.d(TAG, "no prefs found: downloading");
-                        if (snapshot.exists()) sortByDistanceTemp = snapshot.getValue().toString();
-                        emitter.onSuccess(sortByDistanceTemp);
+                        if (snapshot.exists()) sortByDistance = snapshot.getValue().toString();
+                        emitter.onSuccess(sortByDistance);
                     }
 
                     @Override
@@ -193,11 +185,10 @@ public class MainFirebase {
                     @Override
                     public void onComplete() {
                         boolean tagsNotChanged = Arrays.equals(myTagsList.toArray(), myTagsListTemp.toArray());
-                        Log.d("RxOnComplete", "onComplete !sortByDistance.equals(sortByDistanceTemp) : " + !sortByDistance.equals(sortByDistanceTemp));
+                        Log.d("RxOnComplete", "onComplete !sortByDistance.equals(sortByDistanceTemp) : " + !sortByDistance.equals(sortByDistance));
                         Log.d("RxOnComplete", "TagsNotChanged : " + tagsNotChanged);
-                        if (!sortByDistance.equals(sortByDistanceTemp) || !tagsNotChanged) {
+                        if (!tagsNotChanged) {
                             Log.d("RxOnComplete", "onComplete if2: " + true);
-                            sortByDistance = sortByDistanceTemp;
                             myTagsList.clear();
                             myTagsList.addAll(myTagsListTemp);
                             myTagsListTemp.clear();
@@ -234,14 +225,6 @@ public class MainFirebase {
                     @Override
                     public void onComplete() {
                         Log.d(TAG, "onComplete: ");
-                        if (sortByDistance.equals("true")) {
-                            cardsArray = sortCollectionByLikesMeThenDistance(cardsArray);
-                        } else {
-                            cardsArray = sortCollectionByLikesMe(cardsArray);
-                        }
-                        for (Card c : cardsArray) {
-                            Log.d(TAG, "cards sorted: name: " + c.getName() + "  likesme : " + c.isLikesMe() + " dist: " + c.getDistance());
-                        }
                         Log.d(TAG, "Number of cards: " + cardsArray.size());
                         cardsArrayLD.postValue(Resource.success(cardsArray));
                     }
@@ -546,7 +529,7 @@ public class MainFirebase {
         DatabaseReference geofireUser = geofire.child(currentUID);
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},  Constants.requestLocationPermission);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.requestLocationPermission);
         }
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
@@ -557,7 +540,7 @@ public class MainFirebase {
                     try {
                         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
                         List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        myLoc = new LatLng((double) addresses.get(0).getLatitude(), (double) addresses.get(0).getLongitude());
+                        myLoc = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
                         myRef.child("longitude").setValue(addresses.get(0).getLongitude());
                         myRef.child("latitude").setValue(addresses.get(0).getLatitude());
                         Log.d("updateLocation", "myLatitude updateLocation: " + myLoc.latitude);
@@ -609,9 +592,10 @@ public class MainFirebase {
             }
         });
     }
-
-    public MutableLiveData<Resource<ArrayList<Card>>> getCardsArrayLD() {
+    public String getSortByDistance(){
+        return sortByDistance;
+    }
+    public LiveData<Resource<ArrayList<Card>>> getCardsArrayLD() {
         return cardsArrayLD;
     }
-
 }

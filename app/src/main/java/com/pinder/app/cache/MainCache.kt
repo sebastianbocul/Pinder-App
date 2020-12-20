@@ -2,6 +2,7 @@ package com.pinder.app.cache
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.couchbase.lite.*
 import com.fasterxml.jackson.core.type.TypeReference
@@ -66,6 +67,21 @@ class MainCache constructor(private var context: Context) {
         } catch (e: CouchbaseLiteException) {
             e.printStackTrace()
         }
+    }
+
+    fun getSortByDistance(): Boolean {
+        Log.d(TAG, "GET SORT BY DISTANCE")
+        var sortByDistanceBool: Boolean=false
+        if (Database.exists(Constants.DB_NAME, context.filesDir)) {
+            if (mDatabase != null) {
+                val document: Document? = mDatabase!!.getDocument("settings")
+                if (document != null) {
+                    sortByDistanceBool = document.getBoolean("sort_by_distance")
+                    return sortByDistanceBool
+                }
+            }
+        }
+        return sortByDistanceBool
     }
 }
 
