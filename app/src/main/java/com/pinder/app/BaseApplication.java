@@ -10,11 +10,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
-<<<<<<< HEAD
-import com.couchbase.lite.CouchbaseLite;
-=======
 import com.google.firebase.database.FirebaseDatabase;
->>>>>>> origin/firebase_cache
 
 import dagger.hilt.android.HiltAndroidApp;
 
@@ -22,20 +18,20 @@ import dagger.hilt.android.HiltAndroidApp;
 public class BaseApplication extends Application implements LifecycleObserver {
     public static boolean inForeground = false;
     private static final String TAG = "BaseApplication";
-    public enum LoginEnum{
+
+    public enum LoginEnum {
         LOGGED, NOT_LOGGED
     }
+
     public static LoginEnum UserStatus;
+
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate: ");
-<<<<<<< HEAD
-        // Initialize the Couchbase Lite system
-        CouchbaseLite.init(this);
-=======
+//        // Initialize the Couchbase Lite system
+//        CouchbaseLite.init(this);
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
->>>>>>> origin/firebase_cache
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     }
 
