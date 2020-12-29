@@ -306,7 +306,6 @@ public class LoginFragment extends Fragment {
                             final Handler handler = new Handler();
                             if (dataSnapshot.exists()) {
                                 Log.d(TAG,"USER ID : " + user.getUid());
-                                authViewModel.saveUserToCache(user.getUid());
                                 if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                     intent = new Intent(getActivity(), MainFragmentManager.class);
                                 } else {

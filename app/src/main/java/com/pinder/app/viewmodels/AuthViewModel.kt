@@ -12,7 +12,4 @@ class AuthViewModel @ViewModelInject constructor(private val authRepository: Aut
     fun fetchUserData():LiveData<Resource<Boolean>>{
         return authRepository.fetchUserData()
     }
-    fun saveUserToCache(currentUID:String){
-        authRepository.saveUserToCache(currentUID)
-    }
 }

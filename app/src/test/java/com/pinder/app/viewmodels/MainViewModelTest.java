@@ -55,9 +55,9 @@ public class MainViewModelTest {
         cards.addAll(cardsArray);
         cards.remove(0);
         //Act
-        mainViewModel.cardsArrayLD.setValue(Resource.success(cardsArray));
+        mainViewModel.mediatorLiveData.setValue(Resource.success(cardsArray));
         mainViewModel.removeFirstObjectInAdapter();
-        cardsArray=mainViewModel.cardsArrayLD.getValue().data;
+        cardsArray=mainViewModel.mediatorLiveData.getValue().data;
         //Assert
         Assertions.assertTrue(cards.equals(cardsArray));
         System.out.println("Row items:" +cardsArray.toString());
@@ -74,10 +74,10 @@ public class MainViewModelTest {
         cards.remove(0);
         cards.remove(0);
         //Act
-        mainViewModel.cardsArrayLD.setValue(Resource.success(cardsArray));
+        mainViewModel.mediatorLiveData.setValue(Resource.success(cardsArray));
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
-        cardsArray=mainViewModel.cardsArrayLD.getValue().data;
+        cardsArray=mainViewModel.mediatorLiveData.getValue().data;
         //Assert
         Assertions.assertTrue(cards.equals(cardsArray));
         System.out.println("Row items:" +cardsArray.toString());
@@ -95,11 +95,11 @@ public class MainViewModelTest {
         cards.remove(0);
         cards.remove(0);
         //Act
-        mainViewModel.cardsArrayLD.setValue(Resource.success(cardsArray));
+        mainViewModel.mediatorLiveData.setValue(Resource.success(cardsArray));
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
-        cardsArray=mainViewModel.cardsArrayLD.getValue().data;
+        cardsArray=mainViewModel.mediatorLiveData.getValue().data;
         //Assert
         Assertions.assertTrue(cards.equals(cardsArray));
         System.out.println("Row items:" +cardsArray.toString());
@@ -117,7 +117,7 @@ public class MainViewModelTest {
         cards.remove(0);
         cards.remove(0);
         //Act
-        mainViewModel.cardsArrayLD.setValue(Resource.success(cardsArray));
+        mainViewModel.mediatorLiveData.setValue(Resource.success(cardsArray));
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
@@ -125,7 +125,7 @@ public class MainViewModelTest {
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
         mainViewModel.removeFirstObjectInAdapter();
-        cardsArray=mainViewModel.cardsArrayLD.getValue().data;
+        cardsArray=mainViewModel.mediatorLiveData.getValue().data;
         //Assert
         Assertions.assertTrue(cards.equals(cardsArray));
         System.out.println("Row items:" +cardsArray.toString());

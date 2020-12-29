@@ -262,7 +262,6 @@ public class RegistrationEmailFragment extends Fragment {
                         currentUserDb.updateChildren(userInfo);
                         DatabaseReference tags = FirebaseDatabase.getInstance().getReference().child("Tags");
                         tags.child("default").child(userId).setValue(true);
-                        authViewModel.saveUserToCache(userId);
                         Toast.makeText(getContext(), "Register successful!", Toast.LENGTH_SHORT).show();
                     }
                 }

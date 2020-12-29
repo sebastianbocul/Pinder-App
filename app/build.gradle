@@ -14,8 +14,8 @@ android {
         applicationId "com.pinder.app"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 9
-        versionName "1.6"
+        versionCode 10
+        versionName "1.7"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments.notClass = 'com.android.dex.DexIndexOverflowException'
@@ -173,9 +173,6 @@ dependencies {
     //observable fields
     implementation group: 'androidx.databinding', name: 'databinding-common', version: '4.2.0-alpha16'
 
-    //couchbase
-    implementation 'com.couchbase.lite:couchbase-lite-android-ee:2.6.0'
-
     //jackson pojo -> map and vice versa
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.5'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.8.5'
@@ -183,7 +180,6 @@ dependencies {
 
     //coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
-
 }
 kapt {
     correctErrorTypes = true

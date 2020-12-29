@@ -14,7 +14,7 @@ fun loginEmail() {
     val testUserPassword = "dupa12"
     //CHECK LOGIN VIEW
     Thread.sleep(1000);
-    Espresso.onView(ViewMatchers.withId(R.id.continue_email)).perform(ViewActions.click());
+//    Espresso.onView(ViewMatchers.withId(R.id.continue_email)).perform(ViewActions.click());
 
     Espresso.onView(ViewMatchers.withId(R.id.loginActivity)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     Espresso.onView(ViewMatchers.withId(R.id.email)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))

@@ -7,7 +7,6 @@ import androidx.hilt.lifecycle.ViewModelInject;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.pinder.app.models.Card;
@@ -23,25 +22,30 @@ public class MainViewModel extends ViewModel {
     MainRepository mainRepository;
     MutableLiveData<Resource<ArrayList<Card>>> cardsArrayLD = new MutableLiveData<>();
     MediatorLiveData<Resource<ArrayList<Card>>> mediatorLiveData = new MediatorLiveData<>();
-
     private static final String TAG = "MainViewModel";
+
     @ViewModelInject
     public MainViewModel(MainRepository mainRepository) {
         this.mainRepository = mainRepository;
     }
 
     public LiveData<Resource<ArrayList<Card>>> getCardsArrayLD() {
-        mediatorLiveData= new MediatorLiveData<>();
+        mediatorLiveData = new MediatorLiveData<>();
         Log.d(TAG, "getCardsArrayLD: ");
         mediatorLiveData.addSource(mainRepository.getCardsArrayLD(), arrayListResource -> {
-            Resource<ArrayList<Card>> cards = arrayListResource;
-            if(mainRepository.getSortByDistanceString().equals("true")){
-                if(cards!=null && cards.data!=null){
-                    cards.data=sortCollectionByLikesMeThenDistance(cards.data);
+            ArrayList<Card> list = new ArrayList<>();
+            if (arrayListResource.data != null) {
+                list.addAll(arrayListResource.data);
+            }
+            Resource<ArrayList<Card>> cards = new Resource<>(arrayListResource.status, list, arrayListResource.message);
+            Log.d(TAG, mainRepository.getSortByDistanceString());
+            if (mainRepository.getSortByDistanceString().equals("true")) {
+                if (cards != null && cards.data != null) {
+                    cards.data = sortCollectionByLikesMeThenDistance(cards.data);
                 }
-            }else {
-                if(cards!=null && cards.data!=null){
-                    cards.data=sortCollectionByLikesMe(cards.data);
+            } else {
+                if (cards != null && cards.data != null) {
+                    cards.data = sortCollectionByLikesMe(cards.data);
                 }
             }
             mediatorLiveData.postValue(cards);

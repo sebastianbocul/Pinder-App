@@ -1,16 +1,8 @@
 package com.pinder.app.di;
-
-
-import android.app.Application;
 import android.content.Context;
-
-import com.pinder.app.cache.MainCache;
 import com.pinder.app.persistance.MainFirebase;
 import com.pinder.app.repository.MainRepository;
-import com.pinder.app.repository.ProfileRepository;
 import com.pinder.app.viewmodels.MainViewModel;
-import com.pinder.app.viewmodels.ProfileViewModel;
-
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -28,14 +20,8 @@ class MainModules {
     }
     @ActivityRetainedScoped
     @Provides
-    public static MainCache mainCache(@ApplicationContext Context context) {
-        return new MainCache(context);
-    }
-
-    @ActivityRetainedScoped
-    @Provides
-    public static MainRepository mainRepository(MainFirebase mainFirebase,MainCache mainCache) {
-        return new MainRepository(mainFirebase,mainCache);
+    public static MainRepository mainRepository(MainFirebase mainFirebase ) {
+        return new MainRepository(mainFirebase);
     }
 
     @ActivityRetainedScoped

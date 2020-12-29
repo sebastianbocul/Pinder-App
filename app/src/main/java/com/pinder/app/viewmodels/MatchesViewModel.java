@@ -18,7 +18,6 @@ import java.util.Comparator;
 public class MatchesViewModel extends ViewModel {
     private MatchesRepository matchesRepository;
     LiveData<Resource<ArrayList<MatchesObject>>> oryginalMatchesLiveData = new MutableLiveData<>();
-    MediatorLiveData<Resource<ArrayList<MatchesObject>>> sortedLiveData = new MediatorLiveData<>();
     public MutableLiveData<String> tagLD;
 
     @ViewModelInject
@@ -31,6 +30,7 @@ public class MatchesViewModel extends ViewModel {
     }
 
     public LiveData<Resource<ArrayList<MatchesObject>>> getOryginalMatches() {
+        MediatorLiveData<Resource<ArrayList<MatchesObject>>> sortedLiveData = new MediatorLiveData<>();
         oryginalMatchesLiveData = matchesRepository.getMatches();
         sortedLiveData.addSource(oryginalMatchesLiveData, new Observer<Resource<ArrayList<MatchesObject>>>() {
             @Override

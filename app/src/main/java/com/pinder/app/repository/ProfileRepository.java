@@ -1,104 +1,30 @@
 package com.pinder.app.repository;
-
 import android.content.Context;
 import android.net.Uri;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-
-import com.pinder.app.cache.ProfileCache;
 import com.pinder.app.persistance.ProfileFirebase;
-import com.pinder.app.util.bound_resources.ConstantNetworkBoundResource;
 import com.pinder.app.util.Resource;
-
 import java.util.ArrayList;
 
 public class ProfileRepository {
     private ProfileFirebase profileFirebase;
-    private ProfileCache profileCache;
-
-    public ProfileRepository(ProfileFirebase profileFirebase, ProfileCache profileCache) {
+    public ProfileRepository(ProfileFirebase profileFirebase) {
         this.profileFirebase = profileFirebase;
-        this.profileCache = profileCache;
     }
 
     public LiveData<Resource<String>> getName() {
-        return new ConstantNetworkBoundResource<String, String>() {
-            @Override
-            protected void saveFirebaseResult(@NonNull String item) {
-                profileCache.setName(item);
-            }
-
-            @Override
-            protected boolean shouldFetch(@Nullable String data) {
-                return true;
-            }
-
-            @NonNull
-            @Override
-            protected LiveData<String> loadFromDb() {
-                return profileCache.getName();
-            }
-
-            @NonNull
-            @Override
-            protected LiveData<Resource<String>> createFirebaseCall() {
-                return profileFirebase.getName();
-            }
-        }.getAsLiveData();
+        return profileFirebase.getName();
     }
 
     public LiveData<Resource<String>> getDescription() {
-        return new ConstantNetworkBoundResource<String, String>() {
-            @Override
-            protected void saveFirebaseResult(@NonNull String item) {
-                profileCache.setDescription(item);
-            }
-
-            @Override
-            protected boolean shouldFetch(@Nullable String data) {
-                return true;
-            }
-
-            @NonNull
-            @Override
-            protected LiveData<String> loadFromDb() {
-                return profileCache.getDescription();
-            }
-
-            @NonNull
-            @Override
-            protected LiveData<Resource<String>> createFirebaseCall() {
-                return profileFirebase.getDescription();
-            }
-        }.getAsLiveData();
+        return profileFirebase.getDescription();
     }
 
     public LiveData<Resource<ArrayList<String>>> getImages() {
-        return new ConstantNetworkBoundResource<ArrayList<String>, ArrayList<String>>() {
-            @Override
-            protected void saveFirebaseResult(@NonNull ArrayList<String> item) {
-                profileCache.setImages(item);
-            }
-            @Override
-            protected boolean shouldFetch(@Nullable ArrayList<String> data) {
-                return true;
-            }
-
-            @NonNull
-            @Override
-            protected LiveData<ArrayList<String>> loadFromDb() {
-                return profileCache.getImages();
-            }
-
-            @NonNull
-            @Override
-            protected LiveData<Resource<ArrayList<String>>> createFirebaseCall() {
-                return profileFirebase.getImages();
-            }
-        }.getAsLiveData();
+        return profileFirebase.getImages();
     }
 
     public void saveUserInformation(String nameEdt, String descriptionEdt) {
