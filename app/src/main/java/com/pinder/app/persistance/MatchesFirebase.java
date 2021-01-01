@@ -1,5 +1,6 @@
 package com.pinder.app.persistance;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.models.MatchesObject;
+import com.pinder.app.ui.dialogs.SharedPreferencesHelper;
 import com.pinder.app.util.Resource;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,37 +26,45 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MatchesFirebase implements MatchesDao {
-    String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-    MutableLiveData<Resource<ArrayList<String>>> myTagsLiveData = new MutableLiveData<Resource<ArrayList<String>>>();
-    ArrayList<String> myTags = new ArrayList<>();
+    private String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private MutableLiveData<Resource<ArrayList<String>>> myTagsLiveData = new MutableLiveData<Resource<ArrayList<String>>>();
+    private ArrayList<String> myTags = new ArrayList<>();
     private String myImageUrl = new String();
     private static final String TAG = "MatchesFirebase";
-    MutableLiveData<Resource<ArrayList<MatchesObject>>> oryginalMatchesLiveData = new MutableLiveData<Resource<ArrayList<MatchesObject>>>();
+    private MutableLiveData<Resource<ArrayList<MatchesObject>>> oryginalMatchesLiveData = new MutableLiveData<Resource<ArrayList<MatchesObject>>>();
+    private Context context;
 
-    public MatchesFirebase() {
+    public MatchesFirebase(Context context) {
+        this.context = context;
         loadMatches();
         loadTags();
         fetchMyImageUrl();
     }
 
     private void fetchMyImageUrl() {
-        myImageUrl = "default";
+        SharedPreferencesHelper.setCurrentProfilePicture(context, "default");
         DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID);
         currentUserDb.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot.exists()) {
-                    if (snapshot.getKey().equals("profileImageUrl"))
-                        myImageUrl = snapshot.getValue().toString();
-                }
+                if (snapshot.exists())
+                    if (snapshot.getKey() != null)
+                        if (snapshot.getKey().equals("profileImageUrl"))
+                            if (snapshot.getValue() != null) {
+                                myImageUrl = snapshot.getValue().toString();
+                                SharedPreferencesHelper.setCurrentProfilePicture(context, myImageUrl);
+                            }
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot.exists()) {
-                    if (snapshot.getKey().equals("profileImageUrl"))
-                        myImageUrl = snapshot.getValue().toString();
-                }
+                if (snapshot.exists())
+                    if (snapshot.getKey() != null)
+                        if (snapshot.getKey().equals("profileImageUrl"))
+                            if (snapshot.getValue() != null) {
+                                myImageUrl = snapshot.getValue().toString();
+                                SharedPreferencesHelper.setCurrentProfilePicture(context, myImageUrl);
+                            }
             }
 
             @Override
@@ -279,9 +289,5 @@ public class MatchesFirebase implements MatchesDao {
     @Override
     public LiveData<Resource<ArrayList<String>>> getTags() {
         return myTagsLiveData;
-    }
-
-    public String getMyImageUrl() {
-        return myImageUrl;
     }
 }

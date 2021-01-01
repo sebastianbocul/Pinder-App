@@ -1,6 +1,7 @@
 package com.pinder.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.adapters.ChatAdapter;
 import com.pinder.app.models.ChatObject;
+import com.pinder.app.ui.dialogs.SharedPreferencesHelper;
 import com.pinder.app.util.SendFirebaseNotification;
 import com.pinder.app.utils.BuildVariantsHelper;
 import com.pinder.app.viewmodels.MatchesViewModel;
@@ -61,9 +63,6 @@ public class ChatActivity extends AppCompatActivity {
     private ImageView backArrowImage;
     private static final String TAG = "ChatActivity";
     private boolean chatRoomExists = true;
-
-    @Inject
-    public MatchesViewModel matchesViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +127,8 @@ public class ChatActivity extends AppCompatActivity {
     private void fillImagesAndName() {
         String matchName = "";
         String matchImageUrl = "default";
-        myProfileImageUrl = matchesViewModel.getMyImageUrl();
+        SharedPreferences sp = getSharedPreferences("SP_USER", MODE_PRIVATE);
+        myProfileImageUrl = SharedPreferencesHelper.getCurrentProfilePicture(this);
         if (getIntent().getExtras() != null) {
             matchName = getIntent().getExtras().getString("matchName");
             matchImageUrl = getIntent().getExtras().getString("matchImageUrl");

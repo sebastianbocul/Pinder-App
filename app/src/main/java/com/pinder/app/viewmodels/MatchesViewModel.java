@@ -79,10 +79,6 @@ public class MatchesViewModel extends ViewModel {
         return getSortedMatches();
     }
 
-    public String getMyImageUrl() {
-        return matchesRepository.getMyImageUrl();
-    }
-
     private ArrayList<MatchesObject> sortCollection(ArrayList<MatchesObject> matchesList) {
         Collections.sort(matchesList, new Comparator<MatchesObject>() {
             @Override

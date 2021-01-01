@@ -13,16 +13,8 @@ public class MatchesRepository {
         this.matchesFirebase=matchesFirebase;
     }
 
-    public LiveData<Resource<ArrayList<MatchesObject>>> getOryginalMatches() {
-        return matchesFirebase.getOryginalMatches();
-    }
-
     public LiveData<Resource<ArrayList<String>>> getTags() {
         return matchesFirebase.getTags();
-    }
-
-    public String getMyImageUrl() {
-        return matchesFirebase.getMyImageUrl();
     }
 
     public LiveData<Resource<ArrayList<MatchesObject>>> getMatches() {
