@@ -61,7 +61,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingLeft="5sp"
+        android:paddingRight="5sp"
         android:layout_weight="100">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -69,7 +71,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
-            app:stackFromEnd="true" />
+            app:stackFromEnd="true"
+            tools:listitem="@layout/item_chat_right"/>
     </RelativeLayout>
 
     <LinearLayout

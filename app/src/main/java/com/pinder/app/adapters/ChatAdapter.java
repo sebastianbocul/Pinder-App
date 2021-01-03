@@ -1,8 +1,6 @@
 package com.pinder.app.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +21,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolders> {
     private List<ChatObject> chatList;
     private Context context;
-    private LinearLayout.LayoutParams paramsText;
-    private LinearLayout.LayoutParams paramsContainer, paramsContainer2;
+    public static final int MSG_TYPE_LEFT = 0;
+    public static final int MSG_TYPE_RIGHT = 1;
 
     public ChatAdapter(List<ChatObject> matchesList, Context context) {
         this.chatList = matchesList;
@@ -34,72 +32,47 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @NonNull
     @Override
     public ChatViewHolders onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat, null, false);
+        View view;
+        if (viewType == MSG_TYPE_RIGHT) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_right, null, false);
+        } else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_left, null, false);
+        }
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutView.setLayoutParams(lp);
-        ChatViewHolders rcv = new ChatViewHolders(layoutView);
-        paramsText = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        paramsContainer = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        paramsContainer2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        return rcv;
+        view.setLayoutParams(lp);
+        return new ChatViewHolders(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolders holder, int position) {
         holder.mMessaage.setText(chatList.get(position).getMessage());
-        if (chatList.get(position).getCurrentUser() == true) {
-            paramsContainer2.setMargins(100, 0, 20, 0);
-            paramsText.setMargins(0, 0, 10, 0);
-            holder.mMessaage.setGravity(Gravity.RIGHT);
-            holder.mContainer.setGravity(Gravity.RIGHT);
-            holder.mMessaage.setTextColor(Color.parseColor("#404040"));
-            holder.mContainer.setLayoutParams(paramsContainer2);
-            holder.mMessaage.setLayoutParams(paramsText);
-            holder.mContainer.setBackgroundResource(R.drawable.view_my_chat);
-            if (position != 0) {
-                if (chatList.get(position - 1).getCurrentUser() == false) {
-                    holder.mChatImage.getLayoutParams().height = 125;
-                    holder.mChatImage.getLayoutParams().width = 125;
+        if (chatList.get(position).getCurrentUser()) {
+            if (position != chatList.size() - 1) {
+                if (!chatList.get(position + 1).getCurrentUser()) {
+                    holder.mChatImage.setVisibility(View.VISIBLE);
                 } else {
-                    holder.mChatImage.getLayoutParams().height = 0;
-                    holder.mChatImage.getLayoutParams().width = 0;
+                    holder.mChatImage.setVisibility(View.INVISIBLE);
                 }
             } else {
-                holder.mChatImage.getLayoutParams().height = 125;
-                holder.mChatImage.getLayoutParams().width = 125;
-            }
-            if (chatList.get(position).getProfileImageUrl().equals("default")) {
-                Glide.with(context).load(R.drawable.ic_profile_hq).into(holder.mChatImage);
-            } else {
-                Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
+                holder.mChatImage.setVisibility(View.VISIBLE);
             }
         } else {
-            paramsContainer.setMargins(20, 0, 100, 0);
-            paramsText.setMargins(10, 0, 0, 0);
-            holder.mMessaage.setGravity(Gravity.LEFT);
-            holder.mContainer.setGravity(Gravity.LEFT);
-            holder.mMessaage.setTextColor(Color.parseColor("#404040"));
-            holder.mContainer.setLayoutParams(paramsContainer);
-            holder.mMessaage.setLayoutParams(paramsText);
-            holder.mContainer.setBackgroundResource(R.drawable.view_other_chat);
-            if (position != 0) {
-                if (chatList.get(position - 1).getCurrentUser() == true) {
-                    holder.mChatImage.getLayoutParams().height = 125;
-                    holder.mChatImage.getLayoutParams().width = 125;
+            if (position != chatList.size() - 1) {
+                if (chatList.get(position + 1).getCurrentUser()) {
+                    holder.mChatImage.setVisibility(View.VISIBLE);
                 } else {
-                    holder.mChatImage.getLayoutParams().height = 0;
-                    holder.mChatImage.getLayoutParams().width = 0;
+                    holder.mChatImage.setVisibility(View.INVISIBLE);
                 }
             } else {
-                holder.mChatImage.getLayoutParams().height = 125;
-                holder.mChatImage.getLayoutParams().width = 125;
+                holder.mChatImage.setVisibility(View.VISIBLE);
             }
+        }
+        if (holder.mChatImage.getVisibility() == View.VISIBLE)
             if (chatList.get(position).getProfileImageUrl().equals("default")) {
                 Glide.with(context).load(R.drawable.ic_profile_hq).into(holder.mChatImage);
             } else {
                 Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
             }
-        }
     }
 
     @Override
@@ -107,21 +80,53 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         return this.chatList.size();
     }
 
-    public class ChatViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public interface OnItemClickListener {
+        void onProfileClick(int position);
+        void onMessageClick(int position);
+    }
+
+    public class ChatViewHolders extends RecyclerView.ViewHolder {
         public TextView mMessaage;
         public LinearLayout mContainer;
         public CircleImageView mChatImage;
 
-        public ChatViewHolders(@NonNull View itemView) {
+        public ChatViewHolders(@NonNull View itemView, OnItemClickListener listener) {
             super(itemView);
-            itemView.setOnClickListener(this);
             mChatImage = itemView.findViewById(R.id.chatImage);
             mMessaage = itemView.findViewById(R.id.message);
             mContainer = itemView.findViewById(R.id.container);
-        }
 
-        @Override
-        public void onClick(View view) {
+            mContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+            mChatImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onDeleteClick(position);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (chatList.get(position).getCurrentUser()) {
+            return MSG_TYPE_RIGHT;
+        } else {
+            return MSG_TYPE_LEFT;
         }
     }
 }
