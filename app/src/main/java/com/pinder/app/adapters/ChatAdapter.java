@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.pinder.app.R;
 import com.pinder.app.models.ChatObject;
+import com.pinder.app.models.TagsObject;
 
 import java.util.List;
 
@@ -23,10 +24,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     private Context context;
     public static final int MSG_TYPE_LEFT = 0;
     public static final int MSG_TYPE_RIGHT = 1;
+    private OnItemClickListener mListener;
 
     public ChatAdapter(List<ChatObject> matchesList, Context context) {
         this.chatList = matchesList;
         this.context = context;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
     }
 
     @NonNull
@@ -40,22 +46,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         }
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         view.setLayoutParams(lp);
-        return new ChatViewHolders(view);
+        return new ChatViewHolders(view,mListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolders holder, int position) {
         holder.mMessaage.setText(chatList.get(position).getMessage());
         if (chatList.get(position).getCurrentUser()) {
-            if (position != chatList.size() - 1) {
-                if (!chatList.get(position + 1).getCurrentUser()) {
-                    holder.mChatImage.setVisibility(View.VISIBLE);
-                } else {
-                    holder.mChatImage.setVisibility(View.INVISIBLE);
-                }
-            } else {
-                holder.mChatImage.setVisibility(View.VISIBLE);
-            }
+            holder.mChatImage.setVisibility(View.GONE);
         } else {
             if (position != chatList.size() - 1) {
                 if (chatList.get(position + 1).getCurrentUser()) {
@@ -66,18 +64,21 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             } else {
                 holder.mChatImage.setVisibility(View.VISIBLE);
             }
-        }
-        if (holder.mChatImage.getVisibility() == View.VISIBLE)
             if (chatList.get(position).getProfileImageUrl().equals("default")) {
                 Glide.with(context).load(R.drawable.ic_profile_hq).into(holder.mChatImage);
             } else {
                 Glide.with(context).load(chatList.get(position).getProfileImageUrl()).into(holder.mChatImage);
             }
+        }
     }
 
     @Override
     public int getItemCount() {
         return this.chatList.size();
+    }
+
+    public ChatObject getItem(int position) {
+        return chatList.get(position);
     }
 
     public interface OnItemClickListener {
@@ -102,7 +103,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
                     if (listener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listener.onItemClick(position);
+                            listener.onMessageClick(position);
                         }
                     }
                 }
@@ -113,7 +114,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
                     if (listener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listener.onDeleteClick(position);
+                            listener.onProfileClick(position);
                         }
                     }
                 }

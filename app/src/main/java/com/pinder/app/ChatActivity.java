@@ -14,7 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,14 +30,11 @@ import com.pinder.app.models.ChatObject;
 import com.pinder.app.ui.dialogs.SharedPreferencesHelper;
 import com.pinder.app.util.SendFirebaseNotification;
 import com.pinder.app.utils.BuildVariantsHelper;
-import com.pinder.app.viewmodels.MatchesViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -47,7 +43,7 @@ public class ChatActivity extends AppCompatActivity {
     DatabaseReference mDatabaseUserChat, mDatabaseChat, mDatabaseUser;
     boolean notify = false;
     private RecyclerView myRecyclerView;
-    private RecyclerView.Adapter mChatAdapter;
+    private ChatAdapter mChatAdapter;
     private RecyclerView.LayoutManager mChatLayoutManager;
     private EditText mSendEditText;
     private Button mSendButton;
@@ -81,11 +77,7 @@ public class ChatActivity extends AppCompatActivity {
         if (getIntent().getExtras().getString("fromActivity") != null) {
             fromActivity = getIntent().getExtras().getString("fromActivity");
         }
-        myRecyclerView = findViewById(R.id.recyclerView);
-        mChatLayoutManager = new LinearLayoutManager(ChatActivity.this);
-        myRecyclerView.setLayoutManager(mChatLayoutManager);
-        mChatAdapter = new ChatAdapter(getDataSetChat(), ChatActivity.this);
-        myRecyclerView.setAdapter(mChatAdapter);
+        setRecyclerViewAndAdapter();
         handleBackArrow();
         userNameTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,6 +92,21 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
         //this functions helps fix recyclerView while opening keyboards
+        mSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage();
+                notify = true;
+            }
+        });
+    }
+
+    private void setRecyclerViewAndAdapter() {
+        myRecyclerView = findViewById(R.id.recyclerView);
+        mChatLayoutManager = new LinearLayoutManager(ChatActivity.this);
+        myRecyclerView.setLayoutManager(mChatLayoutManager);
+        mChatAdapter = new ChatAdapter(getDataSetChat(), ChatActivity.this);
+        myRecyclerView.setAdapter(mChatAdapter);
         myRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -108,11 +115,14 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
-        mSendButton.setOnClickListener(new View.OnClickListener() {
+        mChatAdapter.setOnItemClickListener(new ChatAdapter.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                sendMessage();
-                notify = true;
+            public void onProfileClick(int position) {
+
+            }
+
+            @Override
+            public void onMessageClick(int position) {
             }
         });
     }
@@ -172,8 +182,8 @@ public class ChatActivity extends AppCompatActivity {
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                     }
                 });
-            }else {
-                Toast.makeText(this,"Looks like you are not a match anymore :(",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Looks like you are not a match anymore :(", Toast.LENGTH_SHORT).show();
             }
         }
         mSendEditText.setText(null);
