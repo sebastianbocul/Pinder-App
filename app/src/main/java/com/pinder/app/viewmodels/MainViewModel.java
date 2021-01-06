@@ -63,12 +63,8 @@ public class MainViewModel extends ViewModel {
 
     public void removeFirstObjectInAdapter() {
         Resource<ArrayList<Card>> cardsArray = this.mediatorLiveData.getValue();
-        if (cardsArray.data.size() != 0) {
-            cardsArray.data.remove(0);
-            if (cardsArray.data.size() == 0) {
-                cardsArray = Resource.emptydata(cardsArray.data);
-            }
-            this.mediatorLiveData.postValue(cardsArray);
+        if (cardsArray != null && cardsArray.data != null && cardsArray.data.size() != 0) {
+            mainRepository.removeCardFromArray(cardsArray.data.get(0));
         }
     }
 

@@ -122,6 +122,8 @@ public class UsersProfilesActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
+                Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
+                myIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 i.putExtra("fromUsersProfilesActivity", "dislikeButtonClicked");
                 startActivity(i);
             }
@@ -130,6 +132,8 @@ public class UsersProfilesActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
+                Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
+                myIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 i.putExtra("fromUsersProfilesActivity", "likeButtonClicked");
                 startActivity(i);
             }

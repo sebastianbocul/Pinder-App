@@ -451,7 +451,6 @@ public class MainFirebase {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    Toast.makeText(con, "New connection!", Toast.LENGTH_LONG).show();
                     String key = FirebaseDatabase.getInstance().getReference().child("Chat").push().getKey();
                     usersDatabaseReference.child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUID).child("ChatId").setValue(key);
                     usersDatabaseReference.child(currentUID).child("connections").child("matches").child(dataSnapshot.getKey()).child("ChatId").setValue(key);
@@ -595,7 +594,7 @@ public class MainFirebase {
     public String getSortByDistance(){
         return sortByDistance;
     }
-    public LiveData<Resource<ArrayList<Card>>> getCardsArrayLD() {
+    public MutableLiveData<Resource<ArrayList<Card>>> getCardsArrayLD() {
         return cardsArrayLD;
     }
 }

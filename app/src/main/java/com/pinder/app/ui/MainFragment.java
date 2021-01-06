@@ -217,12 +217,10 @@ public class MainFragment extends Fragment {
                 //You also have access to the original object.
                 //If you want to use it just cast it (String) dataObject
                 mainViewModel.onLeftCardExit((Card) dataObject);
-                Toast.makeText(getContext(), "Disliked!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRightCardExit(Object dataObject) {
-                Toast.makeText(getContext(), "Liked!", Toast.LENGTH_SHORT).show();
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                     CompletableFuture<Void> adCompletableFuture = new CompletableFuture<>();
                     adCompletableFuture = displayAd(adCompletableFuture);

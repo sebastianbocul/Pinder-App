@@ -1,17 +1,21 @@
 package com.pinder.app.repository;
 
 import android.content.Context;
+
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.pinder.app.models.Card;
 import com.pinder.app.persistance.MainFirebase;
 import com.pinder.app.util.Resource;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MainRepository {
     public MainFirebase mainFirebase;
     private static final String TAG = "MainRepository";
+
     public MainRepository(MainFirebase mainFirebase) {
         this.mainFirebase = mainFirebase;
     }
@@ -42,5 +46,17 @@ public class MainRepository {
 
     public String getSortByDistanceString(){
         return mainFirebase.getSortByDistance();
+    }
+
+    public void removeCardFromArray(Card card) {
+        Resource<ArrayList<Card>> cardsArray;
+        cardsArray = mainFirebase.getCardsArrayLD().getValue();
+        if (cardsArray != null && cardsArray.data != null) {
+            cardsArray.data.remove(card);
+        }
+        if (cardsArray != null && cardsArray.data.size() == 0) {
+            cardsArray = Resource.emptydata(cardsArray.data);
+        }
+        mainFirebase.getCardsArrayLD().setValue(cardsArray);
     }
 }
