@@ -1,14 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MainViewFragmentManager">
+    android:fillViewport="true"
+    tools:context="com.pinder.app.ui.MainViewFragmentManager">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:id="@+id/mainFragmentManager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:fillViewport="true"
+        android:orientation="vertical">
 
-</FrameLayout>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/windowBackground"
+            android:keepScreenOn="true"
+            android:theme="@style/BottomNavigationTheme"
+            app:menu="@menu/navigation" />
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <FrameLayout
+            android:id="@+id/ad_frame"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true" />
+    </LinearLayout>
+
+    <!--    <com.google.android.gms.ads.AdView-->
+    <!--        xmlns:ads="http://schemas.android.com/apk/res-auto"-->
+    <!--        android:id="@+id/ad_banner"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="50dp"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_alignParentBottom="true"-->
+    <!--        ads:adSize="BANNER"-->
+    <!--        ads:adUnitId="@string/test_ad">-->
+    <!--    </com.google.android.gms.ads.AdView>-->
+</ScrollView>

@@ -27,7 +27,7 @@
         </activity>
         <activity android:name=".RegistrationActivity" />
         <activity
-            android:name=".MainFragmentManager"
+            android:name=".MainActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MainPopUpActivity"

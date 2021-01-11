@@ -13,7 +13,7 @@ import kotlin.random.Random
 
 
 @RunWith(AndroidJUnit4ClassRunner::class)
-class MainFragmentManager2Test {
+class MainActivityTest {
     @Rule
     @JvmField
     var repeatRule: RepeatRule = RepeatRule()

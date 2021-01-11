@@ -32,7 +32,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [MainViewFragmentManager.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MainViewFragmentManager : Fragment() {
+class MainFragmentManager : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -42,7 +42,6 @@ class MainViewFragmentManager : Fragment() {
     private var adContainerView: FrameLayout? = null
     private var adView: AdView? = null
     var mKeyboardVisible = false
-    private var mFullScreenAd: InterstitialAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +69,7 @@ class MainViewFragmentManager : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                MainViewFragmentManager().apply {
+                MainFragmentManager().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)
@@ -83,7 +82,7 @@ class MainViewFragmentManager : Fragment() {
         Log.d(TAG, "onCreate: ON CREATE")
         BaseApplication.UserStatus = LoginEnum.LOGGED
         bottomNavigationView = view?.findViewById(R.id.bottom_navigation)
-        bottomNavigationView!!.selectedItemId = R.id.nav_main
+        bottomNavigationView?.selectedItemId = R.id.nav_main
 
         val viewPager: ViewPager = view.findViewById(R.id.pager)
 //        if (getIntent().extras != null) {
@@ -93,6 +92,8 @@ class MainViewFragmentManager : Fragment() {
 //        }
         val adapter = activity?.let { MainFragmentManagerPagerAdapter(it.supportFragmentManager, bottomNavigationView!!.maxItemCount) }
         viewPager.adapter = adapter
+        viewPager.currentItem=2
+
 //        if (fromActivity.equals("chatActivity")) {
 //            viewPager.currentItem = 3
 //            bottomNavigationView!!.selectedItemId = R.id.nav_matches
@@ -131,7 +132,6 @@ class MainViewFragmentManager : Fragment() {
             true
         }
         initAdaptiveAd()
-        initFullScreenAdd()
     }
 
     fun replaceTabPage(tabPage: Int) {
@@ -171,26 +171,6 @@ class MainViewFragmentManager : Fragment() {
         val adWidth = (widthPixels / density).toInt()
         // Step 3 - Get adaptive ad size and return for setting on the ad view.
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth)
-    }
-
-    private fun initFullScreenAdd() {
-        mFullScreenAd = InterstitialAd(context)
-        mFullScreenAd!!.setAdUnitId(getString(R.string.full_screen_ad))
-        mFullScreenAd!!.loadAd(AdRequest.Builder().build())
-        mFullScreenAd!!.setAdListener(object : AdListener() {
-            override fun onAdClosed() {
-                // Load the next interstitial.
-                mFullScreenAd!!.loadAd(AdRequest.Builder().build())
-            }
-        })
-    }
-
-    fun getmFullScreenAd(): InterstitialAd? {
-        return mFullScreenAd
-    }
-
-    fun showFullScreenAd() {
-        mFullScreenAd?.show()
     }
 
     override fun onResume() {

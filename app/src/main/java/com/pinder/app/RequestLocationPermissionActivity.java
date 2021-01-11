@@ -35,7 +35,7 @@ public class RequestLocationPermissionActivity extends AppCompatActivity {
     private void setButtons() {
         requestPermission.setOnClickListener(v -> {
             if (ActivityCompat.checkSelfPermission(RequestLocationPermissionActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                Intent intent = new Intent(RequestLocationPermissionActivity.this, MainFragmentManager.class);
+                Intent intent = new Intent(RequestLocationPermissionActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
                 return;
@@ -50,7 +50,7 @@ public class RequestLocationPermissionActivity extends AppCompatActivity {
             switch (requestCode) {
                 case Constants.requestLocationPermission:
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Intent intent = new Intent(RequestLocationPermissionActivity.this, MainFragmentManager.class);
+                        Intent intent = new Intent(RequestLocationPermissionActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                     } else {

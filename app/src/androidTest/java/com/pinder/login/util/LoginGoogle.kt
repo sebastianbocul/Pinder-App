@@ -13,6 +13,6 @@ fun loginGoogle() {
     //CHECK LOGIN VIEW
     Thread.sleep(1000);
     Espresso.onView(ViewMatchers.withId(R.id.continue_google)).perform(ViewActions.click());
-//        val activityScenario2 = ActivityScenario.launch(MainFragmentManager::class.java)
+//        val activityScenario2 = ActivityScenario.launch(MainActivity::class.java)
     Thread.sleep(5000);
 }

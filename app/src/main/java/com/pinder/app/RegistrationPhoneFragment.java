@@ -221,7 +221,7 @@ public class RegistrationPhoneFragment extends Fragment {
     private void changeActivity() {
         Intent intent;
         if (checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
-            intent = new Intent(getActivity(), MainFragmentManager.class);
+            intent = new Intent(getActivity(), MainActivity.class);
         } else {
             intent = new Intent(getActivity(), RequestLocationPermissionActivity.class);
         }

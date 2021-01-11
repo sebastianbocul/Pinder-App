@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,19 +18,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.pinder.app.util.Resource.Status.*
 import com.pinder.app.viewmodels.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.core.Scheduler
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import java.util.*
 import javax.inject.Inject
 
 /**
@@ -101,7 +90,7 @@ class SplashFragment : Fragment() {
                                     Log.d(TAG, "SUCCESS");
                                     if (it.data!!) {
                                         if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                            val intent = Intent(activity, MainFragmentManager::class.java)
+                                            val intent = Intent(activity, MainActivity::class.java)
                                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                             startActivity(intent)
                                         } else {

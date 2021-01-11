@@ -280,7 +280,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (fromActivity.equals("notification")) {
-            Intent intent = new Intent(this, MainFragmentManager.class);
+            Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("fromActivity", "chatActivity");
             startActivity(intent);
             finish();

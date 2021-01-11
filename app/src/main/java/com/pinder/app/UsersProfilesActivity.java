@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -33,8 +31,6 @@ import com.pinder.app.utils.BuildVariantsHelper;
 
 import java.util.ArrayList;
 import java.util.Map;
-
-import io.reactivex.rxjava3.core.Single;
 
 public class UsersProfilesActivity extends AppCompatActivity {
     public String name, tags, gender, distance, location, description, profileImageUrl;
@@ -121,8 +117,8 @@ public class UsersProfilesActivity extends AppCompatActivity {
         dislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
-                Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
+                Intent i = new Intent(UsersProfilesActivity.this, MainActivity.class);
+                Intent myIntent = new Intent(UsersProfilesActivity.this, MainActivity.class);
                 myIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 i.putExtra("fromUsersProfilesActivity", "dislikeButtonClicked");
                 startActivity(i);
@@ -131,11 +127,12 @@ public class UsersProfilesActivity extends AppCompatActivity {
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
-                Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
-                myIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                i.putExtra("fromUsersProfilesActivity", "likeButtonClicked");
-                startActivity(i);
+                Intent i = new Intent(UsersProfilesActivity.this, MainActivity.class);
+                Intent myIntent = new Intent(UsersProfilesActivity.this, MainActivity.class);
+                onBackPressed();
+//                myIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//                i.putExtra("fromUsersProfilesActivity", "likeButtonClicked");
+//                startActivity(i);
             }
         });
         reportUserButton.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +145,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick");
-                Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
+                Intent myIntent = new Intent(UsersProfilesActivity.this, MainActivity.class);
                 myIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 //                myIntent.setFlags();
 //                myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -181,7 +178,7 @@ public class UsersProfilesActivity extends AppCompatActivity {
 //                            handler.postDelayed(new Runnable() {
 //                                @Override
 //                                public void run() {
-//                                    Intent myIntent = new Intent(UsersProfilesActivity.this, MainFragmentManager.class);
+//                                    Intent myIntent = new Intent(UsersProfilesActivity.this, MainActivity.class);
 //                                    myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //                                    startActivity(myIntent);
 //                                }

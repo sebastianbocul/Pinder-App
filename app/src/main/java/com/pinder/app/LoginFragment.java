@@ -62,18 +62,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pinder.app.persistance.MainFirebase;
-import com.pinder.app.persistance.MatchesFirebase;
-import com.pinder.app.persistance.PopularTagsFirebase;
-import com.pinder.app.persistance.ProfileFirebase;
-import com.pinder.app.persistance.SettingsFirebase;
-import com.pinder.app.persistance.TagsFirebase;
-import com.pinder.app.repository.MainRepository;
-import com.pinder.app.repository.MatchesRepository;
-import com.pinder.app.repository.PopularTagsRepository;
-import com.pinder.app.repository.ProfileRepository;
-import com.pinder.app.repository.SettingsRepository;
-import com.pinder.app.repository.TagsRepository;
 import com.pinder.app.ui.dialogs.PrivacyDialog;
 import com.pinder.app.ui.dialogs.TermsDialog;
 import com.pinder.app.util.ExpandCollapseView;
@@ -307,7 +295,7 @@ public class LoginFragment extends Fragment {
                             if (dataSnapshot.exists()) {
                                 Log.d(TAG,"USER ID : " + user.getUid());
                                 if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                    intent = new Intent(getActivity(), MainFragmentManager.class);
+                                    intent = new Intent(getActivity(), MainActivity.class);
                                 } else {
                                     intent = new Intent(getActivity(), RequestLocationPermissionActivity.class);
                                 }

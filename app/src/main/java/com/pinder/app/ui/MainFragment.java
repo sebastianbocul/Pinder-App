@@ -19,18 +19,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
-import com.pinder.app.MainFragmentManager;
+import com.pinder.app.MainActivity;
 import com.pinder.app.R;
 import com.pinder.app.UsersProfilesActivity;
 import com.pinder.app.adapters.CardsAdapter;
-import com.pinder.app.adapters.TagsManagerAdapter;
 import com.pinder.app.models.Card;
 import com.pinder.app.util.Constants;
 import com.pinder.app.util.Resource;
@@ -270,7 +267,7 @@ public class MainFragment extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private CompletableFuture<Void> handleCompletableAd(CompletableFuture<Void> adCompletableFuture) {
-        InterstitialAd mFullScreenAd = ((MainFragmentManager) getActivity()).getmFullScreenAd();
+        InterstitialAd mFullScreenAd = ((MainActivity) getActivity()).getmFullScreenAd();
         mFullScreenAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
@@ -287,7 +284,7 @@ public class MainFragment extends Fragment {
         adCounter++;
         if (adCounter % Constants.numberOfCardsPerAd == 0) {
             adCompletableFuture = handleCompletableAd(adCompletableFuture);
-            ((MainFragmentManager) getActivity()).showFullScreenAd();
+            ((MainActivity) getActivity()).showFullScreenAd();
             adCounter = 0;
         } else {
             adCompletableFuture.complete(null);
@@ -298,7 +295,7 @@ public class MainFragment extends Fragment {
     private void displayAd() {
         adCounter++;
         if (adCounter % Constants.numberOfCardsPerAd == 0) {
-            ((MainFragmentManager) getActivity()).showFullScreenAd();
+            ((MainActivity) getActivity()).showFullScreenAd();
             adCounter = 0;
         }
     }
@@ -347,7 +344,7 @@ public class MainFragment extends Fragment {
         noMoreEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainFragmentManager) getActivity()).replaceTabPage(R.id.nav_tags);
+//                ((MainFra)).replaceTabPage(R.id.nav_tags);
             }
         });
     }

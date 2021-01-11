@@ -24,6 +24,6 @@ fun loginEmail() {
     Espresso.onView(ViewMatchers.withId(R.id.email)).perform(ViewActions.replaceText(testUser))
     Espresso.onView(ViewMatchers.withId(R.id.password)).perform(ViewActions.replaceText(testUserPassword))
     Espresso.onView(ViewMatchers.withId(R.id.login)).perform(ViewActions.click())
-//        val activityScenario2 = ActivityScenario.launch(MainFragmentManager::class.java)
+//        val activityScenario2 = ActivityScenario.launch(MainActivity::class.java)
     Thread.sleep(5000);
 }
