@@ -8,8 +8,9 @@ import com.pinder.app.repository.AuthRepository
 import com.pinder.app.repository.MatchesRepository
 import com.pinder.app.util.Resource
 
-class AuthViewModel @ViewModelInject constructor(private val authRepository: AuthRepository): ViewModel(){
-    fun fetchUserData():LiveData<Resource<Boolean>>{
-        return authRepository.fetchUserData()
-    }
+class CommunicationViewModel @ViewModelInject constructor(): ViewModel(){
+    var matchProfileUrl: String? =null
+    var matchName: String? = null
+    var matchId: String? = null
+    var fromActivity: String? =null
 }

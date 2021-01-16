@@ -26,7 +26,6 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.pinder.app.MainActivity;
 import com.pinder.app.R;
-import com.pinder.app.UsersProfilesActivity;
 import com.pinder.app.adapters.CardsAdapter;
 import com.pinder.app.models.Card;
 import com.pinder.app.util.Constants;
@@ -253,12 +252,13 @@ public class MainFragment extends Fragment {
         flingContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
             @Override
             public void onItemClicked(int itemPosition, Object dataObject) {
-                Card user = (Card) dataObject;
-                Intent intent = new Intent(getContext(), UsersProfilesActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra("user", user);
-                intent.putExtra("userId", user.getUserId());
-                startActivity(intent);
+                //TODO
+//                Card user = (Card) dataObject;
+//                Intent intent = new Intent(getContext(), UsersProfilesActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//                intent.putExtra("user", user);
+//                intent.putExtra("userId", user.getUserId());
+//                startActivity(intent);
             }
         });
         linearLayoutBottom.setOnClickListener(v -> {
@@ -311,6 +311,7 @@ public class MainFragment extends Fragment {
                 if (getActivity() == null) {
                     return;
                 }
+                //TODO
                 Intent intent = getActivity().getIntent();
                 if (flingContainer != null) {
                     if (intent.getStringExtra("fromUsersProfilesActivity") != null) {

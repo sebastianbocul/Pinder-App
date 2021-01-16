@@ -25,7 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.pinder.app.BaseApplication;
-import com.pinder.app.ChatActivity;
+import com.pinder.app.MainActivity;
 import com.pinder.app.R;
 import com.pinder.app.ui.dialogs.SharedPreferencesHelper;
 
@@ -64,7 +64,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         String body = remoteMessage.getData().get("body");
         String profileImageUrl = remoteMessage.getData().get("profileImageUrl");
         int i = Integer.parseInt(user.replaceAll("[\\D]", ""));
-        Intent intent = new Intent(this, ChatActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("matchId", user);
         intent.putExtra("matchName", title);
         intent.putExtra("matchImageUrl", profileImageUrl);

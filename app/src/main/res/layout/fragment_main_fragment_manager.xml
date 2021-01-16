@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context="com.pinder.app.ui.MainViewFragmentManager">
+    tools:context="com.pinder.app.ui.MainFragmentManager">
 
     <LinearLayout
         android:id="@+id/mainFragmentManager"

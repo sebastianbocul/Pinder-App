@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.mikhaellopez.circularimageview.CircularImageView;
-import com.pinder.app.ChatActivity;
 import com.pinder.app.R;
 import com.pinder.app.models.MatchesObject;
 
@@ -88,17 +87,18 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
 
         @Override
         public void onClick(View view) {
-            try {
-                Intent intent = new Intent(view.getContext(), ChatActivity.class);
-                Bundle b = new Bundle();
-                b.putString("matchId", bundleMatchUserId);
-                b.putString("matchName", bundleMatchName);
-                b.putString("matchImageUrl", bundleMatchImageUrl);
-                intent.putExtras(b);
-                view.getContext().startActivity(intent);
-            } catch (Exception e) {
-                Toast.makeText(view.getContext(), "Oops something went wrong", Toast.LENGTH_SHORT).show();
-            }
+            //TODO
+//            try {
+//                Intent intent = new Intent(view.getContext(), ChatActivity.class);
+//                Bundle b = new Bundle();
+//                b.putString("matchId", bundleMatchUserId);
+//                b.putString("matchName", bundleMatchName);
+//                b.putString("matchImageUrl", bundleMatchImageUrl);
+//                intent.putExtras(b);
+//                view.getContext().startActivity(intent);
+//            } catch (Exception e) {
+//                Toast.makeText(view.getContext(), "Oops something went wrong", Toast.LENGTH_SHORT).show();
+//            }
         }
     }
 }

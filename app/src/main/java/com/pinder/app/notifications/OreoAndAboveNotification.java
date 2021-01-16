@@ -23,7 +23,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.messaging.RemoteMessage;
-import com.pinder.app.ChatActivity;
+import com.pinder.app.MainActivity;
 import com.pinder.app.R;
 
 import java.util.Random;
@@ -79,7 +79,7 @@ public class OreoAndAboveNotification extends ContextWrapper {
         String body = remoteMessage.getData().get("body");
         String profileImageUrl = remoteMessage.getData().get("profileImageUrl");
         int i = Integer.parseInt(user.replaceAll("[\\D]", ""));
-        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.putExtra("matchId", user);
         intent.putExtra("matchName", title);
         intent.putExtra("matchImageUrl", profileImageUrl);
