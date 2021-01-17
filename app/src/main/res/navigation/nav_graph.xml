@@ -29,29 +29,6 @@
         android:name="com.pinder.app.ui.UserProfileFragment"
         android:label="UserProfileFragment" />
     <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.pinder.app.ui.MainFragment"
-        android:label="fragment_main"
-        tools:layout="@layout/fragment_main">
-        <action
-            android:id="@+id/action_mainFragment_to_userProfileFragment"
-            app:destination="@id/userProfileFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.pinder.app.ui.SettingsFragment"
-        android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
-    <fragment
-        android:id="@+id/profileFragment"
-        android:name="com.pinder.app.ui.ProfileFragment"
-        android:label="ProfileFragment" />
-    <fragment
-        android:id="@+id/tagsFragment2"
-        android:name="com.pinder.app.ui.TagsFragment"
-        android:label="fragment_tags"
-        tools:layout="@layout/fragment_tags" />
-    <fragment
         android:id="@+id/locationFragment"
         android:name="com.pinder.app.ui.LocationFragment"
         android:label="fragment_location"
@@ -74,6 +51,8 @@
             app:enterAnim="@anim/slide_up"
             app:exitAnim="@anim/scale"
             app:launchSingleTop="true"
+            app:popEnterAnim="@anim/rotate"
+            app:popExitAnim="@anim/scale"
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_mainFragmentManager2_to_userProfileFragment"

@@ -1,5 +1,6 @@
 package com.pinder.app.ui
 
+import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -42,6 +43,7 @@ class MainFragmentManager : Fragment() {
     private var adContainerView: FrameLayout? = null
     private var adView: AdView? = null
     var mKeyboardVisible = false
+    var adapter: MainFragmentManagerPagerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +82,17 @@ class MainFragmentManager : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onCreate: ON CREATE")
+
+        //Clear all fragments from the adapter before they are re-added.
+//        adapter?.let {
+//            for (i: Int in 0 until adapter?.count!!) {
+//                val item = childFragmentManager.findFragmentByTag("f$i")
+//                if (item != null) {
+//                    adapter!!.destroyItem(view, i, item)
+//                }
+//            }
+//        }
+
         BaseApplication.UserStatus = LoginEnum.LOGGED
         bottomNavigationView = view?.findViewById(R.id.bottom_navigation)
         bottomNavigationView?.selectedItemId = R.id.nav_main
@@ -90,9 +103,11 @@ class MainFragmentManager : Fragment() {
 //                fromActivity = getIntent().extras!!.getString("fromActivity")!!
 //            }
 //        }
-        val adapter = activity?.let { MainFragmentManagerPagerAdapter(it.supportFragmentManager, bottomNavigationView!!.maxItemCount) }
+        adapter = activity?.let {
+            MainFragmentManagerPagerAdapter(childFragmentManager, bottomNavigationView!!.maxItemCount)
+        }
         viewPager.adapter = adapter
-        viewPager.currentItem=2
+        viewPager.currentItem = 2
 
 //        if (fromActivity.equals("chatActivity")) {
 //            viewPager.currentItem = 3
@@ -217,7 +232,24 @@ class MainFragmentManager : Fragment() {
     private fun getContentView(): View? {
         return view?.findViewById(R.id.mainFragmentManager)
     }
+
     fun onBackPressed() {
         activity?.moveTaskToBack(true)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+    }
+
+    override fun onAttachFragment(childFragment: Fragment) {
+        super.onAttachFragment(childFragment)
+    }
+
+    override fun onStart() {
+        super.onStart()
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
     }
 }
