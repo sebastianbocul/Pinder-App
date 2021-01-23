@@ -3,31 +3,45 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/mainFragmentManager2">
+    app:startDestination="@id/navigation3">
     <fragment
         android:id="@+id/chatFragment"
         android:name="com.pinder.app.ui.ChatFragment"
         android:label="ChatFragment">
         <action
             android:id="@+id/action_chatFragment_to_userProfileFragment"
-            app:destination="@id/userProfileFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/matchesFragment"
-        android:name="com.pinder.app.ui.MatchesFragment"
-        android:label="fragment_matches"
-        tools:layout="@layout/fragment_matches">
-        <action
-            android:id="@+id/action_matchesFragment_to_chatFragment"
-            app:destination="@id/chatFragment" />
-        <action
-            android:id="@+id/action_matchesFragment_to_locationFragment"
-            app:destination="@id/locationFragment" />
+            app:destination="@id/userProfileFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" >
+        </action>
+        <argument android:name="matchId" />
+        <argument android:name="matchName" />
+        <argument android:name="matchImageUrl" />
+        <argument android:name="fromActivity" />
     </fragment>
     <fragment
         android:id="@+id/userProfileFragment"
         android:name="com.pinder.app.ui.UserProfileFragment"
-        android:label="UserProfileFragment" />
+        android:label="UserProfileFragment">
+        <action
+            android:id="@+id/action_userProfileFragment_to_mainFragmentManager"
+            app:destination="@id/navigation3"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/slide_out_down"
+            app:popEnterAnim="@anim/slide_in_down"
+            app:popExitAnim="@anim/slide_out_up"
+            app:popUpTo="@id/mainFragmentManager"
+            app:popUpToInclusive="true" >
+            <argument
+                android:name="fromUsersProfilesActivity"/>
+        </action>
+        <argument android:name="userId" />
+        <argument android:name="user"
+            app:argType="com.pinder.app.models.Card"/>
+
+    </fragment>
     <fragment
         android:id="@+id/locationFragment"
         android:name="com.pinder.app.ui.LocationFragment"
@@ -35,27 +49,92 @@
         tools:layout="@layout/fragment_location">
         <action
             android:id="@+id/action_locationFragment_to_userProfileFragment"
-            app:destination="@id/userProfileFragment" />
+            app:destination="@id/userProfileFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_locationFragment_to_chatFragment"
-            app:destination="@id/chatFragment" />
+            app:destination="@id/chatFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument android:name="matchId" />
+        <argument android:name="matchName" />
+        <argument android:name="matchImageUrl" />
+        <argument android:name="fromActivity" />
     </fragment>
-    <fragment
-        android:id="@+id/mainFragmentManager2"
-        android:name="com.pinder.app.ui.MainFragmentManager"
-        android:label="fragment_main_fragment_manager"
-        tools:layout="@layout/fragment_main_fragment_manager" >
-        <action
-            android:id="@+id/action_mainFragmentManager2_to_locationFragment"
-            app:destination="@id/locationFragment"
-            app:enterAnim="@anim/slide_up"
-            app:exitAnim="@anim/scale"
-            app:launchSingleTop="true"
-            app:popEnterAnim="@anim/rotate"
-            app:popExitAnim="@anim/scale"
-            app:popUpToInclusive="false" />
-        <action
-            android:id="@+id/action_mainFragmentManager2_to_userProfileFragment"
-            app:destination="@id/userProfileFragment" />
-    </fragment>
+    <navigation android:id="@+id/navigation3"
+        app:startDestination="@id/mainFragmentManager">
+        <fragment
+            android:id="@+id/mainFragment"
+            android:name="com.pinder.app.ui.MainFragment"
+            android:label="fragment_main"
+            tools:layout="@layout/fragment_main">
+            <argument android:name="fromUsersProfilesActivity" />
+        </fragment>
+        <fragment
+            android:id="@+id/mainFragmentManager"
+            android:name="com.pinder.app.ui.MainFragmentManager"
+            android:label="fragment_main_fragment_manager"
+            tools:layout="@layout/fragment_main_fragment_manager">
+            <action
+                android:id="@+id/action_mainFragmentManager_to_locationFragment"
+                app:destination="@id/locationFragment"
+                app:enterAnim="@anim/slide_in_down"
+                app:exitAnim="@anim/slide_out_up"
+                app:popEnterAnim="@anim/slide_in_up"
+                app:popExitAnim="@anim/slide_out_down" />
+
+            <action
+                android:id="@+id/action_mainFragmentManager_to_userProfileFragment"
+                app:destination="@id/userProfileFragment"
+                app:enterAnim="@anim/slide_in_down"
+                app:exitAnim="@anim/slide_out_up"
+                app:popEnterAnim="@anim/slide_in_up"
+                app:popExitAnim="@anim/slide_out_down" />
+            <action
+                android:id="@+id/action_mainFragmentManager_to_chatFragment"
+                app:destination="@id/chatFragment"
+                app:enterAnim="@anim/slide_in_down"
+                app:exitAnim="@anim/slide_out_up"
+                app:popEnterAnim="@anim/slide_in_up"
+                app:popExitAnim="@anim/slide_out_down" />
+            <action
+                android:id="@+id/action_mainFragmentManager_to_mainFragment"
+                app:destination="@id/mainFragment" />
+            <argument android:name="fromUsersProfilesActivity" />
+        </fragment>
+        <argument
+            android:name="fromUsersProfilesActivity"/>
+    </navigation>
 </navigation>
+
+    <!--        FROM RIGHT TO LEFT-->
+    <!--        <action-->
+    <!--        android:id="@+id/action_mainFragmentManager_to_locationFragment"-->
+    <!--        app:destination="@id/locationFragment"-->
+    <!--        app:enterAnim="@anim/slide_in_right"-->
+    <!--        app:exitAnim="@anim/slide_out_left"-->
+    <!--        app:popEnterAnim="@anim/slide_in_left"-->
+    <!--        app:popExitAnim="@anim/slide_out_right" />-->
+
+    <!--        FROM TOP TO DOWN-->
+    <!--        <action-->
+    <!--            android:id="@+id/action_mainFragmentManager_to_locationFragment"-->
+    <!--            app:destination="@id/locationFragment"-->
+    <!--            app:enterAnim="@anim/slide_in_down"-->
+    <!--            app:exitAnim="@anim/slide_out_up"-->
+    <!--            app:popEnterAnim="@anim/slide_in_up"-->
+    <!--            app:popExitAnim="@anim/slide_out_down" />-->
+
+    <!--        FROM DOWN TO TOP-->
+    <!--        <action-->
+    <!--            android:id="@+id/action_mainFragmentManager_to_locationFragment"-->
+    <!--            app:destination="@id/locationFragment"-->
+    <!--            app:enterAnim="@anim/slide_in_up"-->
+    <!--            app:exitAnim="@anim/slide_out_down"-->
+    <!--            app:popEnterAnim="@anim/slide_in_down"-->
+    <!--            app:popExitAnim="@anim/slide_out_up" />-->

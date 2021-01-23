@@ -1,7 +1,6 @@
 package com.pinder.app.ui
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,10 +22,8 @@ import com.pinder.app.models.ChatObject
 import com.pinder.app.ui.dialogs.SharedPreferencesHelper
 import com.pinder.app.util.SendFirebaseNotification
 import com.pinder.app.utils.BuildVariantsHelper
-import com.pinder.app.viewmodels.CommunicationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
-import javax.inject.Inject
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -53,22 +52,30 @@ class ChatFragment : Fragment() {
     private var profileImage: ImageView? = null
     private var userNameTextView: TextView? = null
     private var currentUserID: String? = null
-    private lateinit var matchId: String
     private var chatId: String? = null
-    private var profileImageUrl: String? = null
-    private var myProfileImageUrl: kotlin.String? = null
-    private var myName: String? = null
     private val resultChat = ArrayList<ChatObject>()
     private var backArrowImage: ImageView? = null
     private val TAG = "ChatActivity"
     private var chatRoomExists = true
+    private var myProfileImageUrl: String? = null
 
-    @Inject
-    lateinit var communicationViewModel: CommunicationViewModel
+    private var matchId: String? = null
+    private var matchName: String? = null
+
+    private var myName: String? = null
+    private var matchImageUrl: String? = null
+    private var fromActivity: String? = null
+
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
+            matchId = it.getString("matchId", "")
+            matchName = it.getString("matchName", "")
+            matchImageUrl = it.getString("matchImageUrl", "default")
+            fromActivity = it.getString("fromActivity", null)
+
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
@@ -102,18 +109,20 @@ class ChatFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
         profileImage = view.findViewById(R.id.profileImage)
         userNameTextView = view.findViewById(R.id.userName)
         mSendEditText = view.findViewById(R.id.message)
         mSendButton = view.findViewById(R.id.button_send)
-        matchId = communicationViewModel.matchId!!
         currentUserID = FirebaseAuth.getInstance().currentUser!!.uid
-        mDatabaseUserChat = FirebaseDatabase.getInstance()
-                .reference.child("Users")
-                .child(currentUserID!!).child("connections")
-                .child("matches")
-                .child(matchId)
-                .child("ChatId")
+        mDatabaseUserChat = matchId?.let {
+            FirebaseDatabase.getInstance()
+                    .reference.child("Users")
+                    .child(currentUserID!!).child("connections")
+                    .child("matches")
+                    .child(it)
+                    .child("ChatId")
+        }
         mDatabaseChat = FirebaseDatabase.getInstance().reference.child("Chat")
         mDatabaseUser = FirebaseDatabase.getInstance().reference.child("Users")
         fillImagesAndName()
@@ -147,24 +156,9 @@ class ChatFragment : Fragment() {
         })
     }
 
-    private fun goToUsersProfile() {
-        //TODO
-//        val intent = Intent(this@ChatActivity, UsersProfilesActivity::class.java)
-        communicationViewModel.fromActivity = "ChatActivity"
-    }
-
     private fun fillImagesAndName() {
-        var matchName = ""
-        var matchImageUrl = "default"
         val sp: SharedPreferences = requireContext().getSharedPreferences("SP_USER", Context.MODE_PRIVATE)
         myProfileImageUrl = SharedPreferencesHelper.getCurrentProfilePicture(context)
-            communicationViewModel.matchName?.let {
-                matchName = communicationViewModel.matchName!!
-            }
-        if (communicationViewModel.matchProfileUrl!=null){
-            matchImageUrl = communicationViewModel.matchProfileUrl!!
-        } else myProfileImageUrl = "default"
-        profileImageUrl = matchImageUrl
         userNameTextView!!.text = matchName
         when (matchImageUrl) {
             "default" -> profileImage?.let { Glide.with(requireContext()).load(R.drawable.ic_profile_hq).into(it) }
@@ -234,7 +228,7 @@ class ChatFragment : Fragment() {
                     }
                     if (message != null && createdByUser != null) {
                         var currentUserBoolean = false
-                        var imageUrl = profileImageUrl
+                        var imageUrl = matchImageUrl
                         if (createdByUser == currentUserID) {
                             currentUserBoolean = true
                             imageUrl = myProfileImageUrl
@@ -282,21 +276,18 @@ class ChatFragment : Fragment() {
         return resultChat
     }
 
-    fun onBackPressed() {
-        //TODO zdefiniowac powrót do main view
-//        if (fromActivity.equals("notification")) {
-//            val intent = Intent(this, MainActivity::class.java)
-//            intent.putExtra("fromActivity", "chatActivity")
-//            startActivity(intent)
-//            onDestroy()
-//        } else {
-//            super.onBackPressed()
-//        }
+    private fun goToUsersProfile() {
+        matchId?.let {
+            var bundle = Bundle()
+            bundle.putString("matchId", matchId)
+            bundle.putString("fromActivity", "ChatActivity")
+            navController.navigate(R.id.action_chatFragment_to_userProfileFragment, bundle)
+        }
     }
 
     fun handleBackArrow() {
         backArrowImage = view?.findViewById(R.id.back_arrow)
         BuildVariantsHelper.disableButton(backArrowImage)
-        backArrowImage!!.setOnClickListener { v -> onBackPressed() }
+        backArrowImage!!.setOnClickListener { v -> activity?.onBackPressed() }
     }
 }

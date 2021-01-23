@@ -1,6 +1,5 @@
 package com.pinder.app.ui
 
-import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -44,12 +43,18 @@ class MainFragmentManager : Fragment() {
     private var adView: AdView? = null
     var mKeyboardVisible = false
     var adapter: MainFragmentManagerPagerAdapter? = null
+    private var extras = Bundle()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
+            fromActivity = it.getString("fromActivity", "")
+            var ext = it.getString("fromUsersProfilesActivity")
+            extras.putString("fromActivity", fromActivity)
+            extras.putString("fromUsersProfilesActivity", it.getString("fromUsersProfilesActivity", null))
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+            it.clear()
         }
     }
 
@@ -82,39 +87,21 @@ class MainFragmentManager : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onCreate: ON CREATE")
-
-        //Clear all fragments from the adapter before they are re-added.
-//        adapter?.let {
-//            for (i: Int in 0 until adapter?.count!!) {
-//                val item = childFragmentManager.findFragmentByTag("f$i")
-//                if (item != null) {
-//                    adapter!!.destroyItem(view, i, item)
-//                }
-//            }
-//        }
-
         BaseApplication.UserStatus = LoginEnum.LOGGED
         bottomNavigationView = view?.findViewById(R.id.bottom_navigation)
         bottomNavigationView?.selectedItemId = R.id.nav_main
 
         val viewPager: ViewPager = view.findViewById(R.id.pager)
-//        if (getIntent().extras != null) {
-//            if (getIntent().extras!!.getString("fromActivity") != null) {
-//                fromActivity = getIntent().extras!!.getString("fromActivity")!!
-//            }
-//        }
         adapter = activity?.let {
-            MainFragmentManagerPagerAdapter(childFragmentManager, bottomNavigationView!!.maxItemCount)
+            MainFragmentManagerPagerAdapter(childFragmentManager, bottomNavigationView!!.maxItemCount, extras)
         }
         viewPager.adapter = adapter
-        viewPager.currentItem = 2
-
-//        if (fromActivity.equals("chatActivity")) {
-//            viewPager.currentItem = 3
-//            bottomNavigationView!!.selectedItemId = R.id.nav_matches
-//        } else {
-//            viewPager.currentItem = 2
-//        }
+        if (fromActivity.equals("chatActivity") || fromActivity.equals("unmatchButtonClicked")) {
+            viewPager.currentItem = 3
+            bottomNavigationView!!.selectedItemId = R.id.nav_matches
+        } else {
+            viewPager.currentItem = 2
+        }
         viewPager.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
             override fun onPageSelected(position: Int) {
@@ -200,7 +187,6 @@ class MainFragmentManager : Fragment() {
                 ?.removeOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener)
     }
 
-
     private val mLayoutKeyboardVisibilityListener = OnGlobalLayoutListener {
         val rectangle = Rect()
         val contentView = getContentView()
@@ -231,25 +217,5 @@ class MainFragmentManager : Fragment() {
 
     private fun getContentView(): View? {
         return view?.findViewById(R.id.mainFragmentManager)
-    }
-
-    fun onBackPressed() {
-        activity?.moveTaskToBack(true)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-    }
-
-    override fun onAttachFragment(childFragment: Fragment) {
-        super.onAttachFragment(childFragment)
-    }
-
-    override fun onStart() {
-        super.onStart()
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
     }
 }

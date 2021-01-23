@@ -151,9 +151,6 @@ public class MatchesFragment extends Fragment {
     }
 
     private void goToLocationActivity() {
-        navController.navigate(R.id.action_mainFragmentManager2_to_locationFragment);
-        //TODO
-//        Intent intent = new Intent(getContext(), LocationActivity.class);
-//        startActivity(intent);
+        navController.navigate(R.id.action_mainFragmentManager_to_locationFragment);
     }
 }

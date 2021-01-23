@@ -1,7 +1,6 @@
 package com.pinder.app.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -9,9 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -87,18 +87,15 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
 
         @Override
         public void onClick(View view) {
-            //TODO
-//            try {
-//                Intent intent = new Intent(view.getContext(), ChatActivity.class);
-//                Bundle b = new Bundle();
-//                b.putString("matchId", bundleMatchUserId);
-//                b.putString("matchName", bundleMatchName);
-//                b.putString("matchImageUrl", bundleMatchImageUrl);
-//                intent.putExtras(b);
-//                view.getContext().startActivity(intent);
-//            } catch (Exception e) {
-//                Toast.makeText(view.getContext(), "Oops something went wrong", Toast.LENGTH_SHORT).show();
-//            }
+            NavController navController = Navigation.findNavController(view);
+            if (bundleMatchUserId != null) {
+                Bundle bundle = new Bundle();
+                bundle.putString("matchId", bundleMatchUserId);
+                bundle.putString("matchName", bundleMatchName);
+                bundle.putString("matchImageUrl", bundleMatchImageUrl);
+                bundle.putString("fromActivity", "MatchesFragment");
+                navController.navigate(R.id.action_mainFragmentManager_to_chatFragment, bundle);
+            }
         }
     }
 }

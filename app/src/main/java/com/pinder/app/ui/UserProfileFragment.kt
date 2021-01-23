@@ -1,21 +1,19 @@
 package com.pinder.app.ui
 
 import android.content.Intent
-import android.content.Intent.getIntent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.viewpager.widget.ViewPager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -65,8 +63,8 @@ class UserProfileFragment : Fragment() {
     private  var mUserProfileDatabase:DatabaseReference? = null
     private  var myDatabaseReference:DatabaseReference? = null
     private var dislikeButton: ImageView? = null
-    private  var likeButton:android.widget.ImageView? = null
-    private  var reportUserButton:android.widget.ImageView? = null
+    private  var likeButton:ImageView? = null
+    private  var reportUserButton:ImageView? = null
     private var unmatchButton: Button? = null
     private var userAge: String? = null
     private var mImages: ArrayList<*>? = null
@@ -75,13 +73,19 @@ class UserProfileFragment : Fragment() {
     private var user: Card? = null
     private var progressBar: ProgressBar? = null
     private var defaultImage: ImageView? = null
-    private  var backArrowImage:android.widget.ImageView? = null
+    private  var backArrowImage:ImageView? = null
     private val TAG = "UsersProfilesActivity"
 
+    private lateinit var navController:NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
+            userId = arguments?.getString("matchId", null)
+            if(userId==null){
+                user = arguments?.getParcelable("user")
+                userId = user!!.userId
+            }
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
@@ -115,16 +119,7 @@ class UserProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //TODO
-//        val intent: Intent = getIntent()
-//        if (intent.getParcelableExtra<Parcelable?>("user") != null) {
-            //TODO
-//            user = intent.getParcelableExtra<Parcelable>("user")
-//            userId = user!!.userId
-//        }
-//        if (intent.getStringExtra("userId") != null) {
-//            userId = intent.getStringExtra("userId")
-//        }
+        navController = Navigation.findNavController(view)
         nameTextView = view.findViewById(R.id.nameTextView)
         tagsTextView = view.findViewById(R.id.tagsTextView)
         genderTextView = view.findViewById(R.id.genderTextView)
@@ -149,127 +144,106 @@ class UserProfileFragment : Fragment() {
         myDatabaseReference = FirebaseDatabase.getInstance().reference
         viewPager = view.findViewById(R.id.viewPager)
         mImageDatabase = mUserDatabase!!.child(userId!!).child("images")
-        //TODO
-//        if (getIntent().hasExtra("userId")) {
-//            if (intent.getStringExtra("userId") == myId) {
-//                unmatchButton!!.visibility = View.INVISIBLE
-//                dislikeButton!!.visibility = View.INVISIBLE
-//                likeButton!!.visibility = View.INVISIBLE
-//                reportUserButton!!.isEnabled = false
-//                loadTagsFirebase()
-//            } else {
-//                reportUserButton!!.isEnabled = true
-//                mUserProfileDatabase!!.addListenerForSingleValueEvent(object : ValueEventListener {
-//                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                        unmatchButton!!.visibility = View.INVISIBLE
-//                        dislikeButton!!.visibility = View.VISIBLE
-//                        likeButton!!.visibility = View.VISIBLE
-//                        if (!dataSnapshot.exists()) return
-//                        for (ds in dataSnapshot.children) {
-//                            if (userId.equals(ds.key)) {
-//                                unmatchButton!!.visibility = View.VISIBLE
-//                                dislikeButton!!.visibility = View.INVISIBLE
-//                                likeButton!!.visibility = View.INVISIBLE
-//                            }
-//                        }
-//                    }
-//
-//                    override fun onCancelled(databaseError: DatabaseError) {}
-//                })
-//            }
-//        }
-        //TODO
-//        dislikeButton!!.setOnClickListener {
-//            val i = Intent(this@UsersProfilesActivity, MainActivity::class.java)
-//            val myIntent = Intent(this@UsersProfilesActivity, MainActivity::class.java)
-//            myIntent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP
-//            i.putExtra("fromUsersProfilesActivity", "dislikeButtonClicked")
-//            startActivity(i)
-//        }
-//        likeButton!!.setOnClickListener {
-//            val i = Intent(this@UsersProfilesActivity, MainActivity::class.java)
-//            val myIntent = Intent(this@UsersProfilesActivity, MainActivity::class.java)
-//            onBackPressed()
-//            //                myIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-////                i.putExtra("fromUsersProfilesActivity", "likeButtonClicked");
-////                startActivity(i);
-//        }
+        if (userId != null) {
+            if (userId == myId) {
+                unmatchButton!!.visibility = View.INVISIBLE
+                dislikeButton!!.visibility = View.INVISIBLE
+                likeButton!!.visibility = View.INVISIBLE
+                reportUserButton!!.isEnabled = false
+                loadTagsFirebase()
+            } else {
+                reportUserButton!!.isEnabled = true
+                mUserProfileDatabase!!.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        unmatchButton!!.visibility = View.INVISIBLE
+                        dislikeButton!!.visibility = View.VISIBLE
+                        likeButton!!.visibility = View.VISIBLE
+                        if (!dataSnapshot.exists()) return
+                        for (ds in dataSnapshot.children) {
+                            if (userId.equals(ds.key)) {
+                                unmatchButton!!.visibility = View.VISIBLE
+                                dislikeButton!!.visibility = View.INVISIBLE
+                                likeButton!!.visibility = View.INVISIBLE
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {}
+                })
+            }
+        }
+
+        dislikeButton!!.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("fromUsersProfilesActivity", "dislikeButtonClicked")
+            navController.navigate(R.id.action_userProfileFragment_to_mainFragmentManager, bundle)
+        }
+        likeButton!!.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("fromUsersProfilesActivity", "likeButtonClicked")
+            navController.navigate(R.id.action_userProfileFragment_to_mainFragmentManager, bundle)
+        }
         reportUserButton!!.setOnClickListener { openReportDialog() }
         unmatchButton!!.setOnClickListener {
-            Log.d(TAG, "onClick")
-            //TODO
-//            val myIntent = Intent(this@UsersProfilesActivity, MainActivity::class.java)
-//            myIntent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            //                myIntent.setFlags();
-//                myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            startActivity(myIntent)
-            Log.d(TAG, "startActivity: ")
-            unmatchButton!!.text = "clicked unmatch"
+            val bundle = Bundle()
             myDatabaseReference!!.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     Log.d(TAG, "onDataChange: $dataSnapshot")
-                    //                        try {
-//                            String chatId = dataSnapshot.child("Users").child(myId).child("connections").child("matches").child(userId).child("ChatId").getValue().toString();
-//                            //for chat
-//                            DatabaseReference mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
-//                            mRemoveChild.removeValue();
-//                            //for me
-//                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(myId).child("connections");
-//                            mRemoveChild.child("nope").child(userId).setValue(true);
-//                            mRemoveChild.child("yes").child(userId).removeValue();
-//                            mRemoveChild.child("matches").child(userId).removeValue();
-//                            //for user
-//                            mRemoveChild = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("connections");
-//                            mRemoveChild.child("nope").child(myId).setValue(true);
-//                            mRemoveChild.child("yes").child(myId).removeValue();
-//                            mRemoveChild.child("matches").child(myId).removeValue();
-//                            final Handler handler = new Handler();
-//                            handler.postDelayed(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    Intent myIntent = new Intent(UsersProfilesActivity.this, MainActivity.class);
-//                                    myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                                    startActivity(myIntent);
-//                                }
-//                            }, 500);
-//                        } catch (NullPointerException e) {
-//                            Toast.makeText(UsersProfilesActivity.this, "Unable to do that operation", Toast.LENGTH_SHORT).show();
-//                        }
+                    try {
+                        val chatId = dataSnapshot.child("Users").child(myId!!).child("connections").child("matches").child(userId!!).child("ChatId").value.toString()
+                        //for chat
+                        var mRemoveChild = FirebaseDatabase.getInstance().reference.child("Chat").child(chatId)
+                        mRemoveChild.removeValue()
+                        //for me
+                        mRemoveChild = FirebaseDatabase.getInstance().reference.child("Users").child(myId!!).child("connections")
+                        mRemoveChild.child("nope").child(userId!!).setValue(true)
+                        mRemoveChild.child("yes").child(userId!!).removeValue()
+                        mRemoveChild.child("matches").child(userId!!).removeValue()
+                        //for user
+                        mRemoveChild = FirebaseDatabase.getInstance().reference.child("Users").child(userId!!).child("connections")
+                        mRemoveChild.child("nope").child(myId!!).setValue(true)
+                        mRemoveChild.child("yes").child(myId!!).removeValue()
+                        mRemoveChild.child("matches").child(myId!!).removeValue()
+                        val handler = Handler()
+                        handler.postDelayed(Runnable {
+                            bundle.putString("fromActivity", "unmatchButtonClicked")
+                            navController.navigate(R.id.action_userProfileFragment_to_mainFragmentManager, bundle)
+                            unmatchButton!!.text = "clicked unmatch"
+                        }, 500)
+                    } catch (e: NullPointerException) {
+                        Toast.makeText(activity, "Unable to do that operation", Toast.LENGTH_SHORT).show()
+                    }
                 }
-
                 override fun onCancelled(databaseError: DatabaseError) {}
             })
         }
-        //TODO
-//        backArrowImage!!.setOnClickListener { v -> onBackPressed() }
-//        if (intent.getParcelableExtra<Parcelable?>("user") == null) {
-//            fillUserProfileFireBase()
-//            loadImagesFireBase()
-//        } else {
-//            fillUserProfileBundle()
-//            loadImagesBundle()
-//        }
+        backArrowImage!!.setOnClickListener { v -> activity?.onBackPressed() }
+        if (user == null) {
+            fillUserProfileFireBase()
+            loadImagesFireBase()
+        } else {
+            fillUserProfileBundle()
+            loadImagesBundle()
+        }
     }
     private fun loadImagesBundle() {
-        //TODO
-//        if (getIntent().getParcelableExtra("user") != null) {
-//            val size: Int = user!!.images.size
-//            if (user!!.images == null || user!!.images.size === 0) {
-//                defaultImage!!.visibility = View.VISIBLE
-//                viewPager!!.setBackgroundColor(Color.TRANSPARENT)
-//                return
-//            } else if (user!!.images.size >= 1) {
-//                defaultImage!!.visibility = View.GONE
-//            }
-//            mImages = user!!.images as ArrayList<*>
-//            val adapter = ImageAdapter(this@UsersProfilesActivity, mImages)
-//            viewPager!!.adapter = adapter
-//        }
+        if (user != null) {
+            val size: Int = user!!.images.size
+            if (user!!.images == null || user!!.images.size === 0) {
+                defaultImage!!.visibility = View.VISIBLE
+                viewPager!!.setBackgroundColor(Color.TRANSPARENT)
+                return
+            } else if (user!!.images.size >= 1) {
+                defaultImage!!.visibility = View.GONE
+            }
+            mImages = user!!.images as ArrayList<*>
+            val adapter = ImageAdapter(context, mImages)
+            viewPager!!.adapter = adapter
+        }
     }
 
     private fun fillUserProfileBundle() {
-        //TODO
-//        if (getIntent().getParcelableExtra("user") != null) {
+        if (user != null) {
             distanceTextView!!.text = ", " + Math.round(user!!.distance).toString() + " km away"
             tagsTextView!!.text = user!!.tags.toString()
             val age = StringDateToAge().stringDateToAge(user!!.dateOfBirth)
@@ -282,7 +256,7 @@ class UserProfileFragment : Fragment() {
             locationTextView!!.text = location
             description = user!!.description
             descriptionTextView!!.text = description
-//        }
+        }
     }
 
     private fun openReportDialog() {
@@ -310,15 +284,14 @@ class UserProfileFragment : Fragment() {
         defaultImage!!.visibility = View.GONE
         mImageDatabase!!.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                //TODO
                 if (dataSnapshot.value != null) {
-//                    val arrayList: ArrayList<*> = ArrayList<Any?>()
-//                    for (ds in dataSnapshot.children) {
-//                        arrayList.add(ds.child("uri").value)
-//                    }
-//                    mImages = arrayList
-//                    val adapter = ImageAdapter(this@UsersProfilesActivity, mImages)
-//                    viewPager!!.adapter = adapter
+                    val arrayList: ArrayList<String?> = ArrayList<String?>()
+                    for (ds in dataSnapshot.children) {
+                        arrayList.add(ds.child("uri").value.toString())
+                    }
+                    mImages = arrayList
+                    val adapter = ImageAdapter(context, mImages)
+                    viewPager!!.adapter = adapter
                 } else {
                     defaultImage!!.visibility = View.VISIBLE
                     progressBar!!.visibility = View.GONE

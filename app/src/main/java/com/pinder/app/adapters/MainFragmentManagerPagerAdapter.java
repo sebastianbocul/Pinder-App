@@ -1,15 +1,12 @@
 package com.pinder.app.adapters;
 
-import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-import com.bumptech.glide.Glide;
-import com.pinder.app.R;
 import com.pinder.app.ui.MainFragment;
 import com.pinder.app.ui.MatchesFragment;
 import com.pinder.app.ui.ProfileFragment;
@@ -18,55 +15,42 @@ import com.pinder.app.ui.TagsManagerFragment;
 
 public class MainFragmentManagerPagerAdapter extends FragmentStatePagerAdapter {
     int mNoOfTabs;
+    Bundle extras;
 
-    public MainFragmentManagerPagerAdapter(@NonNull FragmentManager fm, int NumberOfTabs) {
+    public MainFragmentManagerPagerAdapter(@NonNull FragmentManager fm, int NumberOfTabs, Bundle extras) {
         super(fm);
         this.mNoOfTabs = NumberOfTabs;
+        this.extras = extras;
     }
 
-    @NonNull
     @Override
     public Fragment getItem(int position) {
+        Fragment fragment = null;
         switch (position) {
             case 0:
-                return new SettingsFragment();
+                fragment = new SettingsFragment();
+                break;
             case 1:
-                return new ProfileFragment();
+                fragment = new ProfileFragment();
+                break;
             case 2:
-                return new MainFragment();
+                fragment = new MainFragment();
+                fragment.setArguments(extras);
+                break;
             case 3:
-                return new MatchesFragment();
+                fragment = new MatchesFragment();
+                fragment.setArguments(extras);
+                break;
             case 4:
-                return new TagsManagerFragment();
-            default:
-                return null;
+                fragment = new TagsManagerFragment();
+                break;
         }
+        extras = null;
+        return fragment;
     }
 
     @Override
     public int getCount() {
         return mNoOfTabs;
     }
-
-//    @NonNull
-//    @Override
-//    public Object instantiateItem(@NonNull ViewGroup container, int position) {
-//        // If we already have this item instantiated, there is nothing
-//        // to do.  This can happen when we are restoring the entire pager
-//        // from its saved state, where the fragment manager has already
-//        // taken care of restoring the fragments we previously had instantiated.
-//        if (mFragments.size() > position) {
-//            Fragment f = mFragments.get(position);
-//            if (f != null) {
-//                if (mCurTransaction == null) {
-//                    mCurTransaction = mFragmentManager.beginTransaction();
-//                }
-//
-//                mCurTransaction.detach(f);
-//                mCurTransaction.attach(f);
-//
-//                return f;
-//            }
-//        }
-//    }
 }

@@ -19,6 +19,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -65,6 +67,8 @@ public class MainFragment extends Fragment {
     private List<Card> cardsArray = new ArrayList<Card>();
     private LinearLayout linearLayoutBottom;
     int adCounter = 0;
+    private NavController navController;
+    private String fromUsersProfilesActivity = null;
 
     public MainFragment() {
         // Required empty public constructor
@@ -93,6 +97,7 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: ");
         if (getArguments() != null) {
+            fromUsersProfilesActivity = getArguments().getString("fromUsersProfilesActivity");
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -110,6 +115,7 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Log.d(TAG, "onViewCreated: ");
+        navController = Navigation.findNavController(view);
         noMoreEditText = getView().findViewById(R.id.noMore);
         likeButton = getView().findViewById(R.id.likeButton);
         dislikeButton = getView().findViewById(R.id.dislikeButton);
@@ -252,13 +258,11 @@ public class MainFragment extends Fragment {
         flingContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
             @Override
             public void onItemClicked(int itemPosition, Object dataObject) {
-                //TODO
-//                Card user = (Card) dataObject;
-//                Intent intent = new Intent(getContext(), UsersProfilesActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//                intent.putExtra("user", user);
-//                intent.putExtra("userId", user.getUserId());
-//                startActivity(intent);
+                Card user = (Card) dataObject;
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("user",user);
+                bundle.putString("userId",user.getUserId());
+                navController.navigate(R.id.action_mainFragmentManager_to_userProfileFragment,bundle);
             }
         });
         linearLayoutBottom.setOnClickListener(v -> {
@@ -311,24 +315,20 @@ public class MainFragment extends Fragment {
                 if (getActivity() == null) {
                     return;
                 }
-                //TODO
-                Intent intent = getActivity().getIntent();
                 if (flingContainer != null) {
-                    if (intent.getStringExtra("fromUsersProfilesActivity") != null) {
-                        String s = intent.getStringExtra("fromUsersProfilesActivity");
-                        if (s.equals("likeButtonClicked")) {
+                    if (fromUsersProfilesActivity != null) {
+                        if (fromUsersProfilesActivity.equals("likeButtonClicked")) {
                             if (flingContainer.getChildCount() != 0)
                                 flingContainer.getTopCardListener().selectRight();
                             else
                                 Toast.makeText(getContext(), "There is no more users", Toast.LENGTH_SHORT).show();
                         }
-                        if (s.equals("dislikeButtonClicked")) {
+                        if (fromUsersProfilesActivity.equals("dislikeButtonClicked")) {
                             if (flingContainer.getChildCount() != 0)
                                 flingContainer.getTopCardListener().selectLeft();
                             else
                                 Toast.makeText(getContext(), "There is no more users", Toast.LENGTH_SHORT).show();
                         }
-                        intent.putExtra("fromUsersProfilesActivity", "finished");
                     }
                 }
             }

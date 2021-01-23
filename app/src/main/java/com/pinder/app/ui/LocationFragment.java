@@ -17,6 +17,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,7 +48,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pinder.app.R;
+import com.pinder.app.util.CalculateDistance;
 import com.pinder.app.util.Constants;
+import com.pinder.app.utils.BuildVariantsHelper;
 
 import javax.inject.Inject;
 
@@ -81,8 +85,11 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
     private String matchId, myId,userProfileImg,userName;
     private boolean mapRdy = false;
     private ImageView backArrowImage;
+    private String matchIdBundle;
     @Inject
     public Context context;
+
+    private NavController navController;
 
     public LocationFragment() {
         // Required empty public constructor
@@ -110,6 +117,9 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            matchIdBundle=getArguments().getString("matchId");
+        }
+        if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -125,6 +135,7 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        navController= Navigation.findNavController(view);
         linearLayout = view.findViewById(R.id.userLayout);
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         mAuth = FirebaseAuth.getInstance();
@@ -176,30 +187,29 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
                 }
                 lat = dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString();
                 lon = dataSnapshot.child("Users").child(currentUID).child("location").child("longitude").getValue().toString();
-                //TODO
-//                if (getIntent().hasExtra("matchId")) {
-//                    latMap = dataSnapshot.child("Users").child(getIntent().getExtras().getString("matchId")).child("location").child("latitude").getValue().toString();
-//                    lonMap = dataSnapshot.child("Users").child(getIntent().getExtras().getString("matchId")).child("location").child("longitude").getValue().toString();
-//                } else {
-//                    latMap = lat;
-//                    lonMap = lon;
-//                }
-//                final double myMapLatitude = Double.parseDouble(latMap);
-//                final double myMapLongitude = Double.parseDouble(lonMap);
-//                LatLng latLngMap = new LatLng(myMapLatitude, myMapLongitude);
-//                final double myLatitude = Double.parseDouble(lat);
-//                final double myLongitude = Double.parseDouble(lon);
-//                LatLng latLng = new LatLng(myLatitude, myLongitude);
-//                if (mapRdy == false) {
-//                    myGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLngMap));
-//                    myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLngMap, 15));
-//                    mapRdy = true;
-//                }
+                if (matchIdBundle!=null) {
+                    latMap = dataSnapshot.child("Users").child(matchIdBundle).child("location").child("latitude").getValue().toString();
+                    lonMap = dataSnapshot.child("Users").child(matchIdBundle).child("location").child("longitude").getValue().toString();
+                } else {
+                    latMap = lat;
+                    lonMap = lon;
+                }
+                final double myMapLatitude = Double.parseDouble(latMap);
+                final double myMapLongitude = Double.parseDouble(lonMap);
+                LatLng latLngMap = new LatLng(myMapLatitude, myMapLongitude);
+                final double myLatitude = Double.parseDouble(lat);
+                final double myLongitude = Double.parseDouble(lon);
+                LatLng latLng = new LatLng(myLatitude, myLongitude);
+                if (mapRdy == false) {
+                    myGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLngMap));
+                    myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLngMap, 15));
+                    mapRdy = true;
+                }
 //                set my marker at start
-//                MarkerOptions markerOptionsFB;
-//                markerOptionsFB = new MarkerOptions().position(latLng).title("I'm here").icon(BitmapDescriptorFactory.defaultMarker(300));
-//                Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
-//                myMarker.setTag(currentUID.trim());
+                MarkerOptions markerOptionsFB;
+                markerOptionsFB = new MarkerOptions().position(latLng).title("I'm here").icon(BitmapDescriptorFactory.defaultMarker(300));
+                Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
+                myMarker.setTag(currentUID.trim());
                 myGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng latLng) {
@@ -272,22 +282,20 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
                                 double latitude = Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString());
                                 double longitude = Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString());
 
-                                //TODO
-//                                double distance = new CalculateDistance().distance(myLatitude, myLongitude, latitude, longitude);
+                                double distance = new CalculateDistance().distance(myLatitude, myLongitude, latitude, longitude);
                                 LatLng latLngFB = new LatLng(latitude, longitude);
                                 if (dataSnapshot.child("profileImageUrl").getValue().toString().equals("default")) {
-                                    //TODO
-//                                    BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_profile_hq);
-//                                    bitmap = bitmapdraw.getBitmap();
-//                                    Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
-//                                    Bitmap circleMarker = getCroppedBitmap(smallMarker);
-//                                    MarkerOptions markerOptionsFB;
-//                                    markerOptionsFB = new MarkerOptions()
-//                                            .position(latLngFB)
-//                                            .title(userName + "\r" + Math.round(distance) + "km")
-//                                            .icon(BitmapDescriptorFactory.fromBitmap(circleMarker));
-//                                    Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
-//                                    myMarker.setTag(dataSnapshot.getKey().trim());
+                                    BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_profile_hq);
+                                    bitmap = bitmapdraw.getBitmap();
+                                    Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
+                                    Bitmap circleMarker = getCroppedBitmap(smallMarker);
+                                    MarkerOptions markerOptionsFB;
+                                    markerOptionsFB = new MarkerOptions()
+                                            .position(latLngFB)
+                                            .title(userName + "\r" + Math.round(distance) + "km")
+                                            .icon(BitmapDescriptorFactory.fromBitmap(circleMarker));
+                                    Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
+                                    myMarker.setTag(dataSnapshot.getKey().trim());
                                 } else {
                                     Glide.with(LocationFragment.this)
                                             .load(dataSnapshot.child("profileImageUrl").getValue().toString())
@@ -302,8 +310,7 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
                                                     MarkerOptions markerOptionsFB;
                                                     markerOptionsFB = new MarkerOptions()
                                                             .position(latLngFB)
-                                                            //TODO
-//                                                            .title(userName + "\r" + Math.round(distance) + "km")
+                                                            .title(userName + "\r" + Math.round(distance) + "km")
                                                             .icon(BitmapDescriptorFactory.fromBitmap(circleMarker));
                                                     Marker myMarker = myGoogleMap.addMarker(markerOptionsFB);
                                                     myMarker.setTag(dataSnapshot.getKey().trim());
@@ -362,30 +369,31 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void goToUsersProfile() {
-        //TODO
-//        Intent intent = new Intent(LocationFragment.this, UsersProfilesActivity.class);
-//        intent.putExtra("userId", matchId);
-//        intent.putExtra("fromActivity", "LocationActivity");
-//        startActivity(intent);
+        if(matchId!=null){
+            Bundle bundle = new Bundle();
+            bundle.putString("matchId",matchId);
+            navController.navigate(R.id.action_locationFragment_to_userProfileFragment,bundle);
+        }
     }
 
     private void goToUserChat() {
-        //TODO
-//        Intent intent = new Intent(LocationFragment.this, ChatActivity.class);
-//        intent.putExtra("matchId", matchId);
-//        intent.putExtra("matchName", userName);
-//        intent.putExtra("matchImageUrl", userProfileImg);
-//        intent.putExtra("fromActivity", "LocationActivity");
-//        startActivity(intent);
+        if(matchId!=null){
+            Bundle bundle = new Bundle();
+            bundle.putString("matchId",matchId);
+            bundle.putString("matchName",userName);
+            bundle.putString("matchImageUrl",userProfileImg);
+            bundle.putString("fromActivity","LocationActivity");
+            navController.navigate(R.id.action_locationFragment_to_chatFragment,bundle);
+        }
     }
 
     public void handleBackArrow(){
-        //TODO
-//        backArrowImage = getView().findViewById(R.id.back_arrow);
-//        BuildVariantsHelper.disableButton(backArrowImage);
-//        backArrowImage.setOnClickListener(v->{
-//            onBackPressed();
-//        });
+        backArrowImage = getView().findViewById(R.id.back_arrow);
+        BuildVariantsHelper.disableButton(backArrowImage);
+        backArrowImage.setOnClickListener(v->{
+            getActivity().onBackPressed();
+        });
+
     }
 
 }
