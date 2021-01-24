@@ -20,6 +20,15 @@
         <argument android:name="matchName" />
         <argument android:name="matchImageUrl" />
         <argument android:name="fromActivity" />
+        <action
+            android:id="@+id/action_chatFragment_to_navigation3"
+            app:destination="@id/navigation3"
+            app:popUpTo="@id/navigation3"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/slide_out_down"
+            app:popEnterAnim="@anim/slide_in_down"
+            app:popExitAnim="@anim/slide_out_up"/>
     </fragment>
     <fragment
         android:id="@+id/userProfileFragment"

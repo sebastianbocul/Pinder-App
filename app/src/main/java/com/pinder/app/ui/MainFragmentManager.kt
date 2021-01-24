@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.google.android.gms.ads.*
@@ -38,17 +40,17 @@ class MainFragmentManager : Fragment() {
     private var param2: String? = null
     private val TAG = "MainFragmentManagerTAG"
     private var bottomNavigationView: BottomNavigationView? = null
-    private var fromActivity = ""
+    private var fromActivity:String?=null
     private var adContainerView: FrameLayout? = null
     private var adView: AdView? = null
     var mKeyboardVisible = false
     var adapter: MainFragmentManagerPagerAdapter? = null
     private var extras = Bundle()
-
+    private lateinit var navController:NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            fromActivity = it.getString("fromActivity", "")
+            fromActivity = it.getString("fromActivity", null)
             var ext = it.getString("fromUsersProfilesActivity")
             extras.putString("fromActivity", fromActivity)
             extras.putString("fromUsersProfilesActivity", it.getString("fromUsersProfilesActivity", null))
@@ -86,6 +88,19 @@ class MainFragmentManager : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController= Navigation.findNavController(view)
+        if (fromActivity == null && activity?.intent?.extras?.getString("fromActivity") != null) {
+            fromActivity = activity?.intent?.extras?.getString("fromActivity",null)!!
+            activity?.intent?.extras?.remove("fromActivity")
+        }
+        if (fromActivity.equals("notification")) {
+            var extras = Bundle()
+            extras.putString("matchId",activity?.intent?.extras?.getString("matchId",null))
+            extras.putString("matchName",activity?.intent?.extras?.getString("matchName",null))
+            extras.putString("matchImageUrl",activity?.intent?.extras?.getString("matchImageUrl",null))
+            extras.putString("fromActivity",activity?.intent?.extras?.getString("fromActivity",null))
+            navController.navigate(R.id.action_mainFragmentManager_to_chatFragment,extras)
+        }
         Log.d(TAG, "onCreate: ON CREATE")
         BaseApplication.UserStatus = LoginEnum.LOGGED
         bottomNavigationView = view?.findViewById(R.id.bottom_navigation)

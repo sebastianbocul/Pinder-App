@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -24,6 +25,7 @@ import com.pinder.app.util.SendFirebaseNotification
 import com.pinder.app.utils.BuildVariantsHelper
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -75,9 +77,9 @@ class ChatFragment : Fragment() {
             matchName = it.getString("matchName", "")
             matchImageUrl = it.getString("matchImageUrl", "default")
             fromActivity = it.getString("fromActivity", null)
-
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+            it.clear()
         }
     }
 
@@ -109,6 +111,7 @@ class ChatFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        handleBackButton()
         navController = Navigation.findNavController(view)
         profileImage = view.findViewById(R.id.profileImage)
         userNameTextView = view.findViewById(R.id.userName)
@@ -289,5 +292,21 @@ class ChatFragment : Fragment() {
         backArrowImage = view?.findViewById(R.id.back_arrow)
         BuildVariantsHelper.disableButton(backArrowImage)
         backArrowImage!!.setOnClickListener { v -> activity?.onBackPressed() }
+    }
+
+    fun handleBackButton(){
+        if(fromActivity!=null && fromActivity.equals("notification")){
+            // This callback will only be called when MyFragment is at least Started.
+            val callback: OnBackPressedCallback = object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    var bundle = Bundle()
+                    bundle.putString("fromActivity","chatActivity")
+                    bundle.putString("notification",null)
+                    navController.navigate(R.id.action_chatFragment_to_navigation3,bundle)
+                    // Handle the back button event
+                }
+            }
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        }
     }
 }
