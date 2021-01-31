@@ -391,9 +391,12 @@ public class MainFirebase {
                         protected void onAllTasksCompleted() {
                             //put the code that runs when all the tasks are complete here
                             Log.d(TAG, "onAllTasksCompleted: GEOQUERY ");
+                            Log.d(TAG, "GEOQUERY: NUMBER OF CARDS " + cardsArray.size());
                             emitter.onSuccess(cardsArray);
                         }
                     };
+                    Log.d(TAG, "GEOQUERY: RAW NUMBER OF CARDS " + usersIdGeoFire.size());
+
 //                    Log.d(TAG, "Number of users in geofire: " + usersIdGeoFire.size());
 //                    Log.d("usersInGeoFire", "geofire: usersInArray: " + usersIdGeoFire.size());
 //                    Log.d("usersInGeoFire", "geofire: onKeyEnter: " + myCounterOnKeyEnter);

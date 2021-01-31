@@ -47,8 +47,8 @@
                 android:name="fromUsersProfilesActivity"/>
         </action>
         <argument android:name="userId" />
-        <argument android:name="user"
-            app:argType="com.pinder.app.models.Card"/>
+<!--        <argument android:name="user"-->
+<!--            app:argType="com.pinder.app.models.Card"/>-->
 
     </fragment>
     <fragment

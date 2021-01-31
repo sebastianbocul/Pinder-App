@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_add_tag"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/dialog_add_tag">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,31 +14,31 @@
         android:background="#FFFFFF"
         android:gravity="bottom"
         android:orientation="vertical"
-        android:paddingTop="10sp"
         android:paddingLeft="20sp"
+        android:paddingTop="10sp"
         android:paddingRight="20sp">
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp" />
 
-            <EditText
-                android:id="@+id/tagsEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:hint="Tag name:"
-                android:maxLength="15"
-                android:maxLines="1"
-                android:singleLine="true" />
+        <EditText
+            android:id="@+id/tagsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:hint="Tag name:"
+            android:maxLength="15"
+            android:maxLines="1"
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/lookingForTextView"
-            android:paddingTop="3sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="3sp"
             android:text="Looking for: "
-            android:textSize="20sp" />
+            android:textSize="15sp" />
 
         <RadioGroup
             android:id="@+id/radioGroup"
@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="10sp"
             android:text="Age range: "
-            android:textSize="20sp" />
+            android:textSize="15sp" />
 
         <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
             android:id="@+id/ageRangeSeeker"
@@ -101,7 +101,7 @@
             android:paddingTop="10sp"
             android:paddingBottom="10sp"
             android:text="Max distance:"
-            android:textSize="20sp" />
+            android:textSize="15sp" />
 
         <com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar
             android:id="@+id/distanceSeeker"

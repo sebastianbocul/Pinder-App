@@ -100,6 +100,7 @@ public class MainFragment extends Fragment {
             fromUsersProfilesActivity = getArguments().getString("fromUsersProfilesActivity");
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            getArguments().clear();
         }
     }
 
@@ -329,6 +330,7 @@ public class MainFragment extends Fragment {
                             else
                                 Toast.makeText(getContext(), "There is no more users", Toast.LENGTH_SHORT).show();
                         }
+                        fromUsersProfilesActivity="finished";
                     }
                 }
             }
@@ -345,7 +347,9 @@ public class MainFragment extends Fragment {
         noMoreEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((MainFra)).replaceTabPage(R.id.nav_tags);
+                if (getParentFragment() != null) {
+                    ((MainFragmentManager)getParentFragment()).replaceTabPage(R.id.nav_tags);
+                }
             }
         });
     }

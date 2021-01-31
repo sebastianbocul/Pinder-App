@@ -32,14 +32,9 @@
         <activity
             android:name=".MainPopUpActivity"
             android:theme="@style/AppTheme.PopMe" />
-        <activity android:name=".UsersProfilesActivity" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_key" />
-
-        <activity android:name=".LocationActivity" />
-        <activity android:name=".ChatActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

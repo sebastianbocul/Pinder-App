@@ -15,6 +15,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import com.pinder.app.MainActivity
 import com.pinder.app.R
 import com.pinder.app.StartActivity
 import com.pinder.app.adapters.TagsManagerAdapter
@@ -34,7 +35,7 @@ class TagsFragmentTest {
     var repeatRule: RepeatRule = RepeatRule()
 
     @get:Rule
-    var activityScenarioRule = activityScenarioRule<StartActivity>()
+    var activityScenarioRule = activityScenarioRule<MainActivity>()
 
     @Test
     @RepeatTest(1)
@@ -61,7 +62,6 @@ class TagsFragmentTest {
         onView(withId(R.id.button_add_tag)).check(matches(isDisplayed()))
         onView(withId(R.id.button_add_tag)).perform(click())
 
-        onView(withId(R.id.tagsEditText)).perform(click())
         Thread.sleep(1000)
         val tagName = "default"
         onView(withId(R.id.tagsEditText)).perform(typeText(tagName))
@@ -123,7 +123,7 @@ class TagsFragmentTest {
     @Test
     @RepeatTest(1)
     fun isTagEmpty_addTag_swipeLeftToDeleteTag() {
-        Thread.sleep(5000);
+        Thread.sleep(20000);
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
         for (x in 0 until 1) {
             //swiping doesnt work on item in recyclerview item? ???
@@ -278,7 +278,7 @@ class TagsFragmentTest {
     //repeat
     @Test
     fun isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmpty() {
-        Thread.sleep(5000);
+        Thread.sleep(20000);
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
         for (x in 0 until 3) {
             isCardsEmpty_addTag_isCardsNotEmpty_removeCard_isCardsEmptyy()
@@ -379,7 +379,7 @@ class TagsFragmentTest {
     //but also checks edit tags
     @Test
     fun is_tagsEmpty_editTag_checkIfMatch_goMainCheckIfChanged_delTags_checkIfDeleted() {
-        Thread.sleep(5000);
+        Thread.sleep(20000);
         onView(withId(R.id.mainFragmentManager)).check(matches(isDisplayed()))
         for (x in 0 until 3) {
             goToTags_editTag_checkIfMatch_goMainCheckIfChanged()
