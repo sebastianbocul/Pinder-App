@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegistrationActivity"
     android:orientation="vertical"
     android:paddingLeft="30sp"
-    android:paddingRight="30sp"
     android:paddingTop="50sp"
-    android:paddingBottom="10sp">
+    android:paddingRight="30sp"
+    android:paddingBottom="10sp"
+    tools:context=".RegistrationActivity">
+
     <ImageView
         android:id="@+id/back_arrow"
         android:layout_width="wrap_content"
@@ -21,14 +22,16 @@
         android:scaleY="1.25"
         android:visibility="gone"
         app:srcCompat="@drawable/ic_back_arrow" />
+
     <TextView
         android:id="@+id/logo_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pinder"
         android:layout_gravity="center"
         android:paddingBottom="15dp"
-        android:textSize="48sp"/>
+        android:text="Pinder"
+        android:textSize="48sp" />
+
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
@@ -43,10 +46,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <FrameLayout
             android:id="@+id/register_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
         <ImageView
             android:id="@+id/smallLogo"
             android:layout_width="match_parent"

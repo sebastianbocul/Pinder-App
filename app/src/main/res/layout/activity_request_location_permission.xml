@@ -3,39 +3,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RequestLocationPermissionActivity"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".RequestLocationPermissionActivity">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="200sp"
-        android:src="@drawable/ic_request_location"/>
+        android:src="@drawable/ic_request_location" />
+
     <TextView
         android:id="@+id/text_view_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="48sp"
-        android:text="Location"/>
+        android:text="Location"
+        android:textSize="48sp" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:paddingLeft="20sp"
         android:paddingTop="10sp"
         android:paddingRight="20sp"
         android:paddingBottom="20sp"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:text="Pinder requires location permission to function property."/>
+        android:text="Pinder requires location permission to function property."
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/button_request_permission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Grant permission"
-        android:paddingRight="10sp"
-        android:paddingLeft="10sp"
         android:background="@drawable/view_rounded_button"
-        />
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        android:text="Grant permission" />
 
 </LinearLayout>

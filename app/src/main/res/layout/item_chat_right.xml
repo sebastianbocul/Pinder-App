@@ -21,10 +21,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15sp"
+            android:layout_marginRight="5dp"
             android:background="@drawable/view_my_chat"
             android:gravity="center"
             android:minWidth="20sp"
-            android:layout_marginRight="5dp"
             android:minHeight="50sp">
 
             <TextView
@@ -34,8 +34,7 @@
                 android:layout_margin="10sp"
                 android:text="TekjjkjkghgjjjjjjjjjjjjjjjjjjjjjjjjjdffdsfdfdsfdsfdsfsdfFADFADFASDDdfdfdsfdsfdsfsaddsadsadsdasdsadsadsdasdasdsadsdassdasdasdjjjjjjjjjjjjjjxt"
                 android:textColor="@android:color/white"
-                android:textSize="15sp"
-                />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -44,7 +43,7 @@
             android:layout_height="50sp"
             android:layout_gravity="bottom"
             android:layout_marginLeft="5sp"
-            android:visibility="gone"
-            android:src="@drawable/ic_profile_hq" />
+            android:src="@drawable/ic_profile_hq"
+            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

@@ -56,8 +56,8 @@
                     android:layout_marginBottom="10sp"
                     android:layout_weight="1"
                     android:backgroundTint="#F3F3F3"
-                    android:scaleType="center"
                     android:rotation="45"
+                    android:scaleType="center"
                     app:borderWidth="0dp"
                     app:fabCustomSize="50sp"
                     app:srcCompat="@drawable/ic_add_image" />
@@ -72,8 +72,7 @@
                     android:backgroundTint="#FFF3F3F3"
                     app:borderWidth="0dp"
                     app:fabCustomSize="50sp"
-                    app:srcCompat="@drawable/ic_add_image"
-                    />
+                    app:srcCompat="@drawable/ic_add_image" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/setDefaultButton"
@@ -85,8 +84,7 @@
                     android:backgroundTint="#FFF3F3F3"
                     app:borderWidth="0dp"
                     app:fabCustomSize="50sp"
-                    app:srcCompat="@drawable/ic_set_as_default"
-                    />
+                    app:srcCompat="@drawable/ic_set_as_default" />
             </LinearLayout>
         </RelativeLayout>
 

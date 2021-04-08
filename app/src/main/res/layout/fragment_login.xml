@@ -80,7 +80,7 @@
                         android:layout_marginEnd="20sp"
                         android:layout_marginRight="20sp"
                         android:translationZ="90dp"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
 
                 </RelativeLayout>
 
@@ -155,8 +155,8 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10sp"
-                    android:layout_marginTop="10sp">
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="10sp">
 
                     <Button
                         android:id="@+id/continue_facebook"
@@ -183,7 +183,7 @@
                         android:layout_marginEnd="20sp"
                         android:layout_marginRight="20sp"
                         android:translationZ="90dp"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
 
                 </RelativeLayout>
 
@@ -217,7 +217,7 @@
                         android:layout_marginEnd="20sp"
                         android:layout_marginRight="20sp"
                         android:translationZ="90dp"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
 
                 </RelativeLayout>
 
@@ -250,7 +250,7 @@
                         android:layout_marginEnd="20sp"
                         android:layout_marginRight="20sp"
                         android:translationZ="90dp"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
 
                 </RelativeLayout>
 
@@ -259,9 +259,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6sp"
-                    android:paddingTop="5sp"
                     android:layout_marginRight="6sp"
                     android:orientation="vertical"
+                    android:paddingTop="5sp"
                     android:visibility="gone">
 
                     <TextView

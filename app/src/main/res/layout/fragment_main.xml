@@ -60,8 +60,6 @@
         </RelativeLayout>
 
 
-
-
         <RelativeLayout
             android:id="@+id/relativeLayout_cards"
             android:layout_width="wrap_content"
