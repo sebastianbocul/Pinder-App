@@ -13,7 +13,6 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -72,12 +71,12 @@ class SplashFragment : Fragment() {
     private fun authStateListener() {
         firebaseAuthStateListener = AuthStateListener {
             val user = FirebaseAuth.getInstance().currentUser
-            Log.d(TAG, "USER : $user");
+            Log.d(TAG, "USER : $user")
             if (user != null) {
-                Log.d(TAG, "USER!=NULL");
+                Log.d(TAG, "USER!=NULL")
                 authViewModel.fetchUserData().observe(viewLifecycleOwner, Observer {
                     if (it != null) {
-                        Log.d(TAG, "HANDLER");
+                        Log.d(TAG, "HANDLER")
                         Log.d(TAG, "OBSERVER HANDLER it: ${it.status}")
                         Log.d(TAG, "OBSERVER HANDLER it: ${it.data}")
                         when (it.status) {
@@ -88,7 +87,7 @@ class SplashFragment : Fragment() {
                                 handler.postDelayed({
                                     logoLayout!!.visibility = View.GONE
                                     logoLayout!!.clearAnimation()
-                                    Log.d(TAG, "SUCCESS");
+                                    Log.d(TAG, "SUCCESS")
                                     if (it.data!!) {
                                         if (context?.let { it1 -> checkSelfPermission(it1, Manifest.permission.ACCESS_FINE_LOCATION) } == PackageManager.PERMISSION_GRANTED) {
                                             val intent = Intent(activity, MainActivity::class.java)
@@ -105,10 +104,10 @@ class SplashFragment : Fragment() {
                                 }, 300)
                             }
                             ERROR -> {
-                                Log.d(TAG, "ERROR");
+                                Log.d(TAG, "ERROR")
                             }
                             LOADING -> {
-                                Log.d(TAG, "LOADING");
+                                Log.d(TAG, "LOADING")
                             }
                         }
 

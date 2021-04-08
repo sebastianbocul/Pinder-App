@@ -1,6 +1,7 @@
 package com.pinder.app.di;
 
 import android.content.Context;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -12,13 +13,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 @Module
 @InstallIn(ApplicationComponent.class)
 class AppModules {
-
     @Singleton
     @Provides
     public static Context application(@ApplicationContext Context context) {
         return context;
     }
-
 }
 
 

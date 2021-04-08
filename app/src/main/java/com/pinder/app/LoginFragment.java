@@ -91,15 +91,19 @@ public class LoginFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String EMAIL = "email";
+    private static final String TAG = "LoginActivity";
+    @Inject
+    public Application application;
+    @Inject
+    public AuthViewModel authViewModel;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private static final String EMAIL = "email";
-    private static final String TAG = "LoginActivity";
     private CallbackManager callbackManager;
     private GoogleSignInClient mGoogleSignInClient;
     private Button mLogin;
-    private int RC_SIGN_IN = 1001;
+    private final int RC_SIGN_IN = 1001;
     private EditText mEmail, mPassword;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
@@ -115,10 +119,54 @@ public class LoginFragment extends Fragment {
     private TextView logoTextView;
     private String registerProvider = "external";
     private ProgressBar progressBarGoogle, progressBarEmail, progressBarPhone, progressBarFacebook;
-    @Inject
-    public Application application;
-    @Inject
-    public AuthViewModel authViewModel;
+    private final PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential credential) {
+            Log.d("PhoneAuth", "onVerificationCompleted:" + credential);
+            progressBar.setVisibility(View.GONE);
+            phoneVerificationEditText.setText("Auto-fill");
+            handlePhoneAuth(credential);
+        }
+
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            // This callback is invoked in an invalid request for verification is made,
+            // for instance if the the phone number format is not valid.
+            progressBar.setVisibility(View.GONE);
+            Log.w("PhoneAuth", "onVerificationFailed", e);
+            if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                Toast.makeText(getActivity(), "Please check phone number format", Toast.LENGTH_SHORT).show();
+                // Invalid request
+                // ...
+            } else if (e instanceof FirebaseTooManyRequestsException) {
+                Toast.makeText(getActivity(), "Too many requests! Please try again later.", Toast.LENGTH_SHORT).show();
+                // The SMS quota for the project has been exceeded
+                // ...
+            }
+            // Show a message and update the UI
+            // ...
+        }
+
+        @Override
+        public void onCodeSent(@NonNull String verificationId,
+                               @NonNull PhoneAuthProvider.ForceResendingToken token) {
+            super.onCodeSent(verificationId, token);
+            // The SMS verification code has been sent to the provided phone number, we
+            // now need to ask the user to enter the code and then construct a credential
+            // by combining the code with a verification ID.
+            ExpandCollapseView.expand(phoneVerificationLayout);
+            phoneAuthCode = verificationId;
+            Log.d("PhoneAuth", "onCodeSent:" + verificationId);
+        }
+
+        @Override
+        public void onCodeAutoRetrievalTimeOut(@NonNull String s) {
+            super.onCodeAutoRetrievalTimeOut(s);
+            ExpandCollapseView.collapse(phoneVerificationLayout);
+            Toast.makeText(getActivity(), "Oops, something went wrong!", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
+        }
+    };
 
     public LoginFragment() {
         // Required empty public constructor
@@ -293,7 +341,7 @@ public class LoginFragment extends Fragment {
                             Intent intent;
                             final Handler handler = new Handler();
                             if (dataSnapshot.exists()) {
-                                Log.d(TAG,"USER ID : " + user.getUid());
+                                Log.d(TAG, "USER ID : " + user.getUid());
                                 if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                     intent = new Intent(getActivity(), MainActivity.class);
                                 } else {
@@ -334,55 +382,6 @@ public class LoginFragment extends Fragment {
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
     }
-
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-        @Override
-        public void onVerificationCompleted(PhoneAuthCredential credential) {
-            Log.d("PhoneAuth", "onVerificationCompleted:" + credential);
-            progressBar.setVisibility(View.GONE);
-            phoneVerificationEditText.setText("Auto-fill");
-            handlePhoneAuth(credential);
-        }
-
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-            // This callback is invoked in an invalid request for verification is made,
-            // for instance if the the phone number format is not valid.
-            progressBar.setVisibility(View.GONE);
-            Log.w("PhoneAuth", "onVerificationFailed", e);
-            if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                Toast.makeText(getActivity(), "Please check phone number format", Toast.LENGTH_SHORT).show();
-                // Invalid request
-                // ...
-            } else if (e instanceof FirebaseTooManyRequestsException) {
-                Toast.makeText(getActivity(), "Too many requests! Please try again later.", Toast.LENGTH_SHORT).show();
-                // The SMS quota for the project has been exceeded
-                // ...
-            }
-            // Show a message and update the UI
-            // ...
-        }
-
-        @Override
-        public void onCodeSent(@NonNull String verificationId,
-                               @NonNull PhoneAuthProvider.ForceResendingToken token) {
-            super.onCodeSent(verificationId, token);
-            // The SMS verification code has been sent to the provided phone number, we
-            // now need to ask the user to enter the code and then construct a credential
-            // by combining the code with a verification ID.
-            ExpandCollapseView.expand(phoneVerificationLayout);
-            phoneAuthCode = verificationId;
-            Log.d("PhoneAuth", "onCodeSent:" + verificationId);
-        }
-
-        @Override
-        public void onCodeAutoRetrievalTimeOut(@NonNull String s) {
-            super.onCodeAutoRetrievalTimeOut(s);
-            ExpandCollapseView.collapse(phoneVerificationLayout);
-            Toast.makeText(getActivity(), "Oops, something went wrong!", Toast.LENGTH_SHORT).show();
-            progressBar.setVisibility(View.GONE);
-        }
-    };
 
     private void setRegisterClickable() {
         String text = registerTextView.getText().toString();
@@ -535,7 +534,7 @@ public class LoginFragment extends Fragment {
             handleSignInResult(task);
         }
     }
-    
+
     public void disableProgressBars() {
         progressBarPhone.setVisibility(View.GONE);
         progressBarEmail.setVisibility(View.GONE);

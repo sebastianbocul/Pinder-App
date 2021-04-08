@@ -18,7 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.R;
 
 public class BugsAndImprovementsDialog extends AppCompatDialogFragment {
-    private String myId;
+    private final String myId;
     private EditText editText;
 
     public BugsAndImprovementsDialog(String myId) {

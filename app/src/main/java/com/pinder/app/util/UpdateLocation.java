@@ -11,7 +11,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.firebase.geofire.GeoFire;
@@ -35,6 +34,7 @@ import java.util.Locale;
 public class UpdateLocation {
     public LatLng loc;
     public MutableLiveData<LatLng> locLiveData = new MutableLiveData<>();
+
     public void updateLocation(Context context) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         DatabaseReference usersDb;
@@ -46,7 +46,7 @@ public class UpdateLocation {
         DatabaseReference geofireUser = geofire.child(currentUID);
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},  Constants.requestLocationPermission);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.requestLocationPermission);
         }
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
@@ -57,7 +57,7 @@ public class UpdateLocation {
                     try {
                         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
                         List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        loc = new LatLng((double) addresses.get(0).getLatitude(), (double) addresses.get(0).getLongitude());
+                        loc = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
                         myRef.child("longitude").setValue(addresses.get(0).getLongitude());
                         myRef.child("latitude").setValue(addresses.get(0).getLatitude());
                         Log.d("updateLocation", "myLatitude updateLocation: " + loc.latitude);
@@ -96,7 +96,7 @@ public class UpdateLocation {
                                 Log.d("updateLocation", "onDataChange: " + snapshot.getKey());
                                 double lon = (Double.parseDouble(snapshot.child("0").getValue().toString()));
                                 double lat = (Double.parseDouble(snapshot.child("1").getValue().toString()));
-                                loc = new LatLng(lat,lon);
+                                loc = new LatLng(lat, lon);
                                 locLiveData.postValue(loc);
                             }
                         }

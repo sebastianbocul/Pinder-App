@@ -1,6 +1,5 @@
 package com.pinder.app.ui;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,6 +52,10 @@ public class MainFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "MainFragment";
+    @Inject
+    public MainViewModel mainViewModel;
+    int adCounter = 0;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -60,13 +63,9 @@ public class MainFragment extends Fragment {
     private TextView noMoreEditText;
     private SwipeFlingAdapterView flingContainer;
     private CardsAdapter arrayAdapter;
-    @Inject
-    public MainViewModel mainViewModel;
-    private static final String TAG = "MainFragment";
     private ProgressBar progressBar;
-    private List<Card> cardsArray = new ArrayList<Card>();
+    private final List<Card> cardsArray = new ArrayList<Card>();
     private LinearLayout linearLayoutBottom;
-    int adCounter = 0;
     private NavController navController;
     private String fromUsersProfilesActivity = null;
 
@@ -135,7 +134,6 @@ public class MainFragment extends Fragment {
     private void setAdapters() {
         arrayAdapter = new CardsAdapter(getContext(), R.layout.item_card, cardsArray);
         flingContainer.setAdapter(arrayAdapter);
-
     }
 
     private void setObservers() {
@@ -175,7 +173,7 @@ public class MainFragment extends Fragment {
                             break;
                         }
                     }
-                    if(cards.data!=null){
+                    if (cards.data != null) {
                         cardsArray.clear();
                         cardsArray.addAll(cards.data);
                         arrayAdapter.notifyDataSetChanged();
@@ -261,9 +259,9 @@ public class MainFragment extends Fragment {
             public void onItemClicked(int itemPosition, Object dataObject) {
                 Card user = (Card) dataObject;
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("user",user);
-                bundle.putString("userId",user.getUserId());
-                navController.navigate(R.id.action_mainFragmentManager_to_userProfileFragment,bundle);
+                bundle.putParcelable("user", user);
+                bundle.putString("userId", user.getUserId());
+                navController.navigate(R.id.action_mainFragmentManager_to_userProfileFragment, bundle);
             }
         });
         linearLayoutBottom.setOnClickListener(v -> {
@@ -330,7 +328,7 @@ public class MainFragment extends Fragment {
                             else
                                 Toast.makeText(getContext(), "There is no more users", Toast.LENGTH_SHORT).show();
                         }
-                        fromUsersProfilesActivity="finished";
+                        fromUsersProfilesActivity = "finished";
                     }
                 }
             }
@@ -348,7 +346,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (getParentFragment() != null) {
-                    ((MainFragmentManager)getParentFragment()).replaceTabPage(R.id.nav_tags);
+                    ((MainFragmentManager) getParentFragment()).replaceTabPage(R.id.nav_tags);
                 }
             }
         });

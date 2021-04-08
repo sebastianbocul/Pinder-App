@@ -31,5 +31,4 @@ public class SharedPreferencesHelper {
         String currentUser = sp.getString("MY_PROFILE_IMAGE", "default");
         return currentUser;
     }
-
 }

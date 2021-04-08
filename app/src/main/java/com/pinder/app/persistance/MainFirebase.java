@@ -12,12 +12,10 @@ import android.location.Location;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.firebase.geofire.GeoFire;
@@ -56,31 +54,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Cancellable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+
 import static com.pinder.app.util.SortingFunctions.sortTagsCollectionByDistance;
 import static com.pinder.app.util.ValidateUserByPreferences.validateUserByPreferences;
 
 public class MainFirebase {
     private static final String TAG = "MainFirebase";
+    private final Context context;
+    private final Map<String, String> myInfo = new HashMap<>();
+    private final ArrayList<TagsObject> myTagsListTemp = new ArrayList<>();
+    //change later// temp solution
+    private final MutableLiveData<Resource<ArrayList<Card>>> cardsArrayLD = new MutableLiveData<>();
+    private final ArrayList<String> usersIdLikesMe = new ArrayList<>();
     //counters- logs helpers
     int myCounterOnKeyExit = 0;
     int myCounterOnKeyEnter = 0;
-    private final Context context;
-    private ArrayList<Card> cardsArray = new ArrayList<Card>();
-    private final Map<String, String> myInfo = new HashMap<>();
-    private final ArrayList<TagsObject> myTagsListTemp = new ArrayList<>();
+    private final ArrayList<Card> cardsArray = new ArrayList<Card>();
     private ArrayList<TagsObject> myTagsList = new ArrayList<>();
     private String sortByDistance = "false";
-    //change later// temp solution
-    private final MutableLiveData<Resource<ArrayList<Card>>> cardsArrayLD = new MutableLiveData<>();
     private LatLng myLoc;
     private String mUID;
-    private final ArrayList<String> usersIdLikesMe = new ArrayList<>();
 
     public MainFirebase(Context context) {
         this.context = context;
@@ -396,7 +396,6 @@ public class MainFirebase {
                         }
                     };
                     Log.d(TAG, "GEOQUERY: RAW NUMBER OF CARDS " + usersIdGeoFire.size());
-
 //                    Log.d(TAG, "Number of users in geofire: " + usersIdGeoFire.size());
 //                    Log.d("usersInGeoFire", "geofire: usersInArray: " + usersIdGeoFire.size());
 //                    Log.d("usersInGeoFire", "geofire: onKeyEnter: " + myCounterOnKeyEnter);
@@ -594,9 +593,11 @@ public class MainFirebase {
             }
         });
     }
-    public String getSortByDistance(){
+
+    public String getSortByDistance() {
         return sortByDistance;
     }
+
     public MutableLiveData<Resource<ArrayList<Card>>> getCardsArrayLD() {
         return cardsArrayLD;
     }

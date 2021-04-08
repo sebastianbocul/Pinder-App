@@ -47,6 +47,8 @@ public class RegistrationExternalFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    @Inject
+    AuthViewModel authViewModel;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -56,8 +58,6 @@ public class RegistrationExternalFragment extends Fragment {
     private boolean dateValid = false;
     private FirebaseAuth mAuth;
     private EditText date;
-    @Inject
-    AuthViewModel authViewModel;
 
     public RegistrationExternalFragment() {
         // Required empty public constructor
@@ -115,8 +115,8 @@ public class RegistrationExternalFragment extends Fragment {
             String clean;
             String cleanC;
             private String current = "";
-            private String ddmmyyyy = "DDMMYYYY";
-            private Calendar cal = Calendar.getInstance();
+            private final String ddmmyyyy = "DDMMYYYY";
+            private final Calendar cal = Calendar.getInstance();
 
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {

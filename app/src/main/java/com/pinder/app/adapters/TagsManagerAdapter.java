@@ -14,8 +14,8 @@ import com.pinder.app.R;
 import java.util.List;
 
 public class TagsManagerAdapter extends RecyclerView.Adapter<TagsManagerAdapter.ViewHolder> {
-    private List<String> mData;
-    private LayoutInflater mInflater;
+    private final List<String> mData;
+    private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor

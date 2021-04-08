@@ -1,6 +1,5 @@
 package com.pinder.app.ui
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -17,7 +16,6 @@ import androidx.navigation.Navigation
 import androidx.viewpager.widget.ViewPager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.pinder.app.MainActivity
 import com.pinder.app.R
 import com.pinder.app.adapters.ImageAdapter
 import com.pinder.app.models.Card
@@ -42,29 +40,29 @@ class UserProfileFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     var name: String? = null
-    var tags:kotlin.String? = null
-    var gender:kotlin.String? = null
-    var distance:kotlin.String? = null
-    var location:kotlin.String? = null
-    var description:kotlin.String? = null
-    var profileImageUrl:kotlin.String? = null
+    var tags: kotlin.String? = null
+    var gender: kotlin.String? = null
+    var distance: kotlin.String? = null
+    var location: kotlin.String? = null
+    var description: kotlin.String? = null
+    var profileImageUrl: kotlin.String? = null
     var userId: String? = null
-    var myId:kotlin.String? = null
+    var myId: kotlin.String? = null
     var viewPager: ViewPager? = null
     var mImageDatabase: DatabaseReference? = null
     private var nameTextView: TextView? = null
-    private  var tagsTextView:TextView? = null
-    private  var genderTextView:TextView? = null
-    private  var distanceTextView:TextView? = null
-    private  var locationTextView:TextView? = null
-    private  var descriptionTextView:TextView? = null
+    private var tagsTextView: TextView? = null
+    private var genderTextView: TextView? = null
+    private var distanceTextView: TextView? = null
+    private var locationTextView: TextView? = null
+    private var descriptionTextView: TextView? = null
     private var mAuth: FirebaseAuth? = null
     private var mUserDatabase: DatabaseReference? = null
-    private  var mUserProfileDatabase:DatabaseReference? = null
-    private  var myDatabaseReference:DatabaseReference? = null
+    private var mUserProfileDatabase: DatabaseReference? = null
+    private var myDatabaseReference: DatabaseReference? = null
     private var dislikeButton: ImageView? = null
-    private  var likeButton:ImageView? = null
-    private  var reportUserButton:ImageView? = null
+    private var likeButton: ImageView? = null
+    private var reportUserButton: ImageView? = null
     private var unmatchButton: Button? = null
     private var userAge: String? = null
     private var mImages: ArrayList<*>? = null
@@ -73,16 +71,16 @@ class UserProfileFragment : Fragment() {
     private var user: Card? = null
     private var progressBar: ProgressBar? = null
     private var defaultImage: ImageView? = null
-    private  var backArrowImage:ImageView? = null
+    private var backArrowImage: ImageView? = null
     private val TAG = "UsersProfilesActivity"
 
-    private lateinit var navController:NavController
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             userId = arguments?.getString("matchId", null)
-            if(userId==null){
+            if (userId == null) {
                 user = arguments?.getParcelable("user")
                 userId = user!!.userId
             }
@@ -135,7 +133,7 @@ class UserProfileFragment : Fragment() {
         backArrowImage = view.findViewById(R.id.back_arrow)
         BuildVariantsHelper.disableButton(backArrowImage)
         mAuth = FirebaseAuth.getInstance()
-        myId = mAuth!!.getCurrentUser()!!.uid
+        myId = mAuth!!.currentUser!!.uid
         mUserDatabase = FirebaseDatabase.getInstance().reference.child("Users")
         mUserProfileDatabase = FirebaseDatabase.getInstance().reference.child("Users")
                 .child(myId!!)
@@ -214,6 +212,7 @@ class UserProfileFragment : Fragment() {
                         Toast.makeText(activity, "Unable to do that operation", Toast.LENGTH_SHORT).show()
                     }
                 }
+
                 override fun onCancelled(databaseError: DatabaseError) {}
             })
         }
@@ -226,6 +225,7 @@ class UserProfileFragment : Fragment() {
             loadImagesBundle()
         }
     }
+
     private fun loadImagesBundle() {
         if (user != null) {
             val size: Int = user!!.images.size
@@ -261,7 +261,7 @@ class UserProfileFragment : Fragment() {
 
     private fun openReportDialog() {
         val reportUserDialog = ReportUserDialog(myId, userId)
-        activity?.let { reportUserDialog.show(it.getSupportFragmentManager(), "Report User Dialog") }
+        activity?.let { reportUserDialog.show(it.supportFragmentManager, "Report User Dialog") }
     }
 
     private fun loadTagsFirebase() {

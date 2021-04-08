@@ -199,7 +199,7 @@ class ChatFragment : Fragment() {
                 Toast.makeText(context, "Looks like you are not a match anymore :(", Toast.LENGTH_SHORT).show()
             }
         }
-        mSendEditText!!.setText(null)
+        mSendEditText!!.text = null
     }
 
     private fun getChatId() {
@@ -294,15 +294,15 @@ class ChatFragment : Fragment() {
         backArrowImage!!.setOnClickListener { v -> activity?.onBackPressed() }
     }
 
-    fun handleBackButton(){
-        if(fromActivity!=null && fromActivity.equals("notification")){
+    fun handleBackButton() {
+        if (fromActivity != null && fromActivity.equals("notification")) {
             // This callback will only be called when MyFragment is at least Started.
             val callback: OnBackPressedCallback = object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
                     var bundle = Bundle()
-                    bundle.putString("fromActivity","chatActivity")
-                    bundle.putString("notification",null)
-                    navController.navigate(R.id.action_chatFragment_to_navigation3,bundle)
+                    bundle.putString("fromActivity", "chatActivity")
+                    bundle.putString("notification", null)
+                    navController.navigate(R.id.action_chatFragment_to_navigation3, bundle)
                     // Handle the back button event
                 }
             }

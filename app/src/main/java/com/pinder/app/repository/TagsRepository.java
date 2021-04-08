@@ -1,14 +1,16 @@
 package com.pinder.app.repository;
+
 import androidx.lifecycle.LiveData;
 
 import com.pinder.app.models.TagsObject;
 import com.pinder.app.persistance.TagsFirebase;
 import com.pinder.app.util.Resource;
+
 import java.util.List;
 
 public class TagsRepository {
-    private TagsFirebase tagsFirebase;
     private static final String TAG = "TagsRepository";
+    private final TagsFirebase tagsFirebase;
 
     public TagsRepository(TagsFirebase tagsFirebase) {
         this.tagsFirebase = tagsFirebase;

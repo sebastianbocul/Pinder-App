@@ -9,13 +9,13 @@ public interface SettingsFirebaseDao {
 
     LiveData<Resource<String>> getDate();
 
-    LiveData<Resource<Boolean>> getSortByDistance();
-
-    LiveData<Resource<Boolean>> getShowMyLocation();
-
     void setDate(String date);
 
+    LiveData<Resource<Boolean>> getSortByDistance();
+
     void setSortByDistance(Boolean bool);
+
+    LiveData<Resource<Boolean>> getShowMyLocation();
 
     void setShowMyLocation(Boolean bool);
 

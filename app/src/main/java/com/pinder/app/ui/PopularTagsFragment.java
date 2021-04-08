@@ -37,13 +37,13 @@ public class PopularTagsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "PopularTagsFragment";
+    @Inject
+    public PopularTagsViewModel popularTagsViewModel;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private OnFragmentInteractionListener mListener;
-    private static final String TAG = "PopularTagsFragment";
-    @Inject
-    public PopularTagsViewModel popularTagsViewModel;
 
     public PopularTagsFragment() {
         // Required empty public constructor
@@ -119,11 +119,6 @@ public class PopularTagsFragment extends Fragment {
         });
     }
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-
     @Override
     public void onDetach() {
         super.onDetach();
@@ -137,5 +132,10 @@ public class PopularTagsFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+    }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
     }
 }

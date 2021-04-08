@@ -1,16 +1,19 @@
 package com.pinder.app.repository;
+
 import android.content.Context;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
 import com.pinder.app.persistance.ProfileFirebase;
 import com.pinder.app.util.Resource;
+
 import java.util.ArrayList;
 
 public class ProfileRepository {
-    private ProfileFirebase profileFirebase;
+    private final ProfileFirebase profileFirebase;
+
     public ProfileRepository(ProfileFirebase profileFirebase) {
         this.profileFirebase = profileFirebase;
     }

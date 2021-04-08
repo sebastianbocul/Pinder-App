@@ -6,8 +6,6 @@ import android.graphics.Shader;
 import android.text.TextPaint;
 import android.widget.TextView;
 
-import com.pinder.app.R;
-
 public class PaintText {
     public static void paintLogo(TextView textView, String text) {
         TextPaint paint = textView.getPaint();

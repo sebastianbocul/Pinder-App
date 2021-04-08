@@ -20,9 +20,9 @@ import java.util.Map;
 
 public class TagsFirebase implements TagsFirebaseDao {
     String TAG = "TagsFirebase";
-    private ArrayList<TagsObject> tagsList = new ArrayList<>();
-    private MutableLiveData<Resource<List<TagsObject>>> result = new MutableLiveData<>();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final ArrayList<TagsObject> tagsList = new ArrayList<>();
+    private final MutableLiveData<Resource<List<TagsObject>>> result = new MutableLiveData<>();
 
     public TagsFirebase() {
         loadDataFromDb();
@@ -46,8 +46,8 @@ public class TagsFirebase implements TagsFirebaseDao {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                for(int i=0;i<tagsList.size();i++){
-                    if(tagsList.get(i).getTagName().equals(snapshot.getKey())){
+                for (int i = 0; i < tagsList.size(); i++) {
+                    if (tagsList.get(i).getTagName().equals(snapshot.getKey())) {
                         String gender = snapshot.child("gender").getValue().toString();
                         tagsList.get(i).setGender(gender);
                         String mAgeMax = snapshot.child("maxAge").getValue().toString();

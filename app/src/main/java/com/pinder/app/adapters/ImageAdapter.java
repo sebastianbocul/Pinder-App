@@ -15,12 +15,13 @@ import java.util.ArrayList;
 
 public class ImageAdapter extends PagerAdapter {
     private Context mContext;
-    private ArrayList mImages;
+    private final ArrayList mImages;
 
     public ImageAdapter(Context context, ArrayList imagesUrls) {
         mContext = context;
         mImages = imagesUrls;
     }
+
     public ImageAdapter(ArrayList imagesUrls) {
         mImages = imagesUrls;
     }
@@ -55,6 +56,4 @@ public class ImageAdapter extends PagerAdapter {
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         container.removeView((ImageView) object);
     }
-
-
 }

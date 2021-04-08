@@ -1,4 +1,5 @@
 package com.pinder.app.di;
+
 import com.pinder.app.persistance.TagsFirebase;
 import com.pinder.app.repository.TagsRepository;
 import com.pinder.app.viewmodels.TagsViewModel;

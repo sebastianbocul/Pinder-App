@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.interfaces.OnSeekbarChangeListener;
@@ -34,15 +33,14 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class AddEditTagDialog extends AppCompatDialogFragment {
+    @Inject
+    public TagsViewModel tagsViewModel;
     private TextView ageRangeTextView, maxDistanceTextView;
     private CrystalRangeSeekbar ageRangeSeeker;
     private CrystalSeekbar maxDistanceSeeker;
     private EditText tagsEditText;
     private RadioGroup mRadioGroup;
     private String ageMin, ageMax, distanceMax;
-
-    @Inject
-    public TagsViewModel tagsViewModel;
     private ArrayList<TagsObject> arrayList = new ArrayList<>();
     private View view;
     private TagsObject tag = null;
@@ -153,11 +151,11 @@ public class AddEditTagDialog extends AppCompatDialogFragment {
         TagsObject tag = new TagsObject(tagName, gender, mAgeMin, mAgeMax, mDistance);
         tagsViewModel.REQUEST_MODE = 1;
         if (this.tag != null) {
-            if(!this.tag.equals(tag)){
+            if (!this.tag.equals(tag)) {
                 tagsViewModel.removeTag(this.tag);
                 tagsViewModel.addTag(tag);
                 Toast.makeText(getContext(), "Tag edited!", Toast.LENGTH_SHORT).show();
-            }else {
+            } else {
                 Toast.makeText(getContext(), "Nothing changed!", Toast.LENGTH_SHORT).show();
             }
         } else {

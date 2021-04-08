@@ -18,8 +18,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.pinder.app.R;
 
 public class ReportUserDialog extends AppCompatDialogFragment {
-    private String myId;
-    private String reporetedUserId;
+    private final String myId;
+    private final String reporetedUserId;
     private EditText editText;
 
     public ReportUserDialog(String myId, String reporetedUserId) {

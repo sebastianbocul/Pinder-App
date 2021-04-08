@@ -1,6 +1,5 @@
 package com.pinder.app.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.pinder.app.persistance.AuthFirebase
 import com.pinder.app.util.Resource

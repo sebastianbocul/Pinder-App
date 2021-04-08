@@ -14,8 +14,8 @@ import com.pinder.app.models.PopularTagsObject;
 import java.util.ArrayList;
 
 public class PopularTagsAdapter extends RecyclerView.Adapter<PopularTagsAdapter.ViewHolder> {
-    private ArrayList<PopularTagsObject> mData;
-    private LayoutInflater mInflater;
+    private final ArrayList<PopularTagsObject> mData;
+    private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor

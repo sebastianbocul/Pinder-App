@@ -1,8 +1,11 @@
 package com.pinder.app.di;
+
 import android.content.Context;
+
 import com.pinder.app.persistance.MainFirebase;
 import com.pinder.app.repository.MainRepository;
 import com.pinder.app.viewmodels.MainViewModel;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -18,9 +21,10 @@ class MainModules {
     public static MainFirebase mainFirebase(@ApplicationContext Context context) {
         return new MainFirebase(context);
     }
+
     @ActivityRetainedScoped
     @Provides
-    public static MainRepository mainRepository(MainFirebase mainFirebase ) {
+    public static MainRepository mainRepository(MainFirebase mainFirebase) {
         return new MainRepository(mainFirebase);
     }
 

@@ -30,11 +30,11 @@ import io.reactivex.rxjava3.disposables.Disposable;
 
 public class SettingsFirebase implements SettingsFirebaseDao {
     private static final String TAG = "SettingsFirebase";
-    private SettingInfoObject bufferInfo = new SettingInfoObject();
-    private MutableLiveData<Resource<String>> date = new MutableLiveData<>();
-    private MutableLiveData<Resource<Boolean>> showMyLocation = new MutableLiveData<>();
-    private MutableLiveData<Resource<Boolean>> sortByDistance = new MutableLiveData<>();
-    private MutableLiveData<Resource<Integer>> logoutLiveData = new MutableLiveData<>();
+    private final SettingInfoObject bufferInfo = new SettingInfoObject();
+    private final MutableLiveData<Resource<String>> date = new MutableLiveData<>();
+    private final MutableLiveData<Resource<Boolean>> showMyLocation = new MutableLiveData<>();
+    private final MutableLiveData<Resource<Boolean>> sortByDistance = new MutableLiveData<>();
+    private final MutableLiveData<Resource<Integer>> logoutLiveData = new MutableLiveData<>();
 
     public SettingsFirebase() {
         loadDataFromDb();
@@ -327,23 +327,23 @@ public class SettingsFirebase implements SettingsFirebaseDao {
     }
 
     @Override
-    public LiveData<Resource<Boolean>> getSortByDistance() {
-        return sortByDistance;
-    }
-
-    @Override
-    public LiveData<Resource<Boolean>> getShowMyLocation() {
-        return showMyLocation;
-    }
-
-    @Override
     public void setDate(String date) {
         this.date.setValue(Resource.success(date));
     }
 
     @Override
+    public LiveData<Resource<Boolean>> getSortByDistance() {
+        return sortByDistance;
+    }
+
+    @Override
     public void setSortByDistance(Boolean bool) {
         this.sortByDistance.postValue(Resource.success(bool));
+    }
+
+    @Override
+    public LiveData<Resource<Boolean>> getShowMyLocation() {
+        return showMyLocation;
     }
 
     @Override

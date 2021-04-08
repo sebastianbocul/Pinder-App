@@ -1,7 +1,9 @@
 package com.pinder.app.di;
+
 import com.pinder.app.persistance.SettingsFirebase;
 import com.pinder.app.repository.SettingsRepository;
 import com.pinder.app.viewmodels.SettingsViewModel;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;

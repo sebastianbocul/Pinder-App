@@ -26,13 +26,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MatchesFirebase implements MatchesDao {
-    private String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-    private MutableLiveData<Resource<ArrayList<String>>> myTagsLiveData = new MutableLiveData<Resource<ArrayList<String>>>();
-    private ArrayList<String> myTags = new ArrayList<>();
-    private String myImageUrl = new String();
     private static final String TAG = "MatchesFirebase";
-    private MutableLiveData<Resource<ArrayList<MatchesObject>>> oryginalMatchesLiveData = new MutableLiveData<Resource<ArrayList<MatchesObject>>>();
-    private Context context;
+    String sortId = "00";
+    private final String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private final MutableLiveData<Resource<ArrayList<String>>> myTagsLiveData = new MutableLiveData<Resource<ArrayList<String>>>();
+    private final ArrayList<String> myTags = new ArrayList<>();
+    private String myImageUrl = "";
+    private final MutableLiveData<Resource<ArrayList<MatchesObject>>> oryginalMatchesLiveData = new MutableLiveData<Resource<ArrayList<MatchesObject>>>();
+    private final Context context;
+    private final ArrayList<String> usersID = new ArrayList<>();
+    private final ArrayList<MatchesObject> oryginalMatches = new ArrayList<>();
 
     public MatchesFirebase(Context context) {
         this.context = context;
@@ -145,9 +148,7 @@ public class MatchesFirebase implements MatchesDao {
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<MatchesObject> buffor = new ArrayList<>();
                 try {
-                    if (usersID.contains(dataSnapshot.getKey())) {
-                        usersID.remove(dataSnapshot.getKey());
-                    }
+                    usersID.remove(dataSnapshot.getKey());
                     for (MatchesObject mo : oryginalMatches) {
                         if (mo.getUserId().equals(dataSnapshot.getKey())) {
                             oryginalMatches.remove(mo);
@@ -168,8 +169,6 @@ public class MatchesFirebase implements MatchesDao {
             }
         });
     }
-
-    String sortId = "00";
 
     private void getLastMessage(DataSnapshot match) {
         String chatId = match.child("ChatId").getValue().toString();
@@ -222,9 +221,6 @@ public class MatchesFirebase implements MatchesDao {
             }
         });
     }
-
-    private ArrayList<String> usersID = new ArrayList<>();
-    private ArrayList<MatchesObject> oryginalMatches = new ArrayList<>();
 
     private void fetchMatchInformation(String key, String chatId, final boolean createdByMe, final String message, String mSortId) {
         DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child(key);

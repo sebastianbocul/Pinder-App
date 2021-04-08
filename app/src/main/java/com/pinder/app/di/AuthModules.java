@@ -28,6 +28,7 @@ class AuthModules {
     public static AuthRepository authRepository(AuthFirebase authFirebase) {
         return new AuthRepository(authFirebase);
     }
+
     @Singleton
     @Provides
     public static AuthViewModel authViewModel(AuthRepository authRepository) {

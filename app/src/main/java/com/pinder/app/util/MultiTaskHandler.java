@@ -10,16 +10,16 @@ public abstract class MultiTaskHandler {
 
     protected abstract void onAllTasksCompleted();
 
-    public void taskComplete()  {
+    public void taskComplete() {
         mTasksLeft--;
-        if (mTasksLeft==0 && !mIsCanceled) {
+        if (mTasksLeft == 0 && !mIsCanceled) {
             onAllTasksCompleted();
         }
     }
 
     public void reset(int numOfTasks) {
         mTasksLeft = numOfTasks;
-        mIsCanceled=false;
+        mIsCanceled = false;
     }
 
     public void cancel() {

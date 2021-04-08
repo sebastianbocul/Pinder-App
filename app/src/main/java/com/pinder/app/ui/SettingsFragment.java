@@ -70,24 +70,24 @@ public class SettingsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "SettingsFragment";
+    @Inject
+    public SettingsViewModel settingsViewModel;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    String userId = mAuth.getCurrentUser().getUid();
+    int i = 0;
+    int logoutFlag = 0;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    String userId = mAuth.getCurrentUser().getUid();
     private Button logoutUser, deleteUser, privacyPolicyButton, termsButton, licenceButton;
     private Switch mapLocationSwitch, sortUsersByDistanceSwitch;
     private EditText date;
     private boolean dateValid = false;
     private Button bugsAndImprovements;
     private Context context;
-    private static final String TAG = "SettingsFragment";
     private SharedPreferences prefs;
     private ProgressBar progressBar;
-    int i = 0;
-    int logoutFlag = 0;
-    @Inject
-    public SettingsViewModel settingsViewModel;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -153,8 +153,8 @@ public class SettingsFragment extends Fragment {
             String clean;
             String cleanC;
             private String current = "";
-            private String ddmmyyyy = "DDMMYYYY";
-            private Calendar cal = Calendar.getInstance();
+            private final String ddmmyyyy = "DDMMYYYY";
+            private final Calendar cal = Calendar.getInstance();
 
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {

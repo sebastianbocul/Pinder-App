@@ -15,9 +15,9 @@ import com.pinder.app.R;
 import java.util.List;
 
 public class MatchesTagsAdapter extends RecyclerView.Adapter<MatchesTagsAdapter.ViewHolder> {
-    private List<String> mData;
-    private LayoutInflater mInflater;
     public MatchesTagsAdapter.ItemClickListener mClickListener;
+    private final List<String> mData;
+    private final LayoutInflater mInflater;
 
     // data is passed into the constructor
     public MatchesTagsAdapter(Context context, List<String> data) {

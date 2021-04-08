@@ -24,22 +24,6 @@ public class PopularTagsViewModel extends ViewModel {
         this.popularTagsRepository = popularTagsRepository;
     }
 
-    public LiveData<Resource<List<PopularTagsObject>>> getAllPopularTags() {
-        MediatorLiveData<Resource<List<PopularTagsObject>>> mediatorLiveData = new MediatorLiveData<>();
-        mediatorLiveData.addSource(popularTagsRepository.getAllPopularTags(), new Observer<Resource<List<PopularTagsObject>>>() {
-            @Override
-            public void onChanged(Resource<List<PopularTagsObject>> o) {
-                if (o != null && (o.status == Resource.Status.SUCCESS || o.status== Resource.Status.LOADING) && o.data!=null) {
-                    List<PopularTagsObject> list = o.data;
-                    mediatorLiveData.postValue(Resource.success(sortCollection(list)));
-                } else {
-                    mediatorLiveData.postValue(o);
-                }
-            }
-        });
-        return mediatorLiveData;
-    }
-
     public static List<PopularTagsObject> sortCollection(List<PopularTagsObject> popularTagsList) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Collections.sort(popularTagsList, Comparator.comparing(PopularTagsObject::getTagPopularity).reversed());
@@ -54,5 +38,21 @@ public class PopularTagsViewModel extends ViewModel {
             Collections.reverse(popularTagsList);
         }
         return popularTagsList;
+    }
+
+    public LiveData<Resource<List<PopularTagsObject>>> getAllPopularTags() {
+        MediatorLiveData<Resource<List<PopularTagsObject>>> mediatorLiveData = new MediatorLiveData<>();
+        mediatorLiveData.addSource(popularTagsRepository.getAllPopularTags(), new Observer<Resource<List<PopularTagsObject>>>() {
+            @Override
+            public void onChanged(Resource<List<PopularTagsObject>> o) {
+                if (o != null && (o.status == Resource.Status.SUCCESS || o.status == Resource.Status.LOADING) && o.data != null) {
+                    List<PopularTagsObject> list = o.data;
+                    mediatorLiveData.postValue(Resource.success(sortCollection(list)));
+                } else {
+                    mediatorLiveData.postValue(o);
+                }
+            }
+        });
+        return mediatorLiveData;
     }
 }

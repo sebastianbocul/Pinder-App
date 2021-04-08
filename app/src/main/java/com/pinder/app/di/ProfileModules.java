@@ -1,7 +1,9 @@
 package com.pinder.app.di;
+
 import com.pinder.app.persistance.ProfileFirebase;
 import com.pinder.app.repository.ProfileRepository;
 import com.pinder.app.viewmodels.ProfileViewModel;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;

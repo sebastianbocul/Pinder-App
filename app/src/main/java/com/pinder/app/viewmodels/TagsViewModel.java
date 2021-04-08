@@ -2,7 +2,6 @@ package com.pinder.app.viewmodels;
 
 import androidx.hilt.lifecycle.ViewModelInject;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.pinder.app.models.TagsObject;
@@ -12,9 +11,9 @@ import com.pinder.app.util.Resource;
 import java.util.List;
 
 public class TagsViewModel extends ViewModel {
-    private TagsRepository tagsRepository;
     public int REQUEST_MODE = 1;
     public int position;
+    private final TagsRepository tagsRepository;
 
     @ViewModelInject
     public TagsViewModel(TagsRepository tagsRepository) {

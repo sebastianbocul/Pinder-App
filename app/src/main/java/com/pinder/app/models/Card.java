@@ -4,7 +4,6 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import java.util.List;
@@ -12,6 +11,17 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Card implements Parcelable {
+    public static final Creator<Card> CREATOR = new Creator<Card>() {
+        @Override
+        public Card createFromParcel(Parcel in) {
+            return new Card(in);
+        }
+
+        @Override
+        public Card[] newArray(int size) {
+            return new Card[size];
+        }
+    };
     private String userId;
     private String name;
     private String profileImageUrl;
@@ -56,18 +66,6 @@ public class Card implements Parcelable {
         likesMe = in.readByte() != 0;
         description = in.readString();
     }
-
-    public static final Creator<Card> CREATOR = new Creator<Card>() {
-        @Override
-        public Card createFromParcel(Parcel in) {
-            return new Card(in);
-        }
-
-        @Override
-        public Card[] newArray(int size) {
-            return new Card[size];
-        }
-    };
 
     public String getUserId() {
         return userId;

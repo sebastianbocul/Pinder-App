@@ -14,7 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class RegistrationActivity : AppCompatActivity() {
-    private var logoTextView: TextView? = null;
+    private var logoTextView: TextView? = null
     private var registerType: String? = null
     private var fragment: Fragment? = null
     override fun onCreate(savedInstanceState: Bundle?) {

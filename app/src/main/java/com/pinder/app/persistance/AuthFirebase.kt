@@ -11,7 +11,7 @@ import com.google.firebase.database.ValueEventListener
 import com.pinder.app.util.Resource
 
 class AuthFirebase constructor(context: Context) {
-    val isUserInFirebase: MutableLiveData<Resource<Boolean>> = MutableLiveData();
+    val isUserInFirebase: MutableLiveData<Resource<Boolean>> = MutableLiveData()
 
     fun checkUserInFirebase(): LiveData<Resource<Boolean>> {
         isUserInFirebase.postValue(Resource.loading(null))

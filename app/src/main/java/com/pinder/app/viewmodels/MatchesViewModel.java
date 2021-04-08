@@ -16,9 +16,9 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class MatchesViewModel extends ViewModel {
-    private MatchesRepository matchesRepository;
-    LiveData<Resource<ArrayList<MatchesObject>>> oryginalMatchesLiveData = new MutableLiveData<>();
     public MutableLiveData<String> tagLD;
+    LiveData<Resource<ArrayList<MatchesObject>>> oryginalMatchesLiveData = new MutableLiveData<>();
+    private final MatchesRepository matchesRepository;
 
     @ViewModelInject
     public MatchesViewModel(MatchesRepository matchesRepository) {
@@ -35,7 +35,7 @@ public class MatchesViewModel extends ViewModel {
         sortedLiveData.addSource(oryginalMatchesLiveData, new Observer<Resource<ArrayList<MatchesObject>>>() {
             @Override
             public void onChanged(Resource<ArrayList<MatchesObject>> arrayListResource) {
-                if(arrayListResource.data!=null){
+                if (arrayListResource.data != null) {
                     arrayListResource.data = sortCollection(arrayListResource.data);
                 }
                 sortedLiveData.setValue(arrayListResource);

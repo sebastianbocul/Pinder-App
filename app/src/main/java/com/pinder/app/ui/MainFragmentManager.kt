@@ -40,13 +40,13 @@ class MainFragmentManager : Fragment() {
     private var param2: String? = null
     private val TAG = "MainFragmentManagerTAG"
     private var bottomNavigationView: BottomNavigationView? = null
-    private var fromActivity:String?=null
+    private var fromActivity: String? = null
     private var adContainerView: FrameLayout? = null
     private var adView: AdView? = null
     var mKeyboardVisible = false
     var adapter: MainFragmentManagerPagerAdapter? = null
     private var extras = Bundle()
-    private lateinit var navController:NavController
+    private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -88,22 +88,22 @@ class MainFragmentManager : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController= Navigation.findNavController(view)
+        navController = Navigation.findNavController(view)
         if (fromActivity == null && activity?.intent?.extras?.getString("fromActivity") != null) {
-            fromActivity = activity?.intent?.extras?.getString("fromActivity",null)!!
+            fromActivity = activity?.intent?.extras?.getString("fromActivity", null)!!
             activity?.intent?.extras?.remove("fromActivity")
         }
         if (fromActivity.equals("notification")) {
             var extras = Bundle()
-            extras.putString("matchId",activity?.intent?.extras?.getString("matchId",null))
-            extras.putString("matchName",activity?.intent?.extras?.getString("matchName",null))
-            extras.putString("matchImageUrl",activity?.intent?.extras?.getString("matchImageUrl",null))
-            extras.putString("fromActivity",activity?.intent?.extras?.getString("fromActivity",null))
-            navController.navigate(R.id.action_mainFragmentManager_to_chatFragment,extras)
+            extras.putString("matchId", activity?.intent?.extras?.getString("matchId", null))
+            extras.putString("matchName", activity?.intent?.extras?.getString("matchName", null))
+            extras.putString("matchImageUrl", activity?.intent?.extras?.getString("matchImageUrl", null))
+            extras.putString("fromActivity", activity?.intent?.extras?.getString("fromActivity", null))
+            navController.navigate(R.id.action_mainFragmentManager_to_chatFragment, extras)
         }
         Log.d(TAG, "onCreate: ON CREATE")
         BaseApplication.UserStatus = LoginEnum.LOGGED
-        bottomNavigationView = view?.findViewById(R.id.bottom_navigation)
+        bottomNavigationView = view.findViewById(R.id.bottom_navigation)
         bottomNavigationView?.selectedItemId = R.id.nav_main
 
         val viewPager: ViewPager = view.findViewById(R.id.pager)
@@ -159,7 +159,7 @@ class MainFragmentManager : Fragment() {
         adContainerView = view?.findViewById(R.id.ad_frame)
         // Step 1 - Create an AdView and set the ad unit ID on it.
         adView = AdView(activity)
-        adView!!.setAdUnitId(getString(R.string.banner_ad))
+        adView!!.adUnitId = getString(R.string.banner_ad)
         adContainerView!!.addView(adView)
         loadBanner()
     }
@@ -180,7 +180,7 @@ class MainFragmentManager : Fragment() {
 
     private fun getAdSize(): AdSize {
         // Step 2 - Determine the screen width (less decorations) to use for the ad width.
-        val display: Display? = activity?.getWindowManager()?.getDefaultDisplay()
+        val display: Display? = activity?.windowManager?.defaultDisplay
         val outMetrics = DisplayMetrics()
         display?.getMetrics(outMetrics)
         val widthPixels = outMetrics.widthPixels.toFloat()

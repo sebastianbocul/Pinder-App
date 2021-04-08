@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PopularTagsFirebase implements PopularTagsFirebaseDao {
-    private ArrayList<PopularTagsObject> popularTagsList = new ArrayList<>();
-    private MutableLiveData<Resource<List<PopularTagsObject>>> result = new MutableLiveData<>();
+    private final ArrayList<PopularTagsObject> popularTagsList = new ArrayList<>();
+    private final MutableLiveData<Resource<List<PopularTagsObject>>> result = new MutableLiveData<>();
 
     public PopularTagsFirebase() {
         loadDataFromDb();

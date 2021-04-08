@@ -22,7 +22,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pinder.app.R;
 import com.pinder.app.adapters.ImageAdapter;
-import com.pinder.app.persistance.ProfileFirebase;
 import com.pinder.app.util.Resource;
 import com.pinder.app.viewmodels.ProfileViewModel;
 
@@ -31,7 +30,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 import static com.pinder.app.util.Resource.Status.ERROR;
-import static com.pinder.app.util.Resource.Status.SUCCESS;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,18 +38,18 @@ import static com.pinder.app.util.Resource.Status.SUCCESS;
  */
 @AndroidEntryPoint
 public class ProfileFragment extends Fragment {
-    private static int RESULT_LOAD_IMAGE = 1;
-    ViewPager viewPager;
-    private FloatingActionButton mAddImage, mDeleteImage, setDefaultButton;
-    private EditText mNameField;
-    private EditText descriptionEditText;
-    @Inject
-    public ProfileViewModel profileViewModel;
-    private ProgressBar progressBar;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int RESULT_LOAD_IMAGE = 1;
+    @Inject
+    public ProfileViewModel profileViewModel;
+    ViewPager viewPager;
+    private FloatingActionButton mAddImage, mDeleteImage, setDefaultButton;
+    private EditText mNameField;
+    private EditText descriptionEditText;
+    private ProgressBar progressBar;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;

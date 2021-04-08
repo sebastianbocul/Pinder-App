@@ -22,8 +22,8 @@ import com.pinder.app.models.MatchesObject;
 import java.util.List;
 
 public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesViewHolders> {
-    private List<MatchesObject> matchesList;
-    private Context context;
+    private final List<MatchesObject> matchesList;
+    private final Context context;
 
     public MatchesAdapter(List<MatchesObject> matchesList, Context context) {
         this.matchesList = matchesList;

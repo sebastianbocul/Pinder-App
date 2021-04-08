@@ -1,8 +1,6 @@
 package com.pinder.app.ui;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -13,13 +11,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +18,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -67,28 +64,27 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     public String currentUID;
+    @Inject
+    public Context context;
     TextView name;
     FusedLocationProviderClient fusedLocationProviderClient;
     FirebaseDatabase database;
     DatabaseReference usersReference;
     Bitmap bitmap;
     LinearLayout linearLayout;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
     private GoogleMap myGoogleMap;
     private FirebaseAuth mAuth;
     private DatabaseReference usersDb;
     private DatabaseReference myRef;
     private ImageView profileImage, goToChat;
-    private String matchId, myId,userProfileImg,userName;
+    private String matchId, myId, userProfileImg, userName;
     private boolean mapRdy = false;
     private ImageView backArrowImage;
     private String matchIdBundle;
-    @Inject
-    public Context context;
-
     private NavController navController;
 
     public LocationFragment() {
@@ -113,42 +109,6 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            matchIdBundle=getArguments().getString("matchId");
-        }
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_location, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        navController= Navigation.findNavController(view);
-        linearLayout = view.findViewById(R.id.userLayout);
-        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
-        mAuth = FirebaseAuth.getInstance();
-        currentUID = mAuth.getCurrentUser().getUid();
-        myId = mAuth.getCurrentUser().getUid();
-        name = view.findViewById(R.id.MatchName);
-        profileImage = view.findViewById(R.id.profileImage);
-        goToChat = view.findViewById(R.id.goToChat);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.google_map);
-        supportMapFragment.getMapAsync(LocationFragment.this);
-    }
-
     public static Bitmap drawableToBitmap(Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable) drawable).getBitmap();
@@ -166,6 +126,42 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            matchIdBundle = getArguments().getString("matchId");
+        }
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_location, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        navController = Navigation.findNavController(view);
+        linearLayout = view.findViewById(R.id.userLayout);
+        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+        mAuth = FirebaseAuth.getInstance();
+        currentUID = mAuth.getCurrentUser().getUid();
+        myId = mAuth.getCurrentUser().getUid();
+        name = view.findViewById(R.id.MatchName);
+        profileImage = view.findViewById(R.id.profileImage);
+        goToChat = view.findViewById(R.id.goToChat);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
+        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.google_map);
+        supportMapFragment.getMapAsync(LocationFragment.this);
     }
 
     public void onMapReady(GoogleMap googleMap) {
@@ -187,7 +183,7 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
                 }
                 lat = dataSnapshot.child("Users").child(currentUID).child("location").child("latitude").getValue().toString();
                 lon = dataSnapshot.child("Users").child(currentUID).child("location").child("longitude").getValue().toString();
-                if (matchIdBundle!=null) {
+                if (matchIdBundle != null) {
                     latMap = dataSnapshot.child("Users").child(matchIdBundle).child("location").child("latitude").getValue().toString();
                     lonMap = dataSnapshot.child("Users").child(matchIdBundle).child("location").child("longitude").getValue().toString();
                 } else {
@@ -221,14 +217,14 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
                     public boolean onMarkerClick(Marker marker) {
                         try {
                             linearLayout.setVisibility(View.VISIBLE);
-                            userName=dataSnapshot.child("Users").child(marker.getTag().toString()).child("name").getValue().toString();
+                            userName = dataSnapshot.child("Users").child(marker.getTag().toString()).child("name").getValue().toString();
                             name.setText(userName);
                             String profileImageUrl = dataSnapshot.child("Users").child(marker.getTag().toString()).child("profileImageUrl").getValue().toString();
                             if (profileImageUrl.equals("default")) {
-                                userProfileImg="default";
+                                userProfileImg = "default";
                                 Glide.with(LocationFragment.this).load(R.drawable.ic_profile_hq).into(profileImage);
                             } else {
-                                userProfileImg=dataSnapshot.child("Users").child(marker.getTag().toString()).child("profileImageUrl").getValue().toString();
+                                userProfileImg = dataSnapshot.child("Users").child(marker.getTag().toString()).child("profileImageUrl").getValue().toString();
                                 Glide.with(LocationFragment.this).load(userProfileImg).into(profileImage);
                             }
                             matchId = marker.getTag().toString();
@@ -270,7 +266,6 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             try {
-
                                 if (dataSnapshot.child("showMyLocation").getValue().toString().equals("false")) {
                                     return;
                                 }
@@ -281,7 +276,6 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
                                 userName = dataSnapshot.child("name").getValue().toString();
                                 double latitude = Double.parseDouble(dataSnapshot.child("location").child("latitude").getValue().toString());
                                 double longitude = Double.parseDouble(dataSnapshot.child("location").child("longitude").getValue().toString());
-
                                 double distance = new CalculateDistance().distance(myLatitude, myLongitude, latitude, longitude);
                                 LatLng latLngFB = new LatLng(latitude, longitude);
                                 if (dataSnapshot.child("profileImageUrl").getValue().toString().equals("default")) {
@@ -369,31 +363,29 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void goToUsersProfile() {
-        if(matchId!=null){
+        if (matchId != null) {
             Bundle bundle = new Bundle();
-            bundle.putString("matchId",matchId);
-            navController.navigate(R.id.action_locationFragment_to_userProfileFragment,bundle);
+            bundle.putString("matchId", matchId);
+            navController.navigate(R.id.action_locationFragment_to_userProfileFragment, bundle);
         }
     }
 
     private void goToUserChat() {
-        if(matchId!=null){
+        if (matchId != null) {
             Bundle bundle = new Bundle();
-            bundle.putString("matchId",matchId);
-            bundle.putString("matchName",userName);
-            bundle.putString("matchImageUrl",userProfileImg);
-            bundle.putString("fromActivity","LocationActivity");
-            navController.navigate(R.id.action_locationFragment_to_chatFragment,bundle);
+            bundle.putString("matchId", matchId);
+            bundle.putString("matchName", userName);
+            bundle.putString("matchImageUrl", userProfileImg);
+            bundle.putString("fromActivity", "LocationActivity");
+            navController.navigate(R.id.action_locationFragment_to_chatFragment, bundle);
         }
     }
 
-    public void handleBackArrow(){
+    public void handleBackArrow() {
         backArrowImage = getView().findViewById(R.id.back_arrow);
         BuildVariantsHelper.disableButton(backArrowImage);
-        backArrowImage.setOnClickListener(v->{
+        backArrowImage.setOnClickListener(v -> {
             getActivity().onBackPressed();
         });
-
     }
-
 }

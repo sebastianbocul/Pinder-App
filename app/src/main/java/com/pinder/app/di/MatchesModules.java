@@ -1,9 +1,11 @@
 package com.pinder.app.di;
+
 import android.content.Context;
 
 import com.pinder.app.persistance.MatchesFirebase;
 import com.pinder.app.repository.MatchesRepository;
 import com.pinder.app.viewmodels.MatchesViewModel;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -14,7 +16,6 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped;
 @Module
 @InstallIn(ActivityRetainedComponent.class)
 class MatchesModules {
-
     @ActivityRetainedScoped
     @Provides
     public static MatchesViewModel matchesViewModel(MatchesRepository matchesRepository) {
@@ -26,6 +27,7 @@ class MatchesModules {
     public static MatchesFirebase matchesFirebase(@ApplicationContext Context context) {
         return new MatchesFirebase(context);
     }
+
     @ActivityRetainedScoped
     @Provides
     public static MatchesRepository matchesRepository(MatchesFirebase matchesFirebase) {

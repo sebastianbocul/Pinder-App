@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,23 +37,35 @@ import dagger.hilt.android.AndroidEntryPoint;
  */
 @AndroidEntryPoint
 public class TagsFragment extends Fragment {
+    //public static final int LOAD = 1;
+    public static final int ADD = 1;
+    public static final int REMOVE = -1;
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "TagsFragment";
+    @Inject
+    public TagsViewModel tagsViewModel;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private TagsAdapter adapter;
     private RecyclerView recyclerView;
-    private ArrayList<TagsObject> arrayList = new ArrayList<>();
-    @Inject
-    public TagsViewModel tagsViewModel;
+    private final ArrayList<TagsObject> arrayList = new ArrayList<>();
     private FloatingActionButton addTagButton;
-    //public static final int LOAD = 1;
-    public static final int ADD = 1;
-    public static final int REMOVE = -1;
-    private static final String TAG = "TagsFragment";
+    private final ItemTouchHelper.SimpleCallback itemTouchHelperCallBack = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            removeItem(viewHolder.getAdapterPosition());
+        }
+    };
+
     public TagsFragment() {
         // Required empty public constructor
     }
@@ -125,38 +136,20 @@ public class TagsFragment extends Fragment {
         });
     }
 
-    private ItemTouchHelper.SimpleCallback itemTouchHelperCallBack = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-        @Override
-        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-            return false;
-        }
-
-        @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-            removeItem(viewHolder.getAdapterPosition());
-        }
-    };
-
-
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 
     private void fillTagsAdapter() {
         tagsViewModel.getAllTags().observe(getViewLifecycleOwner(), new Observer<Resource<List<TagsObject>>>() {
             @Override
             public void onChanged(Resource<List<TagsObject>> tagsObjects) {
-                if(tagsObjects != null){
-                    switch (tagsObjects.status){
+                if (tagsObjects != null) {
+                    switch (tagsObjects.status) {
                         case SUCCESS:
                             Log.d(TAG, "onChanged: SUCCESS");
-                            if(tagsObjects.data!=null){
+                            if (tagsObjects.data != null) {
                                 int request = tagsObjects.data.size() - arrayList.size();
                                 switch (request) {
                                     case ADD: {
@@ -177,12 +170,12 @@ public class TagsFragment extends Fragment {
                                         adapter.notifyDataSetChanged();
                                         break;
                                     }
-                                }      
+                                }
                             }
                             break;
                         case LOADING:
                             Log.d(TAG, "onChanged: LOADING");
-                            if(tagsObjects.data!=null){
+                            if (tagsObjects.data != null) {
                                 int request = tagsObjects.data.size() - arrayList.size();
                                 switch (request) {
                                     case ADD: {
@@ -203,7 +196,7 @@ public class TagsFragment extends Fragment {
                                         adapter.notifyDataSetChanged();
                                         break;
                                     }
-                                }   
+                                }
                             }
                             break;
                         case ERROR:
@@ -211,7 +204,6 @@ public class TagsFragment extends Fragment {
                             break;
                     }
                 }
-                
             }
         });
     }
@@ -221,5 +213,10 @@ public class TagsFragment extends Fragment {
         tagsViewModel.removeTag(tagToDel);
         tagsViewModel.position = position;
 //        tagsViewModel.REQUEST_MODE=REMOVE;
+    }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
     }
 }

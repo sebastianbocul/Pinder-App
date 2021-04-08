@@ -53,7 +53,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                     }
                 }
             }
-        }else {
+        } else {
             Log.d(TAG, "onMessageReceived: APP IN FOREGROUND");
         }
     }

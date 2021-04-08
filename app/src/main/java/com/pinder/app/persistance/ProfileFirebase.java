@@ -35,16 +35,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProfileFirebase implements ProfileDao {
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private String userId = mAuth.getCurrentUser().getUid();
-    private DatabaseReference mImageDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("images");
-    private DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-    private MutableLiveData<Resource<ArrayList<String>>> mImages = new MutableLiveData<>();
-    private MutableLiveData<Resource<String>> name = new MutableLiveData<>();
-    private MutableLiveData<Resource<String>> description = new MutableLiveData<>();
-    private MutableLiveData<String> imageName = new MutableLiveData<>();
-    private MutableLiveData<Integer> imagePosition = new MutableLiveData<>();
-    private MutableLiveData<Boolean> showProgressBar = new MutableLiveData<>(false);
+    ArrayList arrayNameList = new ArrayList();
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final String userId = mAuth.getCurrentUser().getUid();
+    private final DatabaseReference mImageDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("images");
+    private final DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+    private final MutableLiveData<Resource<ArrayList<String>>> mImages = new MutableLiveData<>();
+    private final MutableLiveData<Resource<String>> name = new MutableLiveData<>();
+    private final MutableLiveData<Resource<String>> description = new MutableLiveData<>();
+    private final MutableLiveData<String> imageName = new MutableLiveData<>();
+    private final MutableLiveData<Integer> imagePosition = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> showProgressBar = new MutableLiveData<>(false);
 
     public ProfileFirebase() {
         Log.d("ProfileFirebase", "constructor: ");
@@ -52,7 +53,14 @@ public class ProfileFirebase implements ProfileDao {
         sortImagesDatabase();
         getUserInfo();
     }
-    ArrayList arrayNameList = new ArrayList();
+
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
+    }
+
     public void loadImages() {
         try {
             arrayNameList.clear();
@@ -260,7 +268,7 @@ public class ProfileFirebase implements ProfileDao {
                     public void onSuccess(Uri uri) {
                         HashMap newImage = new HashMap();
                         String size = "0";
-                        if(mImages.getValue()!=null){
+                        if (mImages.getValue() != null) {
                             if (mImages.getValue().data != null) {
                                 size = String.valueOf(mImages.getValue().data.size());
                             }
@@ -311,13 +319,6 @@ public class ProfileFirebase implements ProfileDao {
             imageName.setValue(arrayNameList.get(position).toString());
         } catch (Exception e) {
         }
-    }
-
-    public static Bitmap rotateImage(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
-                matrix, true);
     }
 
     private void sortImagesDatabase() {

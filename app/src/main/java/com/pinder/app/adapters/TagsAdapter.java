@@ -14,7 +14,7 @@ import com.pinder.app.models.TagsObject;
 import java.util.ArrayList;
 
 public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.TagsViewHolder> {
-    private ArrayList<TagsObject> mTagsManagerObject;
+    private final ArrayList<TagsObject> mTagsManagerObject;
     private OnItemClickListener mListener;
 
     public TagsAdapter(ArrayList<TagsObject> exampleList) {
@@ -61,8 +61,11 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.TagsViewHolder
     }
 
     public static class TagsViewHolder extends RecyclerView.ViewHolder {
-        private TextView tagName, gender, tagAge, distance;
-        private ImageView mDeleteImage;
+        private final TextView tagName;
+        private final TextView gender;
+        private final TextView tagAge;
+        private final TextView distance;
+        private final ImageView mDeleteImage;
 
         public TagsViewHolder(View itemView, final OnItemClickListener listener) {
             super(itemView);

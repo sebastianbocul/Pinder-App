@@ -19,10 +19,10 @@ import static com.pinder.app.util.SortingFunctions.sortCollectionByLikesMe;
 import static com.pinder.app.util.SortingFunctions.sortCollectionByLikesMeThenDistance;
 
 public class MainViewModel extends ViewModel {
+    private static final String TAG = "MainViewModel";
     MainRepository mainRepository;
     MutableLiveData<Resource<ArrayList<Card>>> cardsArrayLD = new MutableLiveData<>();
     MediatorLiveData<Resource<ArrayList<Card>>> mediatorLiveData = new MediatorLiveData<>();
-    private static final String TAG = "MainViewModel";
 
     @ViewModelInject
     public MainViewModel(MainRepository mainRepository) {

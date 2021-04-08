@@ -1,6 +1,5 @@
 package com.pinder.app.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,7 +20,6 @@ import com.pinder.app.R;
 import com.pinder.app.adapters.MatchesAdapter;
 import com.pinder.app.adapters.MatchesTagsAdapter;
 import com.pinder.app.models.MatchesObject;
-import com.pinder.app.util.Resource;
 import com.pinder.app.viewmodels.MatchesViewModel;
 
 import java.util.ArrayList;
@@ -42,12 +39,15 @@ public class MatchesFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     RecyclerView recyclerView;
     MatchesTagsAdapter adapter;
     ArrayList<String> myTags = new ArrayList<>();
+    ArrayList<MatchesObject> oryginalMatches = new ArrayList<>();
+    @Inject
+    MatchesViewModel matchesViewModel;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
     private RecyclerView myRecyclerView;
     private RecyclerView.Adapter mMatchesAdapter;
     private RecyclerView.LayoutManager mMatchesLayoutManager;
@@ -55,10 +55,6 @@ public class MatchesFragment extends Fragment {
     private String sortBy;
     private TextView sortByTextView;
     private Button allMatches;
-    ArrayList<MatchesObject> oryginalMatches = new ArrayList<>();
-    @Inject
-    MatchesViewModel matchesViewModel;
-
     private NavController navController;
 
     public MatchesFragment() {
@@ -102,7 +98,7 @@ public class MatchesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navController= Navigation.findNavController(view);
+        navController = Navigation.findNavController(view);
         locationButton = getView().findViewById(R.id.locationButton);
         allMatches = getView().findViewById(R.id.allMatches);
         sortByTextView = getView().findViewById(R.id.sortByText);
@@ -132,7 +128,7 @@ public class MatchesFragment extends Fragment {
             }
         });
         matchesViewModel.getTags().observe(getActivity(), strings -> {
-            if (strings.data !=null) {
+            if (strings.data != null) {
                 myTags.clear();
                 myTags.addAll(strings.data);
                 adapter.notifyDataSetChanged();

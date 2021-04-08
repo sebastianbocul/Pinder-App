@@ -13,6 +13,15 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class StringDateToAge {
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static int calculateAge(LocalDate birthDate, LocalDate currentDate) {
+        if ((birthDate != null) && (currentDate != null)) {
+            return Period.between(birthDate, currentDate).getYears();
+        } else {
+            return 0;
+        }
+    }
+
     public int stringDateToAge(String strDate) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return stringDateToAgeOreo(strDate);
@@ -56,14 +65,5 @@ public class StringDateToAge {
         Date c = Calendar.getInstance().getTime();
         LocalDate today = LocalDate.now();
         return calculateAge(date, today);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static int calculateAge(LocalDate birthDate, LocalDate currentDate) {
-        if ((birthDate != null) && (currentDate != null)) {
-            return Period.between(birthDate, currentDate).getYears();
-        } else {
-            return 0;
-        }
     }
 }

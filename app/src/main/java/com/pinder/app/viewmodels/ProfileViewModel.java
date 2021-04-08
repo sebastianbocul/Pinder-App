@@ -8,14 +8,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.pinder.app.persistance.ProfileFirebase;
 import com.pinder.app.repository.ProfileRepository;
 import com.pinder.app.util.Resource;
 
 import java.util.ArrayList;
 
 public class ProfileViewModel extends ViewModel {
-    private ProfileRepository profileRepository;
+    private final ProfileRepository profileRepository;
 
     @ViewModelInject
     public ProfileViewModel(ProfileRepository profileRepository) {
@@ -29,12 +28,13 @@ public class ProfileViewModel extends ViewModel {
     public LiveData<Resource<String>> getDescription() {
         return profileRepository.getDescription();
     }
+
     public LiveData<Resource<ArrayList<String>>> getImages() {
         return profileRepository.getImages();
     }
 
     public void saveUserInformation(String nameEdt, String descriptionEdt) {
-        if (nameEdt.length() != 0 || descriptionEdt.length()!=0) {
+        if (nameEdt.length() != 0 || descriptionEdt.length() != 0) {
             profileRepository.saveUserInformation(nameEdt, descriptionEdt);
         }
     }

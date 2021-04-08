@@ -32,8 +32,8 @@ public class SortingFunctions {
         } else {
             Collections.sort(list, new Comparator<Card>() {
                 public int compare(Card o1, Card o2) {
-                    Boolean x1 = ((Card) o1).isLikesMe();
-                    Boolean x2 = ((Card) o2).isLikesMe();
+                    Boolean x1 = o1.isLikesMe();
+                    Boolean x2 = o2.isLikesMe();
                     int sComp = x2.compareTo(x1);
                     if (sComp != 0) {
                         return sComp;
@@ -51,8 +51,8 @@ public class SortingFunctions {
         } else {
             Collections.sort(list, new Comparator<Card>() {
                 public int compare(Card o1, Card o2) {
-                    Boolean x1 = ((Card) o1).isLikesMe();
-                    Boolean x2 = ((Card) o2).isLikesMe();
+                    Boolean x1 = o1.isLikesMe();
+                    Boolean x2 = o2.isLikesMe();
                     int sComp = x2.compareTo(x1);
                     return sComp;
                 }

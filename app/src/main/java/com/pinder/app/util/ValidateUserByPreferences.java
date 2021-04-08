@@ -1,7 +1,5 @@
 package com.pinder.app.util;
 
-import android.util.Log;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.pinder.app.models.Card;
@@ -14,7 +12,7 @@ import java.util.Map;
 public class ValidateUserByPreferences {
     private static final String TAG = "ValidateUserByPreferenc";
 
-    public static Card validateUserByPreferences(DataSnapshot userDatasnapshot , Boolean likesMe, LatLng myLocation, ArrayList<TagsObject> myTagsList, Map<String, String> myInfo) {
+    public static Card validateUserByPreferences(DataSnapshot userDatasnapshot, Boolean likesMe, LatLng myLocation, ArrayList<TagsObject> myTagsList, Map<String, String> myInfo) {
         Card card = null;
 //        //Log.d(TAG, "validateUserByPreferences: datasnapshot:" + userDatasnapshot.toString());
         //Log.d(TAG, "validateUserByPreferences: likesMe:" + likesMe);
@@ -41,7 +39,7 @@ public class ValidateUserByPreferences {
             double distanceDouble = CalculateDistance.distance(myLocation.latitude, myLocation.longitude, latitude, longitude);
             //Log.d(TAG, "distanceDouble" + distanceDouble);
             //VALIDATE USER
-            for (DataSnapshot dataTag: userDatasnapshot.child("tags").getChildren()) {
+            for (DataSnapshot dataTag : userDatasnapshot.child("tags").getChildren()) {
                 //Log.d(TAG, "forFirst ");
                 for (TagsObject tag : myTagsList) {
                     ///VALIDATING TAGS BY MY PREFERENCES
@@ -116,7 +114,6 @@ public class ValidateUserByPreferences {
             //Log.d(TAG, "tryError " + e.toString());
         }
         //Log.d(TAG, "RETURN CARD :  "+ card + " likesMe " + likesMe);
-
         return card;
     }
 }
